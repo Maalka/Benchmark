@@ -1,7 +1,7 @@
 /**
  * Main routes.
  */
-define(["angular", "./controllers", "common/common"], function(angular, controllers) {
+define(["angular", "./controllers", "common"], function(angular, controllers) {
   var mod = angular.module("main.routes", ["yourprefix.common"]);
   mod.config(["$routeProvider", function($routeProvider) {
     $routeProvider

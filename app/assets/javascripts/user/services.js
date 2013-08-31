@@ -1,7 +1,7 @@
 /**
  * User service, exposes user model to the rest of the app.
  */
-define(["angular", "common/common"], function(angular) {
+define(["angular", "common"], function(angular) {
   var mod = angular.module("user.services", ["yourprefix.common"]);
   mod.factory("userService", ["$http", "$q", "playRoutes", function($http, $q, playRoutes) {
     var UserService = function() {

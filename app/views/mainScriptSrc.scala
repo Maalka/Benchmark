@@ -5,6 +5,7 @@ import play.api.mvc.{Call}
 import play.api.{Play, Mode}
 import controllers.routes
 
+/** Make the app explicit for testing */
 trait RequiresApp {
   implicit val app = play.api.Play.current
 }

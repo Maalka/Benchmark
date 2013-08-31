@@ -1,7 +1,7 @@
 /**
  * Configure routes of user module.
  */
-define(["angular", "./controllers", "common/common"], function(angular, controllers) {
+define(["angular", "./controllers", "common"], function(angular, controllers) {
   var mod = angular.module("user.routes", ["user.services", "yourprefix.common"]);
   mod.config(["$routeProvider", function($routeProvider) {
     $routeProvider

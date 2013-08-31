@@ -9,9 +9,20 @@ GET     /                       controllers.Application.index
 GET     /jsroutes.js            controllers.Application.jsRoutes()
 
 # Routes used by Angular
+# ~~~~
+
+# Authentication
 POST    /login                  controllers.Application.login()
 POST    /logout                 controllers.Application.logout()
+
+# Users
 GET     /users/:id              controllers.Users.user(id: Long)
+POST    /users                  controllers.Users.createUser()
+PUT     /users/:id              controllers.Users.updateUser(id: Long)
+DELETE  /users/:id              controllers.Users.deleteUser(id: Long)
+
+# Static
+# ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /lib/require.js         controllers.WebJarAssets.requirejs
