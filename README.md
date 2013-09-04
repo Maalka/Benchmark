@@ -44,3 +44,8 @@ The JavaScript modules are organized as follows:
 * Produce executable via `play stage`
 * Run `target/start -Dhttp.port=9000`
 
+### Activator
+
+This application is also published an a Typesafe Activator template:
+
+http://typesafe.com/activator/template/play-with-angular-requirejs
