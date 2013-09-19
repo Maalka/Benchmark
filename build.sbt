@@ -5,9 +5,6 @@ name := "play-angular-require-seed"
 version := "1.0-SNAPSHOT"
 
 libraryDependencies ++= Seq(
-  jdbc,
-  anorm,
-  cache,
   "org.webjars" % "underscorejs" % "1.5.1",
   "org.webjars" % "jquery" % "1.10.2",
   "org.webjars" % "bootstrap" % "3.0.0" exclude("org.webjars", "jquery"),
