@@ -5,6 +5,7 @@
   requirejs.config({
     packages: ["common", "main", "user", "dashboard"],
     shim: {
+      "_" : {},
       "jquery": {
         exports: "$"
       },
@@ -13,6 +14,7 @@
         deps: ["jquery"]
       },
       "angular-cookies": ["angular"],
+      "bootstrap" : ["jquery"],
       "app" : ["angular"],
       "jsRoutes" : {
         deps : [],
@@ -37,6 +39,10 @@
   requirejs.onError = function(err) {
     console.log(err);
   };
+
+  /*define("jquery", [], function() {
+    return $;
+  });*/
 
   // Make sure generic external scripts are loaded
   require(["angular", "app", "angular-cookies", "jquery", "bootstrap"], function(angular, app) {
