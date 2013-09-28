@@ -2,7 +2,7 @@ import play.Project._
 
 name := "play-angular-require-seed"
 
-version := "1.0-SNAPSHOT"
+version := "2.2"
 
 libraryDependencies ++= Seq(
   "org.webjars" % "underscorejs" % "1.5.1",
@@ -10,8 +10,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "bootstrap" % "3.0.0" exclude("org.webjars", "jquery"),
   "org.webjars" % "angularjs" % "1.0.7" exclude("org.webjars", "jquery"),
   "org.webjars" % "requirejs" % "2.1.1",
-  "org.webjars" % "webjars-play_2.10" % "2.2.0-RC1-1"
-  )     
+  "org.webjars" % "webjars-play_2.10" % "2.2.0"
+)
 
 playScalaSettings
 
