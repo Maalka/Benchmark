@@ -20,5 +20,9 @@ resolvers += "typesafe" at "http://repo.typesafe.com/typesafe/repo"
 // This tells Play to optimize this file and its dependencies
 requireJs += "mainProd.js"
 
-// This tells Play to read the RequireJS "shim" configuration from mainProd.js
-requireJsShim += "mainProd.js"
+// The main config file
+// See http://requirejs.org/docs/optimization.html#mainConfigFile
+requireJsShim := "build.js"
+
+// To completely override the optimization process, use this config option:
+//requireNativePath := Some("node r.js -o name=main out=javascript-min/main.min.js")
