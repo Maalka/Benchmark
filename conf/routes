@@ -25,8 +25,8 @@ DELETE  /users/:id              controllers.Users.deleteUser(id: Long)
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /lib/require.js         controllers.WebJarAssets.requirejs
+#GET     /lib/require.js         controllers.WebJarAssets.requirejs
 ### Enable www.WebJars.org based resources to be returned
-GET     /webjars/*file          controllers.WebJarAssets.at(file)
+GET     /webjars/*file          controllers.CdnWebJarAssets.at(file)
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file           controllers.Assets.at(path="/public", file)

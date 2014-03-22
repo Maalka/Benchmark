@@ -4,7 +4,8 @@
  * single module.
  */
 define(["angular", "./routes", "./controllers"], function(angular, routes, controllers) {
-  var mod = angular.module("yourprefix.main", ["main.routes"]);
+  "use strict";
+  var mod = angular.module("yourprefix.home", ["ngRoute", "home.routes"]);
   mod.controller("HeaderCtrl", controllers.HeaderCtrl);
   mod.controller("FooterCtrl", controllers.FooterCtrl);
   return mod;

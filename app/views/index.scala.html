@@ -3,10 +3,10 @@
   <head>
     <title data-ng-bind="pageTitle"></title>
     <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-    <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))" />
+    <link rel="stylesheet" media="screen" href="@CdnWebJarAssets.getUrl(CdnWebJarAssets.locate("bootstrap.min.css"))" />
     @*-- Add More CSS here -- *@
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-    @helper.requireJs(core = routes.WebJarAssets.requirejs.url, module = helper.mainScriptSrc("javascripts/main"))
+    @Html(RequireJS.setup(helper.mainScriptSrc(scriptName = "main")))
   </head>
   <body>
     @*-- Header -- *@

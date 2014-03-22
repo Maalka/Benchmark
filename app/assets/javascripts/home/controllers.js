@@ -1,5 +1,5 @@
 /**
- * Main controllers.
+ * Home controllers.
  */
 define([], function() {
   "use strict";
@@ -24,15 +24,15 @@ define([], function() {
     $scope.logout = function() {
       userService.logout();
       $scope.user = undefined;
-      $location.path("/dashboard");
+      $location.path("/");
     };
   };
   HeaderCtrl.$inject = ["$scope", "userService", "helper", "$location"];
 
   /** Controls the footer */
-  var FooterCtrl = function($scope) {
+  var FooterCtrl = function(/*$scope*/) {
   };
-  FooterCtrl.$inject = ["$scope"];
+  //FooterCtrl.$inject = ["$scope"];
 
   return {
     HeaderCtrl: HeaderCtrl,

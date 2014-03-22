@@ -4,5 +4,5 @@
  * to include a single module.
  */
 define(["angular", "./routes", "./controllers"], function(angular, routes, controllers) {
-  return angular.module("yourprefix.dashboard", ["dashboard.routes"]);
+  return angular.module("yourprefix.dashboard", ["ngRoute", "dashboard.routes"]);
 });

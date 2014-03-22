@@ -21,8 +21,7 @@ The JavaScript modules are organized as follows:
     |-- assets
     |--- javascripts    <- contains all the JavaScript/CoffeeScript modules
     |---- app.js        <- app module, wires everything together
-    |---- mainDev.js    <- tells RequireJS how to load modules in DEV mode and bootstraps app
-    |---- mainProd.js   <- tells RequireJS how to load modules in PROD mode and bootstraps app
+    |---- main.js       <- tells RequireJS how to load modules and bootstraps the app
     |---- common/       <- a module, in this case
     |----- main.js      <- main file of the module, loads all sub-files in this folder
     |----- filters.js   <- common's filters
@@ -37,12 +36,17 @@ The JavaScript modules are organized as follows:
 
 * Load dependencies via `play update`
 * Run via `play ~run`
-* Go to localhost:9000
+* Go to [localhost:9000](http://localhost:9000)
+
+This uses the normal JavaScript files and loads libraries from the downloaded WebJars.
 
 ### Prod Mode
 
-* Produce executable via `play stage`
-* Run `target/start -Dhttp.port=9000`
+* Produce executable via `play clean dist`
+* Extract `unzip target/universal/play-angular-require-seed-2.2.2.zip`
+* Run `play-angular-require-seed-2.2.2/bin/play-angular-require-seed -Dhttp.port=9000 -Dconfig.resource=prod.conf`
+
+This uses the uglified JavaScript files and loads WebJars resources from the jsDelivr CDN.
 
 ### Activator
 
