@@ -2,44 +2,43 @@
  * User service, exposes user model to the rest of the app.
  */
 define(["angular", "common"], function(angular) {
+  "use strict";
+
   var mod = angular.module("user.services", ["yourprefix.common"]);
   mod.factory("userService", ["$http", "$q", "playRoutes", function($http, $q, playRoutes) {
-    var UserService = function() {
-      var self = this;
-      var user;
-      var token;
-      self.loginUser = function(credentials) {
+    var user, token;
+    return {
+      loginUser : function(credentials) {
         return playRoutes.controllers.Application.login().post(credentials).then(function(response) {
           // return promise so we can chain easily
-          this.token = response.data.token;
+          token = response.data.token;
           // in a real app we could use the token to fetch the user data
           return playRoutes.controllers.Users.user(3).get();
         }).then(function(response) {
-          var user = response.data; // Extract user data from user() request
+          user = response.data; // Extract user data from user() request
           user.email = credentials.email;
-          self.user = user;
           return user;
         });
-      };
-      self.logout = function() {
-        // Logout on server in a real app
-        self.user = undefined;
-      };
-      self.getUser = function() {
-        return self.user;
-      };
+      },
+      logout : function() {
+      // Logout on server in a real app
+      user = undefined;
+      },
+      getUser : function() {
+        return user;
+      }
     };
-    return new UserService();
   }]);
   /**
    * Add this object to a route definition to only allow resolving the route if the user is
-   * logged in.
+   * logged in. This also adds the contents of the objects as a dependency of the controller.
    */
   mod.constant("userResolve", {
-    checkAuth: ["$q", "userService", function($q, userService) {
+    user: ["$q", "userService", function($q, userService) {
       var deferred = $q.defer();
-      if (userService.getUser()) {
-        deferred.resolve();
+      var user = userService.getUser();
+      if (user) {
+        deferred.resolve(user);
       } else {
         deferred.reject();
       }
