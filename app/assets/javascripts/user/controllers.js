@@ -8,7 +8,7 @@ define(["angular"], function(angular) {
     $scope.credentials = {};
 
     $scope.login = function(credentials) {
-      userService.loginUser(credentials).then(function(user) {
+      userService.loginUser(credentials).then(function(/*user*/) {
         $location.path("/dashboard");
       });
     };

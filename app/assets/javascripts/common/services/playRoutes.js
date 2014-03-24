@@ -47,15 +47,15 @@ define(["angular", "require", "jsRoutes"], function(angular, require, jsRoutes) 
 
     // Add package object, in most cases "controllers"
     var addPackageObject = function(packageName, service) {
-      if (!(packageName in playRoutes)) {
-        playRoutes[packageName] = {};
+      if (!(packageName in service)) {
+        service[packageName] = {};
       }
     };
 
     // Add controller object, e.g. Application
     var addControllerObject = function(packageName, controllerKey, service) {
-      if (!(controllerKey in playRoutes[packageName])) {
-        playRoutes[packageName][controllerKey] = {};
+      if (!(controllerKey in service[packageName])) {
+        service[packageName][controllerKey] = {};
       }
     };
 

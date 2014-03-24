@@ -2,6 +2,8 @@
  * Dashboard routes.
  */
 define(["angular", "./controllers", "common"], function(angular, controllers) {
+  "use strict";
+
   var mod = angular.module("dashboard.routes", ["yourprefix.common"]);
   mod.config(["$routeProvider", "userResolve", function($routeProvider, userResolve) {
     $routeProvider

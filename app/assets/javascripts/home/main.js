@@ -5,6 +5,7 @@
  */
 define(["angular", "./routes", "./controllers"], function(angular, routes, controllers) {
   "use strict";
+
   var mod = angular.module("yourprefix.home", ["ngRoute", "home.routes"]);
   mod.controller("HeaderCtrl", controllers.HeaderCtrl);
   mod.controller("FooterCtrl", controllers.FooterCtrl);

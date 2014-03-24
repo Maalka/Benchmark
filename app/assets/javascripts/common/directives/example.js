@@ -4,6 +4,8 @@
  * that references them all.
  */
 define(["angular"], function(angular) {
+  "use strict";
+
   var mod = angular.module("common.directives.example", []);
   mod.directive("example", ["$log", function($log) {
     return {
