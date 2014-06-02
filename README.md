@@ -12,6 +12,10 @@ It shows an alternative way of organizing modules than the official
 For a full explanation, read the following blog post:
 http://www.mariussoutier.com/blog/2013/08/25/requirejs-optimization-play-webjars/
 
+The updates made for Play 2.2 and newer WebJars are explained here:
+ http://www.mariussoutier.com/blog/2014/03/25/requirejs-optimization-play-2-2-webjars-cdns/
+
+The changes for Play 2.3 and sbt-web will be discussed soon!
 
 ## Code Organization
 
@@ -34,22 +38,22 @@ The JavaScript modules are organized as follows:
 
 ### Dev Mode
 
-* Load dependencies via `play update`
-* Run via `play ~run`
+* Load dependencies via `sbt update`
+* Run via `sbt ~run`
 * Go to [localhost:9000](http://localhost:9000)
 
 This uses the normal JavaScript files and loads libraries from the downloaded WebJars.
 
 ### Prod Mode
 
-* Produce executable via `play clean dist`
-* Extract `unzip target/universal/play-angular-require-seed-2.2.2.zip`
-* Run `play-angular-require-seed-2.2.2/bin/play-angular-require-seed -Dhttp.port=9000 -Dconfig.resource=prod.conf`
+* Produce executable via `sbt clean dist`
+* Extract `unzip target/universal/play-angular-require-seed-2.x.x.zip`
+* Run `play-angular-require-seed-2.x.x/bin/play-angular-require-seed -Dhttp.port=9000 -Dconfig.resource=prod.conf`
 
-This uses the uglified JavaScript files and loads WebJars resources from the jsDelivr CDN.
+This uses the uglified JavaScript files, versioned and compressed assets, and loads WebJars resources from the jsDelivr CDN.
 
 ### Activator
 
-This application is also published an a Typesafe Activator template:
+This application is also published as a Typesafe Activator template:
 
 http://typesafe.com/activator/template/play-with-angular-requirejs

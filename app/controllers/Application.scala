@@ -3,6 +3,8 @@ package controllers
 import play.api._
 import play.api.mvc._
 import play.api.libs.json._
+import play.api.Play.current
+import play.api.cache.Cached
 
 /** Application controller, handles authentication */
 object Application extends Controller with Security {
@@ -14,20 +16,23 @@ object Application extends Controller with Security {
 
   /**
    * Returns the JavaScript router that the client can use for "type-safe" routes.
+   * Uses browser caching; set duration (in seconds) according to your release cycle.
    * @param varName The name of the global variable, defaults to `jsRoutes`
    */
-  def jsRoutes(varName: String = "jsRoutes") = Action { implicit request =>
-    Ok(
-      Routes.javascriptRouter(varName)(
-        routes.javascript.Application.login,
-        routes.javascript.Application.logout,
-        routes.javascript.Users.user,
-        routes.javascript.Users.createUser,
-        routes.javascript.Users.updateUser,
-        routes.javascript.Users.deleteUser
-        // TODO Add your routes here
-      )
-    ).as(JAVASCRIPT)
+  def jsRoutes(varName: String = "jsRoutes") = Cached(_ => "jsRoutes", duration = 86400) {
+    Action { implicit request =>
+      Ok(
+        Routes.javascriptRouter(varName)(
+          routes.javascript.Application.login,
+          routes.javascript.Application.logout,
+          routes.javascript.Users.user,
+          routes.javascript.Users.createUser,
+          routes.javascript.Users.updateUser,
+          routes.javascript.Users.deleteUser
+          // TODO Add your routes here
+        )
+      ).as(JAVASCRIPT)
+    }
   }
 
   /**
