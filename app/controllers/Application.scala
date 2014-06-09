@@ -60,6 +60,7 @@ object Application extends Controller with Security {
     * X-XSRF-TOKEN in HTTP header.
     */
   def logout() = HasToken(parse.json) { token => userId => implicit request =>
+    Logger.info(s"logging out: token: $token")
     Cache.remove(token)
     Ok.discardingCookies(DiscardingCookie(name = AuthTokenCookieKey))
   }

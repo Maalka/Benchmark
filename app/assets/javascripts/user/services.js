@@ -40,7 +40,11 @@ define(['angular', 'common'], function(angular) {
         delete $cookies['XSRF-TOKEN'];
         token = undefined;
         user = undefined;
-        console.log("logged out");
+        var dummyObj = {};
+        return playRoutes.controllers.Application.logout().post(dummyObj).then(
+          function(response) {
+            console.log("loggout response: " + response.data);
+          });
       },
       getUser : function() {
         return user;
