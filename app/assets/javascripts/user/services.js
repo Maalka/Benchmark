@@ -10,7 +10,7 @@ define(['angular', 'common'], function(angular) {
 
     /* If the token is assigned, check that the token is still valid on the server */
     if (token) {
-        playRoutes.controllers.Users.user(3).get().then(
+        playRoutes.controllers.Users.authUser().get().then(
           function(response) {
             user = response.data;
           },
@@ -28,8 +28,7 @@ define(['angular', 'common'], function(angular) {
         return playRoutes.controllers.Application.login().post(credentials).then(function(response) {
           // return promise so we can chain easily
           token = response.data.token;
-          // in a real app we could use the token to fetch the user data
-          return playRoutes.controllers.Users.user(3).get();
+          return playRoutes.controllers.Users.authUser().get();
         }).then(function(response) {
           user = response.data;
           return user;
@@ -40,8 +39,7 @@ define(['angular', 'common'], function(angular) {
         delete $cookies['XSRF-TOKEN'];
         token = undefined;
         user = undefined;
-        var dummyObj = {};
-        return playRoutes.controllers.Application.logout().post(dummyObj).then(
+        return playRoutes.controllers.Application.logout().post().then(
           function(response) {
             console.log("loggout response: " + response.data);
           });
