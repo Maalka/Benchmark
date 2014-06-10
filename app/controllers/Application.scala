@@ -81,7 +81,7 @@ object Application extends Controller with Security {
   /**
     * Log-out a user. Invalidates the authentication token.
     *
-    * Discard the cookie {@link AuthTokenCookieKey} to have AngularJS no longer set the
+    * Discard the cookie [[AuthTokenCookieKey]] to have AngularJS no longer set the
     * X-XSRF-TOKEN in HTTP header.
     */
   def logout() = HasToken(parse.empty) { token => userId => implicit request =>
