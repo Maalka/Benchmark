@@ -26,19 +26,19 @@ object Users extends Controller with Security {
   /** Creates a user from the given JSON */
   def createUser() = HasToken(parse.json) { token => userId => implicit request =>
     // TODO Implement User creation, typically via request.body.validate[User]
-    Ok
+    NotImplemented
   }
 
   /** Updates the user for the given id from the JSON body */
   def updateUser(id: Long) = HasToken(parse.json) { token => userId => implicit request =>
     // TODO Implement User creation, typically via request.body.validate[User]
-    Ok
+    NotImplemented
   }
 
   /** Deletes a user for the given id */
   def deleteUser(id: Long) = HasToken(parse.empty) { token => userId => implicit request =>
     // TODO Implement User creation, typically via request.body.validate[User]
-    Ok
+    NotImplemented
   }
 
 }
