@@ -1,18 +1,17 @@
-// Enable Play-Scala via its sbt auto-settings
-
 // TODO Replace with your project's/module's name
 name := "play-angular-require-seed"
 
 // TODO Set your organization here
 organization := "your.organization"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
-
+// TODO Set your version here
 version := "2.3.0"
 
 // Scala Version, Play supports both 2.10 and 2.11
 //scalaVersion := "2.10.4"
 scalaVersion := "2.11.1"
+
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 // Dependencies
 libraryDependencies ++= Seq(
@@ -57,7 +56,6 @@ pipelineStages := Seq(rjs, digest, gzip)
 RjsKeys.paths += ("jsRoutes" -> ("/jsroutes" -> "empty:"))
 
 //RjsKeys.mainModule := "main"
-//RjsKeys.buildProfile := Map("paths" -> paths) // ++  RjsKeys.webJarModuleIds.value.map(m => m -> j"empty:").toMap.toJS
 
 // Asset hashing with sbt-digest (https://github.com/sbt/sbt-digest)
 // ~~~
