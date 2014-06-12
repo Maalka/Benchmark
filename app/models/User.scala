@@ -55,7 +55,7 @@ object User {
   }
 
   def findByEmailAndPassword(email: String, password: String): Option[User] = {
-    // TODO: find the corresponding user
+    // TODO: find the corresponding user; don't forget to encrypt the password
     //
     // For now return a fake user
     Some(User(Some(3L), email, password, "John Smith", None))

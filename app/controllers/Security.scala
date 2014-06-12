@@ -26,7 +26,7 @@ trait Security { self: Controller =>
         Cache.getAs[Long](token) map { userId =>
           f(token)(userId)(request)
         }
-      } getOrElse Unauthorized(Json.obj("err" -> "No Token"))
+      } getOrElse Unauthorized(Json.obj("message" -> "No Token"))
     }
 
 }

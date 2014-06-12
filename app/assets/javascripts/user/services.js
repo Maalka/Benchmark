@@ -1,50 +1,50 @@
 /**
  * User service, exposes user model to the rest of the app.
  */
-define(['angular', 'common'], function(angular) {
+define(['angular', 'common'], function (angular) {
   'use strict';
 
   var mod = angular.module('user.services', ['yourprefix.common', 'ngCookies']);
-  mod.factory('userService', ['$http', '$q', 'playRoutes', '$cookies', function($http, $q, playRoutes, $cookies) {
+  mod.factory('userService', ['$http', '$q', 'playRoutes', '$cookies', '$log', function ($http, $q, playRoutes, $cookies, $log) {
     var user, token = $cookies['XSRF-TOKEN'];
 
     /* If the token is assigned, check that the token is still valid on the server */
     if (token) {
-        playRoutes.controllers.Users.authUser().get().then(
-          function(response) {
-            user = response.data;
-          },
-          function(response) {
-            /* the token is no longer valid */
-            console.log("response error: " + response.data.err);
-            token = undefined;
-            delete $cookies['XSRF-TOKEN'];
-            return $q.reject("Token invalid");
-          });
+      $log.info('Restoring user from cookie...');
+      playRoutes.controllers.Users.authUser().get()
+        .success(function (data) {
+          $log.info('Welcome back, ' + data.name);
+          user = data;
+        })
+        .error(function () {
+          $log.info('Token no longer valid, please log in.');
+          token = undefined;
+          delete $cookies['XSRF-TOKEN'];
+          return $q.reject("Token invalid");
+        });
     }
 
     return {
-      loginUser : function(credentials) {
-        return playRoutes.controllers.Application.login().post(credentials).then(function(response) {
+      loginUser: function (credentials) {
+        return playRoutes.controllers.Application.login().post(credentials).then(function (response) {
           // return promise so we can chain easily
           token = response.data.token;
           return playRoutes.controllers.Users.authUser().get();
-        }).then(function(response) {
+        }).then(function (response) {
           user = response.data;
           return user;
         });
       },
-      logout : function() {
+      logout: function () {
         // Logout on server in a real app
         delete $cookies['XSRF-TOKEN'];
         token = undefined;
         user = undefined;
-        return playRoutes.controllers.Application.logout().post().then(
-          function(response) {
-            console.log("loggout response: " + response.data);
-          });
+        return playRoutes.controllers.Application.logout().post().then(function () {
+          $log.info("Good bye ");
+        });
       },
-      getUser : function() {
+      getUser: function () {
         return user;
       }
     };
@@ -54,7 +54,7 @@ define(['angular', 'common'], function(angular) {
    * logged in. This also adds the contents of the objects as a dependency of the controller.
    */
   mod.constant('userResolve', {
-    user: ['$q', 'userService', function($q, userService) {
+    user: ['$q', 'userService', function ($q, userService) {
       var deferred = $q.defer();
       var user = userService.getUser();
       if (user) {
@@ -68,8 +68,8 @@ define(['angular', 'common'], function(angular) {
   /**
    * If the current route does not resolve, go back to the start page.
    */
-  var handleRouteError = function($rootScope, $location) {
-    $rootScope.$on('$routeChangeError', function(/*e, next, current*/) {
+  var handleRouteError = function ($rootScope, $location) {
+    $rootScope.$on('$routeChangeError', function (/*e, next, current*/) {
       $location.path('/');
     });
   };
