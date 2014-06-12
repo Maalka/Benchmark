@@ -20,6 +20,7 @@ GET     /users/:id              controllers.Users.user(id: Long)
 POST    /users                  controllers.Users.createUser()
 PUT     /users/:id              controllers.Users.updateUser(id: Long)
 DELETE  /users/:id              controllers.Users.deleteUser(id: Long)
+GET     /authuser               controllers.Users.authUser()
 
 # Static
 # ~~~~
