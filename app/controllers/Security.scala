@@ -18,7 +18,7 @@ trait Security { self: Controller =>
   val AuthTokenUrlKey = "auth"
 
   /**
-    * Checks that a the token is:
+    * Checks that the token is:
     * - present in the cookie header of the request,
     * - either in the header or in the query string,
     * - matches a token already stored in the play cache
