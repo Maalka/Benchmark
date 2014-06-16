@@ -66,7 +66,15 @@ object Application extends Controller with Security {
         User.findByEmailAndPassword(credentials.email, credentials.password).fold {
           BadRequest(Json.obj("status" -> "KO", "message" -> "User not registered"))
         } { user =>
-          // For this demo, return a dummy token
+          /*
+           * For this demo, return a dummy token. A real application would require the following,
+           * as per the AngularJS documentation:
+           *
+           * > The token must be unique for each user and must be verifiable by the server (to
+           * > prevent the JavaScript from making up its own tokens). We recommend that the token is
+           * > a digest of your site's authentication cookie with a salt) for added security.
+           *
+           */
           val token = java.util.UUID.randomUUID.toString
           Cache.set(token, user.id.get)
           Ok(Json.obj("token" -> token))
