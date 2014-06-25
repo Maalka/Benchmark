@@ -5,7 +5,7 @@ name := "play-angular-require-seed"
 organization := "your.organization"
 
 // TODO Set your version here
-version := "2.3.0"
+version := "2.3.1"
 
 // Scala Version, Play supports both 2.10 and 2.11
 //scalaVersion := "2.10.4"
