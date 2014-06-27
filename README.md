@@ -46,9 +46,16 @@ This uses the normal JavaScript files and loads libraries from the downloaded We
 
 ### Prod Mode
 
+Running:
+
+* Run `sbt start -Dconfig.resource=prod.conf`
+
+Deployment:
+
 * Produce executable via `sbt clean dist`
 * Extract `unzip target/universal/play-angular-require-seed-2.x.x.zip`
 * Run `play-angular-require-seed-2.x.x/bin/play-angular-require-seed -Dhttp.port=9000 -Dconfig.resource=prod.conf`
+
 
 This uses the uglified JavaScript files, versioned and compressed assets, and loads WebJars resources from the jsDelivr CDN.
 
@@ -56,4 +63,4 @@ This uses the uglified JavaScript files, versioned and compressed assets, and lo
 
 This application is also published as a Typesafe Activator template:
 
-http://typesafe.com/activator/template/play-with-angular-requirejs
+http://typesafe.com/activator/template/play-angular-require-seed
