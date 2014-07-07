@@ -62,7 +62,7 @@ define(['angular', 'require', 'jsRoutes'], function(angular, require, jsRoutes) 
     // checks if the controllerKey starts with a lower case letter
     var isControllerKey = function(controllerKey) {
       return (/^[A-Z].*/.test(controllerKey));
-    }
+    };
 
     var addRoutes = function(playRoutesObject, jsRoutesObject) {
       for ( var key in jsRoutesObject) {
@@ -77,7 +77,7 @@ define(['angular', 'require', 'jsRoutes'], function(angular, require, jsRoutes) 
           addRoutes(playRoutesObject[key], jsRoutesObject[key]);
         }
       }
-    }
+    };
 
     addRoutes(playRoutes, jsRoutes);
     return playRoutes;
