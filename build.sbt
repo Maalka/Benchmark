@@ -1,8 +1,10 @@
+import WebKeys._
+
 // TODO Replace with your project's/module's name
 name := "play-angular-require-seed"
 
-// TODO Set your organization here
-organization := "your.organization"
+// TODO Set your organization here; ThisBuild means it will apply to all sub-modules
+organization in ThisBuild := "your.organization"
 
 // TODO Set your version here
 version := "2.3.1"
@@ -18,18 +20,15 @@ libraryDependencies ++= Seq(
   filters,
   cache,
   // WebJars (i.e. client-side) dependencies
-  "org.webjars" % "requirejs" % "2.1.11-1",
+  "org.webjars" % "requirejs" % "2.1.14-1",
   "org.webjars" % "underscorejs" % "1.6.0-3",
   "org.webjars" % "jquery" % "1.11.1",
-  "org.webjars" % "bootstrap" % "3.1.1-1" exclude("org.webjars", "jquery"),
-  "org.webjars" % "angularjs" % "1.2.16-2" exclude("org.webjars", "jquery")
+  "org.webjars" % "bootstrap" % "3.1.1-2" exclude("org.webjars", "jquery"),
+  "org.webjars" % "angularjs" % "1.2.18" exclude("org.webjars", "jquery")
 )
 
-//
 // Scala Compiler Options
-// If this project is only a subproject, add these to a common project setting.
- //
-scalacOptions ++= Seq(
+scalacOptions in ThisBuild ++= Seq(
   "-target:jvm-1.7",
   "-encoding", "UTF-8",
   "-deprecation", // warning and location for usages of deprecated APIs
@@ -74,3 +73,6 @@ RjsKeys.paths += ("jsRoutes" -> ("/jsroutes" -> "empty:"))
 // JavaScript linting with sbt-jshint (https://github.com/sbt/sbt-jshint)
 // ~~~
 // JshintKeys.config := ".jshintrc"
+
+// All work and no play...
+emojiLogs
