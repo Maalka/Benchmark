@@ -17,5 +17,5 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-digest" % "1.0.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-gzip" % "1.0.0")
 
-// Enable this plugin to automatically refresh Chrome when you make changes to your app
-//addSbtPlugin("com.jamesward" %% "play-auto-refresh" % "0.0.10")
+// This plugin automatically refreshes Chrome when you make changes to your app
+//addSbtPlugin("com.jamesward" %% "play-auto-refresh" % "0.0.11")
