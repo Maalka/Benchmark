@@ -20,6 +20,7 @@ object Application extends Controller with Security {
   /**
    * Retrieves all routes via reflection.
    * http://stackoverflow.com/questions/12012703/less-verbose-way-of-generating-play-2s-javascript-router
+   * @todo If you have controllers in multiple packages, you need to add each package here.
    */
   val routeCache = {
     val jsRoutesClass = classOf[routes.javascript]
