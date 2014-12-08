@@ -64,3 +64,35 @@ This uses the uglified JavaScript files, versioned and compressed assets, and lo
 This application is also published as a Typesafe Activator template:
 
 http://typesafe.com/activator/template/play-angular-require-seed
+
+To use it from Activator, type
+
+~~~bash
+$ activator new <project-name>
+~~~
+
+Activator will now ask you to choose a template:
+
+~~~bash
+Browse the list of templates: http://typesafe.com/activator/templates
+Choose from these featured templates or enter a template name:
+  1) minimal-java
+  2) minimal-scala
+  3) play-java
+  4) play-scala
+> 
+~~~
+
+Enter `play-angular-require-seed` (you can use tab completion).
+
+~~~bash
+> play-angular-require-seed
+OK, application "<project-name>" is being created using the "play-angular-require-seed" template.
+~~~
+
+Your new app is now ready for development. Switch to its directory and run activator or sbt.
+
+~~~bash
+$ cd <project-name>
+$ activator ~run
+~~~
