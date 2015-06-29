@@ -1,16 +1,19 @@
 package controllers
 
 import models._
-
 import play.api._
-import play.api.mvc._
-import play.api.libs.json._
-import play.api.libs.json.Reads._
-import play.api.libs.functional.syntax._
 import play.api.cache._
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
+import play.api.mvc._
+
+import scala.concurrent.duration._
 
 /** Application controller, handles authentication */
 object Application extends Controller with Security {
+
+  val cacheDuration = 1.day.toSeconds.toInt
 
   /** Serves the index page, see views/index.scala.html */
   def index = Action {
@@ -37,7 +40,7 @@ object Application extends Controller with Security {
    * Uses browser caching; set duration (in seconds) according to your release cycle.
    * @param varName The name of the global variable, defaults to `jsRoutes`
    */
-  def jsRoutes(varName: String = "jsRoutes") = Cached(_ => "jsRoutes", duration = 86400) {
+  def jsRoutes(varName: String = "jsRoutes") = Cached(_ => "jsRoutes", duration = cacheDuration) {
     Action { implicit request =>
       Ok(Routes.javascriptRouter(varName)(routeCache: _*)).as(JAVASCRIPT)
     }
