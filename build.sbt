@@ -7,11 +7,11 @@ name := "play-angular-require-seed"
 organization in ThisBuild := "your.organization"
 
 // TODO Set your version here
-version := "2.3.7-SNAPSHOT"
+version := "2.3.9-SNAPSHOT"
 
-// Scala Version, Play supports both 2.10 and 2.11
+// Scala Version, Play 2.3 supports both 2.10 and 2.11
 //scalaVersion := "2.10.4"
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.6"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
