@@ -31,7 +31,7 @@ trait Security { self: Controller =>
         val maybeToken = request.headers.get(AuthTokenHeader).orElse(request.getQueryString(AuthTokenUrlKey))
         maybeToken flatMap { token =>
           cache.get[Long](token) map { userId =>
-            if (xsrfTokenCookie.value.equals(token)) {
+            if (xsrfTokenCookie.value == token) {
               f(token)(userId)(request)
             } else {
               Unauthorized(Json.obj("message" -> "Invalid Token"))
@@ -40,5 +40,4 @@ trait Security { self: Controller =>
         } getOrElse Unauthorized(Json.obj("message" -> "No Token"))
       }
     }
-
 }
