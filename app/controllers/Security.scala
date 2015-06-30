@@ -1,9 +1,8 @@
 package controllers
 
-import play.api._
-import play.api.mvc._
+import play.api.cache.CacheApi
 import play.api.libs.json._
-import play.api.cache._
+import play.api.mvc._
 
 /**
  * Security actions that should be used by all controllers that need to protect their actions.
@@ -11,7 +10,7 @@ import play.api.cache._
  */
 trait Security { self: Controller =>
 
-  implicit val app: play.api.Application = play.api.Play.current
+  val cache: CacheApi
 
   val AuthTokenHeader = "X-XSRF-TOKEN"
   val AuthTokenCookieKey = "XSRF-TOKEN"
@@ -31,7 +30,7 @@ trait Security { self: Controller =>
       } { xsrfTokenCookie =>
         val maybeToken = request.headers.get(AuthTokenHeader).orElse(request.getQueryString(AuthTokenUrlKey))
         maybeToken flatMap { token =>
-          Cache.getAs[Long](token) map { userId =>
+          cache.get[Long](token) map { userId =>
             if (xsrfTokenCookie.value.equals(token)) {
               f(token)(userId)(request)
             } else {

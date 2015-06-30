@@ -7,11 +7,9 @@ name := "play-angular-require-seed"
 organization in ThisBuild := "your.organization"
 
 // TODO Set your version here
-version := "2.3.9-SNAPSHOT"
+version := "2.4.1-SNAPSHOT"
 
-// Scala Version, Play 2.3 supports both 2.10 and 2.11
-//scalaVersion := "2.10.4"
-scalaVersion := "2.11.6"
+scalaVersion in ThisBuild := "2.11.6"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
@@ -29,7 +27,7 @@ libraryDependencies ++= Seq(
 
 // Scala Compiler Options
 scalacOptions in ThisBuild ++= Seq(
-  "-target:jvm-1.7",
+  "-target:jvm-1.8",
   "-encoding", "UTF-8",
   "-deprecation", // warning and location for usages of deprecated APIs
   "-feature", // warning and location for usages of features that should be imported explicitly
@@ -40,6 +38,8 @@ scalacOptions in ThisBuild ++= Seq(
   "-Ywarn-inaccessible",
   "-Ywarn-dead-code"
 )
+
+routesGenerator := InjectedRoutesGenerator
 
 //
 // sbt-web configuration

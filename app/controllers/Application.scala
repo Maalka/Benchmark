@@ -1,7 +1,7 @@
 package controllers
 
 import models._
-import play.api._
+import play.api.Routes
 import play.api.cache._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
@@ -11,9 +11,18 @@ import play.api.mvc._
 import scala.concurrent.duration._
 
 /** Application controller, handles authentication */
-object Application extends Controller with Security {
+class Application(val cache: CacheApi) extends Controller with Security {
 
-  val cacheDuration = 1.day.toSeconds.toInt
+  val cacheDuration = 1.day
+
+  /**
+   * Caching action that caches an OK response for the given amount of time with the key.
+   * NotFound will be cached for 5 mins. Any other status will not be cached.
+   */
+  def Caching(key: String, okDuration: Duration) =
+    new Cached(cache)
+      .status(_ => key, OK, okDuration.toSeconds.toInt)
+      .includeStatus(NOT_FOUND, 5.minutes.toSeconds.toInt)
 
   /** Serves the index page, see views/index.scala.html */
   def index = Action {
@@ -26,11 +35,13 @@ object Application extends Controller with Security {
    * @todo If you have controllers in multiple packages, you need to add each package here.
    */
   val routeCache = {
-    val jsRoutesClass = classOf[routes.javascript]
-    val controllers = jsRoutesClass.getFields.map(_.get(null))
-    controllers.flatMap { controller =>
-      controller.getClass.getDeclaredMethods.map { action =>
-        action.invoke(controller).asInstanceOf[play.core.Router.JavascriptReverseRoute]
+    val jsRoutesClasses = Seq(classOf[routes.javascript]) // TODO add your own packages
+    jsRoutesClasses.flatMap { jsRoutesClass =>
+      val controllers = jsRoutesClass.getFields.map(_.get(null))
+      controllers.flatMap { controller =>
+        controller.getClass.getDeclaredMethods.filter(_.getName != "_defaultPrefix").map { action =>
+          action.invoke(controller).asInstanceOf[play.api.routing.JavaScriptReverseRoute]
+        }
       }
     }
   }
@@ -40,9 +51,9 @@ object Application extends Controller with Security {
    * Uses browser caching; set duration (in seconds) according to your release cycle.
    * @param varName The name of the global variable, defaults to `jsRoutes`
    */
-  def jsRoutes(varName: String = "jsRoutes") = Cached(_ => "jsRoutes", duration = cacheDuration) {
+  def jsRoutes(varName: String = "jsRoutes") = Caching("jsRoutes", cacheDuration) {
     Action { implicit request =>
-      Ok(Routes.javascriptRouter(varName)(routeCache: _*)).as(JAVASCRIPT)
+      Ok(play.api.routing.JavaScriptReverseRouter(varName)(routeCache: _*)).as(JAVASCRIPT)
     }
   }
 
@@ -66,7 +77,7 @@ object Application extends Controller with Security {
   def login() = Action(parse.json) { implicit request =>
     request.body.validate[LoginCredentials].fold(
       errors => {
-        BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toFlatJson(errors)))
+        BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toJson(errors)))
       },
       credentials => {
         // TODO Check credentials, log user in, return correct token
@@ -83,7 +94,7 @@ object Application extends Controller with Security {
            *
            */
           val token = java.util.UUID.randomUUID.toString
-          Cache.set(token, user.id.get)
+          cache.set(token, user.id.get)
           Ok(Json.obj("token" -> token))
             .withCookies(Cookie(AuthTokenCookieKey, token, None, httpOnly = false))
         }
@@ -98,7 +109,7 @@ object Application extends Controller with Security {
    * X-XSRF-TOKEN in HTTP header.
    */
   def logout() = HasToken(parse.empty) { token => userId => implicit request =>
-    Cache.remove(token)
+    cache.remove(token)
     Ok.discardingCookies(DiscardingCookie(name = AuthTokenCookieKey))
   }
 

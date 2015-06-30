@@ -3,27 +3,27 @@
 # ~~~~
 
 # Home page
-GET     /                       controllers.Application.index
+GET           /                    controllers.Application.index()
 
 # JavaScript routes object
-GET     /jsroutes.js            controllers.Application.jsRoutes()
+GET           /jsroutes.js         controllers.Application.jsRoutes()
 
 # Routes used by Angular
 # ~~~~
 
 # Authentication
-POST    /login                  controllers.Application.login()
-POST    /logout                 controllers.Application.logout()
+POST          /login               controllers.Application.login()
+POST          /logout              controllers.Application.logout()
 
 # Users
-GET     /users/:id              controllers.Users.user(id: Long)
-POST    /users                  controllers.Users.createUser()
-PUT     /users/:id              controllers.Users.updateUser(id: Long)
-DELETE  /users/:id              controllers.Users.deleteUser(id: Long)
-GET     /authuser               controllers.Users.authUser()
+GET           /users/:id           controllers.Users.user(id: Long)
+POST          /users               controllers.Users.createUser()
+PUT           /users/:id           controllers.Users.updateUser(id: Long)
+DELETE        /users/:id           controllers.Users.deleteUser(id: Long)
+GET           /authuser            controllers.Users.authUser()
 
 # Static
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file           controllers.Assets.versioned(path="/public", file: Asset)
+GET           /assets/*file        controllers.Assets.versioned(path="/public", file: Asset)
