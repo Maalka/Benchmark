@@ -6,7 +6,7 @@ define(['angular', 'common'], function (angular) {
 
   var mod = angular.module('user.services', ['yourprefix.common', 'ngCookies']);
   mod.factory('userService', ['$http', '$q', 'playRoutes', '$cookies', '$log', function ($http, $q, playRoutes, $cookies, $log) {
-    var user, token = $cookies['XSRF-TOKEN'];
+    var user, token = $cookies.get('XSRF-TOKEN');
 
     /* If the token is assigned, check that the token is still valid on the server */
     if (token) {
