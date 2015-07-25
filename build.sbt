@@ -9,7 +9,7 @@ organization in ThisBuild := "your.organization"
 // TODO Set your version here
 version := "2.4.1-SNAPSHOT"
 
-scalaVersion in ThisBuild := "2.11.6"
+scalaVersion in ThisBuild := "2.11.7"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
