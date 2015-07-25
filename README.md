@@ -13,9 +13,13 @@ For a full explanation, read the following blog post:
 http://www.mariussoutier.com/blog/2013/08/25/requirejs-optimization-play-webjars/
 
 The updates made for Play 2.2 and newer WebJars are explained here:
- http://www.mariussoutier.com/blog/2014/03/25/requirejs-optimization-play-2-2-webjars-cdns/
+http://www.mariussoutier.com/blog/2014/03/25/requirejs-optimization-play-2-2-webjars-cdns/
 
-The changes for Play 2.3 and sbt-web will be discussed soon!
+The changes for Play 2.3 and sbt-web are discussed in this series about sbt-web:
+http://mariussoutier.com/blog/2014/10/20/intro-sbt-web/ 
+
+The changes for Play 2.4 are summarized in this short summary post:
+http://mariussoutier.com/blog/2015/07/25/play-angular-require-seed-updates/
 
 ## Code Organization
 
