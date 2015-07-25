@@ -63,7 +63,7 @@ class Application(val cache: CacheApi) extends Controller with Security {
   /** JSON reader for [[LoginCredentials]]. */
   implicit val LoginCredentialsFromJson = (
     (__ \ "email").read[String](minLength[String](5)) ~
-      (__ \ "password").read[String](minLength[String](2))
+      (__ \ "password").read[String](minLength[String](8))
     )((email, password) => LoginCredentials(email, password))
 
   /**
