@@ -52,7 +52,7 @@ This uses the normal JavaScript files and loads libraries from the downloaded We
 
 Running:
 
-* Run `sbt start -Dconfig.resource=prod.conf`
+* Run `sbt testProd -Dconfig.resource=prod.conf`
 
 Deployment:
 
