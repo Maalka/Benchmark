@@ -11,7 +11,7 @@ import play.api.mvc._
 import scala.concurrent.duration._
 
 /** Application controller, handles authentication */
-class Application(val cache: CacheApi) extends Controller with Security {
+class Application(val cache: CacheApi) extends Controller with Security with Logging {
 
   val cacheDuration = 1.day
 
@@ -26,6 +26,7 @@ class Application(val cache: CacheApi) extends Controller with Security {
 
   /** Serves the index page, see views/index.scala.html */
   def index = Action {
+    log.debug("Index called")
     Ok(views.html.index())
   }
 
@@ -82,6 +83,7 @@ class Application(val cache: CacheApi) extends Controller with Security {
       credentials => {
         // TODO Check credentials, log user in, return correct token
         User.findByEmailAndPassword(credentials.email, credentials.password).fold {
+          log.info("Unregistered user tried to log in")
           BadRequest(Json.obj("status" -> "KO", "message" -> "User not registered"))
         } { user =>
           /*
@@ -95,6 +97,7 @@ class Application(val cache: CacheApi) extends Controller with Security {
            */
           val token = java.util.UUID.randomUUID.toString
           cache.set(token, user.id.get)
+          log.info(s"User ${user.id.get} succesfully logged in")
           Ok(Json.obj("token" -> token))
             .withCookies(Cookie(AuthTokenCookieKey, token, None, httpOnly = false))
         }
@@ -110,6 +113,7 @@ class Application(val cache: CacheApi) extends Controller with Security {
    */
   def logout() = HasToken(parse.empty) { token => userId => implicit request =>
     cache.remove(token)
+    log.info(s"User $userId succesfully logged out")
     Ok.discardingCookies(DiscardingCookie(name = AuthTokenCookieKey))
   }
 
