@@ -100,3 +100,4 @@ Your new app is now ready for development. Switch to its directory and run activ
 $ cd <project-name>
 $ activator ~run
 ~~~
+# Benchmark
