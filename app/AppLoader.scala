@@ -16,11 +16,12 @@ class AppLoader extends ApplicationLoader {
 class AppComponents(context: Context) extends BuiltInComponentsFromContext(context) with EhCacheComponents {
 
   lazy val applicationController = new controllers.Application(defaultCacheApi)
+  lazy val baselineController = new controllers.Baseline(defaultCacheApi)
   lazy val usersController = new controllers.Users(defaultCacheApi)
   lazy val assets = new controllers.Assets(httpErrorHandler)
 
   // Routes is a generated class
-  override def router: Router = new Routes(httpErrorHandler, applicationController, usersController, assets)
+  override def router: Router = new Routes(httpErrorHandler, applicationController, baselineController, usersController, assets)
 
   val gzipFilter = new GzipFilter(shouldGzip =
     (request, response) => {

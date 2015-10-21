@@ -11,6 +11,9 @@ GET           /jsroutes.js         controllers.Application.jsRoutes()
 # Routes used by Angular
 # ~~~~
 
+# Baselining
+POST          /baseline               controllers.Baseline.makeBaseline()
+
 # Authentication
 POST          /login               controllers.Application.login()
 POST          /logout              controllers.Application.logout()
