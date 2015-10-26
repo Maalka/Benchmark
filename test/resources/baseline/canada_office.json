@@ -7,13 +7,23 @@
   "state": "NY",
   "postalCode": "10011",
   "reportingUnits": "metric",
-  "areaUnits": "meters",
+  "areaUnits": "mSQ",
   "primaryType": "office",
   "numBuildingsPartSingleMore": "single",
-  "energyUse": [3500000,4000],
-  "energyRate": [0.25,0.1],
-  "energyUnits": ["kWh","therms"],
-  "energyType": ["grid", "naturalGas"],
+  "energies": [
+    {
+      "energyType": "grid",
+      "energyUnits": "KWh",
+      "energyUse": 3000000.0,
+      "energyRate": 0.25
+    },
+    {
+      "energyType": "naturalGas",
+      "energyUnits": "NGm3",
+      "energyUse": 200000.0,
+      "energyRate": 0.1
+    }
+  ],
   "targetScore": 75,
   "percentBetterThanMedian": 35,
   "buildingType": "Office",

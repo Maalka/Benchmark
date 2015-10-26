@@ -22,8 +22,8 @@ sealed trait BaseLine {
 
   def convertToMetric(unitType:String,unitValue:String,data:Double):Option[Double] = {
     val metricValue: Option[Double] = (unitType,unitValue) match {
-      case ("area","meters") => Some(SquareMeters(data) to SquareMeters)
-      case ("area","feet") => Some(SquareFeet(data) to SquareMeters)
+      case ("area","mSQ") => Some(SquareMeters(data) to SquareMeters)
+      case ("area","ftSQ") => Some(SquareFeet(data) to SquareMeters)
       case (_,_)  =>  null
     }
     metricValue
@@ -31,8 +31,8 @@ sealed trait BaseLine {
 
   def convertToStandard(unitType:String,unitValue:String,data:Double):Option[Double] = {
     val standardValue: Option[Double] = (unitType,unitValue) match {
-      case ("area","meters") => Some(SquareMeters(data) to SquareFeet)
-      case ("area","feet") => Some(SquareFeet(data) to SquareFeet)
+      case ("area","mSQ") => Some(SquareMeters(data) to SquareFeet)
+      case ("area","ftSQ") => Some(SquareFeet(data) to SquareFeet)
       case (_,_)  =>  null
     }
     standardValue

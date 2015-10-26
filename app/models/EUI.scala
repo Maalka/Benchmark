@@ -14,7 +14,7 @@ import play.api.libs.functional.syntax._
 import squants.energy._
 import squants.space._
 
-
+import scala.util._
 
 object EnergyCalcs {
 
@@ -29,21 +29,22 @@ object EnergyCalcs {
   def getTotalEUI(entries:EnergyList): Double =  {
 
 
+    val floorArea:Try[Area] = Area((entries.GFA, entries.areaUnits))
+
     val EUI:Double = entries.reportingUnits match {
       case "us" =>  {
-        val totalEnergy:Double = entries.energies.map(getSourceEnergy(_,entries.country) to KBtus).sum
-        val floorArea:Area = SquareFeet(entries.GFA)
-        totalEnergy / floorArea.value
+        val totalEnergy:Double = entries.energies.map(getSourceEnergy(_,entries.country).get to KBtus).sum
+        val buildingArea:Double = floorArea.get to SquareFeet
+        totalEnergy / buildingArea
       }
       case "metric" =>  {
-        val totalEnergy:Double = entries.energies.map(getSourceEnergy(_,entries.country) to Gigajoules).sum
-        val floorArea:Area = SquareMeters(entries.GFA)
-        totalEnergy / floorArea.value
+        val totalEnergy:Double = entries.energies.map(getSourceEnergy(_,entries.country).get to Gigajoules).sum
+        val buildingArea:Double = floorArea.get to SquareMeters
+        totalEnergy / buildingArea
       }
     }
-
     EUI
-    }
+  }
 
   /**
    * getResourceEnergy returns the Total Site EUI in kBTU -- at the last step this is converted to whatever reporting
@@ -51,73 +52,44 @@ object EnergyCalcs {
    * @param entry
    * @return
    */
-  def getSourceEnergy(entry:EnergyMetrics,country:String):Energy = {
+  def getSourceEnergy(entry:EnergyMetrics,country:String):Try[Energy] = {
 
-    val siteEnergy:Energy = getSiteEnergy(entry)
-    val sourceEnergy:Energy = (entry.energyType, country) match {
-      case ("grid","USA") => siteEnergy*siteToSourceConversions.gridUS
-      case ("grid","Canada") => siteEnergy*siteToSourceConversions.gridCanada
-      case ("naturalGas","USA") => siteEnergy*siteToSourceConversions.ngUS
-      case ("naturalGas","Canada") => siteEnergy*siteToSourceConversions.ngCanada
-      case ("onSiteElectricity",_) => siteEnergy*siteToSourceConversions.onSiteElectricity
-      case ("fuelOil",_) => siteEnergy*siteToSourceConversions.fuelOil
-      case ("propane","USA") => siteEnergy*siteToSourceConversions.propaneUS
-      case ("propane","USA") => siteEnergy*siteToSourceConversions.propaneCanada
-      case ("steam",_) => siteEnergy*siteToSourceConversions.steam
-      case ("hotWater",_) => siteEnergy*siteToSourceConversions.hotWater
-      case ("chilledWater","USA") => siteEnergy*siteToSourceConversions.chilledWaterUS
-      case ("chilledWater","Canada") => siteEnergy*siteToSourceConversions.chilledWaterCanada
-      case ("wood",_) => siteEnergy*siteToSourceConversions.wood
-      case ("coke",_) => siteEnergy*siteToSourceConversions.coke
-      case ("coal",_) => siteEnergy*siteToSourceConversions.coal
-      case ("other",_) => siteEnergy*siteToSourceConversions.other
+    val siteEnergy:Try[Energy] = Energy((entry.energyUse, entry.energyUnits))
+    Console.println("Site: " + siteEnergy)
 
 
+    val sourceEnergy:Try[Energy] = siteEnergy match {
+      case Success(siteUse) => Success(sourceConvert(entry.energyType, country, siteUse))
+      case Failure(error) => Failure(error)
     }
-    Console.println(sourceEnergy to KBtus)
+    Console.println("Source: " + (sourceEnergy.get to Gigajoules))
     sourceEnergy
-  }
-
-
-  def getSiteEnergy(entry:EnergyMetrics):Energy = {
-
-    val energyUSe:Energy = entry match {
-      case EnergyMetrics("grid",energyUnits,energyUse,energyRate) => gridKwh(energyUnits,energyUse)
-      case EnergyMetrics("naturalGas",energyUnits,energyUse,energyRate) => naturalGasKwh(energyUnits,energyUse)
 
     }
-    Console.println(energyUSe to KBtus)
-    energyUSe
-  }
 
-  def gridKwh(unitType:String,gridUse:Double):Energy = {
-    val energyUse:Energy = unitType match {
+  def sourceConvert(energyType:String,country:String, siteEnergy:Energy):Energy = {
 
-      case "GJ" => Gigajoules(gridUse)
-      case "kBtu" => KBtus(gridUse)
-      case "MBtu" => MBtus(gridUse)
-      case "kWh" => KilowattHours(gridUse)
-      case "MWh" => MegawattHours(gridUse)
-
+    val convertedEnergy: Energy = (energyType,country) match {
+      case ("grid", "USA") => siteEnergy * siteToSourceConversions.gridUS
+      case ("grid", "Canada") => siteEnergy * siteToSourceConversions.gridCanada
+      case ("naturalGas", "USA") => siteEnergy * siteToSourceConversions.ngUS
+      case ("naturalGas", "Canada") => siteEnergy * siteToSourceConversions.ngCanada
+      case ("onSiteElectricity", _) => siteEnergy * siteToSourceConversions.onSiteElectricity
+      case ("fuelOil", _) => siteEnergy * siteToSourceConversions.fuelOil
+      case ("propane", "USA") => siteEnergy * siteToSourceConversions.propaneUS
+      case ("propane", "Canada") => siteEnergy * siteToSourceConversions.propaneCanada
+      case ("steam", _) => siteEnergy * siteToSourceConversions.steam
+      case ("hotWater", _) => siteEnergy * siteToSourceConversions.hotWater
+      case ("chilledWater", "USA") => siteEnergy * siteToSourceConversions.chilledWaterUS
+      case ("chilledWater", "Canada") => siteEnergy * siteToSourceConversions.chilledWaterCanada
+      case ("wood", _) => siteEnergy * siteToSourceConversions.wood
+      case ("coke", _) => siteEnergy * siteToSourceConversions.coke
+      case ("coal", _) => siteEnergy * siteToSourceConversions.coal
+      case ("other", _) => siteEnergy * siteToSourceConversions.other
     }
-    energyUse
+    convertedEnergy
   }
 
-  def naturalGasKwh(unitType:String,ngUse:Double):Energy = {
-    val energyUse:Energy = unitType match {
-
-      case "therms" => Therms(ngUse)
-      case "kBtu" => KBtus(ngUse)
-      case "MBtu" => MBtus(ngUse)
-      case "cf" => KilowattHours(ngUse)
-      case "ccf" => MegawattHours(ngUse)
-      case "kcf" => MBtus(ngUse)
-      case "m3" => KilowattHours(ngUse)
-      case "GJ" => MegawattHours(ngUse)
-
-    }
-    energyUse
-  }
 }
 
 case class EnergyMetrics(energyType:String,energyUnits:String,energyUse:Double,energyRate:Double)
@@ -125,12 +97,12 @@ object EnergyMetrics {
   implicit val energyReads: Reads[EnergyMetrics] = (
     (JsPath \ "energyType").read[String] and
     (JsPath \ "energyUnits").read[String] and
-    (JsPath \ "energyUse").read[Double] and
+    (JsPath \ "energyUse").read[Double](min(0.0)) and
     (JsPath \ "energyRate").read[Double]
     )(EnergyMetrics.apply _)
 }
 
-case class EnergyList(energies:List[EnergyMetrics],GFA:Double,reportingUnits:String, country:String)
+case class EnergyList(energies:List[EnergyMetrics],GFA:Double,reportingUnits:String, country:String, areaUnits:String)
 object EnergyList {
   implicit val listReads:Reads[EnergyList] = Json.reads[EnergyList]
 }

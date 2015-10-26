@@ -7,13 +7,13 @@
   "state": "NY",
   "postalCode": "10011",
   "reportingUnits": "us",
-  "areaUnits": "feet",
+  "areaUnits": "ftSQ",
   "primaryType": "office",
   "numBuildingsPartSingleMore": "single",
   "energies": [
       {
         "energyType": "grid",
-        "energyUnits": "kWh",
+        "energyUnits": "KWh",
         "energyUse": 3500000.0,
         "energyRate": 0.25
       },
