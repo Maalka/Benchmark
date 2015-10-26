@@ -7,21 +7,21 @@
   "state": "NY",
   "postalCode": "10011",
   "reportingUnits": "us",
-  "areaUnits": "ft",
+  "areaUnits": "feet",
   "primaryType": "office",
   "numBuildingsPartSingleMore": "single",
-  "energy": [
+  "energies": [
       {
         "energyType": "grid",
         "energyUnits": "kWh",
-        "energyUse": 3500000,
+        "energyUse": 3500000.0,
         "energyRate": 0.25
       },
       {
-      "energyType": "natural_gas",
-      "energyUnits": "therms",
-      "energyUse": 4000,
-      "energyRate": 0.1
+        "energyType": "naturalGas",
+        "energyUnits": "therms",
+        "energyUse": 4000.0,
+        "energyRate": 0.1
       }
   ],
   "targetScore": 75,
@@ -33,7 +33,7 @@
   "percentHeated": 1,
   "percentCooled": 1,
   "annualITEnergyKwh": null,
-  "floorArea": 200000,
+  "GFA": 200000,
   "seatingCapacity": null,
   "isOpenAllWeekdays": null,
   "weeklyOperatingHours": 80,
@@ -50,7 +50,7 @@
   "avgNumResidents": null,
   "maxNumResidents": null,
   "numRezUnits": null,
-  "num_electronic_lifts": null,
+  "numElectronicLifts": null,
   "numCommWashingMachines": null,
   "numRezWashingMachines": null,
   "numOpenClosedRefrCases": null,
@@ -67,7 +67,7 @@
   "numStaffedBeds": null,
   "numMRIMachines": null,
   "numFTEWorkers": null,
-  "licensedBed_Capacity": null,
+  "licensedBedCapacity": null,
   "hasLaundryFacility": null,
   "hasPool": null,
   "hasParking": null,

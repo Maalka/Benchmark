@@ -11,9 +11,12 @@ version := "2.4.2-SNAPSHOT"
 
 scalaVersion in ThisBuild := "2.11.7"
 
-lazy val squantsProject = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squants")
 
-lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, SbtNativePackager).dependsOn(squantsProject)
+lazy val squants = ProjectRef(file("/Users/rimukas/MaalkaLocal/squants/squants/"),"squantsJVM")
+//lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
+
+
+lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, SbtNativePackager).dependsOn(squants)
 
 
 

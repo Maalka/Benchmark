@@ -14,6 +14,7 @@ GET           /jsroutes.js         controllers.Application.jsRoutes()
 # Baselining
 POST          /baseline               controllers.Baseline.makeBaseline()
 
+
 # Authentication
 POST          /login               controllers.Application.login()
 POST          /logout              controllers.Application.logout()
