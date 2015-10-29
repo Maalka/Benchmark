@@ -37,10 +37,12 @@ class Baseline(val cache: CacheApi) extends Controller with Security with Loggin
     )
 
     getBaseline.targetEUI.map(_ match {
-      case a => Console.println("For ES Score of " + getBaseline.getTargetES.get.target +
-        ", must achieve target EUI: " + a.getOrElse("Cannot Calculate Target EUI"))
+      case Some(a) => Console.println("For ES Score of " + getBaseline.getTargetES.getOrElse("NOT FOUND") +
+        ", must achieve target EUI: " + a)
+      case  None => Console.println("Could not calculate target EUI for ES Score of " + getBaseline.getTargetES.getOrElse("NOT FOUND"))
     }
     )
+
 
     Future(Ok("Ok"))
 
