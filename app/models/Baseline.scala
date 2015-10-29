@@ -59,22 +59,42 @@ case class EUIMetrics(parameters: JsValue) {
   }
 
 
-  val targetRatio:Future[Option[Double]] = parameters.asOpt[TargetES] match {
-    case Some(a) =>
-      for {
-        lookUp <- getLookupTable(parameters: JsValue)
-        targetRatioEntry <- loadLookupTable(lookUp).map {
-          _.filter(_.ES == a.target).last.Ratio
-        }
+  val targetEUI:Future[Option[Double]] = getTargetRatio
+  targetEUI.map(_ match {
+    case Some(a) => a * predictedEUI.get
+    case None => None
+  })
 
-      } yield Some(targetRatioEntry)
-    case None => Future(None)
+  def getTargetES:Option[TargetES] = parameters.asOpt[TargetES]
+
+  def getTargetRatio:Future[Option[Double]] = {
+    parameters.asOpt[TargetES] match {
+      case Some(a) =>
+        for {
+          lookUp <- getLookupTable(parameters: JsValue)
+          targetRatioEntry <- loadLookupTable(lookUp).map {
+            _.filter(_.ES == a.target).last.Ratio
+          }
+
+        } yield Some(targetRatioEntry)
+      case None => Future(None)
+    }
   }
 
-  targetRatio.map(println)
 
+  /* WHY DOES THIS KEEP LOOKING FOR DOUBLE INSTEAD OF SOME DOUBLE???? IM GOING CRAZY!
+   val targetEUI: Future[Option[Double]] = {
+      for {
+        targetRatio <- getTargetRatio
+        targetEUI <- targetRatio.map(_ match {
+          case Some(a) => Option(a * predictedEUI.get)
+          case None => None
+        }
+        )
 
-
+      } yield targetEUI
+    }
+        }*/
 
 
   def loadLookupTable(filename:String): Future[Seq[JsonEntry]] = {
