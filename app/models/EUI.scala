@@ -16,6 +16,9 @@ import squants.space._
 
 import scala.util._
 
+
+
+
 object EnergyCalcs {
 
 
@@ -27,7 +30,6 @@ object EnergyCalcs {
 
 
   def getTotalEUI(entries:EnergyList): Double =  {
-
 
     val floorArea:Try[Area] = Area((entries.GFA, entries.areaUnits))
 
@@ -55,37 +57,43 @@ object EnergyCalcs {
   def getSourceEnergy(entry:EnergyMetrics,country:String):Try[Energy] = {
 
     val siteEnergy:Try[Energy] = Energy((entry.energyUse, entry.energyUnits))
-    Console.println("Site: " + siteEnergy)
-
 
     val sourceEnergy:Try[Energy] = siteEnergy match {
-      case Success(siteUse) => Success(sourceConvert(entry.energyType, country, siteUse))
-      case Failure(error) => Failure(error)
+      case Success(siteUse) => {
+        Console.println("Actual " + entry.energyType + " Site Energy (kWh): " + siteEnergy.get)
+        sourceConvert(entry.energyType, country, siteUse)
+      }
+      case Failure(error) => {
+        Console.println("Actual " + entry.energyType + " Site Energy not Found")
+        Failure(error)
+      }
     }
-    Console.println("Source: " + (sourceEnergy.get to Gigajoules))
+
+    Console.println("Actual " + entry.energyType + " Source Energy (kWh): " + sourceEnergy.get)
     sourceEnergy
 
     }
 
-  def sourceConvert(energyType:String,country:String, siteEnergy:Energy):Energy = {
+  def sourceConvert(energyType:String,country:String, siteEnergy:Energy):Try[Energy] = {
 
-    val convertedEnergy: Energy = (energyType,country) match {
-      case ("grid", "USA") => siteEnergy * siteToSourceConversions.gridUS
-      case ("grid", "Canada") => siteEnergy * siteToSourceConversions.gridCanada
-      case ("naturalGas", "USA") => siteEnergy * siteToSourceConversions.ngUS
-      case ("naturalGas", "Canada") => siteEnergy * siteToSourceConversions.ngCanada
-      case ("onSiteElectricity", _) => siteEnergy * siteToSourceConversions.onSiteElectricity
-      case ("fuelOil", _) => siteEnergy * siteToSourceConversions.fuelOil
-      case ("propane", "USA") => siteEnergy * siteToSourceConversions.propaneUS
-      case ("propane", "Canada") => siteEnergy * siteToSourceConversions.propaneCanada
-      case ("steam", _) => siteEnergy * siteToSourceConversions.steam
-      case ("hotWater", _) => siteEnergy * siteToSourceConversions.hotWater
-      case ("chilledWater", "USA") => siteEnergy * siteToSourceConversions.chilledWaterUS
-      case ("chilledWater", "Canada") => siteEnergy * siteToSourceConversions.chilledWaterCanada
-      case ("wood", _) => siteEnergy * siteToSourceConversions.wood
-      case ("coke", _) => siteEnergy * siteToSourceConversions.coke
-      case ("coal", _) => siteEnergy * siteToSourceConversions.coal
-      case ("other", _) => siteEnergy * siteToSourceConversions.other
+    val convertedEnergy: Try[Energy] = (energyType,country) match {
+      case ("grid", "USA") => Success(siteEnergy * siteToSourceConversions.gridUS)
+      case ("grid", "Canada") => Success(siteEnergy * siteToSourceConversions.gridCanada)
+      case ("naturalGas", "USA") => Success(siteEnergy * siteToSourceConversions.ngUS)
+      case ("naturalGas", "Canada") => Success(siteEnergy * siteToSourceConversions.ngCanada)
+      case ("onSiteElectricity", _) => Success(siteEnergy * siteToSourceConversions.onSiteElectricity)
+      case ("fuelOil", _) => Success(siteEnergy * siteToSourceConversions.fuelOil)
+      case ("propane", "USA") => Success(siteEnergy * siteToSourceConversions.propaneUS)
+      case ("propane", "Canada") => Success(siteEnergy * siteToSourceConversions.propaneCanada)
+      case ("steam", _) => Success(siteEnergy * siteToSourceConversions.steam)
+      case ("hotWater", _) => Success(siteEnergy * siteToSourceConversions.hotWater)
+      case ("chilledWater", "USA") => Success(siteEnergy * siteToSourceConversions.chilledWaterUS)
+      case ("chilledWater", "Canada") => Success(siteEnergy * siteToSourceConversions.chilledWaterCanada)
+      case ("wood", _) => Success(siteEnergy * siteToSourceConversions.wood)
+      case ("coke", _) => Success(siteEnergy * siteToSourceConversions.coke)
+      case ("coal", _) => Success(siteEnergy * siteToSourceConversions.coal)
+      case ("other", _) => Success(siteEnergy * siteToSourceConversions.other)
+      case (_,_) => throw new Exception("Could Not Convert to Source Energy")
     }
     convertedEnergy
   }
@@ -106,8 +114,6 @@ case class EnergyList(energies:List[EnergyMetrics],GFA:Double,reportingUnits:Str
 object EnergyList {
   implicit val listReads:Reads[EnergyList] = Json.reads[EnergyList]
 }
-
-
 
 object siteToSourceConversions {
   val gridUS:Double = 3.14

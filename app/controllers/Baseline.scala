@@ -10,8 +10,7 @@ import play.api.libs.json._
 import play.api.mvc._
 import scala.concurrent.Future
 
-import models.Building
-import models.EnergyCalcs
+import models.EUIMetrics
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -19,30 +18,31 @@ class Baseline(val cache: CacheApi) extends Controller with Security with Loggin
 
   def makeBaseline() = Action.async(parse.json) { implicit request =>
 
-    Building.getExpectedEnergy(request.body) match {
-      case JsSuccess(score,_) => {
-        Console.println(score)
+    val getBaseline:EUIMetrics = EUIMetrics(request.body)
 
-        val EUI = makeEUI(request.body)
-        Console.println("Total Site EUI is: " + EUI)
-
-      }
-      case JsError(err) => {
-        Console.println("No building found - error:  " + err)
-      }
-
+    getBaseline.predictedEUI match {
+      case JsSuccess(a, _) => Console.println("Expected Predicted EUI is: " + a)
+      case JsError(err) => Console.println(err)
+    }
+    getBaseline.sourceEUI match {
+      case JsSuccess(a, _) => Console.println("Actual Source EUI is: " + a)
+      case JsError(err) => Console.println(err)
     }
 
+    Console.println("EUI Ratio is: " + getBaseline.euiRatio)
+
+/*    getBaseline.ES.map(_ match {
+      case Some(a) => Console.println("Calculated ES: " + a)
+      case None => Console.println("Could not calculate ES")
+    }
+    )*/
     Future(Ok("Ok"))
 
   }
 
-  def makeEUI(parameters: JsValue):Any = {
-    EnergyCalcs.getEUI(parameters) match {
-      case JsSuccess(a, _) => a
-      case JsError(err) => ("EUI Could not be calculated - error:" + err)
-    }
-  }
 }
+
+
+
 
 

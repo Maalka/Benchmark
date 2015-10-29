@@ -1,12 +1,131 @@
 
 package models
 
+import net.sf.ehcache.search.expression.And
+import squants.energy.{Energy, KilowattHours}
 import squants.space._
+import scala.concurrent.Future
 import scala.language._
 import scala.math._
 import play.api.libs.json._
-import play.api.libs.json.Reads._
+import play.api.Play
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util._
+import java.io.{InputStream, FileReader, FileNotFoundException, IOException}
+import play.api.libs.functional.syntax._
+import play.api.data.validation.ValidationError
 
+
+
+
+case class EUIMetrics(parameters: JsValue) {
+
+
+  val predictedEUI: JsResult[Double] = Building.getExpectedEnergy(parameters) match {
+    case JsSuccess(score, _) => {
+      JsSuccess(score)
+    }
+    case JsError(err) => JsError("EUI could not be predicted from equation: " + err)
+  }
+
+  val sourceEUI: JsResult[Double] = EnergyCalcs.getEUI(parameters) match {
+    case JsSuccess(score, _) => {
+      JsSuccess(score)
+    }
+    case JsError(err) => JsError("Source EUI could not be calculated: " + err)
+  }
+
+  val euiRatio: Double = sourceEUI.get / predictedEUI.get
+  Console.println(euiRatio)
+
+  val ES: Future[Int] = {
+    for {
+      lookUp <- getLookupTable(parameters: JsValue)
+      futureRatio <- loadLookupTable(lookUp).map {
+        _.dropWhile(_.Ratio < euiRatio).headOption
+      }
+      checkRatio <- loadLookupTable(lookUp).map {
+        _.lastOption
+      }
+      lastRatio <- if (futureRatio.isDefined) {
+        Future(futureRatio)
+      } else {
+        Future(checkRatio)
+      }
+      computeES <- Future(lastRatio.get.ES)
+
+    } yield computeES
+
+  }
+
+
+  val targetRatio:Future[Option[Double]] = parameters.asOpt[TargetES] match {
+    case Some(a) =>
+      for {
+        lookUp <- getLookupTable(parameters: JsValue)
+        targetRatioEntry <- loadLookupTable(lookUp).map {
+          _.filter(_.ES == a.target).last.Ratio
+        }
+
+      } yield Some(targetRatioEntry)
+    case None => Future(None)
+  }
+
+  targetRatio.map(println)
+
+
+
+
+
+  def loadLookupTable(filename:String): Future[Seq[JsonEntry]] = {
+    for {
+      is <- Future(Play.current.resourceAsStream(filename))
+      json <- Future {
+        is match {
+          case Some(is: InputStream) => {
+            Json.parse(is)
+          }
+          case _ => throw new Exception("Could not open file")
+        }
+      }
+      obj <- Future {
+        json.validate[Seq[JsonEntry]] match {
+          case JsSuccess(a, _) => a
+          case JsError(th) => throw new Exception("Cannot find this: " + th.toString())
+        }
+      }
+    } yield obj
+  }
+
+
+  def getLookupTable(parameters: JsValue): Future[String] = {
+
+    val r = parameters.asOpt[CountryBuildingType] match {
+      case Some(CountryBuildingType("USA", "Office")) => Play.current.configuration.getString("baseline.office")
+      case Some(CountryBuildingType("Canada", "Office")) => Play.current.configuration.getString("baseline.canadaOffice")
+      case Some(_) => None
+      case None => None
+    }
+    Future(r.getOrElse("Lookup Table Not Found"))
+  }
+
+
+}
+
+object EUIMetrics {}
+
+case class TargetES(target:Int)
+object TargetES {
+  implicit val TargetReads: Reads[TargetES] = (JsPath \ "targetScore").read[Int](Reads.min(0) andKeep
+    Reads.max(100)).map(new TargetES(_))
+}
+
+
+
+case class JsonEntry(ES: Int, CmPercent: Double, Ratio: Double)
+object JsonEntry {
+  implicit val formatFileName:Reads[JsonEntry] = Json.format[JsonEntry]
+}
 
 /** *
   * Base line trait, enables the reducing of equation segments and manages the lookup of energy star score values
@@ -39,7 +158,6 @@ sealed trait BaseLine {
   }
 }
 
-
 case class PosInt(value: Int)
 object PosInt {
   //implicit def posIntToInt(posInt:PosInt):Int = posInt.value   --------> These don't do anything right now and so we are forced to use PosInt.value below
@@ -66,6 +184,7 @@ def reduce:Double = {
   a * (c - b) }
 }
 
+
 /**
 * Maps the json to the correct BaseLine type.
 */
@@ -77,13 +196,14 @@ object Building {
       case Some(_) => JsError("No matching building by country and type!")
       case None => JsError("Could not find country or buildingType fields with JSON")
     }
-    try {
-      r.map { case (a: BaseLine) => a.expectedEnergy }
-    } catch {
-      case e: Exception => JsError("Could Not Compute Expected Energy")
-    }
+    for (
+      expectedEnergy <- r.map { case (a: BaseLine) => a.expectedEnergy }
+    ) yield expectedEnergy
   }
+
 }
+
+
 
 /**
 * Class to manage the decomposing of Country and Building from the input JSON
