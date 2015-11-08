@@ -16,25 +16,23 @@ import play.api.libs.functional.syntax._
 import play.api.data.validation.ValidationError
 
 
-
-
 case class EUIMetrics(parameters: JsValue) {
 
-
-  val sourceEUI: Future[Double] = {
-    for {
-      targetBuilding <- Future{getBuilding(parameters)}
-      sourceEnergy <- EnergyCalcs.getE(parameters)
-      sourceEUI <- {
-        val f = targetBuilding match {
-          case JsSuccess(a, _) => sourceEnergy / a.floorArea
-          case JsError(err) => throw new Exception("Could not determine building size for EUI Calculation!")
-        }
-        Console.println("Actual Source EUI: " + f)
-        Future(f)
+  val energyCalcs:EUICalculator = EUICalculator(parameters)
+  
+  val sourceEUI: Future[Double] = for {
+    targetBuilding <- Future{getBuilding(parameters)}
+    sourceTotalEnergy <- energyCalcs.getTotalSourceEnergy
+    sourceEUI <- {
+      //Console.println("Total Source Energy: " + sourceTotalEnergy)
+      val f = targetBuilding match {
+        case JsSuccess(a, _) => sourceTotalEnergy.value / a.floorArea
+        case JsError(err) => throw new Exception("Could not determine building size for EUI Calculation!")
       }
-      } yield sourceEUI
-  }
+      //Console.println("Total Actual Source EUI: " + f)
+      Future(f)
+    }
+    } yield sourceEUI
 
 
   val ExpectedEUI:Future[Double] = {
@@ -49,8 +47,8 @@ case class EUIMetrics(parameters: JsValue) {
     for {
       targetBuilding <- Future {getBuilding(parameters)}
       lookupEUI <- computeLookupEUI(targetBuilding)
-      sourceEnergy <-  EnergyCalcs.getE(parameters)
-      euiRatio <- getEUIratio(targetBuilding, lookupEUI, sourceEnergy)
+      sourceTotalEnergy <-  energyCalcs.getTotalSourceEnergy
+      euiRatio <- getEUIratio(targetBuilding, lookupEUI, sourceTotalEnergy.value)
       lookUp <- getLookupTable(parameters)
       futureRatio <- loadLookupTable(lookUp).map {
         _.dropWhile(_.Ratio < euiRatio).headOption
@@ -78,9 +76,6 @@ case class EUIMetrics(parameters: JsValue) {
   }
 
 
-
-
-
   def computeExpectedEUI[T](targetBuilding: T): Future[Double] = {
     val f = targetBuilding match {
       case JsSuccess(a: ResidenceHall, _) => exp(a.expectedEnergy) / a.floorArea
@@ -88,7 +83,7 @@ case class EUIMetrics(parameters: JsValue) {
       case JsSuccess(a: BaseLine, _) => a.expectedEnergy
       case JsError(err) => throw new Exception("Actual EUI could not be computed!")
     }
-    Console.println("Predicted EUI: " + f)
+    //Console.println("Predicted Source EUI: " + f)
     Future(f)
   }
 
@@ -99,6 +94,7 @@ case class EUIMetrics(parameters: JsValue) {
       case JsSuccess(a: BaseLine, _) => sourceEnergy / a.floorArea / lookupPredictedEUI
       case JsError(err) => throw new Exception("Could not calculate EUI Ratio!")
     }
+    Console.println("Reference EUI Ratio: " +  f)
     Future(f)
   }
 
@@ -131,8 +127,8 @@ case class EUIMetrics(parameters: JsValue) {
       case JsSuccess(a: BaseLine, _) => targetRatio * lookupEUI
       case JsError(err) => throw new Exception("Could not calculate Target EUI!")
     }
-    Console.println("LookUp EUI: " +  lookupEUI)
-    Console.println("Target EUI: " +  f)
+    Console.println("Reference Expected(Source) EUI: " +  lookupEUI)
+    //Console.println("Target EUI: " +  f)
     Future(f)
   }
 
@@ -209,10 +205,7 @@ case class EUIMetrics(parameters: JsValue) {
       case None => JsError("Could not find country or buildingType fields with JSON")
     }
   }
-
-
 }
-
 
 case class TargetES(target:Int)
 object TargetES {
@@ -234,15 +227,6 @@ case class PosDouble(value: Double)
 object PosDouble {
   implicit val reads: Reads[PosDouble] = JsPath.read[Double](Reads.min(0.0)).map(new PosDouble(_))
 }
-
-
-
-
-
-
-
-
-
 
 /** *
   * Base line trait, enables the reducing of equation segments and manages the lookup of energy star score values

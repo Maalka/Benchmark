@@ -15,7 +15,7 @@
         "energyType": "grid",
         "energyUnits": "KWh",
         "energyUse": 3500000.0,
-        "energyRate": 0.25
+        "energyRate": null
       },
       {
         "energyType": "naturalGas",
