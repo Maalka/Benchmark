@@ -20,28 +20,11 @@ class Baseline(val cache: CacheApi) extends Controller with Security with Loggin
 
     val getBaseline:EUIMetrics = EUIMetrics(request.body)
 
-    getBaseline.predictedEUI match {
-      case JsSuccess(a, _) => Console.println("Expected Predicted EUI is: " + a)
-      case JsError(err) => Console.println(err)
-    }
-    getBaseline.sourceEUI match {
-      case JsSuccess(a, _) => Console.println("Actual Source EUI is: " + a)
-      case JsError(err) => Console.println(err)
-    }
+    getBaseline.ExpectedEUI.map(println)
+    getBaseline.sourceEUI.map(println)
+    getBaseline.ES.map(println)
+    getBaseline.targetEUI.map(println)
 
-    Console.println("EUI Ratio is: " + getBaseline.euiRatio)
-
-    getBaseline.ES.map(_ match {
-      case a => Console.println("Calculated ES: " + a)
-    }
-    )
-
-    getBaseline.targetEUI.map(_ match {
-      case Some(a) => Console.println("For ES Score of " + getBaseline.getTargetES.getOrElse("NOT FOUND") +
-        ", must achieve target EUI: " + a)
-      case  None => Console.println("Could not calculate target EUI for ES Score of " + getBaseline.getTargetES.getOrElse("NOT FOUND"))
-    }
-    )
 
 
     Future(Ok("Ok"))

@@ -9,6 +9,8 @@ import play.api.libs.json._
 import play.api.libs.json.Reads._
 import squants.energy.{Gigajoules, MBtus}
 import squants.space.SquareFeet
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 import play.api.libs.functional.syntax._
 import squants.energy._
@@ -22,54 +24,59 @@ import scala.util._
 object EnergyCalcs {
 
 
-  def getEUI(parameters: JsValue):JsResult[Double] = {
-
-    val r = parameters.validate[EnergyList]
-    r.map{ case (a:EnergyList) => getTotalEUI(a) }
+  def getE(parameters: JsValue):Future[Double] = {
+    val f = parameters.validate[EnergyList] match {
+      case JsSuccess(a:EnergyList,_) => getTotalSourceEnergy(a)
+      case JsError(err) => throw new Exception("EUI (for lookup) could not be predicted")
+    }
+    Future(f)
+   // r.map{ case (a:EnergyList) => getTotalSourceEnergy(a) }
   }
 
 
-  def getTotalEUI(entries:EnergyList): Double =  {
+  def getSiteEnergy(energyUse:Double,energyUnits:String):Try[Energy] = Energy((energyUse, energyUnits))
 
-    val floorArea:Try[Area] = Area((entries.GFA, entries.areaUnits))
+  def getTotalSourceEnergy(entries:EnergyList): Double =  {
 
-    val EUI:Double = entries.reportingUnits match {
+    val totalE:Double = entries.reportingUnits match {
       case "us" =>  {
-        val totalEnergy:Double = entries.energies.map(getSourceEnergy(_,entries.country).get to KBtus).sum
-        val buildingArea:Double = floorArea.get to SquareFeet
-        totalEnergy / buildingArea
+        val totalEnergy:Double = entries.energies.map{
+        case a: EnergyMetrics => (getSourceEnergy(getSiteEnergy(a.energyUse,a.energyUnits),a.energyType,entries.country).get
+          to KBtus)}.sum
+        totalEnergy
       }
       case "metric" =>  {
-        val totalEnergy:Double = entries.energies.map(getSourceEnergy(_,entries.country).get to Gigajoules).sum
-        val buildingArea:Double = floorArea.get to SquareMeters
-        totalEnergy / buildingArea
+        val totalEnergy:Double = entries.energies.map{
+          case a: EnergyMetrics => (getSourceEnergy(getSiteEnergy(a.energyUse,a.energyUnits),a.energyType,entries.country).get
+            to Gigajoules)}.sum
+        totalEnergy
       }
     }
-    EUI
+    totalE
   }
 
   /**
-   * getResourceEnergy returns the Total Site EUI in kBTU -- at the last step this is converted to whatever reporting
-   * units defined by the user
-   * @param entry
+   *
+   * @param siteEnergy
+   * @param energyType
+   * @param country
    * @return
    */
-  def getSourceEnergy(entry:EnergyMetrics,country:String):Try[Energy] = {
-
-    val siteEnergy:Try[Energy] = Energy((entry.energyUse, entry.energyUnits))
+  def getSourceEnergy(siteEnergy:Try[Energy],energyType:String,country:String):Try[Energy] = {
 
     val sourceEnergy:Try[Energy] = siteEnergy match {
       case Success(siteUse) => {
-        Console.println("Actual " + entry.energyType + " Site Energy (kWh): " + siteEnergy.get)
-        sourceConvert(entry.energyType, country, siteUse)
+        Console.println("Actual " + energyType + " Site Energy: " + siteEnergy.get +" and in kBTU: " + (siteEnergy.get to KBtus))
+        sourceConvert(energyType, country, siteUse)
       }
       case Failure(error) => {
-        Console.println("Actual " + entry.energyType + " Site Energy not Found")
+        Console.println("Actual " + energyType + " Site Energy not Found")
         Failure(error)
       }
     }
 
-    Console.println("Actual " + entry.energyType + " Source Energy (kWh): " + sourceEnergy.get)
+    Console.println("Actual " + energyType + " Source Energy (kWh): " + sourceEnergy.get + " and in kBTU: " +
+      (sourceEnergy.get to KBtus))
     sourceEnergy
 
     }
@@ -110,7 +117,7 @@ object EnergyMetrics {
     )(EnergyMetrics.apply _)
 }
 
-case class EnergyList(energies:List[EnergyMetrics],GFA:Double,reportingUnits:String, country:String, areaUnits:String)
+case class EnergyList(energies:List[EnergyMetrics],reportingUnits:String, country:String, areaUnits:String)
 object EnergyList {
   implicit val listReads:Reads[EnergyList] = Json.reads[EnergyList]
 }

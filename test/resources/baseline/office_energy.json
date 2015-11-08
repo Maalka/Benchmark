@@ -42,7 +42,7 @@
   "hasFoodPreparation": null,
   "numRefrUnits": null,
   "numWorkersMainShift": 250,
-  "warehouseRefrigerated": null,
+  "isWarehouseRefrigerated": null,
   "numWalkinRefrUnits": null,
   "numCashRegisters": null,
   "lengthRefrFoodDisplayCases": null,
