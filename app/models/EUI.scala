@@ -8,6 +8,7 @@ package models
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import squants.energy.{Gigajoules, KBtus}
+import squants.space.{SquareMeters, SquareFeet, Area}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
@@ -21,6 +22,8 @@ import scala.util._
 
 
 case class EUICalculator(parameters: JsValue) {
+
+  implicit def boolOptToInt(b:Option[Boolean]):Int = if (b.getOrElse(false)) 1 else 0
 
   def getSiteEnergy: Future[List[Try[Energy]]] = {
     for {
@@ -69,6 +72,23 @@ case class EUICalculator(parameters: JsValue) {
     }
   }
 
+  def getTotalSourceEnergyNoPoolNoParking:Future[Energy] = {
+    for {
+      entries <- Future {
+        parameters.validate[EnergyList]
+      }
+      conversionInfo <- Future {parameters.validate[ConversionInfo].
+        getOrElse(throw new Exception("Cannot find Country Type"))}
+      sourceEnergyList <- computeSourceEnergy(entries, conversionInfo)
+      sourceEnergyListConverted <- convertOutputSum(sourceEnergyList, conversionInfo)
+      poolEnergy <- getPoolEnergy
+      parkingEnergy <- getParkingEnergy
+
+    } yield {
+      sourceEnergyListConverted - poolEnergy - parkingEnergy
+    }
+  }
+
   def computeSourceEnergy[T](entries: T, convert: ConversionInfo): Future[List[Try[Energy]]] = {
     val f = entries match {
       case JsSuccess(a:EnergyList, _) => a.energies.map{
@@ -100,6 +120,7 @@ case class EUICalculator(parameters: JsValue) {
   }
 
   def convertOutputSum(energies: List[Try[Energy]], convert: ConversionInfo): Future[Energy] = {
+
 
     val f = convert.reportingUnits match {
       case "us" => energies.map{
@@ -137,6 +158,81 @@ case class EUICalculator(parameters: JsValue) {
       case (_, _) => throw new Exception("Could Not Convert to Source Energy")
     }
   }
+
+  def getParkingEnergy: Future[Energy] = {
+    val parkingEnergy = parameters.asOpt[Parking] match {
+      case Some(Parking(a, b, c, d, e, units, "USA")) => {
+
+        /*  Console.println("Parking - open: " + a + " Partially Enclosed: "+ b +  " Fully Enclosed: " + c +
+            " in Units of: " + units)*/
+        val openArea:Double = Area((a.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
+        val partiallyEnclosedParkingArea:Double = Area((b.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
+        val fullyEnclosedParkingArea:Double = Area((c.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
+
+        KBtus((9.385 * openArea) + (28.16 * partiallyEnclosedParkingArea) + (35.67 * fullyEnclosedParkingArea) +
+          (0.009822 * (d.getOrElse(0.0) * e)))
+      }
+      case Some(Parking(a, b, c, d, e, units, "Canada")) => {
+
+        /*  Console.println("Parking - open: " + a + " Partially Enclosed: "+ b +  " Fully Enclosed: " + c +
+            " in Units of: " + units)*/
+        val openArea:Double = Area((a.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
+        val partiallyEnclosedParkingArea:Double = Area((b.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
+        val fullyEnclosedParkingArea:Double = Area((c.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
+
+        KBtus((9.385 * openArea) + (28.16 * partiallyEnclosedParkingArea) + (35.67 * fullyEnclosedParkingArea) +
+          (0.009822 * (d.getOrElse(0.0) * e))) in Gigajoules
+      }
+
+      case Some(_) => KBtus(0)
+      case None => KBtus(0)
+    }
+    //Console.println("Parking Energy: " + parkingEnergy)
+    Future(parkingEnergy)
+  }
+
+
+
+
+def getPoolEnergy:Future[Energy] = {
+  //Console.println(parameters.asOpt[Pool])
+  val poolEnergy = parameters.asOpt[Pool] match {
+    case Some(Pool(Some("Indoor"), "USA", "K12School", Some("Recreational"))) => KBtus(1257300)
+    case Some(Pool(Some("Indoor"), "USA", "K12School", Some("ShortCourse"))) => KBtus(2095500)
+    case Some(Pool(Some("Indoor"), "USA", "K12School", Some("Olympic"))) => KBtus(6266009)
+    case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("Recreational"))) => KBtus(1010711)
+    case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("ShortCourse"))) => KBtus(1684518)
+    case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("Olympic"))) => KBtus(5037084)
+    case Some(Pool(Some("Indoor"), "USA", _, Some("Recreational"))) => KBtus(853981)
+    case Some(Pool(Some("Indoor"), "USA", _, Some("ShortCourse"))) => KBtus(1423301)
+    case Some(Pool(Some("Indoor"), "USA", _, Some("Olympic"))) => KBtus(4255987)
+    case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("Recreational"))) => KBtus(1202780) in Gigajoules
+    case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("ShortCourse"))) => KBtus(2004633) in Gigajoules
+    case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("Olympic"))) => KBtus(5993047) in Gigajoules
+    case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("Recreational"))) => KBtus(962982) in Gigajoules
+    case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("ShortCourse"))) => KBtus(1604654) in Gigajoules
+    case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("Olympic"))) => KBtus(4799745) in Gigajoules
+    case Some(Pool(Some("Indoor"), "Canada", _, Some("Recreational"))) => KBtus(810384) in Gigajoules
+    case Some(Pool(Some("Indoor"), "Canada", _, Some("ShortCourse"))) => KBtus(1351587) in Gigajoules
+    case Some(Pool(Some("Indoor"), "Canada", _, Some("Olympic"))) => KBtus(4040544) in Gigajoules
+
+
+    case Some(Pool(Some("Outdoor"), "USA", _, Some("Recreational"))) => KBtus(119914)
+    case Some(Pool(Some("Outdoor"), "USA", _, Some("ShortCourse"))) => KBtus(199857)
+    case Some(Pool(Some("Outdoor"), "USA", _, Some("Olympic"))) => KBtus(597621)
+    case Some(Pool(Some("Outdoor"), "Canada", _, Some("Recreational"))) => KBtus(112790) in Gigajoules
+    case Some(Pool(Some("Outdoor"), "Canada", _, Some("ShortCourse"))) => KBtus(187668) in Gigajoules
+    case Some(Pool(Some("Outdoor"), "Canada", _, Some("Olympic"))) => KBtus(561108) in Gigajoules
+
+    case Some(Pool(_, _, _, _)) => KBtus(0)
+    case None => KBtus(0)
+  }
+  //Console.println("Pool Energy: " + poolEnergy)
+  Future(poolEnergy)
+}
+
+
+
 }
 
 case class ConversionInfo(country:String, reportingUnits: String)
@@ -177,4 +273,16 @@ object siteToSourceConversions {
   val coke:Double = 1.0
   val other:Double = 1.0
 
+}
+
+case class Pool(indoorOutdoor:Option[String],country:String, buildingType:String, poolType:Option[String])
+object Pool {
+  implicit val poolRead: Reads[Pool] = Json.reads[Pool]
+}
+
+case class Parking(openParkingArea:Option[Double],partiallyEnclosedParkingArea:Option[Double],
+                   fullyEnclosedParkingArea:Option[Double], HDD:Option[Double], hasParkingHeating:Option[Boolean],
+                   parkingAreaUnits:Option[String],country:String)
+object Parking {
+  implicit val parkingRead: Reads[Parking] = Json.reads[Parking]
 }

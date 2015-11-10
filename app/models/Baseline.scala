@@ -2,7 +2,7 @@
 package models
 
 import net.sf.ehcache.search.expression.And
-import squants.energy.{Energy, KilowattHours}
+import squants.energy.{Gigajoules, KBtus, Energy, KilowattHours}
 import squants.space._
 import scala.concurrent.Future
 import scala.language._
@@ -22,11 +22,13 @@ case class EUIMetrics(parameters: JsValue) {
   
   val sourceEUI: Future[Double] = for {
     targetBuilding <- Future{getBuilding(parameters)}
+    poolEnergy <- energyCalcs.getPoolEnergy
+    parkingEnergy <- energyCalcs.getParkingEnergy
     sourceTotalEnergy <- energyCalcs.getTotalSourceEnergy
     sourceEUI <- {
       //Console.println("Total Source Energy: " + sourceTotalEnergy)
       val f = targetBuilding match {
-        case JsSuccess(a, _) => sourceTotalEnergy.value / a.floorArea
+        case JsSuccess(a, _) => (sourceTotalEnergy - poolEnergy - parkingEnergy).value / a.floorArea
         case JsError(err) => throw new Exception("Could not determine building size for EUI Calculation!")
       }
       //Console.println("Total Actual Source EUI: " + f)
@@ -47,8 +49,10 @@ case class EUIMetrics(parameters: JsValue) {
     for {
       targetBuilding <- Future {getBuilding(parameters)}
       lookupEUI <- computeLookupEUI(targetBuilding)
+      poolEnergy <- energyCalcs.getPoolEnergy
+      parkingEnergy <- energyCalcs.getParkingEnergy
       sourceTotalEnergy <-  energyCalcs.getTotalSourceEnergy
-      euiRatio <- getEUIratio(targetBuilding, lookupEUI, sourceTotalEnergy.value)
+      euiRatio <- getEUIratio(targetBuilding, lookupEUI, (sourceTotalEnergy - poolEnergy - parkingEnergy).value)
       lookUp <- getLookupTable(parameters)
       futureRatio <- loadLookupTable(lookUp).map {
         _.dropWhile(_.Ratio < euiRatio).headOption
@@ -179,6 +183,8 @@ case class EUIMetrics(parameters: JsValue) {
     }
     Future(r.getOrElse("Lookup Table Not Found"))
   }
+
+
 
   def getBuilding(parameters: JsValue): JsResult[BaseLine] = {
     parameters.asOpt[CountryBuildingType] match {
