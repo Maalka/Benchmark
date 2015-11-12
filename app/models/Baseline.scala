@@ -1,7 +1,7 @@
 
 package models
 
-import net.sf.ehcache.search.expression.And
+
 import squants.energy.{Gigajoules, KBtus, Energy, KilowattHours}
 import squants.space._
 import scala.concurrent.Future
@@ -10,34 +10,32 @@ import scala.math._
 import play.api.libs.json._
 import play.api.Play
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util._
 import java.io.{InputStream, FileReader, FileNotFoundException, IOException}
 import play.api.libs.functional.syntax._
-import play.api.data.validation.ValidationError
 
 
 case class EUIMetrics(parameters: JsValue) {
 
   val energyCalcs:EUICalculator = EUICalculator(parameters)
   
-  val sourceEUI: Future[Double] = for {
-    targetBuilding <- Future{getBuilding(parameters)}
-    poolEnergy <- energyCalcs.getPoolEnergy
-    parkingEnergy <- energyCalcs.getParkingEnergy
-    sourceTotalEnergy <- energyCalcs.getTotalSourceEnergy
-    sourceEUI <- {
-      //Console.println("Total Source Energy: " + sourceTotalEnergy)
-      val f = targetBuilding match {
-        case JsSuccess(a, _) => (sourceTotalEnergy - poolEnergy - parkingEnergy).value / a.floorArea
-        case JsError(err) => throw new Exception("Could not determine building size for EUI Calculation!")
-      }
-      //Console.println("Total Actual Source EUI: " + f)
-      Future(f)
-    }
-    } yield sourceEUI
+  val sourceEUI: Future[Double] =
+    for {
+      buildingSize <- getBuildingSize(parameters)
+      poolEnergy <- energyCalcs.getPoolEnergy
+      parkingEnergy <- energyCalcs.getParkingEnergy
+      sourceTotalEnergy <- energyCalcs.getTotalSourceEnergy
+      sourceEUI <- sourceEUInoPoolnoParking(sourceTotalEnergy, poolEnergy, parkingEnergy)
+    } yield sourceEUI.value / buildingSize
+
+  val siteEUI: Future[Double] =
+    for {
+      buildingSize <- getBuildingSize(parameters)
+      siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
+    } yield siteTotalEnergy.value / buildingSize
 
 
-  val ExpectedEUI:Future[Double] = {
+
+  val expectedSourceEUI:Future[Double] = {
     for {
       targetBuilding <- Future{getBuilding(parameters)}
       expectedEUI <- computeExpectedEUI(targetBuilding)
@@ -70,7 +68,7 @@ case class EUIMetrics(parameters: JsValue) {
     } yield computeES
   }
 
-  val targetEUI:Future[Double] = {
+  val targetSourceEUI:Future[Double] = {
     for {
       targetBuilding <- Future {getBuilding(parameters)}
       lookupEUI <- computeLookupEUI(targetBuilding)
@@ -79,15 +77,155 @@ case class EUIMetrics(parameters: JsValue) {
     } yield targetEUI
   }
 
+  val targetSourceEnergy:Future[Double] = {
+    for {
+      buildingSize <- getBuildingSize(parameters)
+      siteRatio <- siteToSourceRatio
+      sourceEnergy <- targetSourceEUI
+    } yield sourceEnergy  * buildingSize
+  }
+
+  val targetSiteEnergy:Future[Double] = {
+    for {
+      siteRatio <- siteToSourceRatio
+      sourceEnergy <- targetSourceEnergy
+    } yield sourceEnergy * siteRatio
+  }
+
+  val targetSiteEUI:Future[Double] = {
+    for {
+      buildingSize <- getBuildingSize(parameters)
+      siteEnergy <- targetSiteEnergy
+    } yield siteEnergy / buildingSize
+  }
+
+
+  val medianSourceEUI:Future[Double] = {
+    for {
+      targetBuilding <- Future {getBuilding(parameters)}
+      medianEUI <- {
+       targetBuilding match {
+          case JsSuccess(_,_) => for {
+            lookupEUI <- computeLookupEUI(targetBuilding)
+            targetRatio <- getMedianRatio(parameters)
+            targetEUI <-  getTargetEUI(targetBuilding,lookupEUI,targetRatio)
+          } yield targetEUI
+          case JsError(_) => Future(sourceMedianEUI(parameters).value)
+        }
+      }
+    } yield medianEUI
+  }
+
+  val medianSourceEnergy:Future[Double] = {
+    for {
+      buildingSize <- getBuildingSize(parameters)
+      siteRatio <- siteToSourceRatio
+      sourceEnergy <- medianSourceEUI
+    } yield sourceEnergy * buildingSize
+  }
+
+  val medianSiteEnergy:Future[Double] = {
+    for {
+      siteRatio <- siteToSourceRatio
+      sourceEnergy <- medianSourceEnergy
+    } yield sourceEnergy * siteRatio
+  }
+
+  val medianSiteEUI:Future[Double] = {
+    for {
+      buildingSize <- getBuildingSize(parameters)
+      siteEnergy <- medianSiteEnergy
+    } yield siteEnergy / buildingSize
+  }
+
+  val percentBetterSourceEUI:Future[Double] = {
+    for {
+      betterTarget <- Future {parameters.validate[PercentBetterThanMedian]}
+      medianEUI <- medianSourceEUI
+      targetEUI <- {
+        betterTarget match {
+          case JsSuccess(a, _) => Future(medianEUI * (1 - a.target / 100.0))
+          case JsError(err) => throw new Exception("Could not determine target EUI!")
+        }
+      }
+    } yield targetEUI
+  }
+
+  val percentBetterSourceEnergy:Future[Double] = {
+    for {
+      buildingSize <- getBuildingSize(parameters)
+      siteRatio <- siteToSourceRatio
+      sourceEnergy <- percentBetterSourceEUI
+    } yield sourceEnergy * buildingSize
+  }
+
+  val percentBetterSiteEnergy:Future[Double] = {
+    for {
+      siteRatio <- siteToSourceRatio
+      sourceEnergy <- percentBetterSourceEnergy
+    } yield sourceEnergy * siteRatio
+  }
+
+  val percentBetterSiteEUI:Future[Double] = {
+    for {
+      buildingSize <- getBuildingSize(parameters)
+      siteEnergy <- percentBetterSiteEnergy
+    } yield siteEnergy / buildingSize
+  }
+
+
+  val percentBetterES:Future[Int] = {
+    for {
+      targetBuilding <- Future {getBuilding(parameters)}
+      lookupEUI <- computeLookupEUI(targetBuilding)
+      sourceTotalEnergy <-  percentBetterSourceEUI
+      euiRatio <- getTargetEUIratio(targetBuilding, lookupEUI, sourceTotalEnergy)
+      lookUp <- getLookupTable(parameters)
+      futureRatio <- loadLookupTable(lookUp).map {
+        _.dropWhile(_.Ratio < euiRatio).headOption
+      }
+      checkRatio <- loadLookupTable(lookUp).map {
+        _.lastOption
+      }
+      lastRatio <- if (futureRatio.isDefined) {
+        Future(futureRatio)
+      } else {
+        Future(checkRatio)
+      }
+      computeES <- Future(lastRatio.get.ES)
+
+    } yield computeES
+  }
+
+
+  def siteToSourceRatio:Future[Double] = {
+    for {
+      siteEnergy <- energyCalcs.getTotalSiteEnergy
+      sourceEnergy <- energyCalcs.getTotalSourceEnergyNoPoolNoParking
+    } yield siteEnergy/sourceEnergy
+  }
+
+
+
+
+  def sourceEUInoPoolnoParking(sourceTotalEnergy:Energy, poolEnergy:Energy,
+                               parkingEnergy:Energy):Future[Energy] = Future(sourceTotalEnergy - poolEnergy - parkingEnergy)
+
+  def getBuildingSize(parameters:JsValue):Future[Double] = {
+    parameters.validate[BuildingArea] match {
+      case JsSuccess(a, _) => Future(a.GFA.value)
+      case JsError(err) => throw new Exception("Could not determine building size for EUI Calculation!")
+    }
+  }
 
   def computeExpectedEUI[T](targetBuilding: T): Future[Double] = {
+    //Console.println(targetBuilding)
     val f = targetBuilding match {
       case JsSuccess(a: ResidenceHall, _) => exp(a.expectedEnergy) / a.floorArea
       case JsSuccess(a: MedicalOffice, _) => exp(a.expectedEnergy) / a.floorArea
       case JsSuccess(a: BaseLine, _) => a.expectedEnergy
-      case JsError(err) => throw new Exception("Actual EUI could not be computed!")
+      case JsError(err) => throw new Exception("Cannot compute Expected EUI for this building type: Missing Algorithm")
     }
-    //Console.println("Predicted Source EUI: " + f)
     Future(f)
   }
 
@@ -102,10 +240,21 @@ case class EUIMetrics(parameters: JsValue) {
     Future(f)
   }
 
+  def getTargetEUIratio[T](targetBuilding: T,lookupPredictedEUI:Double,sourceEUI:Double):Future[Double] = {
+    val f = targetBuilding match {
+      case JsSuccess(a: ResidenceHall, _) => log(sourceEUI * a.floorArea) * 15.717 / lookupPredictedEUI
+      case JsSuccess(a: MedicalOffice, _) => log(sourceEUI * a.floorArea) * 14.919 / lookupPredictedEUI
+      case JsSuccess(a: BaseLine, _) => sourceEUI  / lookupPredictedEUI
+      case JsError(err) => throw new Exception("Could not calculate EUI Ratio!")
+    }
+    Console.println("Reference EUI Ratio: " +  f)
+    Future(f)
+  }
+
   def computeLookupEUI[T](targetBuilding: T): Future[Double] = {
     val f = targetBuilding match {
       case JsSuccess(a: BaseLine,_) => a.expectedEnergy
-      case JsError(err) => throw new Exception("EUI (for lookup) could not be predicted")
+      case JsError(err) => throw new Exception("Actual EUI could not be computed!")
     }
     Future(f)
   }
@@ -124,6 +273,15 @@ case class EUIMetrics(parameters: JsValue) {
     f
   }
 
+  def getMedianRatio(parameters:JsValue):Future[Double] = {
+    for {
+      lookUp <- getLookupTable(parameters)
+      targetRatioEntry <- loadLookupTable(lookUp).map {
+        _.filter(_.ES == 50).last.Ratio
+      }
+    } yield targetRatioEntry
+  }
+
   def getTargetEUI[T](targetBuilding: T,lookupEUI:Double,targetRatio:Double):Future[Double] = {
     val f = targetBuilding match {
       case JsSuccess(a: ResidenceHall, _) => exp(targetRatio / 15.717 * lookupEUI) / a.floorArea
@@ -135,6 +293,7 @@ case class EUIMetrics(parameters: JsValue) {
     //Console.println("Target EUI: " +  f)
     Future(f)
   }
+
 
   def loadLookupTable(filename:String): Future[Seq[JsonEntry]] = {
     for {
@@ -207,16 +366,195 @@ case class EUIMetrics(parameters: JsValue) {
       case Some(CountryBuildingType("Canada", "MedicalOffice")) => parameters.validate[CanadaMedicalOffice]
       case Some(CountryBuildingType("Canada", "K12School")) => parameters.validate[CanadaK12School]
       case Some(CountryBuildingType("Canada", "Hospital")) => parameters.validate[CanadaHospital]
-      case Some(_) => JsError("No matching building by country and type!")
+      case Some(_) => JsError("No matching building by country and type with ES algorithm!")
       case None => JsError("Could not find country or buildingType fields with JSON")
     }
   }
+
+  def sourceMedianEUI(parameters:JsValue):Energy = {
+
+    val countryBuilding = parameters.asOpt[CountryBuildingType]
+
+    val buildingType = countryBuilding match {
+      case Some(CountryBuildingType(_, b)) => b
+      case None => JsError("No Building Type Provided!")
+  }
+
+    val sourceMedian:Double = buildingType match {
+      case ("AdultEducation") => 141.4
+      case ("College") => 262.6
+      case ("PreSchool") => 145.7
+      case ("VocationalSchool") => 141.4
+      case ("OtherEducation") => 141.4
+      case ("ConventionCenter") => 69.8
+      case ("MovieTheater") => 85.1
+      case ("Museum") => 85.1
+      case ("PerformingArts") => 85.1
+      case ("BowlingAlley") => 96.8
+      case ("FitnessCenter") => 96.8
+      case ("IceRink") => 96.8
+      case ("RollerRink") => 96.8
+      case ("SwimmingPool") => 96.8
+      case ("OtherRecreation") => 96.8
+      case ("MeetingHall") => 69.8
+      case ("IndoorArena") => 85.1
+      case ("RaceTrack") => 85.1
+      case ("Stadium") => 85.1
+      case ("Aquarium") => 85.1
+      case ("Bar") => 85.1
+      case ("NightClub") => 85.1
+      case ("Casino") => 85.1
+      case ("Zoo") => 85.1
+      case ("OtherEntertainment") => 85.1
+      case ("ConvenienceStore") => 536.3
+      case ("GasStation") => 536.3
+      case ("FastFoodRestaurant") => 1015.3
+      case ("Restaurant") => 432.0
+      case ("OtherDining") => 432.0
+      case ("FoodSales") => 536.3
+      case ("FoodService") => 543.2
+      case ("AmbulatorySurgicalCenter") => 155.2
+      case ("SpecialtyHospital") => 389.8
+      case ("OutpatientCenter") => 155.2
+      case ("PhysicalTherapyCenter") => 155.2
+      case ("UrgentCareCenter") => 182.7
+      case ("Barracks") => 114.9
+      case ("Prison") => 169.9
+      case ("ResidentialLodging") => 155.5
+      case ("MixedUse") => 123.1
+      case ("VeterinaryOffice") => 182.7
+      case ("Courthouse") => 169.9
+      case ("FireStation") => 154.4
+      case ("Library") => 235.6
+      case ("MailingCenter") => 100.4
+      case ("PostOffice") => 100.4
+      case ("PoliceStation") => 154.4
+      case ("TransportationTerminal") => 85.1
+      case ("OtherPublicServices") => 123.1
+      case ("AutoDealership") => 130.1
+      case ("EnclosedMall") => 235.6
+      case ("StripMall") => 237.6
+      case ("Laboratory") => 123.1
+      case ("PersonalServices") => 100.4
+      case ("RepairServices") => 100.4
+      case ("OtherServices") => 100.4
+      case ("PowerStation") => 123.1
+      case ("OtherUtility") => 123.1
+      case ("SelfStorageFacility") => 47.6
+      case (_) => 123.1
+    }
+
+    val medianSourceEUI = countryBuilding match {
+      case Some(CountryBuildingType("USA", _)) => KBtus(sourceMedian)
+      case Some(CountryBuildingType("Canada", _)) => KBtus(sourceMedian) in Gigajoules
+      case Some(CountryBuildingType(_, _)) => throw new Exception("Could not find correct Country for Median EUI")
+      case None => throw new Exception("Could not find correct Country for Median EUI")
+    }
+
+    medianSourceEUI
+
+  }
+
+  def siteMedianEUI(parameters:JsValue):Energy = {
+
+    val countryBuilding = parameters.asOpt[CountryBuildingType]
+
+    val buildingType = countryBuilding match {
+      case Some(CountryBuildingType(_, b)) => b
+      case None => JsError("No Building Type Provided!")
+    }
+    val siteMedian:Double = buildingType match {
+      case ("AdultEducation") => 59.6
+      case ("College") => 130.7
+      case ("PreSchool") => 70.9
+      case ("VocationalSchool") => 59.6
+      case ("OtherEducation") => 59.6
+      case ("ConventionCenter") => 45.3
+      case ("MovieTheater") => 45.3
+      case ("Museum") => 45.3
+      case ("PerformingArts") => 45.3
+      case ("BowlingAlley") => 41.2
+      case ("FitnessCenter") => 41.2
+      case ("IceRink") => 41.2
+      case ("RollerRink") => 41.2
+      case ("SwimmingPool") => 41.2
+      case ("OtherRecreation") => 41.2
+      case ("MeetingHall") => 45.3
+      case ("IndoorArena") => 45.3
+      case ("RaceTrack") => 45.3
+      case ("Stadium") => 45.3
+      case ("Aquarium") => 45.3
+      case ("Bar") => 45.3
+      case ("NightClub") => 45.3
+      case ("Casino") => 45.3
+      case ("Zoo") => 45.3
+      case ("OtherEntertainment") => 45.3
+      case ("ConvenienceStore") => 192.9
+      case ("GasStation") => 192.9
+      case ("FastFoodRestaurant") => 384.0
+      case ("Restaurant") => 223.8
+      case ("OtherDining") => 223.8
+      case ("FoodSales") => 192.9
+      case ("FoodService") => 266.8
+      case ("AmbulatorySurgicalCenter") => 63.0
+      case ("SpecialtyHospital") => 196.9
+      case ("OutpatientCenter") => 63.0
+      case ("PhysicalTherapyCenter") => 63.0
+      case ("UrgentCareCenter") => 66.8
+      case ("Barracks") => 73.9
+      case ("Prison") => 93.2
+      case ("ResidentialLodging") => 73.4
+      case ("MixedUse") => 78.8
+      case ("VeterinaryOffice") => 66.8
+      case ("Courthouse") => 93.2
+      case ("FireStation") => 88.3
+      case ("Library") => 91.6
+      case ("MailingCenter") => 49.6
+      case ("PostOffice") => 49.6
+      case ("PoliceStation") => 88.3
+      case ("TransportationTerminal") => 45.3
+      case ("OtherPublicServices") => 78.8
+      case ("AutoDealership") => 52.5
+      case ("EnclosedMall") => 93.7
+      case ("StripMall") => 94.2
+      case ("Laboratory") => 78.8
+      case ("PersonalServices") => 49.6
+      case ("RepairServices") => 49.6
+      case ("OtherServices") => 49.6
+      case ("PowerStation") => 78.8
+      case ("OtherUtility") => 78.8
+      case ("SelfStorageFacility") => 19.8
+      case (_) => 78.8
+    }
+
+    val medianSiteEUI = countryBuilding match {
+      case Some(CountryBuildingType("USA", _)) => KBtus(siteMedian)
+      case Some(CountryBuildingType("Canada", _)) => KBtus(siteMedian) in Gigajoules
+      case Some(CountryBuildingType(_, _)) => throw new Exception("Could not find correct Country for Median EUI")
+      case None => throw new Exception("Could not find correct Country for Median EUI")
+
+    }
+
+    medianSiteEUI
+  }
 }
+
+case class BuildingArea(GFA:PosDouble)
+object BuildingArea {
+  implicit val buildingAreaReads: Reads[BuildingArea] = Json.reads[BuildingArea]
+}
+
 
 case class TargetES(target:Int)
 object TargetES {
   implicit val TargetReads: Reads[TargetES] = (JsPath \ "targetScore").read[Int](Reads.min(0) andKeep
     Reads.max(100)).map(new TargetES(_))
+}
+
+case class PercentBetterThanMedian(target:Double)
+object PercentBetterThanMedian {
+  implicit val percentBetterReads: Reads[PercentBetterThanMedian] = (JsPath \ "percentBetterThanMedian").read[Double](
+    Reads.min(0.0) andKeep Reads.max(100.0)).map(new PercentBetterThanMedian(_))
 }
 
 case class JsonEntry(ES: Int, CmPercent: Double, Ratio: Double)
@@ -243,7 +581,6 @@ sealed trait BaseLine {
 
   def energyReduce:Double = regressionSegments.map(_.reduce).sum
   def expectedEnergy = energyReduce
-  def squareFunction(s: String):String = "Square" + s.capitalize
 
   implicit def boolOptToInt(b:Option[Boolean]):Int = if (b.getOrElse(false)) 1 else 0
 
@@ -272,6 +609,7 @@ object CountryBuildingType {
 implicit val countryBuildingTypeRead: Reads[CountryBuildingType] = Json.reads[CountryBuildingType]
 }
 
+
 /**
 * Office Building Type parameters
 * @param weeklyOperatingHours
@@ -298,8 +636,8 @@ case class Office(GFA:PosDouble, numComputers:PosInt, weeklyOperatingHours: PosI
     RegressionSegment(17.28, 2.231, math.min(numComputers.value / floorArea * 1000, 11.1)),
     RegressionSegment(55.96, 3.972, log(weeklyOperatingHours.value)),
     RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.value / floorArea * 1000)),
-    RegressionSegment(0.0077, 4411, HDD.value * percentHeated.value),
-    RegressionSegment(0.0144, 1157, CDD.value * percentCooled.value),
+    RegressionSegment(0.0077, 4411, HDD.value * percentHeated.value / 100),
+    RegressionSegment(0.0144, 1157, CDD.value * percentCooled.value / 100),
     RegressionSegment(-64.83 * isSmallBank, 9.535, log(floorArea)),
     RegressionSegment(34.2 * isSmallBank, .5616, log(numWorkersMainShift.value / floorArea * 1000)),
     RegressionSegment(56.3 * isSmallBank, 0, 1)
@@ -340,7 +678,7 @@ case class CanadaOffice(weeklyOperatingHours:PosInt, numWorkersMainShift:PosInt,
     RegressionSegment(.3643, 7.36, log(math.min(floorArea,5000))), // floorArea capped @ 5,000 sq meters during analysis
     RegressionSegment(-0.00002596, 2933, math.min(floorArea,5000)), // floorArea capped @ 5,000 sq meters during analysis
     RegressionSegment(.0002034, 4619, HDD.value),
-    RegressionSegment(.06386, 3.703, log(CDD.value) * percentCooled.value)
+    RegressionSegment(.06386, 3.703, log(CDD.value) * percentCooled.value / 100)
   )
 }
 
@@ -831,8 +1169,7 @@ object CanadaK12School {
 
 /**
  *
- * @param weeklyOperatingHours
- * @param numWorkersMainShift
+
  * @param isOpenWeekends
  * @param isHighSchool
  * @param hasCooking
@@ -846,7 +1183,7 @@ object CanadaK12School {
  * @param areaUnits
  */
 
-case class K12School(weeklyOperatingHours:PosInt, numWorkersMainShift:PosDouble, isOpenWeekends:Option[Boolean],
+case class K12School(isOpenWeekends:Option[Boolean],
                      isHighSchool:Option[Boolean],hasCooking:Option[Boolean],numComputers:PosDouble,
                      numWalkinRefrUnits:PosDouble,percentHeated:PosDouble, percentCooled:PosDouble,HDD:PosDouble,
                      CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {

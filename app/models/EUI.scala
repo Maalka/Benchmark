@@ -31,6 +31,32 @@ case class EUICalculator(parameters: JsValue) {
       siteEnergyList <- computeSiteEnergy(entries)
     } yield siteEnergyList
   }
+  def getTotalSiteEnergy: Future[Energy] = {
+    for {
+      entries <- Future{parameters.validate[EnergyList]}
+      conversionInfo <- Future {parameters.validate[ConversionInfo].
+        getOrElse(throw new Exception("Cannot find Country Type"))}
+      siteEnergyList <- computeSiteEnergy(entries)
+      siteEnergySum <- getSiteEnergySum(siteEnergyList, conversionInfo)
+
+    } yield siteEnergySum
+  }
+
+  def getSiteEnergySum(energies: List[Try[Energy]], convert: ConversionInfo): Future[Energy] = {
+
+    val f = convert.reportingUnits match {
+      case "us" => energies.map{
+        case a:Success[Energy] => a.map(_ in KBtus)
+        case a:Failure[Energy] => throw new Exception("Could not recognize reporting unit conversion")
+      }.map(_.get).sum in KBtus
+      case "metric" => energies.map{
+        case a:Success[Energy] => a.map(_ in Gigajoules)
+        case a:Failure[Energy] => throw new Exception("Could not recognize reporting unit conversion")
+      }.map(_.get).sum in Gigajoules
+      case _ => throw new Exception("Could not recognize reporting unit conversion")
+    }
+    Future(f)
+  }
 
   def computeSiteEnergy[T](entries: T): Future[List[Try[Energy]]] = {
     val f = entries match {
@@ -74,19 +100,11 @@ case class EUICalculator(parameters: JsValue) {
 
   def getTotalSourceEnergyNoPoolNoParking:Future[Energy] = {
     for {
-      entries <- Future {
-        parameters.validate[EnergyList]
-      }
-      conversionInfo <- Future {parameters.validate[ConversionInfo].
-        getOrElse(throw new Exception("Cannot find Country Type"))}
-      sourceEnergyList <- computeSourceEnergy(entries, conversionInfo)
-      sourceEnergyListConverted <- convertOutputSum(sourceEnergyList, conversionInfo)
+      sourceEnergyListConverted <- getTotalSourceEnergy
       poolEnergy <- getPoolEnergy
       parkingEnergy <- getParkingEnergy
 
-    } yield {
-      sourceEnergyListConverted - poolEnergy - parkingEnergy
-    }
+    } yield sourceEnergyListConverted - poolEnergy - parkingEnergy
   }
 
   def computeSourceEnergy[T](entries: T, convert: ConversionInfo): Future[List[Try[Energy]]] = {
@@ -120,7 +138,6 @@ case class EUICalculator(parameters: JsValue) {
   }
 
   def convertOutputSum(energies: List[Try[Energy]], convert: ConversionInfo): Future[Energy] = {
-
 
     val f = convert.reportingUnits match {
       case "us" => energies.map{
