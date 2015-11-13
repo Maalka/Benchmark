@@ -18,7 +18,9 @@ import models.EUICalculator
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class Baseline(val cache: CacheApi) extends Controller with Security with Logging{
+
+trait BaselineActions {
+  this: Controller =>
 
   def makeBaseline() = Action.async(parse.json) { implicit request =>
 
@@ -57,17 +59,11 @@ class Baseline(val cache: CacheApi) extends Controller with Security with Loggin
     getBaseline.percentBetterSiteEnergy.map{case a => Console.println("Percent Better Target Site Energy: " +  a)}
     getBaseline.percentBetterES.map{case a => Console.println("Percent Better Target ES: " +  a)}
 
-
-
-
     Future(Ok("Ok"))
 
 
   }
-
 }
 
-
-
-
+class BaselineController(val cache: CacheApi) extends Controller with Security with Logging with BaselineActions
 

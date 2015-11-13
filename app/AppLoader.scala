@@ -16,7 +16,7 @@ class AppLoader extends ApplicationLoader {
 class AppComponents(context: Context) extends BuiltInComponentsFromContext(context) with EhCacheComponents {
 
   lazy val applicationController = new controllers.Application(defaultCacheApi)
-  lazy val baselineController = new controllers.Baseline(defaultCacheApi)
+  lazy val baselineController = new controllers.BaselineController(defaultCacheApi)
   lazy val usersController = new controllers.Users(defaultCacheApi)
   lazy val assets = new controllers.Assets(httpErrorHandler)
 

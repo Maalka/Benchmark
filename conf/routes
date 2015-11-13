@@ -12,7 +12,7 @@ GET           /jsroutes.js         controllers.Application.jsRoutes()
 # ~~~~
 
 # Baselining
-POST          /baseline               controllers.Baseline.makeBaseline()
+POST          /baseline               controllers.BaselineController.makeBaseline()
 
 
 # Authentication

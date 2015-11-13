@@ -1,24 +1,21 @@
 import WebKeys._
 
 // TODO Replace with your project's/module's name
-name := "play-angular-require-seed"
+name := "Maalka Benchmark"
 
 // TODO Set your organization here; ThisBuild means it will apply to all sub-modules
-organization in ThisBuild := "your.organization"
+organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
-version := "2.4.2-SNAPSHOT"
+version := "0.0.1"
 
-scalaVersion in ThisBuild := "2.11.7"
-
-
-lazy val squants = ProjectRef(file("/Users/rimukas/MaalkaLocal/squants/squants/"),"squantsJVM")
-//lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
+scalaVersion in ThisBuild := "2.11.6"
 
 
+//lazy val squants = ProjectRef(file("/Users/rimukas/MaalkaLocal/squants/squants/"),"squantsJVM")
+
+lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
 lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, SbtNativePackager).dependsOn(squants)
-
-
 
 
 // Dependencies
@@ -26,6 +23,9 @@ libraryDependencies ++= Seq(
   filters,
   cache,
   // WebJars (i.e. client-side) dependencies
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "org.scalatestplus" %% "play" % "1.4.0-M3" % "test",
+  "org.mockito" % "mockito-all" % "1.10.19",
   "org.webjars" % "requirejs" % "2.1.14-1",
   "org.webjars" % "underscorejs" % "1.6.0-3",
   "org.webjars" % "jquery" % "1.11.1",
