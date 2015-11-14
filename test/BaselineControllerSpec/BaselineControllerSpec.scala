@@ -17,7 +17,7 @@ class BaselineControllerSpec extends PlaySpec with Results {
   }
   class TestController() extends Controller with BaselineActions
 
-  "makeBaseline - office post body" should {
+  "makeBaseline - adult_education post body" should {
     "should be valid" in {
       val controller = new TestController()
       val fakeRequest = makeFakeRequest("", "baseline/adult_education.json")

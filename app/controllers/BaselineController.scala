@@ -6,6 +6,7 @@
 package controllers
 
 import play.api.cache.CacheApi
+import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json._
 import play.api.mvc._
 import scala.concurrent.Future
@@ -15,6 +16,8 @@ import squants.space._
 
 import models.EUIMetrics
 import models.EUICalculator
+import scala.util.{ Success, Failure, Try}
+
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -22,48 +25,89 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait BaselineActions {
   this: Controller =>
 
+  private def tryToOption[A](objs: List[Try[A]]): List[Option[A]] = {
+    objs.map {
+      case Success(e) => Option(e)
+      case Failure(th) => None
+    }
+  }
+
+
   def makeBaseline() = Action.async(parse.json) { implicit request =>
-
-    val getBaseline:EUIMetrics = EUIMetrics(request.body)
-    val energyCalcs:EUICalculator = EUICalculator(request.body)
+    implicit def energyToJSValue(b :Energy): JsValueWrapper = Json.toJsFieldJsValueWrapper(b.value)
 
 
-    energyCalcs.getSiteEnergy.map{case a => Console.println("Site Energy: " +  a)}
-    energyCalcs.getTotalSiteEnergy.map{case a => Console.println("Total Site Energy: " +  a)}
+    val getBaseline: EUIMetrics = EUIMetrics(request.body)
 
-    energyCalcs.getSourceEnergy.map{case a => Console.println("Source Energy: " +  a)}
-    energyCalcs.getTotalSourceEnergy.map{case a => Console.println("Total Source Energy (with Pool/Parking): " +  a)}
-    energyCalcs.getPoolEnergy.map{case a => Console.println("Source Energy for Pool: " +  a)}
-    energyCalcs.getParkingEnergy.map{case a => Console.println("Source Energy for Parking: " +  a)}
-    energyCalcs.getTotalSourceEnergyNoPoolNoParking.map{case a => Console.println("Total Source Energy for Building " +
-      "(no pool/parking): " +  a)}
+    val energyCalcs: EUICalculator = EUICalculator(request.body)
 
-    getBaseline.expectedSourceEUI.map{case a => Console.println("Expected Building Source EUI: " +  a)}
-    getBaseline.sourceEUI.map{case a => Console.println("Actual Building Source EUI: " +  a)}
-    getBaseline.ES.map{case a => Console.println("Building EnergyStar Score: " +  a)}
+    val futures = for {
+      siteEnergy <- energyCalcs.getSiteEnergy.map { m => tryToOption(m) }
+      totalSiteEnergy <- energyCalcs.getTotalSiteEnergy
 
-    getBaseline.targetSourceEUI.map{case a => Console.println("Target Source EUI: " +  a)}
-    getBaseline.targetSiteEUI.map{case a => Console.println("Target Site EUI: " +  a)}
-    getBaseline.targetSourceEnergy.map{case a => Console.println("Target Source Energy: " +  a)}
-    getBaseline.targetSiteEnergy.map{case a => Console.println("Target Site Energy: " +  a)}
+      sourceEnergy <- energyCalcs.getSourceEnergy.map { m => tryToOption(m) }
+      totalSourceEnergy <- energyCalcs.getTotalSourceEnergy
 
+      poolEnergy <- energyCalcs.getPoolEnergy
+      parkingEnergy <- energyCalcs.getParkingEnergy
+      totalSourceEnergyNoPoolNoParking <- energyCalcs.getTotalSourceEnergyNoPoolNoParking
 
-    getBaseline.medianSourceEUI.map{case a => Console.println("Median Source EUI: " +  a)}
-    getBaseline.medianSiteEUI.map{case a => Console.println("Median Site EUI: " +  a)}
-    getBaseline.medianSiteEnergy.map{case a => Console.println("Median Site Energy: " +  a)}
-    getBaseline.medianSourceEnergy.map{case a => Console.println("Median Source Energy: " +  a)}
+      expectedSourceEUI <- getBaseline.expectedSourceEUI
+      sourceEUI <- getBaseline.sourceEUI
+      es <- getBaseline.ES
 
-    getBaseline.percentBetterSourceEUI.map{case a => Console.println("Percent Better Target Source EUI: " +  a)}
-    getBaseline.percentBetterSiteEUI.map{case a => Console.println("Percent Better Target Site EUI: " +  a)}
-    getBaseline.percentBetterSourceEnergy.map{case a => Console.println("Percent Better Target Source Energy: " +  a)}
-    getBaseline.percentBetterSiteEnergy.map{case a => Console.println("Percent Better Target Site Energy: " +  a)}
-    getBaseline.percentBetterES.map{case a => Console.println("Percent Better Target ES: " +  a)}
+      targetSourceEUI <- getBaseline.targetSourceEUI
+      targetSiteEUI <- getBaseline.targetSiteEUI
+      targetSourceEnergy <- getBaseline.targetSourceEnergy
+      targetSiteEnergy <- getBaseline.targetSiteEnergy
 
-    Future(Ok("Ok"))
+      medianSourceEUI <- getBaseline.medianSourceEUI
+      medianSiteEUI <- getBaseline.medianSiteEUI
+      medianSiteEnergy <- getBaseline.medianSiteEnergy
+      medianSourceEnergy <- getBaseline.medianSourceEnergy
 
+      percentBetterSourceEUI <- getBaseline.percentBetterSourceEUI
+      percentBetterSiteEUI <- getBaseline.percentBetterSiteEUI
+      percentBetterSourceEnergy <- getBaseline.percentBetterSourceEnergy
+      percentBetterSiteEnergy <- getBaseline.percentBetterSiteEnergy
+      percentBetterES <- getBaseline.percentBetterES
+    } yield {
+        Json.obj(
+          "siteEnergy" -> siteEnergy.map(_.map(_.value)),
+          "totalSiteEnergy" -> totalSiteEnergy,
 
+          "sourceEnergy" -> sourceEnergy.map(_.map(_.value)),
+          "totalSourceEnergy" -> totalSourceEnergy,
+
+          "poolEnergy" -> poolEnergy,
+          "parkingEnergy" -> parkingEnergy,
+          "totalSourceEnergyNoPoolNoParking" -> totalSourceEnergyNoPoolNoParking,
+
+          "expectedSourceEUI" -> expectedSourceEUI,
+          "sourceEUI" -> sourceEUI,
+          "es" -> es,
+
+          "targetSourceEUI" -> targetSourceEUI,
+          "targetSiteEUI" -> targetSiteEUI,
+          "targetSourceEnergy" -> targetSourceEnergy,
+          "targetSiteEnergy" -> targetSiteEnergy,
+
+          "medianSourceEUI" -> medianSourceEUI,
+          "medianSiteEUI" -> medianSiteEUI,
+          "medianSiteEnergy" -> medianSiteEnergy,
+          "medianSourceEnergy" -> medianSourceEnergy,
+
+          "percentBetterSourceEUI" -> percentBetterSourceEUI,
+          "percentBetterSiteEUI" -> percentBetterSiteEUI,
+          "percentBetterSourceEnergy" -> percentBetterSourceEnergy,
+          "percentBetterSiteEnergy" -> percentBetterSiteEnergy,
+          "percentBetterES" -> percentBetterES
+        )
+      }
+    futures.map { res =>
+      Ok(res)
+    }
   }
 }
 
 class BaselineController(val cache: CacheApi) extends Controller with Security with Logging with BaselineActions
-
