@@ -17,6 +17,7 @@ import squants.space._
 
 import models.EUIMetrics
 import models.EUICalculator
+import scala.util.control.NonFatal
 import scala.util.{ Success, Failure, Try}
 
 
@@ -33,16 +34,57 @@ trait BaselineActions {
     }
   }
 
+  case class EitherFuture(name: String, future: Future[AnyRef])
+
+  case class EitherFutureResult(name: String, either: Either[String, JsValue])
+
+  implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(b.value)
+  implicit def listTryEnergyToJSValue(v: List[Try[Energy]]): JsValue = Json.toJson(tryToOption[Energy](v).map(_.map(_.value)))
+
+  def eitherFutures(futures: Seq[EitherFuture]): Future[Seq[EitherFutureResult]] = {
+    val f = futures.map { f =>
+      f.future.onFailure {
+        case NonFatal(th) => EitherFutureResult(f.name, Left(th.getMessage))
+      }
+
+      f.future.map {
+        case v: Energy => EitherFutureResult(f.name, Right(v))
+        case v: List[Try[Energy]] =>
+          EitherFutureResult(f.name, Right(v))
+      }
+    }
+    Future.sequence(f)
+  }
 
   def makeBaseline() = Action.async(parse.json) { implicit request =>
-    implicit def energyToJSValue(b :Energy): JsValueWrapper = Json.toJsFieldJsValueWrapper(b.value)
+    implicit def energyToJSValue(b: Energy): JsValueWrapper = Json.toJsFieldJsValueWrapper(b.value)
 
 
     val getBaseline: EUIMetrics = EUIMetrics(request.body)
 
     val energyCalcs: EUICalculator = EUICalculator(request.body)
 
-    val futures = for {
+    val futures = eitherFutures(Seq(
+      EitherFuture("siteEnergy", energyCalcs.getSiteEnergy),
+      EitherFuture("totalSiteEnergy", energyCalcs.getTotalSiteEnergy)
+    ))
+
+    futures.map { r =>
+      val errors = r.collect {
+        case EitherFutureResult(n, Left(s)) => Json.obj(n -> s)
+      }
+      val results = r.collect {
+        case EitherFutureResult(n, Right(s)) => Json.obj(n -> s)
+      }
+      Ok(Json.obj(
+        "results" -> results,
+        "errors" -> errors
+      ))
+    }
+  }
+}
+/*
+
       siteEnergy <- energyCalcs.getSiteEnergy.map { m => tryToOption(m) }
       totalSiteEnergy <- energyCalcs.getTotalSiteEnergy
 
@@ -110,5 +152,5 @@ trait BaselineActions {
     }
   }
 }
-
+*/
 class BaselineController @Inject() (val cache: CacheApi) extends Controller with Security with Logging with BaselineActions
