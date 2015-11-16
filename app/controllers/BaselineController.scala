@@ -5,6 +5,7 @@
 
 package controllers
 
+import com.google.inject.Inject
 import play.api.cache.CacheApi
 import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json._
@@ -110,4 +111,4 @@ trait BaselineActions {
   }
 }
 
-class BaselineController(val cache: CacheApi) extends Controller with Security with Logging with BaselineActions
+class BaselineController @Inject() (val cache: CacheApi) extends Controller with Security with Logging with BaselineActions

@@ -1,5 +1,6 @@
 package controllers
 
+import com.google.inject.Inject
 import play.api.cache.CacheApi
 import play.api.libs.json._
 import play.api.mvc._
@@ -7,7 +8,7 @@ import play.api.mvc._
 import models.User
 
 /** Example controller; see conf/routes for the the mapping to routes */
-class Users(val cache: CacheApi) extends Controller with Security {
+class Users @Inject() (val cache: CacheApi) extends Controller with Security {
 
   /** Retrieves a logged in user if the authentication token is valid.
     *

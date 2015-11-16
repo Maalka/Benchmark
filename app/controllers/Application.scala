@@ -7,11 +7,13 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 import play.api.mvc._
+import com.google.inject.Inject
+
 
 import scala.concurrent.duration._
 
 /** Application controller, handles authentication */
-class Application(val cache: CacheApi) extends Controller with Security with Logging {
+class Application @Inject() (val cache: CacheApi) extends Controller with Security with Logging {
 
   val cacheDuration = 1.day
 
