@@ -34,26 +34,30 @@ trait BaselineActions {
     }
   }
 
-  case class EitherFuture(name: String, future: Future[AnyRef])
+  case class EitherFuture(name: String, future: Future[Any])
 
   case class EitherFutureResult(name: String, either: Either[String, JsValue])
 
   implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(b.value)
   implicit def listTryEnergyToJSValue(v: List[Try[Energy]]): JsValue = Json.toJson(tryToOption[Energy](v).map(_.map(_.value)))
 
-  def eitherFutures(futures: Seq[EitherFuture]): Future[Seq[EitherFutureResult]] = {
-    val f = futures.map { f =>
+  def eitherFutures(futures: Seq[EitherFuture]): Seq[Future[EitherFutureResult]] = {
+    futures.map { f =>
       f.future.onFailure {
-        case NonFatal(th) => EitherFutureResult(f.name, Left(th.getMessage))
+        case th => {
+          println(th)
+        }
       }
 
       f.future.map {
+        case v: Energy => EitherFutureResult(f.name, Right(v))
+        case v: Double => EitherFutureResult(f.name, Right(Json.toJson(v)))
+        case v: Int => EitherFutureResult(f.name, Right(Json.toJson(v)))
         case v: Energy => EitherFutureResult(f.name, Right(v))
         case v: List[Try[Energy]] =>
           EitherFutureResult(f.name, Right(v))
       }
     }
-    Future.sequence(f)
   }
 
   def makeBaseline() = Action.async(parse.json) { implicit request =>
@@ -64,11 +68,29 @@ trait BaselineActions {
 
     val energyCalcs: EUICalculator = EUICalculator(request.body)
 
-    val futures = eitherFutures(Seq(
-      EitherFuture("siteEnergy", energyCalcs.getSiteEnergy),
-      EitherFuture("totalSiteEnergy", energyCalcs.getTotalSiteEnergy)
-    ))
+    val futures = Future.sequence(eitherFutures(Seq(
 
+      EitherFuture("siteEnergy", energyCalcs.getSiteEnergy),
+      EitherFuture("totalSiteEnergy", energyCalcs.getTotalSiteEnergy),
+      EitherFuture("sourceEnergy", energyCalcs.getSourceEnergy),
+      EitherFuture("totalSourceEnergy", energyCalcs.getTotalSourceEnergy),
+      EitherFuture("totalSourceEnergyNoPoolNoParking", energyCalcs.getTotalSourceEnergyNoPoolNoParking),
+      EitherFuture("poolEnergy", energyCalcs.getPoolEnergy),
+      EitherFuture("parkingEnergy", energyCalcs.getParkingEnergy),
+
+      EitherFuture("medianSiteEUI", getBaseline.medianSiteEUI),
+      EitherFuture("medianSiteEnergy", getBaseline.medianSiteEnergy),
+      EitherFuture("medianSourceEUI", getBaseline.medianSourceEUI),
+      EitherFuture("medianSourceEnergy", getBaseline.medianSourceEnergy),
+      EitherFuture("ES", getBaseline.ES)
+    )))
+
+
+    futures.recover {
+      case th => {
+       println(th)
+      }
+    }
     futures.map { r =>
       val errors = r.collect {
         case EitherFutureResult(n, Left(s)) => Json.obj(n -> s)

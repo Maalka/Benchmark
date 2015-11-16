@@ -251,13 +251,15 @@ case class EUIMetrics(parameters: JsValue) {
     Future(f)
   }
 
-  def computeLookupEUI[T](targetBuilding: T): Future[Double] = {
-    val f = targetBuilding match {
-      case JsSuccess(a: BaseLine,_) => a.expectedEnergy
+  def computeLookupEUI[T](targetBuilding: T): Future[Double] = Future {
+    targetBuilding match {
+      case JsSuccess(a: BaseLine, _) => a.expectedEnergy
       case JsError(err) => throw new Exception("Actual EUI could not be computed!")
     }
-    Future(f)
   }
+
+
+
 
   def getTargetRatio(parameters:JsValue):Future[Double] = {
     val f = parameters.asOpt[TargetES] match {
