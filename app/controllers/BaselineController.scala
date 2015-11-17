@@ -41,24 +41,59 @@ trait BaselineActions {
   implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(b.value)
   implicit def listTryEnergyToJSValue(v: List[Try[Energy]]): JsValue = Json.toJson(tryToOption[Energy](v).map(_.map(_.value)))
 
-  def eitherFutures(futures: Seq[EitherFuture]): Seq[Future[EitherFutureResult]] = {
-    futures.map { f =>
-      f.future.onFailure {
-        case th => {
-          println(th)
-        }
-      }
+  def futureFailed(f:Future[Any]):Boolean = {f.failed.value.isDefined}
 
-      f.future.map {
-        case v: Energy => EitherFutureResult(f.name, Right(v))
-        case v: Double => EitherFutureResult(f.name, Right(Json.toJson(v)))
-        case v: Int => EitherFutureResult(f.name, Right(Json.toJson(v)))
-        case v: Energy => EitherFutureResult(f.name, Right(v))
-        case v: List[Try[Energy]] =>
-          EitherFutureResult(f.name, Right(v))
-      }
+  def eitherFutures(futures: Seq[EitherFuture]): Seq[Future[EitherFutureResult]] = {
+
+
+
+
+    val errors = futures.filter {
+      case EitherFuture(a,b) => b.failed.value.isDefined
     }
-  }
+
+    val results = futures.filter {
+      case EitherFuture(a,b) => b.failed.value.isEmpty
+    }
+
+    Console.println("Size of Errors:  " + errors.size)
+    Console.println("Size of Results:  " + results.size)
+
+
+    results.foreach{f=>{
+      Console.println(f.name)
+      Console.println(f.future.onComplete(println)) //pretty much always empty
+      Console.println("rrrrrrrrr!")
+    }}
+
+    errors.foreach{f=>{
+      Console.println(f.name)
+      Console.println(f.future.failed.value) //sometimes empty, if future doesn't complete
+      Console.println("eeeeeeee!")
+    }}
+
+    val err = errors.map { f => Future{EitherFutureResult(f.name, Left("Could not recognize input type"))}}
+
+    val res = results.map { f => f.future.map {
+      case v: Energy => EitherFutureResult(f.name, Right(v))
+      case v: Double => EitherFutureResult(f.name, Right(Json.toJson(v)))
+      case v: Int => EitherFutureResult(f.name, Right(Json.toJson(v)))
+      case v: Energy => EitherFutureResult(f.name, Right(v))
+      case v: List[Try[Energy]] => EitherFutureResult(f.name, Right(v))
+      case None => EitherFutureResult(f.name, Left("Could not recognize input type"))
+    }
+    }
+    // FOR THE FOLLOWING SAMPLE CURL CALL:
+    // curl -XPOST "http://localhost:9000/baseline" -d"@adult_education.json" -H "Content-Type: application/json" | python -m json.tool
+    //if err is returned AND the futures are fully completed, then the correct errors json entry will be returned,
+    //but if the futures are not fully completed, then it won't fail but it also won't return any errors
+    err
+    //if res is returned, then it will fail SOMETIMES when the futures aren't completed in time, need to somehow
+    //figure out how to make sure the futures are fully completed before separating between successes and failures
+    //res
+    }
+
+
 
   def makeBaseline() = Action.async(parse.json) { implicit request =>
     implicit def energyToJSValue(b: Energy): JsValueWrapper = Json.toJsFieldJsValueWrapper(b.value)
@@ -75,22 +110,12 @@ trait BaselineActions {
       EitherFuture("sourceEnergy", energyCalcs.getSourceEnergy),
       EitherFuture("totalSourceEnergy", energyCalcs.getTotalSourceEnergy),
       EitherFuture("totalSourceEnergyNoPoolNoParking", energyCalcs.getTotalSourceEnergyNoPoolNoParking),
-      EitherFuture("poolEnergy", energyCalcs.getPoolEnergy),
-      EitherFuture("parkingEnergy", energyCalcs.getParkingEnergy),
-
-      EitherFuture("medianSiteEUI", getBaseline.medianSiteEUI),
-      EitherFuture("medianSiteEnergy", getBaseline.medianSiteEnergy),
-      EitherFuture("medianSourceEUI", getBaseline.medianSourceEUI),
-      EitherFuture("medianSourceEnergy", getBaseline.medianSourceEnergy),
+      EitherFuture("expectedSourceEUI", getBaseline.expectedSourceEUI),
+      EitherFuture("sourceEUI", getBaseline.sourceEUI),
       EitherFuture("ES", getBaseline.ES)
+
     )))
 
-
-    futures.recover {
-      case th => {
-       println(th)
-      }
-    }
     futures.map { r =>
       val errors = r.collect {
         case EitherFutureResult(n, Left(s)) => Json.obj(n -> s)
@@ -103,9 +128,165 @@ trait BaselineActions {
         "errors" -> errors
       ))
     }
+
   }
 }
 /*
+
+      EitherFuture("siteEnergy", energyCalcs.getSiteEnergy),
+      EitherFuture("totalSiteEnergy", energyCalcs.getTotalSiteEnergy),
+      EitherFuture("sourceEnergy", energyCalcs.getSourceEnergy),
+      EitherFuture("totalSourceEnergy", energyCalcs.getTotalSourceEnergy),
+      EitherFuture("totalSourceEnergyNoPoolNoParking", energyCalcs.getTotalSourceEnergyNoPoolNoParking),
+      EitherFuture("poolEnergy", energyCalcs.getPoolEnergy),
+      EitherFuture("parkingEnergy", energyCalcs.getParkingEnergy),
+
+      EitherFuture("medianSiteEUI", getBaseline.medianSiteEUI),
+      EitherFuture("medianSiteEnergy", getBaseline.medianSiteEnergy),
+      EitherFuture("medianSourceEUI", getBaseline.medianSourceEUI),
+      EitherFuture("medianSourceEnergy", getBaseline.medianSourceEnergy),
+
+      EitherFuture("targetSourceEUI", getBaseline.targetSourceEUI),
+      EitherFuture("targetSourceEnergy", getBaseline.targetSourceEnergy),
+      EitherFuture("targetSiteEUI", getBaseline.targetSiteEUI),
+      EitherFuture("targetSiteEnergy", getBaseline.targetSiteEnergy),
+
+      EitherFuture("percentBetterSourceEUI", getBaseline.percentBetterSourceEUI),
+      EitherFuture("percentBetterSourceEnergy", getBaseline.percentBetterSourceEnergy),
+      EitherFuture("percentBetterSiteEUI", getBaseline.percentBetterSiteEUI),
+      EitherFuture("percentBetterSiteEnergy", getBaseline.percentBetterSiteEnergy),
+      EitherFuture("percentBetterES", getBaseline.percentBetterES),
+
+      EitherFuture("expectedSourceEUI", getBaseline.expectedSourceEUI),
+      EitherFuture("sourceEUI", getBaseline.sourceEUI),
+      EitherFuture("ES", getBaseline.ES)
+
+      EitherFuture("siteEnergy", {
+        for(t<-energyCalcs.getSiteEnergy)yield t
+      }),
+
+      EitherFuture("totalSiteEnergy", {
+        for(t<-energyCalcs.getTotalSiteEnergy)yield t
+      }),
+      EitherFuture("sourceEnergy", {
+        for(t<-energyCalcs.getSourceEnergy)yield t
+      }),
+      EitherFuture("totalSourceEnergy", {
+        for(t<-energyCalcs.getTotalSourceEnergy)yield t
+      }),
+
+      EitherFuture("expectedSourceEUI", {
+        for(t<-getBaseline.expectedSourceEUI)yield t
+      }),
+      EitherFuture("sourceEUI", {
+        for(t<-getBaseline.sourceEUI)yield t
+      }),
+      EitherFuture("ES", {
+        for(t<-getBaseline.ES)yield t
+      })
+
+
+    val p = results.map { f => f.future.map {
+        case v: Energy => EitherFutureResult(f.name, Right(v))
+        case v: Double => EitherFutureResult(f.name, Right(Json.toJson(v)))
+        case v: Int => EitherFutureResult(f.name, Right(Json.toJson(v)))
+        case v: Energy => EitherFutureResult(f.name, Right(v))
+        case v: List[Try[Energy]] => EitherFutureResult(f.name, Right(v))
+        case None => EitherFutureResult(f.name, Left("Could not recognize input type"))
+      }
+    }
+    p
+    }
+
+
+val test = {
+
+
+      for {
+        siteEnergy <- energyCalcs.getSiteEnergy
+
+        totalSiteEnergy <- energyCalcs.getTotalSiteEnergy
+
+        sourceEnergy <- energyCalcs.getSourceEnergy
+        totalSourceEnergy <- energyCalcs.getTotalSourceEnergy
+
+        poolEnergy <- energyCalcs.getPoolEnergy
+        parkingEnergy <- energyCalcs.getParkingEnergy
+        totalSourceEnergyNoPoolNoParking <- energyCalcs.getTotalSourceEnergyNoPoolNoParking
+
+        expectedSourceEUI <- getBaseline.expectedSourceEUI
+        sourceEUI <- getBaseline.sourceEUI
+        es <- getBaseline.ES
+      } yield {
+        val pop = Seq(
+        EitherFuture("siteEnergy", energyCalcs.getSiteEnergy),
+        EitherFuture("totalSiteEnergy", energyCalcs.getTotalSiteEnergy),
+        EitherFuture("sourceEnergy", energyCalcs.getSourceEnergy),
+        EitherFuture("totalSourceEnergy", energyCalcs.getTotalSourceEnergy),
+        EitherFuture("poolEnergy", energyCalcs.getPoolEnergy),
+        EitherFuture("expectedSourceEUI", getBaseline.expectedSourceEUI),
+        EitherFuture("sourceEUI", getBaseline.sourceEUI),
+        EitherFuture("ES", getBaseline.ES)
+        )
+        val errors = pop.filter {
+          case EitherFuture(a, b) => b.failed.value.isDefined
+        }
+
+        val results = pop.filter {
+          case EitherFuture(a, b) => b.failed.value.isEmpty
+        }
+        Console.println("Size of Errors:  " + errors.size)
+        Console.println("Size of Results:  " + results.size)
+
+
+        results.foreach { f => {
+          Console.println(f.name)
+          Console.println(f.future.onComplete(println))
+          Console.println("ddddddd!")
+        }
+        }
+
+        errors.foreach { f => {
+          Console.println(f.name)
+          Console.println(f.future.failed.value)
+          Console.println("ddddddd!")
+        }
+        }
+      }
+    }
+
+  def eitherFutures(futures: Seq[EitherFuture]): Seq[Future[EitherFutureResult]] = {
+
+    futures.map { f => f.future.failed.value match {
+      case Some(a) => Future {
+        EitherFutureResult(f.name, Left(a.getOrElse("Error Getting" + f.name).toString))
+      }
+      case None => f.future.map {
+        case v: Energy => EitherFutureResult(f.name, Right(v))
+        case v: Double => EitherFutureResult(f.name, Right(Json.toJson(v)))
+        case v: Int => EitherFutureResult(f.name, Right(Json.toJson(v)))
+        case v: Energy => EitherFutureResult(f.name, Right(v))
+        case v: List[Try[Energy]] => EitherFutureResult(f.name, Right(v))
+        case None => EitherFutureResult(f.name, Left("Could not recognize input type"))
+      }
+    }
+    }
+  }
+
+      EitherFuture("targetSourceEUI", getBaseline.targetSourceEUI),
+      EitherFuture("targetSourceEnergy", getBaseline.targetSourceEnergy),
+      EitherFuture("targetSiteEUI", getBaseline.targetSiteEUI),
+      EitherFuture("targetSiteEnergy", getBaseline.targetSiteEnergy),
+
+      EitherFuture("percentBetterSourceEUI", getBaseline.percentBetterSourceEUI),
+      EitherFuture("percentBetterSourceEnergy", getBaseline.percentBetterSourceEnergy),
+      EitherFuture("percentBetterSiteEUI", getBaseline.percentBetterSiteEUI),
+      EitherFuture("percentBetterSiteEnergy", getBaseline.percentBetterSiteEnergy),
+      EitherFuture("percentBetterES", getBaseline.percentBetterES),
+
+      EitherFuture("expectedSourceEUI", getBaseline.expectedSourceEUI),
+      EitherFuture("sourceEUI", getBaseline.sourceEUI),
+
 
       siteEnergy <- energyCalcs.getSiteEnergy.map { m => tryToOption(m) }
       totalSiteEnergy <- energyCalcs.getTotalSiteEnergy
