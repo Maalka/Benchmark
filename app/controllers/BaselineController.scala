@@ -19,6 +19,7 @@ import models.EUIMetrics
 import models.EUICalculator
 import scala.util.control.NonFatal
 import scala.util.{ Success, Failure, Try}
+import scala.concurrent.blocking
 
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -45,9 +46,6 @@ trait BaselineActions {
 
   def eitherFutures(futures: Seq[EitherFuture]): Seq[Future[EitherFutureResult]] = {
 
-
-
-
     val errors = futures.filter {
       case EitherFuture(a,b) => b.failed.value.isDefined
     }
@@ -60,18 +58,6 @@ trait BaselineActions {
     Console.println("Size of Results:  " + results.size)
 
 
-    results.foreach{f=>{
-      Console.println(f.name)
-      Console.println(f.future.onComplete(println)) //pretty much always empty
-      Console.println("rrrrrrrrr!")
-    }}
-
-    errors.foreach{f=>{
-      Console.println(f.name)
-      Console.println(f.future.failed.value) //sometimes empty, if future doesn't complete
-      Console.println("eeeeeeee!")
-    }}
-
     val err = errors.map { f => Future{EitherFutureResult(f.name, Left("Could not recognize input type"))}}
 
     val res = results.map { f => f.future.map {
@@ -83,6 +69,23 @@ trait BaselineActions {
       case None => EitherFutureResult(f.name, Left("Could not recognize input type"))
     }
     }
+
+    results.foreach{f=>{
+      Console.println(f.name)
+      Console.println(f.future.isCompleted)
+      f.future.map(println) // these get printed way later, but at this time the future is empty and not completed
+      Console.println(f.future.value)
+
+      //pretty much always empty
+      Console.println("____result____")
+    }}
+
+    errors.foreach{f=>{
+      Console.println(f.name)
+      Console.println(f.future.isCompleted)
+      Console.println(f.future.failed.value) //sometimes empty, if future doesn't complete
+      Console.println("____error____!")
+    }}
     // FOR THE FOLLOWING SAMPLE CURL CALL:
     // curl -XPOST "http://localhost:9000/baseline" -d"@adult_education.json" -H "Content-Type: application/json" | python -m json.tool
     //if err is returned AND the futures are fully completed, then the correct errors json entry will be returned,
@@ -100,8 +103,8 @@ trait BaselineActions {
 
 
     val getBaseline: EUIMetrics = EUIMetrics(request.body)
-
     val energyCalcs: EUICalculator = EUICalculator(request.body)
+
 
     val futures = Future.sequence(eitherFutures(Seq(
 
@@ -131,6 +134,24 @@ trait BaselineActions {
 
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 
       EitherFuture("siteEnergy", energyCalcs.getSiteEnergy),
