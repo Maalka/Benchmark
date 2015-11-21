@@ -1,0 +1,81 @@
+{
+    "errors": [
+        {
+            "expectedSourceEUI": "Cannot compute Expected EUI for this building type: Missing Algorithm"
+        },
+        {
+            "ES": "Actual EUI could not be computed!"
+        },
+        {
+            "targetSourceEUI": "Actual EUI could not be computed!"
+        },
+        {
+            "targetSourceEnergy": "Actual EUI could not be computed!"
+        },
+        {
+            "targetSiteEUI": "Actual EUI could not be computed!"
+        },
+        {
+            "targetSiteEnergy": "Actual EUI could not be computed!"
+        },
+        {
+            "percentBetterES": "Actual EUI could not be computed!"
+        }
+    ],
+    "values": [
+        {
+            "siteEnergy": [
+                2000000,
+                20000
+            ]
+        },
+        {
+            "totalSiteEnergy": 8824366.286854066
+        },
+        {
+            "sourceEnergy": [
+                21428249.456043474,
+                2100087.171628091
+            ]
+        },
+        {
+            "totalSourceEnergy": 23528336.627671566
+        },
+        {
+            "poolEnergy": 0
+        },
+        {
+            "parkingEnergy": 0
+        },
+        {
+            "totalSourceEnergyNoPoolNoParking": 23528336.627671566
+        },
+        {
+            "sourceEUI": 117.64168313835783
+        },
+        {
+            "medianSourceEUI": 141.4
+        },
+        {
+            "medianSiteEUI": 53.0324524298787
+        },
+        {
+            "medianSiteEnergy": 10606490.48597574
+        },
+        {
+            "medianSourceEnergy": 28280000
+        },
+        {
+            "percentBetterSourceEUI": 49.49
+        },
+        {
+            "percentBetterSourceEnergy": 9898000
+        },
+        {
+            "percentBetterSiteEUI": 18.561358350457546
+        },
+        {
+            "percentBetterSiteEnergy": 3712271.670091509
+        }
+    ]
+}
