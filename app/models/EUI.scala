@@ -18,87 +18,76 @@ import EnergyConversions.EnergyNumeric
 
 import scala.util._
 
-
-
-
 case class EUICalculator(parameters: JsValue) {
 
-  implicit def boolOptToInt(b:Option[Boolean]):Int = if (b.getOrElse(false)) 1 else 0
+  implicit def boolOptToInt(b: Option[Boolean]): Int = if (b.getOrElse(false)) 1 else 0
 
-  def getSiteEnergy: Future[List[Try[Energy]]] = {
+  def getSiteEnergy: Future[List[Energy]] = {
     for {
-      entries <- Future{parameters.validate[EnergyList]}
+      entries <- getEnergyList
       siteEnergyList <- computeSiteEnergy(entries)
-    } yield siteEnergyList
+    } yield {
+      siteEnergyList
+    }
   }
+
   def getTotalSiteEnergy: Future[Energy] = {
     for {
-      entries <- Future{parameters.validate[EnergyList]}
-      conversionInfo <- Future {parameters.validate[ConversionInfo].
-        getOrElse(throw new Exception("Cannot find Country Type"))}
+      entries <- getEnergyList
+      conversionInfo <- getConversionInfo
       siteEnergyList <- computeSiteEnergy(entries)
       siteEnergySum <- getSiteEnergySum(siteEnergyList, conversionInfo)
 
     } yield siteEnergySum
   }
 
-  def getSiteEnergySum(energies: List[Try[Energy]], convert: ConversionInfo): Future[Energy] = {
+  def getSiteEnergySum(energies: List[Energy], convert: ConversionInfo): Future[Energy] = {
 
     val f = convert.reportingUnits match {
-      case "us" => energies.map{
-        case a:Success[Energy] => a.map(_ in KBtus)
-        case a:Failure[Energy] => throw new Exception("Could not recognize reporting unit conversion")
-      }.map(_.get).sum in KBtus
-      case "metric" => energies.map{
-        case a:Success[Energy] => a.map(_ in Gigajoules)
-        case a:Failure[Energy] => throw new Exception("Could not recognize reporting unit conversion")
-      }.map(_.get).sum in Gigajoules
+      case "us" => energies.map {case a:Energy => a in KBtus}.sum in KBtus
+      case "metric" => energies.map {case a:Energy => a in Gigajoules}.sum in Gigajoules
       case _ => throw new Exception("Could not recognize reporting unit conversion")
     }
     Future(f)
   }
 
-  def computeSiteEnergy[T](entries: T): Future[List[Try[Energy]]] = {
-    val f = entries match {
-      case JsSuccess(a:EnergyList, _) => a.energies.map{
-        case a:EnergyMetrics => Energy((a.energyUse, a.energyUnits))
+  def computeSiteEnergy[T](entries: T): Future[List[Energy]] = Future {
+    entries match {
+      case a: EnergyList => a.energies.map {
+        case a: EnergyMetrics => {
+          Energy((a.energyUse, a.energyUnits)) match {
+            case a:Success[Energy] => a.get
+            case a: Failure[Energy] => throw new Exception("Could not determine energy unit for entry")
+          }
+        }
       }
-      case JsError => throw new Exception("Could not validate energy entries to calculate EUI")
+      case _ => throw new Exception("Could not validate energy entries to calculate EUI")
     }
-    Future(f)
   }
 
-  def getSourceEnergy:Future[List[Try[Energy]]] = {
+  def getSourceEnergy: Future[List[Energy]] = {
     for {
-      entries <- Future {
-        parameters.validate[EnergyList]
-      }
-      conversionInfo <- Future {parameters.validate[ConversionInfo].
-        getOrElse(throw new Exception("Cannot find Country Type"))}
+      entries <- getEnergyList
+      conversionInfo <- getConversionInfo
       sourceEnergyList <- computeSourceEnergy(entries, conversionInfo)
       sourceEnergyListConverted <- convertOutput(sourceEnergyList, conversionInfo)
-
     } yield {
       sourceEnergyListConverted
     }
   }
 
-  def getTotalSourceEnergy:Future[Energy] = {
+  def getTotalSourceEnergy: Future[Energy] = {
     for {
-      entries <- Future {
-        parameters.validate[EnergyList]
-      }
-      conversionInfo <- Future {parameters.validate[ConversionInfo].
-        getOrElse(throw new Exception("Cannot find Country Type"))}
+      entries <- getEnergyList
+      conversionInfo <- getConversionInfo
       sourceEnergyList <- computeSourceEnergy(entries, conversionInfo)
       sourceEnergyListConverted <- convertOutputSum(sourceEnergyList, conversionInfo)
 
-    } yield {
-      sourceEnergyListConverted
-    }
+    } yield sourceEnergyListConverted
+
   }
 
-  def getTotalSourceEnergyNoPoolNoParking:Future[Energy] = {
+  def getTotalSourceEnergyNoPoolNoParking: Future[Energy] = {
     for {
       sourceEnergyListConverted <- getTotalSourceEnergy
       poolEnergy <- getPoolEnergy
@@ -107,149 +96,147 @@ case class EUICalculator(parameters: JsValue) {
     } yield sourceEnergyListConverted - poolEnergy - parkingEnergy
   }
 
-  def computeSourceEnergy[T](entries: T, convert: ConversionInfo): Future[List[Try[Energy]]] = {
-    val f = entries match {
-      case JsSuccess(a:EnergyList, _) => a.energies.map{
-        case a:EnergyMetrics => {
-          sourceConvert(a.energyType, convert.country, Energy((a.energyUse, a.energyUnits)).getOrElse
-            (throw new Exception("Error creating energy list for site to source conversion")))
+  def computeSourceEnergy[T](entries: T, convert: ConversionInfo): Future[List[Energy]] = Future{
+    entries match {
+      case a: EnergyList => a.energies.map {
+        case a: EnergyMetrics => sourceConvert(a.energyType, convert.country, Energy((a.energyUse, a.energyUnits)))
+      }
+      case _ => throw new Exception("Could not compute Source Energy from Site Energy")
+    }
+  }
+
+  def getEnergyList: Future[EnergyList] = {
+    for {
+      entries <- Future {
+        parameters.validate[EnergyList]
+      }
+      siteEnergyList <- {
+        entries match {
+          case JsSuccess(a, _) => Future(a)
+          case JsError(err) => throw new Exception("Could not read provided energy list")
         }
       }
-      case JsError => throw new Exception("Could not complete site to source energy conversion")
-    }
-    Future(f)
+    } yield siteEnergyList
   }
 
-
-  def convertOutput(energies: List[Try[Energy]], convert: ConversionInfo): Future[List[Try[Energy]]] = {
-
-    val f = convert.reportingUnits match {
-      case "us" => energies.map{
-        case a:Success[Energy] => a.map(_ in KBtus)
-        case a:Failure[Energy] => throw new Exception("Could not recognize reporting unit conversion")
+  def getConversionInfo: Future[ConversionInfo] = {
+    for {
+      info <- Future {
+        parameters.validate[ConversionInfo]
       }
-      case "metric" => energies.map{
-        case a:Success[Energy] => a.map(_ in Gigajoules)
-        case a:Failure[Energy] => throw new Exception("Could not recognize reporting unit conversion")
+      check <- {
+        info match {
+          case JsSuccess(a, _) => Future(a)
+          case JsError(err) => throw new Exception("Could not read Site to Source Conversion Parameters")
+        }
       }
+    } yield check
+  }
+
+  def convertOutput(energies: List[Energy], convert: ConversionInfo): Future[List[Energy]] = Future {
+    convert.reportingUnits match {
+      case "us" => energies.map {case a:Energy => a in KBtus}
+      case "metric" => energies.map {case a:Energy => a in Gigajoules}
       case _ => throw new Exception("Could not recognize reporting unit conversion")
     }
-    Future(f)
   }
 
-  def convertOutputSum(energies: List[Try[Energy]], convert: ConversionInfo): Future[Energy] = {
 
-    val f = convert.reportingUnits match {
-      case "us" => energies.map{
-        case a:Success[Energy] => a.map(_ in KBtus)
-        case a:Failure[Energy] => throw new Exception("Could not recognize reporting unit conversion")
-      }.map(_.get).sum in KBtus
-      case "metric" => energies.map{
-        case a:Success[Energy] => a.map(_ in Gigajoules)
-        case a:Failure[Energy] => throw new Exception("Could not recognize reporting unit conversion")
-      }.map(_.get).sum in Gigajoules
+  def convertOutputSum(energies: List[Energy], convert: ConversionInfo): Future[Energy] = Future {
+    convert.reportingUnits match {
+      case "us" => energies.map {case a:Energy => a in KBtus}.sum in KBtus
+      case "metric" => energies.map {case a:Energy => a in Gigajoules}.sum in Gigajoules
       case _ => throw new Exception("Could not recognize reporting unit conversion")
     }
-    Future(f)
   }
 
 
-  def sourceConvert(energyType:String,country:String, siteEnergy:Energy):Try[Energy] = {
-    (energyType, country) match {
-      case ("grid", "USA") => Success(siteEnergy * siteToSourceConversions.gridUS)
-      case ("grid", "Canada") => Success(siteEnergy * siteToSourceConversions.gridCanada)
-      case ("naturalGas", "USA") => Success(siteEnergy * siteToSourceConversions.ngUS)
-      case ("naturalGas", "Canada") => Success(siteEnergy * siteToSourceConversions.ngCanada)
-      case ("onSiteElectricity", _) => Success(siteEnergy * siteToSourceConversions.onSiteElectricity)
-      case ("fuelOil", _) => Success(siteEnergy * siteToSourceConversions.fuelOil)
-      case ("propane", "USA") => Success(siteEnergy * siteToSourceConversions.propaneUS)
-      case ("propane", "Canada") => Success(siteEnergy * siteToSourceConversions.propaneCanada)
-      case ("steam", _) => Success(siteEnergy * siteToSourceConversions.steam)
-      case ("hotWater", _) => Success(siteEnergy * siteToSourceConversions.hotWater)
-      case ("chilledWater", "USA") => Success(siteEnergy * siteToSourceConversions.chilledWaterUS)
-      case ("chilledWater", "Canada") => Success(siteEnergy * siteToSourceConversions.chilledWaterCanada)
-      case ("wood", _) => Success(siteEnergy * siteToSourceConversions.wood)
-      case ("coke", _) => Success(siteEnergy * siteToSourceConversions.coke)
-      case ("coal", _) => Success(siteEnergy * siteToSourceConversions.coal)
-      case ("other", _) => Success(siteEnergy * siteToSourceConversions.other)
-      case (_, _) => throw new Exception("Could Not Convert to Source Energy")
+  def sourceConvert(energyType: String, country: String, siteEnergy: Try[Energy]): Energy = {
+    siteEnergy match {
+      case a: Success[Energy] => {
+        (energyType, country) match {
+        case ("grid", "USA") => a.get * siteToSourceConversions.gridUS
+        case ("grid", "Canada") => a.get * siteToSourceConversions.gridCanada
+        case ("naturalGas", "USA") => a.get * siteToSourceConversions.ngUS
+        case ("naturalGas", "Canada") => a.get * siteToSourceConversions.ngCanada
+        case ("onSiteElectricity", _) => a.get * siteToSourceConversions.onSiteElectricity
+        case ("fuelOil", _) => a.get * siteToSourceConversions.fuelOil
+        case ("propane", "USA") => a.get * siteToSourceConversions.propaneUS
+        case ("propane", "Canada") => a.get * siteToSourceConversions.propaneCanada
+        case ("steam", _) => a.get * siteToSourceConversions.steam
+        case ("hotWater", _) => a.get * siteToSourceConversions.hotWater
+        case ("chilledWater", "USA") => a.get * siteToSourceConversions.chilledWaterUS
+        case ("chilledWater", "Canada") => a.get * siteToSourceConversions.chilledWaterCanada
+        case ("wood", _) => a.get * siteToSourceConversions.wood
+        case ("coke", _) => a.get * siteToSourceConversions.coke
+        case ("coal", _) => a.get * siteToSourceConversions.coal
+        case ("other", _) => a.get * siteToSourceConversions.other
+        case (_, _) => throw new Exception("Could Not Convert to Source Energy")
+      }}
+      case a: Failure[Energy] => throw new Exception("Could not read site energy entry")
     }
   }
 
-  def getParkingEnergy: Future[Energy] = {
-    val parkingEnergy = parameters.asOpt[Parking] match {
+  def getParkingEnergy: Future[Energy] = Future {
+    parameters.asOpt[Parking] match {
       case Some(Parking(a, b, c, d, e, units, "USA")) => {
 
-        /*  Console.println("Parking - open: " + a + " Partially Enclosed: "+ b +  " Fully Enclosed: " + c +
-            " in Units of: " + units)*/
-        val openArea:Double = Area((a.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
-        val partiallyEnclosedParkingArea:Double = Area((b.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
-        val fullyEnclosedParkingArea:Double = Area((c.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
+        val openArea: Double = Area((a.getOrElse(0.0), units.getOrElse("ftSQ"))).get to SquareFeet
+        val partiallyEnclosedParkingArea: Double = Area((b.getOrElse(0.0), units.getOrElse("ftSQ"))).get to SquareFeet
+        val fullyEnclosedParkingArea: Double = Area((c.getOrElse(0.0), units.getOrElse("ftSQ"))).get to SquareFeet
 
         KBtus((9.385 * openArea) + (28.16 * partiallyEnclosedParkingArea) + (35.67 * fullyEnclosedParkingArea) +
           (0.009822 * (d.getOrElse(0.0) * e)))
       }
       case Some(Parking(a, b, c, d, e, units, "Canada")) => {
 
-        /*  Console.println("Parking - open: " + a + " Partially Enclosed: "+ b +  " Fully Enclosed: " + c +
-            " in Units of: " + units)*/
-        val openArea:Double = Area((a.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
-        val partiallyEnclosedParkingArea:Double = Area((b.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
-        val fullyEnclosedParkingArea:Double = Area((c.getOrElse(0.0),units.getOrElse("ftSQ"))).get to SquareFeet
+        val openArea: Double = Area((a.getOrElse(0.0), units.getOrElse("ftSQ"))).get to SquareFeet
+        val partiallyEnclosedParkingArea: Double = Area((b.getOrElse(0.0), units.getOrElse("ftSQ"))).get to SquareFeet
+        val fullyEnclosedParkingArea: Double = Area((c.getOrElse(0.0), units.getOrElse("ftSQ"))).get to SquareFeet
 
         KBtus((9.385 * openArea) + (28.16 * partiallyEnclosedParkingArea) + (35.67 * fullyEnclosedParkingArea) +
           (0.009822 * (d.getOrElse(0.0) * e))) in Gigajoules
       }
-
       case Some(_) => KBtus(0)
       case None => KBtus(0)
     }
-    //Console.println("Parking Energy: " + parkingEnergy)
-    Future(parkingEnergy)
   }
 
 
+  def getPoolEnergy: Future[Energy] = Future {
+
+    parameters.asOpt[Pool] match {
+      case Some(Pool(Some("Indoor"), "USA", "K12School", Some("Recreational"))) => KBtus(1257300)
+      case Some(Pool(Some("Indoor"), "USA", "K12School", Some("ShortCourse"))) => KBtus(2095500)
+      case Some(Pool(Some("Indoor"), "USA", "K12School", Some("Olympic"))) => KBtus(6266009)
+      case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("Recreational"))) => KBtus(1010711)
+      case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("ShortCourse"))) => KBtus(1684518)
+      case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("Olympic"))) => KBtus(5037084)
+      case Some(Pool(Some("Indoor"), "USA", _, Some("Recreational"))) => KBtus(853981)
+      case Some(Pool(Some("Indoor"), "USA", _, Some("ShortCourse"))) => KBtus(1423301)
+      case Some(Pool(Some("Indoor"), "USA", _, Some("Olympic"))) => KBtus(4255987)
+      case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("Recreational"))) => KBtus(1202780) in Gigajoules
+      case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("ShortCourse"))) => KBtus(2004633) in Gigajoules
+      case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("Olympic"))) => KBtus(5993047) in Gigajoules
+      case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("Recreational"))) => KBtus(962982) in Gigajoules
+      case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("ShortCourse"))) => KBtus(1604654) in Gigajoules
+      case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("Olympic"))) => KBtus(4799745) in Gigajoules
+      case Some(Pool(Some("Indoor"), "Canada", _, Some("Recreational"))) => KBtus(810384) in Gigajoules
+      case Some(Pool(Some("Indoor"), "Canada", _, Some("ShortCourse"))) => KBtus(1351587) in Gigajoules
+      case Some(Pool(Some("Indoor"), "Canada", _, Some("Olympic"))) => KBtus(4040544) in Gigajoules
 
 
-def getPoolEnergy:Future[Energy] = {
-  //Console.println(parameters.asOpt[Pool])
-  val poolEnergy = parameters.asOpt[Pool] match {
-    case Some(Pool(Some("Indoor"), "USA", "K12School", Some("Recreational"))) => KBtus(1257300)
-    case Some(Pool(Some("Indoor"), "USA", "K12School", Some("ShortCourse"))) => KBtus(2095500)
-    case Some(Pool(Some("Indoor"), "USA", "K12School", Some("Olympic"))) => KBtus(6266009)
-    case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("Recreational"))) => KBtus(1010711)
-    case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("ShortCourse"))) => KBtus(1684518)
-    case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("Olympic"))) => KBtus(5037084)
-    case Some(Pool(Some("Indoor"), "USA", _, Some("Recreational"))) => KBtus(853981)
-    case Some(Pool(Some("Indoor"), "USA", _, Some("ShortCourse"))) => KBtus(1423301)
-    case Some(Pool(Some("Indoor"), "USA", _, Some("Olympic"))) => KBtus(4255987)
-    case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("Recreational"))) => KBtus(1202780) in Gigajoules
-    case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("ShortCourse"))) => KBtus(2004633) in Gigajoules
-    case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("Olympic"))) => KBtus(5993047) in Gigajoules
-    case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("Recreational"))) => KBtus(962982) in Gigajoules
-    case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("ShortCourse"))) => KBtus(1604654) in Gigajoules
-    case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("Olympic"))) => KBtus(4799745) in Gigajoules
-    case Some(Pool(Some("Indoor"), "Canada", _, Some("Recreational"))) => KBtus(810384) in Gigajoules
-    case Some(Pool(Some("Indoor"), "Canada", _, Some("ShortCourse"))) => KBtus(1351587) in Gigajoules
-    case Some(Pool(Some("Indoor"), "Canada", _, Some("Olympic"))) => KBtus(4040544) in Gigajoules
+      case Some(Pool(Some("Outdoor"), "USA", _, Some("Recreational"))) => KBtus(119914)
+      case Some(Pool(Some("Outdoor"), "USA", _, Some("ShortCourse"))) => KBtus(199857)
+      case Some(Pool(Some("Outdoor"), "USA", _, Some("Olympic"))) => KBtus(597621)
+      case Some(Pool(Some("Outdoor"), "Canada", _, Some("Recreational"))) => KBtus(112790) in Gigajoules
+      case Some(Pool(Some("Outdoor"), "Canada", _, Some("ShortCourse"))) => KBtus(187668) in Gigajoules
+      case Some(Pool(Some("Outdoor"), "Canada", _, Some("Olympic"))) => KBtus(561108) in Gigajoules
 
-
-    case Some(Pool(Some("Outdoor"), "USA", _, Some("Recreational"))) => KBtus(119914)
-    case Some(Pool(Some("Outdoor"), "USA", _, Some("ShortCourse"))) => KBtus(199857)
-    case Some(Pool(Some("Outdoor"), "USA", _, Some("Olympic"))) => KBtus(597621)
-    case Some(Pool(Some("Outdoor"), "Canada", _, Some("Recreational"))) => KBtus(112790) in Gigajoules
-    case Some(Pool(Some("Outdoor"), "Canada", _, Some("ShortCourse"))) => KBtus(187668) in Gigajoules
-    case Some(Pool(Some("Outdoor"), "Canada", _, Some("Olympic"))) => KBtus(561108) in Gigajoules
-
-    case Some(Pool(_, _, _, _)) => KBtus(0)
-    case None => KBtus(0)
+      case Some(Pool(_, _, _, _)) => KBtus(0)
+      case None => KBtus(0)
+    }
   }
-  //Console.println("Pool Energy: " + poolEnergy)
-  Future(poolEnergy)
-}
-
-
-
 }
 
 case class ConversionInfo(country:String, reportingUnits: String)

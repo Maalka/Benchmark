@@ -2,7 +2,7 @@
 package models
 
 
-import squants.energy.{Gigajoules, KBtus, Energy, KilowattHours}
+import squants.energy.{Gigajoules, KBtus, Energy}
 import squants.space._
 import scala.concurrent.Future
 import scala.language._
@@ -10,14 +10,14 @@ import scala.math._
 import play.api.libs.json._
 import play.api.Play
 import scala.concurrent.ExecutionContext.Implicits.global
-import java.io.{InputStream, FileReader, FileNotFoundException, IOException}
+import java.io.{InputStream}
 import play.api.libs.functional.syntax._
 
 
 case class EUIMetrics(parameters: JsValue) {
 
   val energyCalcs:EUICalculator = EUICalculator(parameters)
-  
+
   val sourceEUI: Future[Double] =
     for {
       buildingSize <- getBuildingSize(parameters)
@@ -37,7 +37,7 @@ case class EUIMetrics(parameters: JsValue) {
 
   val expectedSourceEUI:Future[Double] = {
     for {
-      targetBuilding <- Future{getBuilding(parameters)}
+      targetBuilding <- getBuilding(parameters)
       expectedEUI <- computeExpectedEUI(targetBuilding)
     } yield expectedEUI
   }
@@ -45,7 +45,7 @@ case class EUIMetrics(parameters: JsValue) {
   val ES:Future[Int] = {
 
     for {
-      targetBuilding <- Future {getBuilding(parameters)}
+      targetBuilding <-  getBuilding(parameters)
       lookupEUI <- computeLookupEUI(targetBuilding)
       poolEnergy <- energyCalcs.getPoolEnergy
       parkingEnergy <- energyCalcs.getParkingEnergy
@@ -70,7 +70,7 @@ case class EUIMetrics(parameters: JsValue) {
 
   val targetSourceEUI:Future[Double] = {
     for {
-      targetBuilding <- Future {getBuilding(parameters)}
+      targetBuilding <- getBuilding(parameters)
       lookupEUI <- computeLookupEUI(targetBuilding)
       targetRatio <- getTargetRatio(parameters)
       targetEUI <-  getTargetEUI(targetBuilding,lookupEUI,targetRatio)
@@ -102,7 +102,7 @@ case class EUIMetrics(parameters: JsValue) {
 
   val medianSourceEUI:Future[Double] = {
     for {
-      targetBuilding <- Future {getBuilding(parameters)}
+      targetBuilding <- getBuilding(parameters)
       medianEUI <- {
        targetBuilding match {
           case JsSuccess(_,_) => for {
@@ -119,7 +119,6 @@ case class EUIMetrics(parameters: JsValue) {
   val medianSourceEnergy:Future[Double] = {
     for {
       buildingSize <- getBuildingSize(parameters)
-      siteRatio <- siteToSourceRatio
       sourceEnergy <- medianSourceEUI
     } yield sourceEnergy * buildingSize
   }
@@ -173,10 +172,9 @@ case class EUIMetrics(parameters: JsValue) {
     } yield siteEnergy / buildingSize
   }
 
-
   val percentBetterES:Future[Int] = {
     for {
-      targetBuilding <- Future {getBuilding(parameters)}
+      targetBuilding <- getBuilding(parameters)
       lookupEUI <- computeLookupEUI(targetBuilding)
       sourceTotalEnergy <-  percentBetterSourceEUI
       euiRatio <- getTargetEUIratio(targetBuilding, lookupEUI, sourceTotalEnergy)
@@ -197,7 +195,6 @@ case class EUIMetrics(parameters: JsValue) {
     } yield computeES
   }
 
-
   def siteToSourceRatio:Future[Double] = {
     for {
       siteEnergy <- energyCalcs.getTotalSiteEnergy
@@ -206,52 +203,39 @@ case class EUIMetrics(parameters: JsValue) {
   }
 
 
-
-
   def sourceEUInoPoolnoParking(sourceTotalEnergy:Energy, poolEnergy:Energy,
                                parkingEnergy:Energy):Future[Energy] = Future(sourceTotalEnergy - poolEnergy - parkingEnergy)
 
-  def getBuildingSize(parameters:JsValue):Future[Double] = {
-    parameters.validate[BuildingArea] match {
-      case JsSuccess(a, _) => Future(a.GFA.value)
-      case JsError(err) => throw new Exception("Could not determine building size for EUI Calculation!")
-    }
-  }
 
-  def computeExpectedEUI[T](targetBuilding: T): Future[Double] = {
-    //Console.println(targetBuilding)
-    val f = targetBuilding match {
+  def computeExpectedEUI[T](targetBuilding: T): Future[Double] = Future{
+    targetBuilding match {
       case JsSuccess(a: ResidenceHall, _) => exp(a.expectedEnergy) / a.floorArea
       case JsSuccess(a: MedicalOffice, _) => exp(a.expectedEnergy) / a.floorArea
       case JsSuccess(a: BaseLine, _) => a.expectedEnergy
       case JsError(err) => throw new Exception("Cannot compute Expected EUI for this building type: Missing Algorithm")
     }
-    Future(f)
   }
 
-  def getEUIratio[T](targetBuilding: T,lookupPredictedEUI:Double,sourceEnergy:Double):Future[Double] = {
-    val f = targetBuilding match {
+  def getEUIratio[T](targetBuilding: T,lookupPredictedEUI:Double,sourceEnergy:Double):Future[Double] = Future{
+    targetBuilding match {
       case JsSuccess(a: ResidenceHall, _) => log(sourceEnergy) * 15.717 / lookupPredictedEUI
       case JsSuccess(a: MedicalOffice, _) => log(sourceEnergy) * 14.919 / lookupPredictedEUI
       case JsSuccess(a: BaseLine, _) => sourceEnergy / a.floorArea / lookupPredictedEUI
       case JsError(err) => throw new Exception("Could not calculate EUI Ratio!")
     }
-    Console.println("Reference EUI Ratio: " +  f)
-    Future(f)
   }
 
-  def getTargetEUIratio[T](targetBuilding: T,lookupPredictedEUI:Double,sourceEUI:Double):Future[Double] = {
-    val f = targetBuilding match {
+
+  def getTargetEUIratio[T](targetBuilding: T,lookupPredictedEUI:Double,sourceEUI:Double):Future[Double] = Future{
+   targetBuilding match {
       case JsSuccess(a: ResidenceHall, _) => log(sourceEUI * a.floorArea) * 15.717 / lookupPredictedEUI
       case JsSuccess(a: MedicalOffice, _) => log(sourceEUI * a.floorArea) * 14.919 / lookupPredictedEUI
       case JsSuccess(a: BaseLine, _) => sourceEUI  / lookupPredictedEUI
       case JsError(err) => throw new Exception("Could not calculate EUI Ratio!")
     }
-    Console.println("Reference EUI Ratio: " +  f)
-    Future(f)
   }
 
-  def computeLookupEUI[T](targetBuilding: T): Future[Double] = Future {
+  def computeLookupEUI[T](targetBuilding: T): Future[Double] = Future{
     targetBuilding match {
       case JsSuccess(a: BaseLine, _) => a.expectedEnergy
       case JsError(err) => throw new Exception("Actual EUI could not be computed!")
@@ -260,20 +244,16 @@ case class EUIMetrics(parameters: JsValue) {
 
 
 
-
   def getTargetRatio(parameters:JsValue):Future[Double] = {
-    val f = parameters.asOpt[TargetES] match {
-      case Some(a) =>
-        for {
-          lookUp <- getLookupTable(parameters)
-          targetRatioEntry <- loadLookupTable(lookUp).map {
-            _.filter(_.ES == a.target).last.Ratio
-          }
-        } yield targetRatioEntry
-      case None => throw new Exception("Could not calculate your Target EUI Ratio")
-    }
-    f
+    for {
+      targetES <- getTargetES
+      lookUp <- getLookupTable(parameters)
+      targetRatioEntry <- loadLookupTable(lookUp).map {
+        _.filter(_.ES == targetES).last.Ratio
+      }
+    } yield targetRatioEntry
   }
+
 
   def getMedianRatio(parameters:JsValue):Future[Double] = {
     for {
@@ -284,16 +264,13 @@ case class EUIMetrics(parameters: JsValue) {
     } yield targetRatioEntry
   }
 
-  def getTargetEUI[T](targetBuilding: T,lookupEUI:Double,targetRatio:Double):Future[Double] = {
-    val f = targetBuilding match {
+  def getTargetEUI[T](targetBuilding: T,lookupEUI:Double,targetRatio:Double):Future[Double] = Future {
+    targetBuilding match {
       case JsSuccess(a: ResidenceHall, _) => exp(targetRatio / 15.717 * lookupEUI) / a.floorArea
       case JsSuccess(a: MedicalOffice, _) => exp(targetRatio / 14.919 * lookupEUI) / a.floorArea
       case JsSuccess(a: BaseLine, _) => targetRatio * lookupEUI
       case JsError(err) => throw new Exception("Could not calculate Target EUI!")
     }
-    Console.println("Reference Expected(Source) EUI: " +  lookupEUI)
-    //Console.println("Target EUI: " +  f)
-    Future(f)
   }
 
 
@@ -332,7 +309,7 @@ case class EUIMetrics(parameters: JsValue) {
       case Some(CountryBuildingType("USA", "MedicalOffice")) => Play.current.configuration.getString("baseline.medicalOffice")
       case Some(CountryBuildingType("USA", "K12School")) => Play.current.configuration.getString("baseline.K12School")
       case Some(CountryBuildingType("USA", "Hotel")) => Play.current.configuration.getString("baseline.hotel")
-      case Some(CountryBuildingType("USA", "DataCenter")) => Play.current.configuration.getString("datacenter.hotel")
+      case Some(CountryBuildingType("USA", "DataCenter")) => Play.current.configuration.getString("baseline.datacenter")
       case Some(CountryBuildingType("USA", "Hospital")) => Play.current.configuration.getString("baseline.hospital")
       case Some(CountryBuildingType("Canada", "Office")) => Play.current.configuration.getString("baseline.canadaOffice")
       case Some(CountryBuildingType("Canada", "Supermarket")) => Play.current.configuration.getString("baseline.canadaSupermarket")
@@ -345,9 +322,7 @@ case class EUIMetrics(parameters: JsValue) {
     Future(r.getOrElse("Lookup Table Not Found"))
   }
 
-
-
-  def getBuilding(parameters: JsValue): JsResult[BaseLine] = {
+  def getBuilding(parameters: JsValue): Future[JsResult[BaseLine]] = Future{
     parameters.asOpt[CountryBuildingType] match {
       case Some(CountryBuildingType("USA", "Office")) => parameters.validate[Office]
       case Some(CountryBuildingType("USA", "WorshipCenter")) => parameters.validate[WorshipCenter]
@@ -371,7 +346,12 @@ case class EUIMetrics(parameters: JsValue) {
       case Some(_) => JsError("No matching building by country and type with ES algorithm!")
       case None => JsError("Could not find country or buildingType fields with JSON")
     }
+/*    building match {
+      case JsSuccess(a: BaseLine, _) => a
+      case JsError(err) => throw new Exception("Building Type parameters fail validation!")
+    }*/
   }
+
 
   def sourceMedianEUI(parameters:JsValue):Energy = {
 
@@ -379,7 +359,7 @@ case class EUIMetrics(parameters: JsValue) {
 
     val buildingType = countryBuilding match {
       case Some(CountryBuildingType(_, b)) => b
-      case None => JsError("No Building Type Provided!")
+      case _ => JsError("No Building Type Provided!")
   }
 
     val sourceMedian:Double = buildingType match {
@@ -449,8 +429,8 @@ case class EUIMetrics(parameters: JsValue) {
     val medianSourceEUI = countryBuilding match {
       case Some(CountryBuildingType("USA", _)) => KBtus(sourceMedian)
       case Some(CountryBuildingType("Canada", _)) => KBtus(sourceMedian) in Gigajoules
-      case Some(CountryBuildingType(_, _)) => throw new Exception("Could not find correct Country for Median EUI")
-      case None => throw new Exception("Could not find correct Country for Median EUI")
+      case Some(CountryBuildingType(_, _)) => throw new Exception("Could not find Country for Median EUI")
+      case None => throw new Exception("Could not find Country for Median EUI")
     }
 
     medianSourceEUI
@@ -536,10 +516,25 @@ case class EUIMetrics(parameters: JsValue) {
       case None => throw new Exception("Could not find correct Country for Median EUI")
 
     }
-
     medianSiteEUI
   }
+
+  def getBuildingSize(parameters:JsValue):Future[Double] = Future{
+    parameters.validate[BuildingArea] match {
+      case JsSuccess(a, _) => a.GFA.value
+      case JsError(err) => throw new Exception("Could not determine building size for EUI Calculation!")
+    }
+  }
+
+  def getTargetES:Future[Int] = Future{
+    parameters.asOpt[TargetES] match {
+      case Some(a) => a.target
+      case None => throw new Exception("Could not find your Target ES!")
+    }
+  }
 }
+
+
 
 case class BuildingArea(GFA:PosDouble)
 object BuildingArea {
@@ -580,6 +575,7 @@ object PosDouble {
 sealed trait BaseLine {
   val floorArea:Double
   val regressionSegments: Seq[RegressionSegment]
+  val algorithm:String
 
   def energyReduce:Double = regressionSegments.map(_.reduce).sum
   def expectedEnergy = energyReduce
@@ -611,6 +607,13 @@ object CountryBuildingType {
 implicit val countryBuildingTypeRead: Reads[CountryBuildingType] = Json.reads[CountryBuildingType]
 }
 
+case class GenericBuilding (GFA:PosDouble,areaUnits:String) extends BaseLine {
+  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "General"
+  val regressionSegments = Seq[RegressionSegment]()
+}
+
+
 
 /**
 * Office Building Type parameters
@@ -631,6 +634,7 @@ case class Office(GFA:PosDouble, numComputers:PosInt, weeklyOperatingHours: PosI
                   areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(186.6, 0, 1), // regression constant
@@ -671,6 +675,7 @@ case class CanadaOffice(weeklyOperatingHours:PosInt, numWorkersMainShift:PosInt,
                 areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(1.788, 0, 1), // regression constant
@@ -710,6 +715,7 @@ case class WorshipCenter(weeklyOperatingHours:PosInt, seatingCapacity:PosInt, nu
                          isOpenAllWeekdays:Option[Boolean], areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(73.91, 0, 1), // regression constant
@@ -751,6 +757,7 @@ case class WastewaterCenter(wastewaterAvgInfluentInflow:PosDouble, wastewaterInf
                             wastewaterLoadFactor:PosDouble, HDD:PosInt, CDD:PosInt, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
   // for predicted EUI you do not divide by GFA, you divide by average influent flow in Gallons per Day
 
 
@@ -792,6 +799,7 @@ case class Warehouse(weeklyOperatingHours:PosInt, numWorkersMainShift:PosInt, nu
                      percentCooled:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
 
   val regressionSegments = Seq[RegressionSegment] (
@@ -832,6 +840,7 @@ case class Supermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDo
                      percentCooled:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
 
   val regressionSegments = Seq[RegressionSegment] (
@@ -870,6 +879,7 @@ case class CanadaSupermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift
                              GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(4.828, 0, 1), // regression constant
@@ -916,6 +926,7 @@ case class SeniorCare(weeklyOperatingHours:PosInt, avgNumResidents:PosDouble, ma
                       HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(253, 0, 1), // regression constant
@@ -963,6 +974,7 @@ case class Retail(weeklyOperatingHours:PosInt, numOpenClosedRefrCases:PosDouble,
                   HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(153.1, 0, 1), // regression constant
@@ -1000,6 +1012,7 @@ case class ResidenceHall(numBedrooms:PosDouble, percentHeated:PosDouble, percent
                       HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(4.99455, 0, 1), // regression constant
@@ -1037,6 +1050,7 @@ case class MultiFamily(weeklyOperatingHours:PosInt, numRezUnits:PosDouble, numBe
                        HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(140.8, 0, 1), // regression constant
@@ -1070,6 +1084,7 @@ case class CanadaMedicalOffice(weeklyOperatingHours:PosInt, numWorkersMainShift:
                       HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
+  val algorithm:String = "Specific"
   val workerDensity:Double = numWorkersMainShift.value * 100 / floorArea
 
   val regressionSegments = Seq[RegressionSegment] (
@@ -1107,6 +1122,7 @@ case class MedicalOffice(weeklyOperatingHours:PosInt, numWorkersMainShift:PosDou
                          areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(2.78889, 0, 1), // regression constant
@@ -1147,6 +1163,7 @@ case class CanadaK12School(weeklyOperatingHours:PosInt, numWorkersMainShift:PosD
                            GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(1.021, 0, 1), // regression constant
@@ -1191,6 +1208,7 @@ case class K12School(isOpenWeekends:Option[Boolean],
                      CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(131.9, 0, 1), // regression constant
@@ -1239,6 +1257,7 @@ case class Hotel(numBedrooms:PosDouble, hasFoodPreparation:Option[Boolean], numW
                       HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(169.1, 0, 1), // regression constant
@@ -1273,6 +1292,7 @@ case class Hospital(numFTEWorkers:PosDouble, numStaffedBeds:PosDouble, numMRIMac
                      CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(484.8, 0, 1), // regression constant
@@ -1311,6 +1331,7 @@ case class CanadaHospital(weeklyOperatingHours:PosInt, numWorkersMainShift:PosDo
                     HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(2.984, 0, 1), // regression constant
@@ -1337,6 +1358,7 @@ case class DataCenter(annualITEnergyKwh:PosDouble, country:String, reportingUnit
                       GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
+  val algorithm:String = "Specific"
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(2.984, 0, 1), // regression constant
