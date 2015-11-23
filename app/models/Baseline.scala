@@ -153,7 +153,6 @@ case class EUIMetrics(parameters: JsValue) {
   val percentBetterSourceEnergy:Future[Double] = {
     for {
       buildingSize <- getBuildingSize(parameters)
-      siteRatio <- siteToSourceRatio
       sourceEnergy <- percentBetterSourceEUI
     } yield sourceEnergy * buildingSize
   }
@@ -241,8 +240,6 @@ case class EUIMetrics(parameters: JsValue) {
       case JsError(err) => throw new Exception("Actual EUI could not be computed!")
     }
   }
-
-
 
   def getTargetRatio(parameters:JsValue):Future[Double] = {
     for {

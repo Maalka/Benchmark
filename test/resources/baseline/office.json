@@ -10,20 +10,7 @@
   "areaUnits": "ftSQ",
   "primaryType": "office",
   "numBuildingsPartSingleMore": "single",
-  "energies": [
-      {
-        "energyType": "grid",
-        "energyUnits": "KWh",
-        "energyUse": 3500000.0,
-        "energyRate": null
-      },
-      {
-        "energyType": "naturalGas",
-        "energyUnits": "therms",
-        "energyUse": 4000.0,
-        "energyRate": 0.1
-      }
-  ],
+  "energies": null,
   "targetScore": 75,
   "percentBetterThanMedian": 35,
   "buildingType": "Office",
