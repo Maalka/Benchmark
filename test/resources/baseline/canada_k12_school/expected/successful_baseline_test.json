@@ -1,0 +1,86 @@
+{
+  "errors": [],
+  "values": [
+    {
+      "ES": 79
+    },
+    {
+      "sourceEUI": 1.03
+    },
+    {
+      "siteEUI": 0.7
+    },
+    {
+      "totalSourceEnergy": 8486.9
+    },
+    {
+      "totalSiteEnergy": 5775.8
+    },
+    {
+      "targetES": 75
+    },
+    {
+      "targetSourceEUI": 1.07
+    },
+    {
+      "targetSiteEUI": 0.73
+    },
+    {
+      "targetSourceEnergy": 8822.27
+    },
+    {
+      "targetSiteEnergy": 6004.02
+    },
+    {
+      "percentBetterES": 95
+    },
+    {
+      "percentBetterSourceEUI": 0.82
+    },
+    {
+      "percentBetterSiteEUI": 0.56
+    },
+    {
+      "percentBetterSourceEnergy": 6781.13
+    },
+    {
+      "percentBetterSiteEnergy": 4614.92
+    },
+    {
+      "medianES": 50
+    },
+    {
+      "medianSourceEUI": 1.26
+    },
+    {
+      "medianSiteEUI": 0.86
+    },
+    {
+      "medianSourceEnergy": 10432.51
+    },
+    {
+      "medianSiteEnergy": 7099.87
+    },
+    {
+      "sourceEnergy": [
+        5166,
+        3320.9
+      ]
+    },
+    {
+      "siteEnergy": [
+        700000,
+        85000
+      ]
+    },
+    {
+      "poolEnergy": 0
+    },
+    {
+      "parkingEnergy": 0
+    },
+    {
+      "totalSourceEnergyNoPoolNoParking": 8486.9
+    }
+  ]
+}

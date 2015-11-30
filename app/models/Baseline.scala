@@ -13,6 +13,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import java.io.{InputStream}
 import play.api.libs.functional.syntax._
 
+import scala.util.Try
+import scala.util.control.NonFatal
+
 
 case class EUIMetrics(parameters: JsValue) {
 
@@ -105,12 +108,12 @@ case class EUIMetrics(parameters: JsValue) {
       targetBuilding <- getBuilding(parameters)
       medianEUI <- {
        targetBuilding match {
-          case JsSuccess(_,_) => for {
+          case a:GenericBuilding =>  Future(sourceMedianEUI(parameters).value)
+          case b:BaseLine => for {
             lookupEUI <- computeLookupEUI(targetBuilding)
             targetRatio <- getMedianRatio(parameters)
             targetEUI <-  getTargetEUI(targetBuilding,lookupEUI,targetRatio)
           } yield targetEUI
-          case JsError(_) => Future(sourceMedianEUI(parameters).value)
         }
       }
     } yield medianEUI
@@ -195,11 +198,20 @@ case class EUIMetrics(parameters: JsValue) {
   }
 
   def siteToSourceRatio:Future[Double] = {
-    for {
+
+    val local = for {
       siteEnergy <- energyCalcs.getTotalSiteEnergy
       sourceEnergy <- energyCalcs.getTotalSourceEnergyNoPoolNoParking
-    } yield siteEnergy/sourceEnergy
+      ratio <- Future {
+        siteEnergy / sourceEnergy
+      }
+    } yield ratio
+
+  local.recoverWith{case NonFatal(th) => Future.successful(0.05)}
+
   }
+
+
 
 
   def sourceEUInoPoolnoParking(sourceTotalEnergy:Energy, poolEnergy:Energy,
@@ -208,36 +220,37 @@ case class EUIMetrics(parameters: JsValue) {
 
   def computeExpectedEUI[T](targetBuilding: T): Future[Double] = Future{
     targetBuilding match {
-      case JsSuccess(a: ResidenceHall, _) => exp(a.expectedEnergy) / a.floorArea
-      case JsSuccess(a: MedicalOffice, _) => exp(a.expectedEnergy) / a.floorArea
-      case JsSuccess(a: BaseLine, _) => a.expectedEnergy
-      case JsError(err) => throw new Exception("Cannot compute Expected EUI for this building type: Missing Algorithm")
+      case a: ResidenceHall => exp(a.expectedEnergy) / a.floorArea
+      case a: MedicalOffice => exp(a.expectedEnergy) / a.floorArea
+      case a: GenericBuilding => throw new Exception("Cannot compute Expected EUI - Generic Building: No Algorithm!")
+      case a: BaseLine => a.expectedEnergy
     }
   }
 
   def getEUIratio[T](targetBuilding: T,lookupPredictedEUI:Double,sourceEnergy:Double):Future[Double] = Future{
     targetBuilding match {
-      case JsSuccess(a: ResidenceHall, _) => log(sourceEnergy) * 15.717 / lookupPredictedEUI
-      case JsSuccess(a: MedicalOffice, _) => log(sourceEnergy) * 14.919 / lookupPredictedEUI
-      case JsSuccess(a: BaseLine, _) => sourceEnergy / a.floorArea / lookupPredictedEUI
-      case JsError(err) => throw new Exception("Could not calculate EUI Ratio!")
+      case a: ResidenceHall => log(sourceEnergy) * 15.717 / lookupPredictedEUI
+      case a: MedicalOffice => log(sourceEnergy) * 14.919 / lookupPredictedEUI
+      case a: GenericBuilding => throw new Exception("Could not calculate EUI Ratio - Generic Building: No Algorithm!")
+      case a: BaseLine => sourceEnergy / a.floorArea / lookupPredictedEUI
     }
   }
 
 
   def getTargetEUIratio[T](targetBuilding: T,lookupPredictedEUI:Double,sourceEUI:Double):Future[Double] = Future{
    targetBuilding match {
-      case JsSuccess(a: ResidenceHall, _) => log(sourceEUI * a.floorArea) * 15.717 / lookupPredictedEUI
-      case JsSuccess(a: MedicalOffice, _) => log(sourceEUI * a.floorArea) * 14.919 / lookupPredictedEUI
-      case JsSuccess(a: BaseLine, _) => sourceEUI  / lookupPredictedEUI
-      case JsError(err) => throw new Exception("Could not calculate EUI Ratio!")
+      case a: ResidenceHall => log(sourceEUI * a.floorArea) * 15.717 / lookupPredictedEUI
+      case a: MedicalOffice => log(sourceEUI * a.floorArea) * 14.919 / lookupPredictedEUI
+      case a: GenericBuilding => throw new Exception("Could not calculate Target EUI Ratio - Generic Building: No Algorithm!")
+      case a: BaseLine => sourceEUI  / lookupPredictedEUI
+
     }
   }
 
   def computeLookupEUI[T](targetBuilding: T): Future[Double] = Future{
     targetBuilding match {
-      case JsSuccess(a: BaseLine, _) => a.expectedEnergy
-      case JsError(err) => throw new Exception("Actual EUI could not be computed!")
+      case a: GenericBuilding => throw new Exception("Lookup EUI could not be computed - Generic Building: No Algorithm!")
+      case a: BaseLine => a.expectedEnergy
     }
   }
 
@@ -263,10 +276,10 @@ case class EUIMetrics(parameters: JsValue) {
 
   def getTargetEUI[T](targetBuilding: T,lookupEUI:Double,targetRatio:Double):Future[Double] = Future {
     targetBuilding match {
-      case JsSuccess(a: ResidenceHall, _) => exp(targetRatio / 15.717 * lookupEUI) / a.floorArea
-      case JsSuccess(a: MedicalOffice, _) => exp(targetRatio / 14.919 * lookupEUI) / a.floorArea
-      case JsSuccess(a: BaseLine, _) => targetRatio * lookupEUI
-      case JsError(err) => throw new Exception("Could not calculate Target EUI!")
+      case a: ResidenceHall => exp(targetRatio / 15.717 * lookupEUI) / a.floorArea
+      case a: MedicalOffice => exp(targetRatio / 14.919 * lookupEUI) / a.floorArea
+      case a:GenericBuilding => throw new Exception("Could not calculate Target EUI - Generic Building: No Algorithm!!")
+      case a: BaseLine => targetRatio * lookupEUI
     }
   }
 
@@ -319,8 +332,8 @@ case class EUIMetrics(parameters: JsValue) {
     Future(r.getOrElse("Lookup Table Not Found"))
   }
 
-  def getBuilding(parameters: JsValue): Future[JsResult[BaseLine]] = Future{
-    parameters.asOpt[CountryBuildingType] match {
+  def getBuilding(parameters: JsValue): Future[BaseLine] = Future{
+    val building:JsResult[BaseLine] = parameters.asOpt[CountryBuildingType] match {
       case Some(CountryBuildingType("USA", "Office")) => parameters.validate[Office]
       case Some(CountryBuildingType("USA", "WorshipCenter")) => parameters.validate[WorshipCenter]
       case Some(CountryBuildingType("USA", "WastewaterCenter")) => parameters.validate[WastewaterCenter]
@@ -340,13 +353,13 @@ case class EUIMetrics(parameters: JsValue) {
       case Some(CountryBuildingType("Canada", "MedicalOffice")) => parameters.validate[CanadaMedicalOffice]
       case Some(CountryBuildingType("Canada", "K12School")) => parameters.validate[CanadaK12School]
       case Some(CountryBuildingType("Canada", "Hospital")) => parameters.validate[CanadaHospital]
-      case Some(_) => JsError("No matching building by country and type with ES algorithm!")
+      case Some(_) => parameters.validate[GenericBuilding]
       case None => JsError("Could not find country or buildingType fields with JSON")
     }
-/*    building match {
+    building match {
       case JsSuccess(a: BaseLine, _) => a
       case JsError(err) => throw new Exception("Building Type parameters fail validation!")
-    }*/
+    }
   }
 
 
@@ -608,6 +621,9 @@ case class GenericBuilding (GFA:PosDouble,areaUnits:String) extends BaseLine {
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
   val algorithm:String = "General"
   val regressionSegments = Seq[RegressionSegment]()
+}
+object GenericBuilding {
+  implicit val genericBuildingTypeRead: Reads[GenericBuilding] = Json.reads[GenericBuilding]
 }
 
 

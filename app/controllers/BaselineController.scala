@@ -23,15 +23,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait BaselineActions {
   this: Controller =>
 
-
+  implicit def roundDouble(d:Double):Double = roundAt(2)(d)
   implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(roundAt(1)(b.value))
-
   implicit def listEnergyToJSValue(v: List[Energy]): JsValue = Json.toJson(v.map{
     case e:Energy => roundAt(1)(e.value)
   })
 
-
-  implicit def roundDouble(d:Double):Double = roundAt(1)(d)
 
   def roundAt(p: Int)(n: Double): Double = { val s = math pow (10, p); (math round n * s) / s }
 
@@ -44,7 +41,7 @@ trait BaselineActions {
   def api(response: Any):Either[String, JsValue] = {
     response match {
       case v: Energy => Right(v)
-      case v: Double => Right(Json.toJson(roundAt(1)(v)))
+      case v: Double => Right(Json.toJson(roundAt(2)(v)))
       case v: Int => Right(Json.toJson(v))
       case v: List[Energy] => Right(v)
       case None => Left("Could not recognize input type")
