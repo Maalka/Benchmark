@@ -1,0 +1,42 @@
+{
+  "name": "semantic-ui-daterangepicker",
+  "version": "1.3.21",
+  "description": "Date range picker component for Semantic UI",
+  "main": "daterangepicker.js",
+  "style": "daterangepicker.css",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BreadMaker/semantic-ui-daterangepicker.git"
+  },
+  "author": {
+    "name": "Dan Grossman",
+    "email": "dan@dangrossman.info",
+    "url": "http://www.dangrossman.info"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BreadMaker/semantic-ui-daterangepicker/issues"
+  },
+  "homepage": "https://github.com/BreadMaker/semantic-ui-daterangepicker",
+  "engines": {
+    "node": "0.10.32",
+    "nmp": "1.4.28"
+  },
+  "dependencies": {
+    "jquery": "^1.10",
+    "moment": "^2.9.0"
+  },
+  "devDependencies": {
+    "del": "^1.2.0",
+    "gulp": "^3.9.0",
+    "gulp-jshint": "^1.11.0",
+    "gulp-minify-css": "^1.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-uglifyjs": "^0.6.2",
+    "jshint-stylish": "^2.0.1"
+  }
+}

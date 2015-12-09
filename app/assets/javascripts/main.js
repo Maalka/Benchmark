@@ -5,7 +5,7 @@
   // -- RequireJS config --
   requirejs.config({
     // Packages = top-level folders; loads a contained file named 'main.js"
-    packages: ['common', 'home', 'user', 'dashboard'],
+    packages: ['common', 'benchmark'],
     shim: {
       'jsRoutes': {
         deps: [],
@@ -19,7 +19,9 @@
       },
       'angular-route': ['angular'],
       'angular-cookies': ['angular'],
-      'bootstrap': ['jquery']
+      'semantic': ['angular'],
+      'semantic-daterangepicker': ['moment']
+      
     },
     paths: {
       'requirejs': ['../lib/requirejs/require'],
@@ -27,8 +29,10 @@
       'angular': ['../lib/angularjs/angular'],
       'angular-route': ['../lib/angularjs/angular-route'],
       'angular-cookies': ['../lib/angularjs/angular-cookies'],
-      'bootstrap': ['../lib/bootstrap/js/bootstrap'],
-      'jsRoutes': ['/jsroutes']
+      'semantic': ['../lib/semantic-ui/semantic'],
+      'jsRoutes': ['/jsroutes'],
+      'semantic-daterangepicker': './semantic-ui-daterangepicker/daterangepicker',
+      'moment': './semantic-ui-daterangepicker/moment'
     }
   });
 
@@ -37,7 +41,7 @@
   };
 
   // Load the app. This is kept minimal so it doesn't need much updating.
-  require(['angular', 'angular-cookies', 'angular-route', 'jquery', 'bootstrap', './app'],
+  require(['angular', 'angular-cookies', 'angular-route', 'jquery', 'semantic', './app'],
     function (angular) {
       angular.bootstrap(document, ['app']);
     }

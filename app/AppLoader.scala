@@ -17,12 +17,12 @@ class AppComponents(context: Context) extends BuiltInComponentsFromContext(conte
 
   lazy val applicationController = new controllers.Application(defaultCacheApi)
   lazy val baselineController = new controllers.BaselineController(defaultCacheApi)
-  lazy val usersController = new controllers.Users(defaultCacheApi)
+//  lazy val usersController = new controllers.Users(defaultCacheApi)
   lazy val assets = new controllers.Assets(httpErrorHandler)
 
   // Routes is a generated class
-  override def router: Router = new Routes(httpErrorHandler, applicationController, baselineController, usersController, assets)
-
+  //override def router: Router = new Routes(httpErrorHandler, applicationController, baselineController, usersController, assets)
+  override def router: Router = new Routes(httpErrorHandler, applicationController, baselineController, assets)
   val gzipFilter = new GzipFilter(shouldGzip =
     (request, response) => {
       val contentType = response.headers.get("Content-Type")
