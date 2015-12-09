@@ -2,6 +2,7 @@
 package models
 
 
+import akka.actor.FSM.->
 import squants.energy.{Gigajoules, KBtus, Energy}
 import squants.space._
 import scala.concurrent.Future
@@ -152,6 +153,7 @@ case class EUIMetrics(parameters: JsValue) {
       }
     } yield targetEUI
   }
+
 
   val percentBetterSourceEnergy:Future[Double] = {
     for {
@@ -1386,3 +1388,7 @@ case class DataCenter(annualITEnergyKwh:PosDouble, country:String, reportingUnit
 object DataCenter {
   implicit val dataCenterReads: Reads[DataCenter] = Json.reads[DataCenter]
 }
+
+
+
+
