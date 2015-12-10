@@ -1,5 +1,5 @@
 {
-  "Alabama": {
+  "AL": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -82,7 +82,7 @@
     "WorshipCenter": 0.599,
     "Zoo": 0.657
   },
-  "Alaska": {
+  "AK": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -166,7 +166,7 @@
     "Zoo": 0.586
   },
   
-  "Arizona": {
+  "AZ": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -250,7 +250,7 @@
     "Zoo": 0.586
   },
   
-  "Arkansas": {
+  "AR": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -334,7 +334,7 @@
     "Zoo": 0.657
   },
   
-  "California": {
+  "CA": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -418,7 +418,7 @@
     "Zoo": 0.586
   },
   
-  "Colorado": {
+  "CO": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -502,7 +502,7 @@
     "Zoo": 0.586
   },
   
-  "Connecticut": {
+  "CT": {
     "AdultEducation": 0.259,
     "AmbulatorySurgicalCenter": 0.395,
     "Aquarium": 0.22,
@@ -586,7 +586,7 @@
     "Zoo": 0.22
   },
   
-  "Delaware": {
+  "DE": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -754,7 +754,7 @@
     "Zoo": 0.657
   },
   
-  "Florida": {
+  "FL": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -838,7 +838,7 @@
     "Zoo": 0.657
   },
   
-  "Georgia": {
+  "GA": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -922,7 +922,7 @@
     "Zoo": 0.657
   },
   
-  "Hawaii": {
+  "HI": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -1006,7 +1006,7 @@
     "Zoo": 0.586
   },
   
-  "Idaho": {
+  "ID": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -1090,7 +1090,7 @@
     "Zoo": 0.586
   },
   
-  "Illinois": {
+  "IL": {
   
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
@@ -1175,7 +1175,7 @@
     "Zoo": 0.364
   },
   
-  "Indiana": {
+  "IN": {
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
     "Aquarium": 0.364,
@@ -1259,7 +1259,7 @@
     "Zoo": 0.364
   },
   
-  "Iowa": {
+  "IA": {
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
     "Aquarium": 0.364,
@@ -1343,7 +1343,7 @@
     "Zoo": 0.364
   },
   
-  "Kansas": {
+  "KS": {
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
     "Aquarium": 0.364,
@@ -1427,7 +1427,7 @@
     "Zoo": 0.364
   },
   
-  "Kentucky": {
+  "KY": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -1511,7 +1511,7 @@
     "Zoo": 0.657
   },
   
-  "Louisiana": {
+  "LA": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -1595,7 +1595,7 @@
     "Zoo": 0.657
   },
   
-  "Maine": {
+  "ME": {
     "AdultEducation": 0.259,
     "AmbulatorySurgicalCenter": 0.395,
     "Aquarium": 0.22,
@@ -1679,7 +1679,7 @@
     "Zoo": 0.22
   },
   
-  "Maryland": {
+  "MD": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -1763,7 +1763,7 @@
     "Zoo": 0.657
   },
   
-  "Massachusetts": {
+  "MA": {
     "AdultEducation": 0.259,
     "AmbulatorySurgicalCenter": 0.395,
     "Aquarium": 0.22,
@@ -1847,7 +1847,7 @@
     "Zoo": 0.22
   },
   
-  "Michigan": {
+  "MI": {
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
     "Aquarium": 0.364,
@@ -1931,7 +1931,7 @@
     "Zoo": 0.364
   },
   
-  "Minnesota": {
+  "MN": {
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
     "Aquarium": 0.364,
@@ -2015,7 +2015,7 @@
     "Zoo": 0.364
   },
   
-  "Mississippi": {
+  "MS": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -2099,7 +2099,7 @@
     "Zoo": 0.657
   },
   
-  "Missouri": {
+  "MO": {
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
     "Aquarium": 0.364,
@@ -2183,7 +2183,7 @@
     "Zoo": 0.364
   },
   
-  "Montana": {
+  "MT": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -2267,7 +2267,7 @@
     "Zoo": 0.586
   },
   
-  "Nebraska": {
+  "NE": {
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
     "Aquarium": 0.364,
@@ -2351,7 +2351,7 @@
     "Zoo": 0.364
   },
   
-  "Nevada": {
+  "NV": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -2435,7 +2435,7 @@
     "Zoo": 0.586
   },
   
-  "NewHampshire": {
+  "NH": {
     "AdultEducation": 0.259,
     "AmbulatorySurgicalCenter": 0.395,
     "Aquarium": 0.22,
@@ -2519,7 +2519,7 @@
     "Zoo": 0.22
   },
   
-  "NewJersey": {
+  "NJ": {
     "AdultEducation": 0.259,
     "AmbulatorySurgicalCenter": 0.395,
     "Aquarium": 0.22,
@@ -2603,7 +2603,7 @@
     "Zoo": 0.22
   },
   
-  "NewMexico": {
+  "NM": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -2687,7 +2687,7 @@
     "Zoo": 0.586
   },
   
-  "NewYork": {
+  "NY": {
     "AdultEducation": 0.259,
     "AmbulatorySurgicalCenter": 0.395,
     "Aquarium": 0.22,
@@ -2771,7 +2771,7 @@
     "Zoo": 0.22
   },
   
-  "NorthCarolina": {
+  "NC": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -2855,7 +2855,7 @@
     "Zoo": 0.657
   },
   
-  "NorthDakota": {
+  "ND": {
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
     "Aquarium": 0.364,
@@ -2939,7 +2939,7 @@
     "Zoo": 0.364
   },
   
-  "Ohio": {
+  "OH": {
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
     "Aquarium": 0.364,
@@ -3023,7 +3023,7 @@
     "Zoo": 0.364
   },
   
-  "Oklahoma": {
+  "OK": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -3107,7 +3107,7 @@
     "Zoo": 0.657
   },
   
-  "Oregon": {
+  "OR": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -3191,7 +3191,7 @@
     "Zoo": 0.586
   },
   
-  "Pennsylvania": {
+  "PA": {
     "AdultEducation": 0.259,
     "AmbulatorySurgicalCenter": 0.395,
     "Aquarium": 0.22,
@@ -3275,7 +3275,7 @@
     "Zoo": 0.22
   },
   
-  "RhodeIsland": {
+  "RI": {
     "AdultEducation": 0.259,
     "AmbulatorySurgicalCenter": 0.395,
     "Aquarium": 0.22,
@@ -3359,7 +3359,7 @@
     "Zoo": 0.22
   },
   
-  "SouthCarolina": {
+  "SC": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -3443,7 +3443,7 @@
     "Zoo": 0.657
   },
   
-  "SouthDakota": {
+  "SD": {
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
     "Aquarium": 0.364,
@@ -3527,7 +3527,7 @@
     "Zoo": 0.364
   },
   
-  "Tennessee": {
+  "TN": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -3611,7 +3611,7 @@
     "Zoo": 0.657
   },
   
-  "Texas": {
+  "TX": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -3695,7 +3695,7 @@
     "Zoo": 0.657
   },
   
-  "Utah": {
+  "UT": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -3779,7 +3779,7 @@
     "Zoo": 0.586
   },
   
-  "Vermont": {
+  "VT": {
     "AdultEducation": 0.259,
     "AmbulatorySurgicalCenter": 0.395,
     "Aquarium": 0.22,
@@ -3863,7 +3863,7 @@
     "Zoo": 0.22
   },
   
-  "Virginia": {
+  "VA": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -3947,7 +3947,7 @@
     "Zoo": 0.657
   },
   
-  "Washington": {
+  "WA": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,
@@ -4031,7 +4031,7 @@
     "Zoo": 0.586
   },
   
-  "WestVirginia": {
+  "WV": {
     "AdultEducation": 0.657,
     "AmbulatorySurgicalCenter": 0.758,
     "Aquarium": 0.657,
@@ -4115,7 +4115,7 @@
     "Zoo": 0.657
   },
   
-  "Wisconsin": {
+  "WI": {
     "AdultEducation": 0.312,
     "AmbulatorySurgicalCenter": 0.531,
     "Aquarium": 0.364,
@@ -4199,7 +4199,7 @@
     "Zoo": 0.364
   },
   
-  "Wyoming": {
+  "WY": {
     "AdultEducation": 0.45,
     "AmbulatorySurgicalCenter": 0.62,
     "Aquarium": 0.586,

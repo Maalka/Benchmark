@@ -52,7 +52,6 @@ trait BaselineActions {
     val getBaseline: EUIMetrics = EUIMetrics(request.body)
     val energyCalcs: EUICalculator = EUICalculator(request.body)
 
-
     val fieldNames = Seq(
       "ES", "sourceEUI", "siteEUI", "totalSourceEnergy", "totalSiteEnergy",
 
