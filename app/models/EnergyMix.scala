@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
  */
 object EnergyMix {
 
-  val energyMixTable = loadEnergyMixTable
+  lazy val energyMixTable = loadEnergyMixTable
 
   def loadEnergyMixTable: Future[JsValue] = {
     for {
