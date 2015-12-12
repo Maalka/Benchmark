@@ -83,10 +83,13 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
     "be valid" in successfulBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "/baseline/adult_education/expected/successful_baseline_no_energy_test.json")
     "ES be invalid" in errorFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "ES")
     "percentBetterSourceEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "percentBetterSourceEnergy").as[Double] mustBe 8617000
+      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "percentBetterSourceEnergy").as[Double] mustBe 9898000
     }
     "medianSourceEUI response be valid" in {
-      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "medianSourceEUI").as[Double] mustBe 123.1
+      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "medianSourceEUI").as[Double] mustBe 141.4
+    }
+    "medianSiteEUI response be valid" in {
+      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "medianSiteEUI").as[Double] mustBe 88.86
     }
     "ES response not be valid" in {
       errorValueBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "ES")

@@ -74,6 +74,7 @@
   "indoorOutdoor": null,
   "isOutdoorPool": null,
   "poolType": null,
+  "parkingAreaUnits": null, 
   
   "openParkingArea": null,
   "partiallyEnclosedParkingArea": null,

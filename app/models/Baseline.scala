@@ -2,6 +2,7 @@
 package models
 
 
+import akka.actor.FSM.->
 import squants.energy.{Gigajoules, KBtus, Energy}
 import squants.space._
 import scala.concurrent.Future
@@ -153,6 +154,7 @@ case class EUIMetrics(parameters: JsValue) {
     } yield targetEUI
   }
 
+
   val percentBetterSourceEnergy:Future[Double] = {
     for {
       buildingSize <- getBuildingSize(parameters)
@@ -207,11 +209,17 @@ case class EUIMetrics(parameters: JsValue) {
       }
     } yield ratio
 
-  local.recoverWith{case NonFatal(th) => Future.successful(0.05)}
+  local.recoverWith{case NonFatal(th) => defaultSiteToSourceRatio }
 
   }
 
-
+  def defaultSiteToSourceRatio:Future[Double] = {
+    for {
+      stateBuildingType <- getStateBuildingType(parameters)
+      statePropEnergyMix <- EnergyMix.getMix(stateBuildingType.state,stateBuildingType.buildingType)
+      defaultRatio <- EnergyMix.getDefaultRatio(statePropEnergyMix)
+    } yield defaultRatio
+  }
 
 
   def sourceEUInoPoolnoParking(sourceTotalEnergy:Energy, poolEnergy:Energy,
@@ -302,6 +310,13 @@ case class EUIMetrics(parameters: JsValue) {
         }
       }
     } yield obj
+  }
+
+  def getStateBuildingType(parameters: JsValue): Future[StateBuildingType] = Future{
+   parameters.asOpt[StateBuildingType] match {
+      case Some(a) => a
+      case _ => throw new Exception("Cannot find State and Building Type:")
+    }
   }
 
   def getLookupTable(parameters: JsValue): Future[String] = {
@@ -606,6 +621,14 @@ def reduce:Double = {
   //Console.println("a :" + a + " b: " + b + " c: " + c + " total: " + a * (c - b))
   a * (c - b) }
 }
+
+case class StateBuildingType(state: String, buildingType: String)
+
+object StateBuildingType {
+  implicit val stateBuildingTypeRead: Reads[StateBuildingType] = Json.reads[StateBuildingType]
+}
+
+
 /**
 * Class to manage the decomposing of Country and Building from the input JSON
 * @param country country that the building resides in
@@ -1386,3 +1409,7 @@ case class DataCenter(annualITEnergyKwh:PosDouble, country:String, reportingUnit
 object DataCenter {
   implicit val dataCenterReads: Reads[DataCenter] = Json.reads[DataCenter]
 }
+
+
+
+
