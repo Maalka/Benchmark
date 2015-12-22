@@ -1,440 +1,948 @@
 <div class="ui page">
-	<form class="ui form">
-	  <h4 class="ui dividing header">Shipping Information</h4>
+	<form class="ui form" name="baselineForm">
+	  <h4 class="ui dividing header"><i class="large world icon"></i>Geographical Information</h4>
+        <div class="ui segment" style="background-color:#f0f7fe">
 	  <div class="field">
-	    <label>Name</label>
-	    <div class="two fields">
-	      <div class="field">
-	        <input type="text" name="shipping[first-name]" placeholder="First Name">
-	      </div>
-	      <div class="field">
-	        <input type="text" name="shipping[last-name]" placeholder="Last Name">
-	      </div>
-	    </div>
+          <span>
+              <label>City/Municipality</label>
+              <label ng-show="cityRequired"><font color="red">[Required]</font></label>
+          </span>
+          <div class="field">
+              <div class="eight wide field">
+                  <input type="text" ng-model="propertyModel.city"
+                         required name="city" placeholder="City">
+              </div>
+          </div>
+          <span>
+              <label>Postal Code</label>
+              <label ng-show="postalCodeRequired"><font color="red">[Required]</font></label>
+              <label ng-show="baselineForm.postalCode.$error.number"><font color="red">[Must be Numeric]</font></label>
+          </span>
+          <div class="field">
+              <div class="eight wide field">
+                  <input type="number" ng-model="propertyModel.postalCode"
+                         required name="postalCode" min="0" placeholder="Postal Code">
+              </div>
+          </div>
 	  </div>
-	  <div class="field">
-	    <label>Billing Address</label>
-	    <div class="fields">
-	      <div class="twelve wide field">
-	        <input type="text" name="shipping[address]" placeholder="Street Address">
-	      </div>
-	      <div class="four wide field">
-	        <input type="text" name="shipping[address-2]" placeholder="Apt #">
-	      </div>
-	    </div>
-	  </div>
-	  <div class="two fields">
-	    <div class="field">
-	      <label>State</label>
-	      <select class="ui fluid dropdown">
-	        <option value="">State</option>
-	    <option value="AL">Alabama</option>
-	    <option value="AK">Alaska</option>
-	    <option value="AZ">Arizona</option>
-	    <option value="AR">Arkansas</option>
-	    <option value="CA">California</option>
-	    <option value="CO">Colorado</option>
-	    <option value="CT">Connecticut</option>
-	    <option value="DE">Delaware</option>
-	    <option value="DC">District Of Columbia</option>
-	    <option value="FL">Florida</option>
-	    <option value="GA">Georgia</option>
-	    <option value="HI">Hawaii</option>
-	    <option value="ID">Idaho</option>
-	    <option value="IL">Illinois</option>
-	    <option value="IN">Indiana</option>
-	    <option value="IA">Iowa</option>
-	    <option value="KS">Kansas</option>
-	    <option value="KY">Kentucky</option>
-	    <option value="LA">Louisiana</option>
-	    <option value="ME">Maine</option>
-	    <option value="MD">Maryland</option>
-	    <option value="MA">Massachusetts</option>
-	    <option value="MI">Michigan</option>
-	    <option value="MN">Minnesota</option>
-	    <option value="MS">Mississippi</option>
-	    <option value="MO">Missouri</option>
-	    <option value="MT">Montana</option>
-	    <option value="NE">Nebraska</option>
-	    <option value="NV">Nevada</option>
-	    <option value="NH">New Hampshire</option>
-	    <option value="NJ">New Jersey</option>
-	    <option value="NM">New Mexico</option>
-	    <option value="NY">New York</option>
-	    <option value="NC">North Carolina</option>
-	    <option value="ND">North Dakota</option>
-	    <option value="OH">Ohio</option>
-	    <option value="OK">Oklahoma</option>
-	    <option value="OR">Oregon</option>
-	    <option value="PA">Pennsylvania</option>
-	    <option value="RI">Rhode Island</option>
-	    <option value="SC">South Carolina</option>
-	    <option value="SD">South Dakota</option>
-	    <option value="TN">Tennessee</option>
-	    <option value="TX">Texas</option>
-	    <option value="UT">Utah</option>
-	    <option value="VT">Vermont</option>
-	    <option value="VA">Virginia</option>
-	    <option value="WA">Washington</option>
-	    <option value="WV">West Virginia</option>
-	    <option value="WI">Wisconsin</option>
-	    <option value="WY">Wyoming</option>
-	      </select>
-	    </div>
-	    <div class="field">
-	      <label>Country</label>
-	      <div class="ui fluid search selection dropdown">
-	        <input type="hidden" name="country">
-	        <i class="dropdown icon"></i>
-	        <div class="default text">Select Country</div>
-	        <div class="menu">
-	    <div class="item" data-value="af"><i class="af flag"></i>Afghanistan</div>
-	    <div class="item" data-value="ax"><i class="ax flag"></i>Aland Islands</div>
-	    <div class="item" data-value="al"><i class="al flag"></i>Albania</div>
-	    <div class="item" data-value="dz"><i class="dz flag"></i>Algeria</div>
-	    <div class="item" data-value="as"><i class="as flag"></i>American Samoa</div>
-	    <div class="item" data-value="ad"><i class="ad flag"></i>Andorra</div>
-	    <div class="item" data-value="ao"><i class="ao flag"></i>Angola</div>
-	    <div class="item" data-value="ai"><i class="ai flag"></i>Anguilla</div>
-	    <div class="item" data-value="ag"><i class="ag flag"></i>Antigua</div>
-	    <div class="item" data-value="ar"><i class="ar flag"></i>Argentina</div>
-	    <div class="item" data-value="am"><i class="am flag"></i>Armenia</div>
-	    <div class="item" data-value="aw"><i class="aw flag"></i>Aruba</div>
-	    <div class="item" data-value="au"><i class="au flag"></i>Australia</div>
-	    <div class="item" data-value="at"><i class="at flag"></i>Austria</div>
-	    <div class="item" data-value="az"><i class="az flag"></i>Azerbaijan</div>
-	    <div class="item" data-value="bs"><i class="bs flag"></i>Bahamas</div>
-	    <div class="item" data-value="bh"><i class="bh flag"></i>Bahrain</div>
-	    <div class="item" data-value="bd"><i class="bd flag"></i>Bangladesh</div>
-	    <div class="item" data-value="bb"><i class="bb flag"></i>Barbados</div>
-	    <div class="item" data-value="by"><i class="by flag"></i>Belarus</div>
-	    <div class="item" data-value="be"><i class="be flag"></i>Belgium</div>
-	    <div class="item" data-value="bz"><i class="bz flag"></i>Belize</div>
-	    <div class="item" data-value="bj"><i class="bj flag"></i>Benin</div>
-	    <div class="item" data-value="bm"><i class="bm flag"></i>Bermuda</div>
-	    <div class="item" data-value="bt"><i class="bt flag"></i>Bhutan</div>
-	    <div class="item" data-value="bo"><i class="bo flag"></i>Bolivia</div>
-	    <div class="item" data-value="ba"><i class="ba flag"></i>Bosnia</div>
-	    <div class="item" data-value="bw"><i class="bw flag"></i>Botswana</div>
-	    <div class="item" data-value="bv"><i class="bv flag"></i>Bouvet Island</div>
-	    <div class="item" data-value="br"><i class="br flag"></i>Brazil</div>
-	    <div class="item" data-value="vg"><i class="vg flag"></i>British Virgin Islands</div>
-	    <div class="item" data-value="bn"><i class="bn flag"></i>Brunei</div>
-	    <div class="item" data-value="bg"><i class="bg flag"></i>Bulgaria</div>
-	    <div class="item" data-value="bf"><i class="bf flag"></i>Burkina Faso</div>
-	    <div class="item" data-value="ar"><i class="ar flag"></i>Burma</div>
-	    <div class="item" data-value="bi"><i class="bi flag"></i>Burundi</div>
-	    <div class="item" data-value="tc"><i class="tc flag"></i>Caicos Islands</div>
-	    <div class="item" data-value="kh"><i class="kh flag"></i>Cambodia</div>
-	    <div class="item" data-value="cm"><i class="cm flag"></i>Cameroon</div>
-	    <div class="item" data-value="ca"><i class="ca flag"></i>Canada</div>
-	    <div class="item" data-value="cv"><i class="cv flag"></i>Cape Verde</div>
-	    <div class="item" data-value="ky"><i class="ky flag"></i>Cayman Islands</div>
-	    <div class="item" data-value="cf"><i class="cf flag"></i>Central African Republic</div>
-	    <div class="item" data-value="td"><i class="td flag"></i>Chad</div>
-	    <div class="item" data-value="cl"><i class="cl flag"></i>Chile</div>
-	    <div class="item" data-value="cn"><i class="cn flag"></i>China</div>
-	    <div class="item" data-value="cx"><i class="cx flag"></i>Christmas Island</div>
-	    <div class="item" data-value="cc"><i class="cc flag"></i>Cocos Islands</div>
-	    <div class="item" data-value="co"><i class="co flag"></i>Colombia</div>
-	    <div class="item" data-value="km"><i class="km flag"></i>Comoros</div>
-	    <div class="item" data-value="cg"><i class="cg flag"></i>Congo Brazzaville</div>
-	    <div class="item" data-value="cd"><i class="cd flag"></i>Congo</div>
-	    <div class="item" data-value="ck"><i class="ck flag"></i>Cook Islands</div>
-	    <div class="item" data-value="cr"><i class="cr flag"></i>Costa Rica</div>
-	    <div class="item" data-value="ci"><i class="ci flag"></i>Cote Divoire</div>
-	    <div class="item" data-value="hr"><i class="hr flag"></i>Croatia</div>
-	    <div class="item" data-value="cu"><i class="cu flag"></i>Cuba</div>
-	    <div class="item" data-value="cy"><i class="cy flag"></i>Cyprus</div>
-	    <div class="item" data-value="cz"><i class="cz flag"></i>Czech Republic</div>
-	    <div class="item" data-value="dk"><i class="dk flag"></i>Denmark</div>
-	    <div class="item" data-value="dj"><i class="dj flag"></i>Djibouti</div>
-	    <div class="item" data-value="dm"><i class="dm flag"></i>Dominica</div>
-	    <div class="item" data-value="do"><i class="do flag"></i>Dominican Republic</div>
-	    <div class="item" data-value="ec"><i class="ec flag"></i>Ecuador</div>
-	    <div class="item" data-value="eg"><i class="eg flag"></i>Egypt</div>
-	    <div class="item" data-value="sv"><i class="sv flag"></i>El Salvador</div>
-	    <div class="item" data-value="gb"><i class="gb flag"></i>England</div>
-	    <div class="item" data-value="gq"><i class="gq flag"></i>Equatorial Guinea</div>
-	    <div class="item" data-value="er"><i class="er flag"></i>Eritrea</div>
-	    <div class="item" data-value="ee"><i class="ee flag"></i>Estonia</div>
-	    <div class="item" data-value="et"><i class="et flag"></i>Ethiopia</div>
-	    <div class="item" data-value="eu"><i class="eu flag"></i>European Union</div>
-	    <div class="item" data-value="fk"><i class="fk flag"></i>Falkland Islands</div>
-	    <div class="item" data-value="fo"><i class="fo flag"></i>Faroe Islands</div>
-	    <div class="item" data-value="fj"><i class="fj flag"></i>Fiji</div>
-	    <div class="item" data-value="fi"><i class="fi flag"></i>Finland</div>
-	    <div class="item" data-value="fr"><i class="fr flag"></i>France</div>
-	    <div class="item" data-value="gf"><i class="gf flag"></i>French Guiana</div>
-	    <div class="item" data-value="pf"><i class="pf flag"></i>French Polynesia</div>
-	    <div class="item" data-value="tf"><i class="tf flag"></i>French Territories</div>
-	    <div class="item" data-value="ga"><i class="ga flag"></i>Gabon</div>
-	    <div class="item" data-value="gm"><i class="gm flag"></i>Gambia</div>
-	    <div class="item" data-value="ge"><i class="ge flag"></i>Georgia</div>
-	    <div class="item" data-value="de"><i class="de flag"></i>Germany</div>
-	    <div class="item" data-value="gh"><i class="gh flag"></i>Ghana</div>
-	    <div class="item" data-value="gi"><i class="gi flag"></i>Gibraltar</div>
-	    <div class="item" data-value="gr"><i class="gr flag"></i>Greece</div>
-	    <div class="item" data-value="gl"><i class="gl flag"></i>Greenland</div>
-	    <div class="item" data-value="gd"><i class="gd flag"></i>Grenada</div>
-	    <div class="item" data-value="gp"><i class="gp flag"></i>Guadeloupe</div>
-	    <div class="item" data-value="gu"><i class="gu flag"></i>Guam</div>
-	    <div class="item" data-value="gt"><i class="gt flag"></i>Guatemala</div>
-	    <div class="item" data-value="gw"><i class="gw flag"></i>Guinea-Bissau</div>
-	    <div class="item" data-value="gn"><i class="gn flag"></i>Guinea</div>
-	    <div class="item" data-value="gy"><i class="gy flag"></i>Guyana</div>
-	    <div class="item" data-value="ht"><i class="ht flag"></i>Haiti</div>
-	    <div class="item" data-value="hm"><i class="hm flag"></i>Heard Island</div>
-	    <div class="item" data-value="hn"><i class="hn flag"></i>Honduras</div>
-	    <div class="item" data-value="hk"><i class="hk flag"></i>Hong Kong</div>
-	    <div class="item" data-value="hu"><i class="hu flag"></i>Hungary</div>
-	    <div class="item" data-value="is"><i class="is flag"></i>Iceland</div>
-	    <div class="item" data-value="in"><i class="in flag"></i>India</div>
-	    <div class="item" data-value="io"><i class="io flag"></i>Indian Ocean Territory</div>
-	    <div class="item" data-value="id"><i class="id flag"></i>Indonesia</div>
-	    <div class="item" data-value="ir"><i class="ir flag"></i>Iran</div>
-	    <div class="item" data-value="iq"><i class="iq flag"></i>Iraq</div>
-	    <div class="item" data-value="ie"><i class="ie flag"></i>Ireland</div>
-	    <div class="item" data-value="il"><i class="il flag"></i>Israel</div>
-	    <div class="item" data-value="it"><i class="it flag"></i>Italy</div>
-	    <div class="item" data-value="jm"><i class="jm flag"></i>Jamaica</div>
-	    <div class="item" data-value="jp"><i class="jp flag"></i>Japan</div>
-	    <div class="item" data-value="jo"><i class="jo flag"></i>Jordan</div>
-	    <div class="item" data-value="kz"><i class="kz flag"></i>Kazakhstan</div>
-	    <div class="item" data-value="ke"><i class="ke flag"></i>Kenya</div>
-	    <div class="item" data-value="ki"><i class="ki flag"></i>Kiribati</div>
-	    <div class="item" data-value="kw"><i class="kw flag"></i>Kuwait</div>
-	    <div class="item" data-value="kg"><i class="kg flag"></i>Kyrgyzstan</div>
-	    <div class="item" data-value="la"><i class="la flag"></i>Laos</div>
-	    <div class="item" data-value="lv"><i class="lv flag"></i>Latvia</div>
-	    <div class="item" data-value="lb"><i class="lb flag"></i>Lebanon</div>
-	    <div class="item" data-value="ls"><i class="ls flag"></i>Lesotho</div>
-	    <div class="item" data-value="lr"><i class="lr flag"></i>Liberia</div>
-	    <div class="item" data-value="ly"><i class="ly flag"></i>Libya</div>
-	    <div class="item" data-value="li"><i class="li flag"></i>Liechtenstein</div>
-	    <div class="item" data-value="lt"><i class="lt flag"></i>Lithuania</div>
-	    <div class="item" data-value="lu"><i class="lu flag"></i>Luxembourg</div>
-	    <div class="item" data-value="mo"><i class="mo flag"></i>Macau</div>
-	    <div class="item" data-value="mk"><i class="mk flag"></i>Macedonia</div>
-	    <div class="item" data-value="mg"><i class="mg flag"></i>Madagascar</div>
-	    <div class="item" data-value="mw"><i class="mw flag"></i>Malawi</div>
-	    <div class="item" data-value="my"><i class="my flag"></i>Malaysia</div>
-	    <div class="item" data-value="mv"><i class="mv flag"></i>Maldives</div>
-	    <div class="item" data-value="ml"><i class="ml flag"></i>Mali</div>
-	    <div class="item" data-value="mt"><i class="mt flag"></i>Malta</div>
-	    <div class="item" data-value="mh"><i class="mh flag"></i>Marshall Islands</div>
-	    <div class="item" data-value="mq"><i class="mq flag"></i>Martinique</div>
-	    <div class="item" data-value="mr"><i class="mr flag"></i>Mauritania</div>
-	    <div class="item" data-value="mu"><i class="mu flag"></i>Mauritius</div>
-	    <div class="item" data-value="yt"><i class="yt flag"></i>Mayotte</div>
-	    <div class="item" data-value="mx"><i class="mx flag"></i>Mexico</div>
-	    <div class="item" data-value="fm"><i class="fm flag"></i>Micronesia</div>
-	    <div class="item" data-value="md"><i class="md flag"></i>Moldova</div>
-	    <div class="item" data-value="mc"><i class="mc flag"></i>Monaco</div>
-	    <div class="item" data-value="mn"><i class="mn flag"></i>Mongolia</div>
-	    <div class="item" data-value="me"><i class="me flag"></i>Montenegro</div>
-	    <div class="item" data-value="ms"><i class="ms flag"></i>Montserrat</div>
-	    <div class="item" data-value="ma"><i class="ma flag"></i>Morocco</div>
-	    <div class="item" data-value="mz"><i class="mz flag"></i>Mozambique</div>
-	    <div class="item" data-value="na"><i class="na flag"></i>Namibia</div>
-	    <div class="item" data-value="nr"><i class="nr flag"></i>Nauru</div>
-	    <div class="item" data-value="np"><i class="np flag"></i>Nepal</div>
-	    <div class="item" data-value="an"><i class="an flag"></i>Netherlands Antilles</div>
-	    <div class="item" data-value="nl"><i class="nl flag"></i>Netherlands</div>
-	    <div class="item" data-value="nc"><i class="nc flag"></i>New Caledonia</div>
-	    <div class="item" data-value="pg"><i class="pg flag"></i>New Guinea</div>
-	    <div class="item" data-value="nz"><i class="nz flag"></i>New Zealand</div>
-	    <div class="item" data-value="ni"><i class="ni flag"></i>Nicaragua</div>
-	    <div class="item" data-value="ne"><i class="ne flag"></i>Niger</div>
-	    <div class="item" data-value="ng"><i class="ng flag"></i>Nigeria</div>
-	    <div class="item" data-value="nu"><i class="nu flag"></i>Niue</div>
-	    <div class="item" data-value="nf"><i class="nf flag"></i>Norfolk Island</div>
-	    <div class="item" data-value="kp"><i class="kp flag"></i>North Korea</div>
-	    <div class="item" data-value="mp"><i class="mp flag"></i>Northern Mariana Islands</div>
-	    <div class="item" data-value="no"><i class="no flag"></i>Norway</div>
-	    <div class="item" data-value="om"><i class="om flag"></i>Oman</div>
-	    <div class="item" data-value="pk"><i class="pk flag"></i>Pakistan</div>
-	    <div class="item" data-value="pw"><i class="pw flag"></i>Palau</div>
-	    <div class="item" data-value="ps"><i class="ps flag"></i>Palestine</div>
-	    <div class="item" data-value="pa"><i class="pa flag"></i>Panama</div>
-	    <div class="item" data-value="py"><i class="py flag"></i>Paraguay</div>
-	    <div class="item" data-value="pe"><i class="pe flag"></i>Peru</div>
-	    <div class="item" data-value="ph"><i class="ph flag"></i>Philippines</div>
-	    <div class="item" data-value="pn"><i class="pn flag"></i>Pitcairn Islands</div>
-	    <div class="item" data-value="pl"><i class="pl flag"></i>Poland</div>
-	    <div class="item" data-value="pt"><i class="pt flag"></i>Portugal</div>
-	    <div class="item" data-value="pr"><i class="pr flag"></i>Puerto Rico</div>
-	    <div class="item" data-value="qa"><i class="qa flag"></i>Qatar</div>
-	    <div class="item" data-value="re"><i class="re flag"></i>Reunion</div>
-	    <div class="item" data-value="ro"><i class="ro flag"></i>Romania</div>
-	    <div class="item" data-value="ru"><i class="ru flag"></i>Russia</div>
-	    <div class="item" data-value="rw"><i class="rw flag"></i>Rwanda</div>
-	    <div class="item" data-value="sh"><i class="sh flag"></i>Saint Helena</div>
-	    <div class="item" data-value="kn"><i class="kn flag"></i>Saint Kitts and Nevis</div>
-	    <div class="item" data-value="lc"><i class="lc flag"></i>Saint Lucia</div>
-	    <div class="item" data-value="pm"><i class="pm flag"></i>Saint Pierre</div>
-	    <div class="item" data-value="vc"><i class="vc flag"></i>Saint Vincent</div>
-	    <div class="item" data-value="ws"><i class="ws flag"></i>Samoa</div>
-	    <div class="item" data-value="sm"><i class="sm flag"></i>San Marino</div>
-	    <div class="item" data-value="gs"><i class="gs flag"></i>Sandwich Islands</div>
-	    <div class="item" data-value="st"><i class="st flag"></i>Sao Tome</div>
-	    <div class="item" data-value="sa"><i class="sa flag"></i>Saudi Arabia</div>
-	    <div class="item" data-value="sn"><i class="sn flag"></i>Senegal</div>
-	    <div class="item" data-value="cs"><i class="cs flag"></i>Serbia</div>
-	    <div class="item" data-value="rs"><i class="rs flag"></i>Serbia</div>
-	    <div class="item" data-value="sc"><i class="sc flag"></i>Seychelles</div>
-	    <div class="item" data-value="sl"><i class="sl flag"></i>Sierra Leone</div>
-	    <div class="item" data-value="sg"><i class="sg flag"></i>Singapore</div>
-	    <div class="item" data-value="sk"><i class="sk flag"></i>Slovakia</div>
-	    <div class="item" data-value="si"><i class="si flag"></i>Slovenia</div>
-	    <div class="item" data-value="sb"><i class="sb flag"></i>Solomon Islands</div>
-	    <div class="item" data-value="so"><i class="so flag"></i>Somalia</div>
-	    <div class="item" data-value="za"><i class="za flag"></i>South Africa</div>
-	    <div class="item" data-value="kr"><i class="kr flag"></i>South Korea</div>
-	    <div class="item" data-value="es"><i class="es flag"></i>Spain</div>
-	    <div class="item" data-value="lk"><i class="lk flag"></i>Sri Lanka</div>
-	    <div class="item" data-value="sd"><i class="sd flag"></i>Sudan</div>
-	    <div class="item" data-value="sr"><i class="sr flag"></i>Suriname</div>
-	    <div class="item" data-value="sj"><i class="sj flag"></i>Svalbard</div>
-	    <div class="item" data-value="sz"><i class="sz flag"></i>Swaziland</div>
-	    <div class="item" data-value="se"><i class="se flag"></i>Sweden</div>
-	    <div class="item" data-value="ch"><i class="ch flag"></i>Switzerland</div>
-	    <div class="item" data-value="sy"><i class="sy flag"></i>Syria</div>
-	    <div class="item" data-value="tw"><i class="tw flag"></i>Taiwan</div>
-	    <div class="item" data-value="tj"><i class="tj flag"></i>Tajikistan</div>
-	    <div class="item" data-value="tz"><i class="tz flag"></i>Tanzania</div>
-	    <div class="item" data-value="th"><i class="th flag"></i>Thailand</div>
-	    <div class="item" data-value="tl"><i class="tl flag"></i>Timorleste</div>
-	    <div class="item" data-value="tg"><i class="tg flag"></i>Togo</div>
-	    <div class="item" data-value="tk"><i class="tk flag"></i>Tokelau</div>
-	    <div class="item" data-value="to"><i class="to flag"></i>Tonga</div>
-	    <div class="item" data-value="tt"><i class="tt flag"></i>Trinidad</div>
-	    <div class="item" data-value="tn"><i class="tn flag"></i>Tunisia</div>
-	    <div class="item" data-value="tr"><i class="tr flag"></i>Turkey</div>
-	    <div class="item" data-value="tm"><i class="tm flag"></i>Turkmenistan</div>
-	    <div class="item" data-value="tv"><i class="tv flag"></i>Tuvalu</div>
-	    <div class="item" data-value="ug"><i class="ug flag"></i>Uganda</div>
-	    <div class="item" data-value="ua"><i class="ua flag"></i>Ukraine</div>
-	    <div class="item" data-value="ae"><i class="ae flag"></i>United Arab Emirates</div>
-	    <div class="item" data-value="us"><i class="us flag"></i>United States</div>
-	    <div class="item" data-value="uy"><i class="uy flag"></i>Uruguay</div>
-	    <div class="item" data-value="um"><i class="um flag"></i>Us Minor Islands</div>
-	    <div class="item" data-value="vi"><i class="vi flag"></i>Us Virgin Islands</div>
-	    <div class="item" data-value="uz"><i class="uz flag"></i>Uzbekistan</div>
-	    <div class="item" data-value="vu"><i class="vu flag"></i>Vanuatu</div>
-	    <div class="item" data-value="va"><i class="va flag"></i>Vatican City</div>
-	    <div class="item" data-value="ve"><i class="ve flag"></i>Venezuela</div>
-	    <div class="item" data-value="vn"><i class="vn flag"></i>Vietnam</div>
-	    <div class="item" data-value="wf"><i class="wf flag"></i>Wallis and Futuna</div>
-	    <div class="item" data-value="eh"><i class="eh flag"></i>Western Sahara</div>
-	    <div class="item" data-value="ye"><i class="ye flag"></i>Yemen</div>
-	    <div class="item" data-value="zm"><i class="zm flag"></i>Zambia</div>
-	    <div class="item" data-value="zw"><i class="zw flag"></i>Zimbabwe</div>
-	  </div>
-	      </div>
-	    </div>
-	  </div>
-	  <h4 class="ui dividing header">Billing Information</h4>
-	  <div class="field">
-	    <label>Card Type</label>
-	    <div class="ui selection dropdown">
-	      <input type="hidden" name="card[type]">
-	      <div class="default text">Type</div>
-	      <i class="dropdown icon"></i>
-	      <div class="menu">
-	        <div class="item" data-value="visa">
-	          <i class="visa icon"></i>
-	          Visa
-	        </div>
-	        <div class="item" data-value="amex">
-	          <i class="amex icon"></i>
-	          American Express
-	        </div>
-	        <div class="item" data-value="discover">
-	          <i class="discover icon"></i>
-	          Discover
-	        </div>
-	      </div>
-	    </div>
-	  </div>
-	  <div class="fields">
-	    <div class="seven wide field">
-	      <label>Card Number</label>
-	      <input type="text" name="card[number]" maxlength="16" placeholder="Card #">
-	    </div>
-	    <div class="three wide field">
-	      <label>CVC</label>
-	      <input type="text" name="card[cvc]" maxlength="3" placeholder="CVC">
-	    </div>
-	    <div class="six wide field">
-	      <label>Expiration</label>
-	      <div class="two fields">
-	        <div class="field">
-	          <select class="ui fluid search dropdown" name="card[expire-month]">
-	            <option value="">Month</option>
-	            <option value="1">January</option>
-	            <option value="2">February</option>
-	            <option value="3">March</option>
-	            <option value="4">April</option>
-	            <option value="5">May</option>
-	            <option value="6">June</option>
-	            <option value="7">July</option>
-	            <option value="8">August</option>
-	            <option value="9">September</option>
-	            <option value="10">October</option>
-	            <option value="11">November</option>
-	            <option value="12">December</option>
-	          </select>
-	        </div>
-	        <div class="field">
-	          <input type="text" name="card[expire-year]" maxlength="4" placeholder="Year">
-	        </div>
-	      </div>
-	    </div>
-	  </div>
-	   <h4 class="ui dividing header">Receipt</h4>
-	   <div class="field">
-	    <label>Send Receipt To:</label>
-	    <div class="ui fluid multiple search selection dropdown">
-	      <input type="hidden" name="receipt">
-	      <i class="dropdown icon"></i>
-	      <div class="default text">Saved Contacts</div>
-	      <div class="menu">
-	        <div class="item" data-value="jenny" data-text="Jenny">
-	          <img class="ui mini avatar image" src="/images/avatar/small/jenny.jpg">
-	          Jenny Hess
-	        </div>
-	        <div class="item" data-value="elliot" data-text="Elliot">
-	          <img class="ui mini avatar image" src="/images/avatar/small/elliot.jpg">
-	          Elliot Fu
-	        </div>
-	        <div class="item" data-value="stevie" data-text="Stevie">
-	          <img class="ui mini avatar image" src="/images/avatar/small/stevie.jpg">
-	          Stevie Feliciano
-	        </div>
-	        <div class="item" data-value="christian" data-text="Christian">
-	          <img class="ui mini avatar image" src="/images/avatar/small/christian.jpg">
-	          Christian
-	        </div>
-	        <div class="item" data-value="matt" data-text="Matt">
-	          <img class="ui mini avatar image" src="/images/avatar/small/matt.jpg">
-	          Matt
-	        </div>
-	        <div class="item" data-value="justen" data-text="Justen">
-	          <img class="ui mini avatar image" src="/images/avatar/small/justen.jpg">
-	          Justen Kitsune
-	        </div>
-	      </div>
-	    </div>
-	  </div>
-	   <div class="ui segment">
-	    <div class="field">
-	      <div class="ui toggle checkbox">
-	        <input type="checkbox" name="gift" tabindex="0" class="hidden">
-	        <label>Do not include a receipt in the package</label>
-	      </div>
-	    </div>
-	  </div>
-	  <div class="ui button" tabindex="0" ng-click="submit()">Submit Order</div>
+
+        <div class="field">
+            <span>
+                <label>Country</label>
+                <label ng-show="countryRequired"><font color="red">[Required]</font></label>
+            </span>
+            <div class="eight wide field">
+                <select class="ui dropdown search"
+                        dropdown
+                        ng-model="propertyModel.country"
+                        ng-options="item.id as item.name for item in geographicProperties.country"
+                        required
+                        name="country">
+                </select>
+            </div>
+        </div>
+
+        <div class="field">
+            <span>
+                <label>State/Province</label>
+                <label ng-show="stateRequired"><font color="red">[Required]</font></label>
+            </span>
+            <div class="eight wide field">
+                <select class="ui dropdown search"
+                        dropdown
+                        ng-model="propertyModel.state"
+                        ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: propertyModel.country}"
+                        required
+                        name="state">
+                </select>
+            </div>
+            </div>
+    </div>
+
+	  <h4 class="ui dividing header"><i class="building icon"></i>Building Information</h4>
+
+        <div class="ui segment" style="background-color:#f0f7fe">
+
+        <div class="field">
+            <span>
+                <label>Primary Function of Building</label>
+                <label ng-show="buildingTypeRequired"><font color="red">[Required]</font></label>
+            </span>
+            <div class="eight wide field">
+                <select class="ui dropdown search"
+                        dropdown
+                        ng-model="propertyModel.buildingType"
+                        ng-options="item.id as item.name for item in buildingProperties.buildingType"
+                        required name="buildingType">
+                    <option value="">Select</option>
+                </select>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="six wide field">
+                <span>
+                    <label>Gross Floor Area</label>
+                    <label ng-show="GFARequired"><font color="red">[Required]</font></label>
+                    <label ng-show="baselineForm.GFA.$error.number"><font color="red">[Must Be Number]</font></label>
+                </span>
+
+                <input type="number" ng-model="propertyModel.GFA"
+                     name="GFA"
+                     required
+                     min="0"
+                     placeholder="GFA">
+            </div>
+            <div class="four wide field">
+                <span>
+                    <label>Area Units</label>
+                    <label ng-show="areaUnitsRequired"><font color="red">[Required]</font></label>
+                </span>
+
+              <select class="ui dropdown search"
+                dropdown
+                ng-model="propertyModel.areaUnits"
+                ng-options="item.id as item.name for item in buildingProperties.areaUnits"
+                required name="areaUnits">
+                <option value="">Select</option>
+              </select>
+            </div>
+            <br>
+        </div>
+
+        <!--Checkbox entries-->
+        <div class="inline fields" ng-show="hasAlgo">
+            <div class="field">
+                <input type="checkbox" ng-model="defaultValues" name="defaultValues" ng-true-value=true ng-false-value=false>
+                <label>I want to use default values for my building parameters.</label>
+                <label ng-show="!baselineForm.GFA.$valid || !baselineForm.areaUnits.$valid" style="color:red">[Must enter Gross Floor Area to enable Default Values]</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showIsSmallBank">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.isSmallBank" ng-init="propertyModel.isSmallBank=false"
+                       ng-true-value=true ng-false-value=false>
+                <label>Property is a Small Bank (Y/N)</label>
+            </div>
+        </div>
+
+        <div class="inline fields" ng-show="showIsOpenAllWeekdays">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.isOpenAllWeekdays"
+                       ng-true-value=true ng-false-value=false name="isOpenAllWeekdays" ng-init="propertyModel.isOpenAllWeekdays=false">
+            </div>
+            <div class="four wide field">
+                <label>Is open All Weekdays (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showHasFoodPreparation">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.hasFoodPreparation"
+                       ng-true-value=true ng-false-value=false name="hasFoodPreparation" ng-init="propertyModel.hasFoodPreparation=false">
+            </div>
+            <div class="four wide field">
+                <label>Has Food Preparation (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showIsWarehouseRefrigerated">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.isWarehouseRefrigerated"
+                       ng-true-value=true ng-false-value=false name="isWarehouseRefrigerated" ng-init="propertyModel.isWarehouseRefrigerated=false">
+            </div>
+            <div class="four wide field">
+                <label>Is the Warehouse Refrigerated?</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showHasCooking">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.hasCooking"
+                       ng-true-value=true ng-false-value=false name="hasCooking" ng-init="propertyModel.hasCooking=false">
+            </div>
+            <div class="four wide field">
+                <label>Facility Has Cooking (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showIsSecondarySchool">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.isSecondarySchool"
+                       ng-true-value=true ng-false-value=false name="isSecondarySchool" ng-init="propertyModel.isSecondarySchool=false">
+            </div>
+            <div class="four wide field">
+                <label>Property is a Secondary School (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showIsHighSchool">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.isHighSchool"
+                       ng-true-value=true ng-false-value=false name="isHighSchool" ng-init="propertyModel.isHighSchool=false">
+            </div>
+            <div class="four wide field">
+                <label>Property is a High School (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showIsOpenWeekends">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.isOpenWeekends"
+                       ng-true-value=true ng-false-value=false name="isOpenWeekends" ng-init="propertyModel.isOpenWeekends=false">
+            </div>
+            <div class="four wide field">
+                <label>Property is Open Weekends (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showHasLaundryFacility">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.hasLaundryFacility"
+                       ng-true-value=true ng-false-value=false name="hasLaundryFacility" ng-init="propertyModel.hasLaundryFacility=false">
+            </div>
+            <div class="four wide field">
+                <label>Has Laundry Facility (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showHasPool">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.hasPool"
+                       ng-true-value=true ng-false-value=false name="hasPool" ng-init="propertyModel.hasPool=false">
+            </div>
+            <div class="four wide field">
+                <label>Has Pool (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showHasParking">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.hasParking"
+                       ng-true-value=true ng-false-value=false name="hasParking" ng-init="propertyModel.hasParking=false">
+            </div>
+            <div class="four wide field">
+                <label>Has Parking (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showIndoorOutdoor">
+
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.indoorOutdoor"
+                       ng-true-value=true ng-false-value=false name="indoorOutdoor" ng-init="propertyModel.indoorOutdoor=false">
+            </div>
+            <div class="four wide field">
+                <label>Is an Indoor/Outdoor Pool (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showIsOutdoorPool">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.isOutdoorPool"
+                       ng-true-value=true ng-false-value=false name="isOutdoorPool" ng-init="propertyModel.isOutdoorPool=false">
+            </div>
+            <div class="four wide field">
+                <label>Is Outdoor Pool (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showWastewaterHasNutrientRemoval">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.wastewaterHasNutrientRemoval"
+                       ng-true-value=true ng-false-value=false name="wastewaterHasNutrientRemoval" ng-init="propertyModel.wastewaterHasNutrientRemoval=false">
+            </div>
+            <div class="four wide field">
+                <label>Has Nutrient Removal (Y/N)</label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showWastewaterHasTrickleFiltration">
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.wastewaterHasTrickleFiltration"
+                       ng-true-value=true ng-false-value=false name="wastewaterHasTrickleFiltration" ng-init="propertyModel.wastewaterHasTrickleFiltration=false">
+            </div>
+            <div class="four wide field">
+                <label>Has Trickle Filtration (Y/N)</label>
+            </div>
+        </div>
+
+
+        <!--User Input Entries-->
+        <div class="inline fields" ng-show="showPoolType">
+            <div class="four wide field">
+                <input type="text" ng-model="propertyModel.poolType" ng-required="showPoolType"
+                       name="poolType" maxlength="8" placeholder="poolType">
+            </div>
+            <div class="field">
+                <label>Pool Type</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.poolType.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showAnnualITEnergyKwh">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.annualITEnergyKwh"
+                       ng-required="showAnnualITEnergyKwhOrDefault" name="annualITEnergyKwh" min="0" placeholder="annualITEnergyKwh">
+            </div>
+            <div class="field">
+                <label>Annual IT Energy (kWh)</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.annualITEnergyKwh.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="seatingCapacity">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.seatingCapacity"
+                       ng-required="showSeatingCapacity" name="seatingCapacity" min="0" placeholder="seatingCapacity">
+            </div>
+            <div class="field">
+                <label>Seating Capacity</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.seatingCapacity.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showWeeklyOperatingHours">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.weeklyOperatingHours"
+                       ng-required="showWeeklyOperatingHours" name="weeklyOperatingHours" min="0" placeholder="weeklyOperatingHours">
+            </div>
+            <div class="field">
+                <label>Number of Weekly Operating Hours</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.weeklyOperatingHours.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="numComputers">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numComputers"
+                       ng-required="showNumComputers" name="numComputers" min="0" placeholder="numComputers">
+            </div>
+            <div class="field">
+                <label>Number of Computers</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numComputers.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumServers">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numServers"
+                       ng-required="showNumServers" name="numServers" min="0" placeholder="numServers">
+            </div>
+            <div class="field">
+                <label>Number of Servers</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numServers.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumRefrUnits">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numRefrUnits"
+                       ng-required="showNumRefrUnits" name="numRefrUnits" min="0" placeholder="numRefrUnits">
+            </div>
+            <div class="field">
+                <label>Number of Refrigerator Units</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numRefrUnits.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumWorkersMainShift">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numWorkersMainShift"
+                       ng-required="showNumWorkersMainShift" name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
+            </div>
+            <div class="field">
+                <label>Number of Workers on Main Shift</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numWorkersMainShift.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumWalkinRefrUnits">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numWalkinRefrUnits"
+                       ng-required="showBumWalkinRefrUnits" name="numWalkinRefrUnits" min="0" placeholder="numWalkinRefrUnits">
+            </div>
+            <div class="field">
+                <label>Number of Walk-in Refrigeration Units</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numWalkinRefrUnits.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumCashRegisters">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numCashRegisters"
+                       ng-required="numCashRegisters" name="numCashRegisters" min="0" placeholder="numCashRegisters">
+            </div>
+            <div class="field">
+                <label>Number of Cash Registers</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numCashRegisters.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showLengthRefrFoodDisplayCases">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.lengthRefrFoodDisplayCases"
+                       ng-required="showLengthRefrFoodDisplayCases" name="lengthRefrFoodDisplayCases" min="0" placeholder="lengthRefrFoodDisplayCases">
+            </div>
+            <div class="field">
+                <label>Length of Refrigerated Food Display Cases</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.lengthRefrFoodDisplayCases.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+
+        <div class="inline fields" ng-show="showAvgNumResidents">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.avgNumResidents"
+                       ng-required="showAvgNumResidents" name="avgNumResidents" min="0" placeholder="avgNumResidents">
+            </div>
+            <div class="field">
+                <label>Average Number of Residents</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.avgNumResidents.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showMaxNumResidents">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.maxNumResidents"
+                       ng-required="showMaxNumResidents" name="maxNumResidents" min="0" placeholder="maxNumResidents">
+            </div>
+            <div class="field">
+                <label>Maximum Number of Residents</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.maxNumResidents.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumRezUnits">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numRezUnits"
+                       ng-required="showNumRezUnits" name="numRezUnits" min="0" placeholder="numRezUnits">
+            </div>
+            <div class="field">
+                <label>Number of Residential Units</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numRezUnits.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumElectronicLifts">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numElectronicLifts"
+                       ng-required="showNumElectronicLifts" name="numElectronicLifts" min="0" placeholder="numElectronicLifts">
+            </div>
+            <div class="field">
+                <label>Number of Electronic Lifts</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numElectronicLifts.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumCommWashingMachines">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numCommWashingMachines"
+                       ng-required="showNumCommWashingMachines" name="numCommWashingMachines" min="0" placeholder="numCommWashingMachines">
+            </div>
+            <div class="field">
+                <label>Number of Commercial Washing Machines</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numCommWashingMachines.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumRezWashingMachines">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numRezWashingMachines"
+                       ng-required="showNumRezWashingMachines" name="numRezWashingMachines" min="0" placeholder="numRezWashingMachines">
+            </div>
+            <div class="field">
+                <label>Number of Residential Washing Machines</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numRezWashingMachines.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumOpenClosedRefrCases">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numOpenClosedRefrCases"
+                       ng-required="showNumOpenClosedRefrCases" name="numOpenClosedRefrCases" min="0" placeholder="numOpenClosedRefrCases">
+            </div>
+            <div class="field">
+                <label>Number of Open/Closed Refrigeration Cases</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numOpenClosedRefrCases.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+
+        <div class="inline fields" ng-show="showNumBedrooms">
+            <div class="two wide field">
+                <input type="number" ng-model="propertyModel.numBedrooms"
+                       ng-required="showNumBedrooms" name="numBedrooms" min="0" placeholder="numBedrooms">
+            </div>
+            <div class="field">
+                <label>Number of Bedrooms</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numBedrooms.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumUnitsLowRise1to4">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numUnitsLowRise1to4"
+                       ng-required="showNumUnitsLowRise1to4" name="numUnitsLowRise1to4" min="0" placeholder="numUnitsLowRise1to4">
+            </div>
+            <div class="field">
+                <label>Number of Low Rise (Floors 1-4) Units</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numUnitsLowRise1to4.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumUnitsMidRise5to9">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numUnitsMidRise5to9"
+                       ng-required="showNumUnitsMidRise5to9" name="numUnitsMidRise5to9" min="0" placeholder="numUnitsMidRise5to9">
+            </div>
+            <div class="field">
+                <label>Number of Mid Rise (Floors 5-9) Units</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numUnitsMidRise5to9.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumUnitsHighRise10plus">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numUnitsHighRise10plus"
+                       ng-required="showNumUnitsHighRise10plus" name="numUnitsHighRise10plus" min="0" placeholder="numUnitsHighRise10plus">
+            </div>
+            <div class="field">
+                <label>Number of High Rise (Floors above 10) Units</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numUnitsHighRise10plus.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showGymFloorArea">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.gymFloorArea"
+                       ng-required="showGymFloorArea" name="gymFloorArea" min="0" placeholder="gymFloorArea">
+            </div>
+            <div class="field">
+                <label>Gym Floor Area</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.gymFloorArea.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showStudentSeatingCapacity">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.studentSeatingCapacity"
+                       ng-required="showStudentSeatingCapacity" name="studentSeatingCapacity" min="0" placeholder="studentSeatingCapacity">
+            </div>
+            <div class="field">
+                <label>Student Seating Capacity</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.studentSeatingCapacity.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+
+        <div class="inline fields" ng-show="showNumStaffedBeds">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numStaffedBeds"
+                       ng-required="showNumStaffedBeds" name="numStaffedBeds" min="0" placeholder="numStaffedBeds">
+            </div>
+            <div class="field">
+                <label>Number of Staffed Beds</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numStaffedBeds.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumMRIMachines">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numMRIMachines"
+                       ng-required="showNumMRIMachines" name="numMRIMachines" min="0" placeholder="numMRIMachines">
+            </div>
+            <div class="field">
+                <label>Number of MRI Machines</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numMRIMachines.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showNumFTEWorkers">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numFTEWorkers"
+                       ng-required="showNumFTEWorkers" name="numFTEWorkers" min="0" placeholder="numFTEWorkers">
+            </div>
+            <div class="field">
+                <label>Number of Full Time Workers</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.numFTEWorkers.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showLicensedBedCapacity">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.licensedBedCapacity"
+                       ng-required="showLicensedBedCapacity" name="licensedBedCapacity" min="0" placeholder="licensedBedCapacity">
+            </div>
+            <div class="field">
+                <label>Licensed Bed Capacity</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.licensedBedCapacity.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+
+        <div class="inline fields" ng-show="showParkingAreaUnits">
+            <div class="four wide field">
+                <select class="ui dropdown search"
+                        dropdown
+                        ng-model="propertyModel.parkingAreaUnits"
+                        ng-options="item.id as item.name for item in buildingProperties.areaUnits"
+                        ng-required="showParkingAreaUnits" name="parkingAreaUnits">
+                    <option value="">Select</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Parking Area Units</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.parkingAreaUnits.$valid"><font color="red">[Required]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showOpenParkingArea">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.openParkingArea"
+                       ng-required="showOpenParkingArea" name="openParkingArea" min="0" placeholder="openParkingArea">
+            </div>
+            <div class="field">
+                <label>Open Parking Area Coverage</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.openParkingArea.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showPartiallyEnclosedParkingArea">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.partiallyEnclosedParkingArea"
+                       ng-required="showPartiallyEnclosedParkingArea" name="partiallyEnclosedParkingArea" min="0" placeholder="partiallyEnclosedParkingArea">
+            </div>
+            <div class="field">
+                <label>Partially Enclosed Parking Area Coverage</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.partiallyEnclosedParkingArea.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="FullyEnclosedParkingArea">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.fullyEnclosedParkingArea"
+                       ng-required="showFullyEnclosedParkingArea" name="fullyEnclosedParkingArea" min="0" placeholder="fullyEnclosedParkingArea">
+            </div>
+            <div class="field">
+                <label>Fully Enclosed Parking Area Coverage</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.fullyEnclosedParkingArea.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showHasParkingHeating">
+            <div class="four wide field">
+                <input type="checkbox" ng-model="propertyModel.hasParkingHeating"
+                       ng-required="showHasParkingHeating" name="hasParkingHeating" ng-init="propertyModel.hasParkingHeating=false">
+            </div>
+            <div class="field">
+                <label>Has Parking Area Heating (Y/N)</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.hasParkingHeating.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showWastewaterAvgInfluentInflow">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.wastewaterAvgInfluentInflow"
+                       ng-required="showWastewaterAvgInfluentInflow" name="wastewaterAvgInfluentInflow" min="0" placeholder="wastewaterAvgInfluentInflow">
+            </div>
+            <div class="field">
+                <label>Wastewater Average Influent Inflow</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.wastewaterAvgInfluentInflow.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showWastewaterLoadFactor">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.wastewaterLoadFactor"
+                       ng-required="showWastewaterLoadFactor" name="wastewaterLoadFactor" min="0" placeholder="wastewaterLoadFactor">
+            </div>
+            <div class="field">
+                <label>Wastewater Load Factor</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.wastewaterLoadFactor.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showWastewaterInfluentBiologicalOxygenDemand">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.wastewaterInfluentBiologicalOxygenDemand"
+                       ng-required="showWastewaterInfluentBiologicalOxygenDemand" name="wastewaterInfluentBiologicalOxygenDemand" min="0" placeholder="wastewaterInfluentBiologicalOxygenDemand">
+            </div>
+            <div class="field">
+                <label>Influent Biological Oxygen Demand</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.wastewaterInfluentBiologicalOxygenDemand.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showWastewaterEffluentBiologicalOxygenDemand">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.wastewaterEffluentBiologicalOxygenDemand"
+                       ng-required="showWastewaterEffluentBiologicalOxygenDemand" name="wastewaterEffluentBiologicalOxygenDemand" min="0" placeholder="wastewaterEffluentBiologicalOxygenDemand">
+            </div>
+            <div class="field">
+                <label>Effluent Biological Oxygen Demand</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.wastewaterEffluentBiologicalOxygenDemand.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showWastewaterPlantDesignFlowRate">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.wastewaterPlantDesignFlowRate"
+                       ng-required="showWastewaterPlantDesignFlowRate" name="wastewaterPlantDesignFlowRate" min="0" placeholder="wastewaterPlantDesignFlowRate">
+            </div>
+            <div class="field">
+                <label>Plant Design Flow Rate</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.wastewaterPlantDesignFlowRate.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showHDDbase40">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.HDDbase40"
+                       ng-required="showHDDbase40" name="HDDbase40" min="0" placeholder="HDDbase40">
+            </div>
+            <div class="field">
+                <label>HDD (40): Heating Degree Days Base 40</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.HDDbase40.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showPercentHeated">
+            <div class="field">
+                <select class="select"
+                        dropdown
+                        ng-model="propertyModel.percentHeated"
+                        ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                        ng-required="showPercentHeated"
+                        name="percentHeated">
+                </select>
+            </div>
+            <div class="field">
+                <label>Percent Heated</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.percentHeated.$valid"><font color="red">[Required]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showPercentCooled">
+            <div class="field">
+                <select class="select"
+                        dropdown
+                        ng-model="propertyModel.percentCooled"
+                        ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                        ng-required="showPercentCooled"
+                        name="percentCooled">>
+                </select>
+            </div>
+            <div class="field">
+                <label>Percent Cooled</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.percentCooled.$valid"><font color="red">[Required]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showHDD">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.HDD"
+                       ng-required="showHDD" name="HDD" min="0" placeholder="HDD">
+            </div>
+            <div class="field">
+                <label>HDD: Heating Degree Days</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.HDD.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+        <div class="inline fields" ng-show="showCDD">
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.CDD"
+                       ng-required="showCDD" name="CDD" min="0" placeholder="CDD">
+            </div>
+            <div class="field">
+                <label>CDD: Cooling Degree Days</label>
+            </div>
+            <div class="field">
+                <label ng-show="!baselineForm.CDD.$valid"><font color="red">[Must Be Number]</font></label>
+            </div>
+        </div>
+
+
+        </div>
+        <h4 class="ui dividing header"><i class="power icon"></i>Energy Use Information</h4>
+        <h4 class="ui header">You can enter energy use information for 12 months (yearly) to calculate your buildings
+            current ENERGY STAR Score, Site EUI, and Source EUI.</h4>
+
+        <div class="ui segment" style="background-color:#f0f7fe">
+            <div class="inline fields">
+                <div class="field">
+                    <input type="checkbox" ng-model="hideEnergies" name="hideEnergies"
+                           ng-true-value=true ng-false-value=false ng-init="hideEnergies=false">
+                    <label>I want to enter my Energy-use Information</label>
+                </div>
+            </div>
+            <div ng-show="hideEnergies">
+                <div class="fields">
+                    <div class="five wide field">
+                        <span>
+                            <label>Energy Type</label>
+                            <label ng-show="energyTypeRequired"><font color="red">[Please Select]</font></label>
+                        </span>
+                        <select class="ui dropdown"
+                            dropdown
+                            name="energyType"
+                            ng-model="propertyModel.energies.energyType"
+                            ng-options="item.id as item.name for item in energyProperties.energyType">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                    <div class="four wide field">
+                        <span>
+                            <label>Units</label>
+                            <label ng-show="energyUnitsRequired"><font color="red">[Please Select]</font></label>
+                        </span>
+                        <select class="ui dropdown"
+                            dropdown
+                            name="energyUnits"
+                            ng-model="propertyModel.energies.energyUnits"
+                            ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: propertyModel.energies.energyType}">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                    <div class="four wide field">
+                        <span>
+                            <label>Annual Energy Use</label>
+                            <label ng-show="energyUseRequired"><font color="red">[Required]</font></label>
+                            <label ng-show="baselineForm.energyUse.$error.number"><font color="red">[Must be a Number]</font></label>
+                        </span>
+                        <input type="number" ng-model="propertyModel.energies.energyUse"
+                               name="energyUse" min="0"
+                               placeholder="Energy Use">
+                    </div>
+                    <div class="three wide field">
+                        <span>
+                        <label>Energy Rate ($/unit)</label>
+                        <label ng-show="baselineForm.energyRate.$error.number"><font color="red">[Must be a Number]</font></label>
+                        </span>
+                        <input type="number" ng-model="propertyModel.energies.energyRate"
+                               name="energyRate" min="0"
+                               placeholder="$/unit">
+                    </div>
+                </div>
+
+                <div class="ui labeled button" ng-click="addEnergiesRow()">
+                    <i class="add circle icon"></i> Save Entry
+                </div>
+
+            </div>
+
+                <table class="ui table" ng-show="showEnergyTable">
+                    <tr>
+                        <th>Energy Type</th>
+                        <th>Units</th>
+                        <th>Total Annual Energy Use</th>
+                        <th>Energy Rate ($/unit)</th>
+                    </tr>
+                    <tr ng-repeat="energyEntry in energies">
+                        <td>{{energyEntry.energyType}}</td>
+                        <td>{{energyEntry.energyUnits}}</td>
+                        <td>{{energyEntry.energyUse}}</td>
+                        <td>{{energyEntry.energyRate}}</td>
+                        <td>
+                            <div class="ui labeled button" tabindex="0"  ng-click="removeRow(energyEntry.energyType,
+                                         energyEntry.energyUnits,energyEntry.energyUse)">
+                                <i class="minus circle icon"></i> Remove Entry
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        <h4 class="ui dividing header"><i class="bar chart icon"></i>Report Preferences</h4>
+        <div class="ui segment" style="background-color:#f0f7fe">
+            <div ng-init="propertyModel.reportingUnits='us'">
+                <div class="inline fields">
+                    <label>What units would you like your report to output?</label>
+                    <div class="field">
+                        <input type="radio" ng-model="propertyModel.reportingUnits" name="reportingUnits" value="us">
+                        <label>Conventional EPA Units (e.g., kBtu/ft²) </label>
+                    </div>
+                    <div class="field">
+                        <input type="radio" ng-model="propertyModel.reportingUnits" name="reportingUnits" value="metric">
+                        <label>Metric Units (e.g., GJ/m²)</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="ui header">You can choose either a Target ENERGY STAR Score or a Target % Better than Median to see how
+            much energy your property would need to be consuming annually to reach your target.</h4>
+        <div class="ui segment" style="background-color:#f0f7fe">
+            <label>Select Target EUI Calculation Option:</label>
+            <div class="grouped fields">
+
+                <div class="inline fields" ng-show="hasAlgo">
+                    <div class="field">
+                        <input type="checkbox" ng-model="getTargetScore"
+                               name="targetScore" ng-true-value=true
+                               ng-false-value=false ng-init="getTargetScore=false">
+                        <label>Target ENERGY STAR Score</label>
+                    </div>
+                    <div class="four wide field" ng-show="getTargetScore">
+                        <input type="number" ng-model="propertyModel.targetScore"
+                               name="targetScore" placeholder="Target Score"
+                               min="0" max="100">
+
+                    </div>
+                    <div class="field">
+                        <label ng-show="!baselineForm.targetScore.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <div class="field">
+                        <input type="checkbox" ng-model="getPercentBetterThanMedian"
+                               name="percentBetterThanMedian" ng-true-value=true
+                               ng-false-value=false ng-init="getPercentBetterThanMedian=false">
+                        <label>Target % Better than Median</label>
+                    </div>
+
+                    <div class="four wide field" ng-show="getPercentBetterThanMedian">
+                        <input type="number" ng-model="propertyModel.percentBetterThanMedian"
+                               name="percentBetterThanMedian" placeholder="Target %"
+                               min="0" max="100">
+                    </div>
+                    <div class="field">
+                        <label ng-show="!baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui big labeled button" ng-click="submit()">
+            <i class="arrow right icon"></i>  Compute Target
+        </div>
 	</form>
 </div>

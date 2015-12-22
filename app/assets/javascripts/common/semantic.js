@@ -4,7 +4,7 @@ define(['angular', 'semantic-daterangepicker'], function(angular) {
   'use strict';
 
   var mod = angular.module('common.semantic', []);
-  /*
+
     mod.directive('checkbox', function ($timeout) {
       return {
         restrict: "C",
@@ -16,7 +16,7 @@ define(['angular', 'semantic-daterangepicker'], function(angular) {
         }
       };
     });  
-*/
+
     mod.directive('modal', ["$timeout", function ($timeout) {
       return {
           restrict: "E",

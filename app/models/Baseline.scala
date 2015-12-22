@@ -209,7 +209,7 @@ case class EUIMetrics(parameters: JsValue) {
       }
     } yield ratio
 
-  local.recoverWith{case NonFatal(th) => defaultSiteToSourceRatio }
+    local.recoverWith{case NonFatal(th) => defaultSiteToSourceRatio }
 
   }
 
@@ -391,6 +391,7 @@ case class EUIMetrics(parameters: JsValue) {
       case ("AdultEducation") => 141.4
       case ("College") => 262.6
       case ("PreSchool") => 145.7
+      case ("DataCenter") => 1.821
       case ("VocationalSchool") => 141.4
       case ("OtherEducation") => 141.4
       case ("ConventionCenter") => 69.8
@@ -421,6 +422,7 @@ case class EUIMetrics(parameters: JsValue) {
       case ("FoodSales") => 536.3
       case ("FoodService") => 543.2
       case ("AmbulatorySurgicalCenter") => 155.2
+      case ("DrinkingWaterTreatment") => 6.61
       case ("SpecialtyHospital") => 389.8
       case ("OutpatientCenter") => 155.2
       case ("PhysicalTherapyCenter") => 155.2
@@ -474,6 +476,7 @@ case class EUIMetrics(parameters: JsValue) {
       case ("AdultEducation") => 59.6
       case ("College") => 130.7
       case ("PreSchool") => 70.9
+      case ("DataCenter") => 1.821
       case ("VocationalSchool") => 59.6
       case ("OtherEducation") => 59.6
       case ("ConventionCenter") => 45.3
@@ -504,6 +507,7 @@ case class EUIMetrics(parameters: JsValue) {
       case ("FoodSales") => 192.9
       case ("FoodService") => 266.8
       case ("AmbulatorySurgicalCenter") => 63.0
+      case ("DrinkingWaterTreatment") => 2.27
       case ("SpecialtyHospital") => 196.9
       case ("OutpatientCenter") => 63.0
       case ("PhysicalTherapyCenter") => 63.0
@@ -617,9 +621,7 @@ sealed trait BaseLine {
  */
 
 case class RegressionSegment(a:Double, b:Double, c:Double) {
-def reduce:Double = {
-  //Console.println("a :" + a + " b: " + b + " c: " + c + " total: " + a * (c - b))
-  a * (c - b) }
+  def reduce:Double = {a * (c - b)}
 }
 
 case class StateBuildingType(state: String, buildingType: String)
@@ -652,7 +654,7 @@ object GenericBuilding {
 
 
 /**
-* Office Building Type parameters
+*   Building Type parameters
 * @param weeklyOperatingHours
 * @param numWorkersMainShift
 * @param numComputers
@@ -665,9 +667,10 @@ object GenericBuilding {
 * @param areaUnits
 */
 
-case class Office(GFA:PosDouble, numComputers:PosInt, weeklyOperatingHours: PosInt, percentHeated:PosInt,
-                  percentCooled:PosInt, HDD:PosInt, CDD:PosInt, isSmallBank:Option[Boolean], numWorkersMainShift:PosInt,
+case class Office(GFA:PosDouble, numComputers:PosDouble, weeklyOperatingHours: PosDouble, percentHeated:PosDouble,
+                  percentCooled:PosDouble, HDD:PosDouble, CDD:PosDouble, isSmallBank:Option[Boolean], numWorkersMainShift:PosDouble,
                   areaUnits:String) extends BaseLine {
+
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
   val algorithm:String = "Specific"
@@ -706,8 +709,8 @@ implicit val officeReads: Reads[Office] = Json.reads[Office]
  * @param areaUnits
  */
 
-case class CanadaOffice(weeklyOperatingHours:PosInt, numWorkersMainShift:PosInt, numComputers:PosInt,
-                percentCooled:PosInt, HDD:PosInt, CDD:PosInt, numServers:PosInt, GFA:PosDouble,
+case class CanadaOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, numComputers:PosDouble,
+                percentCooled:PosDouble, HDD:PosDouble, CDD:PosDouble, numServers:PosDouble, GFA:PosDouble,
                 areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
@@ -746,8 +749,8 @@ object CanadaOffice {
  * @param areaUnits
  */
 
-case class WorshipCenter(weeklyOperatingHours:PosInt, seatingCapacity:PosInt, numComputers:PosInt,
-                         numRefrUnits:PosInt, HDD:PosInt, CDD:PosInt, GFA:PosDouble, hasFoodPreparation:Option[Boolean],
+case class WorshipCenter(weeklyOperatingHours:PosDouble, seatingCapacity:PosDouble, numComputers:PosDouble,
+                         numRefrUnits:PosDouble, HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, hasFoodPreparation:Option[Boolean],
                          isOpenAllWeekdays:Option[Boolean], areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
@@ -790,7 +793,7 @@ object WorshipCenter {
 case class WastewaterCenter(wastewaterAvgInfluentInflow:PosDouble, wastewaterInfluentBiologicalOxygenDemand:PosDouble,
                             wastewaterEffluentBiologicalOxygenDemand:PosDouble, wastewaterPlantDesignFlowRate:PosDouble,
                             wastewaterHasTrickleFiltration:Option[Boolean], wastewaterHasNutrientRemoval:Option[Boolean],
-                            wastewaterLoadFactor:PosDouble, HDD:PosInt, CDD:PosInt, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                            wastewaterLoadFactor:PosDouble, HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
   val algorithm:String = "Specific"
@@ -830,8 +833,8 @@ object WastewaterCenter {
  * @param GFA
  * @param areaUnits
  */
-case class Warehouse(weeklyOperatingHours:PosInt, numWorkersMainShift:PosInt, numWalkinRefrUnits:PosInt,
-                     HDD:PosInt, CDD:PosInt,isWarehouseRefrigerated:Option[Boolean], percentHeated:PosDouble,
+case class Warehouse(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, numWalkinRefrUnits:PosDouble,
+                     HDD:PosDouble, CDD:PosDouble,isWarehouseRefrigerated:Option[Boolean], percentHeated:PosDouble,
                      percentCooled:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
@@ -955,7 +958,7 @@ object CanadaSupermarket {
  * @param areaUnits
  */
 
-case class SeniorCare(weeklyOperatingHours:PosInt, avgNumResidents:PosDouble, maxNumResidents:PosDouble,
+case class SeniorCare(weeklyOperatingHours:PosDouble, avgNumResidents:PosDouble, maxNumResidents:PosDouble,
                       numRezUnits:PosDouble, numElectronicLifts:PosDouble, numWorkersMainShift:PosDouble,
                       numComputers:PosDouble, numRefrUnits:PosDouble, numCommWashingMachines:PosDouble,
                       numRezWashingMachines:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
@@ -1004,7 +1007,7 @@ object SeniorCare {
  * @param areaUnits
  */
 
-case class Retail(weeklyOperatingHours:PosInt, numOpenClosedRefrCases:PosDouble, numCashRegisters:PosDouble,
+case class Retail(weeklyOperatingHours:PosDouble, numOpenClosedRefrCases:PosDouble, numCashRegisters:PosDouble,
                   numWorkersMainShift:PosDouble, numComputers:PosDouble, numRefrUnits:PosDouble,
                   numWalkinRefrUnits:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
                   HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
@@ -1081,7 +1084,7 @@ object ResidenceHall {
  * @param areaUnits
  */
 
-case class MultiFamily(weeklyOperatingHours:PosInt, numRezUnits:PosDouble, numBedrooms:PosDouble,
+case class MultiFamily(weeklyOperatingHours:PosDouble, numRezUnits:PosDouble, numBedrooms:PosDouble,
                        numUnitsLowRise1to4: PosDouble, numUnitsMidRise5to9:PosDouble, numUnitsHighRise10plus: PosDouble,
                        HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
@@ -1116,7 +1119,7 @@ object MultiFamily {
  * @param GFA
  * @param areaUnits
  */
-case class CanadaMedicalOffice(weeklyOperatingHours:PosInt, numWorkersMainShift:PosDouble, percentCooled:PosDouble,
+case class CanadaMedicalOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, percentCooled:PosDouble,
                       HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
 
   val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
@@ -1153,7 +1156,7 @@ object CanadaMedicalOffice {
  * @param areaUnits
  */
 
-case class MedicalOffice(weeklyOperatingHours:PosInt, numWorkersMainShift:PosDouble, percentCooled:PosDouble,
+case class MedicalOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, percentCooled:PosDouble,
                          percentHeated:PosDouble, HDD:PosDouble, CDD:PosDouble, GFA:PosDouble,
                          areaUnits:String) extends BaseLine {
 
@@ -1193,7 +1196,7 @@ object MedicalOffice {
  * @param areaUnits
  */
 
-case class CanadaK12School(weeklyOperatingHours:PosInt, numWorkersMainShift:PosDouble,
+case class CanadaK12School(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble,
                            gymFloorArea:PosDouble, studentSeatingCapacity:PosDouble, isSecondarySchool:Option[Boolean],
                            percentHeated:PosDouble, percentCooled:PosDouble,HDD:PosDouble, CDD:PosDouble,
                            GFA:PosDouble, areaUnits:String) extends BaseLine {
@@ -1210,21 +1213,16 @@ case class CanadaK12School(weeklyOperatingHours:PosInt, numWorkersMainShift:PosD
     RegressionSegment(-0.3942, 8.118, log(floorArea)),
     RegressionSegment(0.0005647, 47.88, CDD.value * percentCooled.value/100),
     RegressionSegment(0.0001635, 4584, HDD.value * percentHeated.value/100)
-
   )
 }
-
 /**
  * CanadaK12School companion object.  Contains built in JSON validation.
  */
 object CanadaK12School {
   implicit val canadaK12SchoolReads: Reads[CanadaK12School] = Json.reads[CanadaK12School]
 }
-
-
 /**
  *
-
  * @param isOpenWeekends
  * @param isHighSchool
  * @param hasCooking
@@ -1237,7 +1235,6 @@ object CanadaK12School {
  * @param GFA
  * @param areaUnits
  */
-
 case class K12School(isOpenWeekends:Option[Boolean],
                      isHighSchool:Option[Boolean],hasCooking:Option[Boolean],numComputers:PosDouble,
                      numWalkinRefrUnits:PosDouble,percentHeated:PosDouble, percentCooled:PosDouble,HDD:PosDouble,
@@ -1361,7 +1358,7 @@ object Hospital {
  * @param areaUnits
  */
 
-case class CanadaHospital(weeklyOperatingHours:PosInt, numWorkersMainShift:PosDouble,
+case class CanadaHospital(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble,
                     licensedBedCapacity:PosDouble, hasLaundryFacility:Option[Boolean],
                     percentHeated:PosDouble, percentCooled:PosDouble,
                     HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {

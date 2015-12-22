@@ -160,7 +160,12 @@ case class EUICalculator(parameters: JsValue) {
         case ("naturalGas", "USA") => a.get * siteToSourceConversions.ngUS
         case ("naturalGas", "Canada") => a.get * siteToSourceConversions.ngCanada
         case ("onSiteElectricity", _) => a.get * siteToSourceConversions.onSiteElectricity
-        case ("fuelOil", _) => a.get * siteToSourceConversions.fuelOil
+        case ("fuelOil1", _) => a.get * siteToSourceConversions.fuelOil
+        case ("fuelOil2", _) => a.get * siteToSourceConversions.fuelOil
+        case ("fuelOil4", _) => a.get * siteToSourceConversions.fuelOil
+        case ("fuelOil6", _) => a.get * siteToSourceConversions.fuelOil
+        case ("kerosene", _) => a.get * siteToSourceConversions.fuelOil
+        case ("diesel", _) => a.get * siteToSourceConversions.fuelOil
         case ("propane", "USA") => a.get * siteToSourceConversions.propaneUS
         case ("propane", "Canada") => a.get * siteToSourceConversions.propaneCanada
         case ("steam", _) => a.get * siteToSourceConversions.steam
@@ -169,7 +174,8 @@ case class EUICalculator(parameters: JsValue) {
         case ("chilledWater", "Canada") => a.get * siteToSourceConversions.chilledWaterCanada
         case ("wood", _) => a.get * siteToSourceConversions.wood
         case ("coke", _) => a.get * siteToSourceConversions.coke
-        case ("coal", _) => a.get * siteToSourceConversions.coal
+        case ("coalA", _) => a.get * siteToSourceConversions.coal
+        case ("coalB", _) => a.get * siteToSourceConversions.coal
         case ("other", _) => a.get * siteToSourceConversions.other
         case (_, _) => throw new Exception("Could Not Convert to Source Energy")
       }}
