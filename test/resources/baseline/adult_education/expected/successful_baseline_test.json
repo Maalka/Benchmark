@@ -36,31 +36,31 @@
       "targetES": 75
     },
     {
-      "percentBetterSourceEUI": 43.08
+      "percentBetterSourceEUI": 49.49
     },
     {
-      "percentBetterSiteEUI": 14.02
+      "percentBetterSiteEUI": 16.11
     },
     {
-      "percentBetterSourceEnergy": 8617000
+      "percentBetterSourceEnergy": 9898000
     },
     {
-      "percentBetterSiteEnergy": 2804772.15
+      "percentBetterSiteEnergy": 3221728.54
     },
     {
       "medianES": 50
     },
     {
-      "medianSourceEUI": 123.1
+      "medianSourceEUI": 141.4
     },
     {
-      "medianSiteEUI": 40.07
+      "medianSiteEUI": 46.02
     },
     {
-      "medianSourceEnergy": 24620000
+      "medianSourceEnergy": 28280000
     },
     {
-      "medianSiteEnergy": 8013634.73
+      "medianSiteEnergy": 9204938.67
     },
     {
       "sourceEnergy": [
