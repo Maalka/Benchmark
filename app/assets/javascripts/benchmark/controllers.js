@@ -1,7 +1,7 @@
 /**
  * Dashboard controllers.
  */
-define([], function() {
+define(["./test/sample_response_test_data"], function(sampleTestData) {
   'use strict';
   var DashboardCtrl = function($rootScope, $scope, benchmarkServices) {
 
@@ -15,6 +15,9 @@ define([], function() {
     //For displaying user-input energy entries after having been saved
     $scope.showEnergyTable = false;
 
+    // for testing purposes, display a sample result
+    $scope.showTestResponse = true;
+    $scope.bechmarkResult = sampleTestData;
 
     //For Delayed Error Pointing After Submit Button Click (ugly if done on watch, though watch is good for removing errors)
     $scope.cityRequired = false;
@@ -980,7 +983,8 @@ define([], function() {
             else {$scope.propertyModel.energies = $scope.energies;}
 
             benchmarkServices.submit($scope.propertyModel).then(function (response) {
-            console.log(response);
+                console.log(response);
+                $scope.bechmarkResult = response;
             });
         } else {
             if($scope.baselineForm.city.$error.required){$scope.cityRequired = true;}
