@@ -1068,7 +1068,6 @@ object CanadaSupermarket {
 
 /**
  *
- * @param weeklyOperatingHours
  * @param avgNumResidents
  * @param maxNumResidents
  * @param numRezUnits
@@ -1086,7 +1085,7 @@ object CanadaSupermarket {
  * @param areaUnits
  */
 
-case class SeniorCare(weeklyOperatingHours:PosDouble, avgNumResidents:PosDouble, maxNumResidents:PosDouble,
+case class SeniorCare(avgNumResidents:PosDouble, maxNumResidents:PosDouble,
                       numRezUnits:PosDouble, numElectronicLifts:PosDouble, numWorkersMainShift:PosDouble,
                       numComputers:PosDouble, numRefrUnits:PosDouble, numCommWashingMachines:PosDouble,
                       numRezWashingMachines:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
