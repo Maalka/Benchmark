@@ -1,5 +1,5 @@
 /**
- * A bencharmk cell directive
+ * A benchmark cell directive
  * prints out the value or an error based on the response from the benchmark web server
  * that references them all.
  */

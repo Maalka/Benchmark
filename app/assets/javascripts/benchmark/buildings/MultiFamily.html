@@ -1,29 +1,8 @@
 
-<div class="inline fields" ng-show="showIsSmallBank">
-    <div class="field">
-        <input type="checkbox" ng-model="propertyModel.isSmallBank" ng-init="propertyModel.isSmallBank=false"
-               ng-true-value=true ng-false-value=false>
-        <label>Property is a Small Bank (Y/N)</label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="numComputers">
-    <div class="four wide field">
-        <input type="number" ng-model="propertyModel.numComputers"
-               ng-required="showNumComputers" name="numComputers" min="0" placeholder="numComputers">
-    </div>
-    <div class="field">
-        <label>Number of Computers</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.numComputers.$valid"><font color="red">[Must Be Number]</font></label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="showWeeklyOperatingHours">
+<div class="inline fields">
     <div class="four wide field">
         <input type="number" ng-model="propertyModel.weeklyOperatingHours"
-               ng-required="showWeeklyOperatingHours" name="weeklyOperatingHours" min="0" placeholder="weeklyOperatingHours">
+               ng-required="requireMultiFamily" name="weeklyOperatingHours" min="0" placeholder="weeklyOperatingHours">
     </div>
     <div class="field">
         <label>Number of Weekly Operating Hours</label>
@@ -33,80 +12,65 @@
     </div>
 </div>
 
-<div class="inline fields" ng-show="showPercentHeated">
-    <div class="field">
-        <select class="select"
-                dropdown
-                ng-model="propertyModel.percentHeated"
-                ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                ng-required="showPercentHeated"
-                name="percentHeated">
-        </select>
-    </div>
-    <div class="field">
-        <label>Percent Heated</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.percentHeated.$valid"><font color="red">[Required]</font></label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="showPercentCooled">
-    <div class="field">
-        <select class="select"
-                dropdown
-                ng-model="propertyModel.percentCooled"
-                ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                ng-required="showPercentCooled"
-                name="percentCooled">>
-        </select>
-    </div>
-    <div class="field">
-        <label>Percent Cooled</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.percentCooled.$valid"><font color="red">[Required]</font></label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="showHDD">
+<div class="inline fields">
     <div class="four wide field">
-        <input type="number" ng-model="propertyModel.HDD"
-               ng-required="showHDD" name="HDD" min="0" placeholder="HDD">
+        <input type="number" ng-model="propertyModel.numRezUnits"
+               ng-required="requireMultiFamily" name="numRezUnits" min="0" placeholder="numRezUnits">
     </div>
     <div class="field">
-        <label>HDD: Heating Degree Days</label>
+        <label>Number of Residential Units</label>
     </div>
     <div class="field">
-        <label ng-show="!baselineForm.HDD.$valid"><font color="red">[Must Be Number]</font></label>
+        <label ng-show="!baselineForm.numRezUnits.$valid"><font color="red">[Must Be Number]</font></label>
     </div>
 </div>
 
-<div class="inline fields" ng-show="showCDD">
+<div class="inline fields">
+    <div class="two wide field">
+        <input type="number" ng-model="propertyModel.numBedrooms"
+               ng-required="requireMultiFamily" name="numBedrooms" min="0" placeholder="numBedrooms">
+    </div>
+    <div class="field">
+        <label>Number of Bedrooms</label>
+    </div>
+    <div class="field">
+        <label ng-show="!baselineForm.numBedrooms.$valid"><font color="red">[Must Be Number]</font></label>
+    </div>
+</div>
+
+<div class="inline fields">
     <div class="four wide field">
-        <input type="number" ng-model="propertyModel.CDD"
-               ng-required="showCDD" name="CDD" min="0" placeholder="CDD">
+        <input type="number" ng-model="propertyModel.numUnitsLowRise1to4"
+               ng-required="requireMultiFamily" name="numUnitsLowRise1to4" min="0" placeholder="numUnitsLowRise1to4">
     </div>
     <div class="field">
-        <label>CDD: Cooling Degree Days</label>
+        <label>Number of Low Rise (Floors 1-4) Units</label>
     </div>
     <div class="field">
-        <label ng-show="!baselineForm.CDD.$valid"><font color="red">[Must Be Number]</font></label>
+        <label ng-show="!baselineForm.numUnitsLowRise1to4.$valid"><font color="red">[Must Be Number]</font></label>
     </div>
 </div>
-
-<div class="inline fields" ng-show="showNumWorkersMainShift">
+<div class="inline fields">
     <div class="four wide field">
-        <input type="number" ng-model="propertyModel.numWorkersMainShift"
-               ng-required="showNumWorkersMainShift" name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
+        <input type="number" ng-model="propertyModel.numUnitsMidRise5to9"
+               ng-required="requireMultiFamily" name="numUnitsMidRise5to9" min="0" placeholder="numUnitsMidRise5to9">
     </div>
     <div class="field">
-        <label>Number of Workers on Main Shift</label>
+        <label>Number of Mid Rise (Floors 5-9) Units</label>
     </div>
     <div class="field">
-        <label ng-show="!baselineForm.numWorkersMainShift.$valid"><font color="red">[Must Be Number]</font></label>
+        <label ng-show="!baselineForm.numUnitsMidRise5to9.$valid"><font color="red">[Must Be Number]</font></label>
     </div>
 </div>
-
-
-
+<div class="inline fields">
+    <div class="four wide field">
+        <input type="number" ng-model="propertyModel.numUnitsHighRise10plus"
+               ng-required="requireMultiFamily" name="numUnitsHighRise10plus" min="0" placeholder="numUnitsHighRise10plus">
+    </div>
+    <div class="field">
+        <label>Number of High Rise (Floors above 10) Units</label>
+    </div>
+    <div class="field">
+        <label ng-show="!baselineForm.numUnitsHighRise10plus.$valid"><font color="red">[Must Be Number]</font></label>
+    </div>
+</div>

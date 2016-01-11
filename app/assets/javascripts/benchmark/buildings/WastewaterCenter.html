@@ -1,112 +1,83 @@
 
-<div class="inline fields" ng-show="showIsSmallBank">
+<div class="inline fields">
     <div class="field">
-        <input type="checkbox" ng-model="propertyModel.isSmallBank" ng-init="propertyModel.isSmallBank=false"
-               ng-true-value=true ng-false-value=false>
-        <label>Property is a Small Bank (Y/N)</label>
+        <input type="checkbox" ng-model="propertyModel.wastewaterHasNutrientRemoval"
+               ng-true-value=true ng-false-value=false name="wastewaterHasNutrientRemoval" ng-init="propertyModel.wastewaterHasNutrientRemoval=false">
     </div>
-</div>
-
-<div class="inline fields" ng-show="numComputers">
     <div class="four wide field">
-        <input type="number" ng-model="propertyModel.numComputers"
-               ng-required="showNumComputers" name="numComputers" min="0" placeholder="numComputers">
-    </div>
-    <div class="field">
-        <label>Number of Computers</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.numComputers.$valid"><font color="red">[Must Be Number]</font></label>
+        <label>Has Nutrient Removal (Y/N)</label>
     </div>
 </div>
-
-<div class="inline fields" ng-show="showWeeklyOperatingHours">
+<div class="inline fields">
+    <div class="field">
+        <input type="checkbox" ng-model="propertyModel.wastewaterHasTrickleFiltration"
+               ng-true-value=true ng-false-value=false name="wastewaterHasTrickleFiltration" ng-init="propertyModel.wastewaterHasTrickleFiltration=false">
+    </div>
     <div class="four wide field">
-        <input type="number" ng-model="propertyModel.weeklyOperatingHours"
-               ng-required="showWeeklyOperatingHours" name="weeklyOperatingHours" min="0" placeholder="weeklyOperatingHours">
-    </div>
-    <div class="field">
-        <label>Number of Weekly Operating Hours</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.weeklyOperatingHours.$valid"><font color="red">[Must Be Number]</font></label>
+        <label>Has Trickle Filtration (Y/N)</label>
     </div>
 </div>
-
-<div class="inline fields" ng-show="showPercentHeated">
-    <div class="field">
-        <select class="select"
-                dropdown
-                ng-model="propertyModel.percentHeated"
-                ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                ng-required="showPercentHeated"
-                name="percentHeated">
-        </select>
-    </div>
-    <div class="field">
-        <label>Percent Heated</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.percentHeated.$valid"><font color="red">[Required]</font></label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="showPercentCooled">
-    <div class="field">
-        <select class="select"
-                dropdown
-                ng-model="propertyModel.percentCooled"
-                ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                ng-required="showPercentCooled"
-                name="percentCooled">>
-        </select>
-    </div>
-    <div class="field">
-        <label>Percent Cooled</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.percentCooled.$valid"><font color="red">[Required]</font></label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="showHDD">
+<div class="inline fields">
     <div class="four wide field">
-        <input type="number" ng-model="propertyModel.HDD"
-               ng-required="showHDD" name="HDD" min="0" placeholder="HDD">
+        <input type="number" ng-model="propertyModel.wastewaterAvgInfluentInflow"
+               ng-required="requireWastewaterCenter" name="wastewaterAvgInfluentInflow" min="0" placeholder="wastewaterAvgInfluentInflow">
     </div>
     <div class="field">
-        <label>HDD: Heating Degree Days</label>
+        <label>Wastewater Average Influent Inflow</label>
     </div>
     <div class="field">
-        <label ng-show="!baselineForm.HDD.$valid"><font color="red">[Must Be Number]</font></label>
+        <label ng-show="!baselineForm.wastewaterAvgInfluentInflow.$valid"><font color="red">[Must Be Number]</font></label>
+    </div>
+</div>
+<div class="inline fields">
+    <div class="four wide field">
+        <input type="number" ng-model="propertyModel.wastewaterLoadFactor"
+               ng-required="requireWastewaterCenter" name="wastewaterLoadFactor" min="0" placeholder="wastewaterLoadFactor">
+    </div>
+    <div class="field">
+        <label>Wastewater Load Factor</label>
+    </div>
+    <div class="field">
+        <label ng-show="!baselineForm.wastewaterLoadFactor.$valid"><font color="red">[Must Be Number]</font></label>
+    </div>
+</div>
+<div class="inline fields">
+    <div class="four wide field">
+        <input type="number" ng-model="propertyModel.wastewaterInfluentBiologicalOxygenDemand"
+               ng-required="requireWastewaterCenter" name="wastewaterInfluentBiologicalOxygenDemand" min="0" placeholder="wastewaterInfluentBiologicalOxygenDemand">
+    </div>
+    <div class="field">
+        <label>Influent Biological Oxygen Demand</label>
+    </div>
+    <div class="field">
+        <label ng-show="!baselineForm.wastewaterInfluentBiologicalOxygenDemand.$valid"><font color="red">[Must Be Number]</font></label>
+    </div>
+</div>
+<div class="inline fields">
+    <div class="four wide field">
+        <input type="number" ng-model="propertyModel.wastewaterEffluentBiologicalOxygenDemand"
+               ng-required="requireWastewaterCenter" name="wastewaterEffluentBiologicalOxygenDemand" min="0" placeholder="wastewaterEffluentBiologicalOxygenDemand">
+    </div>
+    <div class="field">
+        <label>Effluent Biological Oxygen Demand</label>
+    </div>
+    <div class="field">
+        <label ng-show="!baselineForm.wastewaterEffluentBiologicalOxygenDemand.$valid"><font color="red">[Must Be Number]</font></label>
+    </div>
+</div>
+<div class="inline fields">
+    <div class="four wide field">
+        <input type="number" ng-model="propertyModel.wastewaterPlantDesignFlowRate"
+               ng-required="requireWastewaterCenter" name="wastewaterPlantDesignFlowRate" min="0" placeholder="wastewaterPlantDesignFlowRate">
+    </div>
+    <div class="field">
+        <label>Plant Design Flow Rate</label>
+    </div>
+    <div class="field">
+        <label ng-show="!baselineForm.wastewaterPlantDesignFlowRate.$valid"><font color="red">[Must Be Number]</font></label>
     </div>
 </div>
 
-<div class="inline fields" ng-show="showCDD">
-    <div class="four wide field">
-        <input type="number" ng-model="propertyModel.CDD"
-               ng-required="showCDD" name="CDD" min="0" placeholder="CDD">
-    </div>
-    <div class="field">
-        <label>CDD: Cooling Degree Days</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.CDD.$valid"><font color="red">[Must Be Number]</font></label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="showNumWorkersMainShift">
-    <div class="four wide field">
-        <input type="number" ng-model="propertyModel.numWorkersMainShift"
-               ng-required="showNumWorkersMainShift" name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
-    </div>
-    <div class="field">
-        <label>Number of Workers on Main Shift</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.numWorkersMainShift.$valid"><font color="red">[Must Be Number]</font></label>
-    </div>
-</div>
 
 
 

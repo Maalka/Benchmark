@@ -2,8 +2,8 @@
 package models
 
 
-import akka.actor.FSM.->
-import squants.energy.{Gigajoules, KBtus, Energy}
+
+import squants.energy.{TBtus, Gigajoules, KBtus, Energy}
 import squants.space._
 import scala.concurrent.Future
 import scala.language._
@@ -14,34 +14,31 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import java.io.{InputStream}
 import play.api.libs.functional.syntax._
 
-import scala.util.Try
 import scala.util.control.NonFatal
 
 
 case class EUIMetrics(parameters: JsValue) {
 
   val energyCalcs:EUICalculator = EUICalculator(parameters)
+  val targetBuilding:BaseLine = getBuilding(parameters)
 
   val sourceEUI: Future[Double] =
     for {
-      buildingSize <- getBuildingSize(parameters)
       poolEnergy <- energyCalcs.getPoolEnergy
       parkingEnergy <- energyCalcs.getParkingEnergy
       sourceTotalEnergy <- energyCalcs.getTotalSourceEnergy
       sourceEUI <- sourceEUInoPoolnoParking(sourceTotalEnergy, poolEnergy, parkingEnergy)
-    } yield sourceEUI.value / buildingSize
+    } yield sourceEUI.value / targetBuilding.buildingSize
 
   val siteEUI: Future[Double] =
     for {
-      buildingSize <- getBuildingSize(parameters)
       siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
-    } yield siteTotalEnergy.value / buildingSize
+    } yield siteTotalEnergy.value / targetBuilding.buildingSize
 
 
 
   val expectedSourceEUI:Future[Double] = {
     for {
-      targetBuilding <- getBuilding(parameters)
       expectedEUI <- computeExpectedEUI(targetBuilding)
     } yield expectedEUI
   }
@@ -49,7 +46,6 @@ case class EUIMetrics(parameters: JsValue) {
   val ES:Future[Int] = {
 
     for {
-      targetBuilding <-  getBuilding(parameters)
       lookupEUI <- computeLookupEUI(targetBuilding)
       poolEnergy <- energyCalcs.getPoolEnergy
       parkingEnergy <- energyCalcs.getParkingEnergy
@@ -74,7 +70,6 @@ case class EUIMetrics(parameters: JsValue) {
 
   val targetSourceEUI:Future[Double] = {
     for {
-      targetBuilding <- getBuilding(parameters)
       lookupEUI <- computeLookupEUI(targetBuilding)
       targetRatio <- getTargetRatio(parameters)
       targetEUI <-  getTargetEUI(targetBuilding,lookupEUI,targetRatio)
@@ -83,10 +78,9 @@ case class EUIMetrics(parameters: JsValue) {
 
   val targetSourceEnergy:Future[Double] = {
     for {
-      buildingSize <- getBuildingSize(parameters)
       siteRatio <- siteToSourceRatio
       sourceEnergy <- targetSourceEUI
-    } yield sourceEnergy  * buildingSize
+    } yield sourceEnergy  * targetBuilding.buildingSize
   }
 
   val targetSiteEnergy:Future[Double] = {
@@ -98,17 +92,15 @@ case class EUIMetrics(parameters: JsValue) {
 
   val targetSiteEUI:Future[Double] = {
     for {
-      buildingSize <- getBuildingSize(parameters)
       siteEnergy <- targetSiteEnergy
-    } yield siteEnergy / buildingSize
+    } yield siteEnergy / targetBuilding.buildingSize
   }
 
 
   val medianSourceEUI:Future[Double] = {
     for {
-      targetBuilding <- getBuilding(parameters)
       medianEUI <- {
-       targetBuilding match {
+        targetBuilding match {
           case a:GenericBuilding =>  Future(sourceMedianEUI(parameters).value)
           case b:BaseLine => for {
             lookupEUI <- computeLookupEUI(targetBuilding)
@@ -122,9 +114,8 @@ case class EUIMetrics(parameters: JsValue) {
 
   val medianSourceEnergy:Future[Double] = {
     for {
-      buildingSize <- getBuildingSize(parameters)
       sourceEnergy <- medianSourceEUI
-    } yield sourceEnergy * buildingSize
+    } yield sourceEnergy * targetBuilding.buildingSize
   }
 
   val medianSiteEnergy:Future[Double] = {
@@ -136,9 +127,8 @@ case class EUIMetrics(parameters: JsValue) {
 
   val medianSiteEUI:Future[Double] = {
     for {
-      buildingSize <- getBuildingSize(parameters)
       siteEnergy <- medianSiteEnergy
-    } yield siteEnergy / buildingSize
+    } yield siteEnergy / targetBuilding.buildingSize
   }
 
   val percentBetterSourceEUI:Future[Double] = {
@@ -157,9 +147,8 @@ case class EUIMetrics(parameters: JsValue) {
 
   val percentBetterSourceEnergy:Future[Double] = {
     for {
-      buildingSize <- getBuildingSize(parameters)
       sourceEnergy <- percentBetterSourceEUI
-    } yield sourceEnergy * buildingSize
+    } yield sourceEnergy * targetBuilding.buildingSize
   }
 
   val percentBetterSiteEnergy:Future[Double] = {
@@ -171,14 +160,13 @@ case class EUIMetrics(parameters: JsValue) {
 
   val percentBetterSiteEUI:Future[Double] = {
     for {
-      buildingSize <- getBuildingSize(parameters)
       siteEnergy <- percentBetterSiteEnergy
-    } yield siteEnergy / buildingSize
+    } yield siteEnergy / targetBuilding.buildingSize
   }
 
   val percentBetterES:Future[Int] = {
     for {
-      targetBuilding <- getBuilding(parameters)
+    //targetBuilding <- getBuilding(parameters)
       lookupEUI <- computeLookupEUI(targetBuilding)
       sourceTotalEnergy <-  percentBetterSourceEUI
       euiRatio <- getTargetEUIratio(targetBuilding, lookupEUI, sourceTotalEnergy)
@@ -228,27 +216,29 @@ case class EUIMetrics(parameters: JsValue) {
 
   def computeExpectedEUI[T](targetBuilding: T): Future[Double] = Future{
     targetBuilding match {
-      case a: ResidenceHall => exp(a.expectedEnergy) / a.floorArea
-      case a: MedicalOffice => exp(a.expectedEnergy) / a.floorArea
+      case a: ResidenceHall => exp(a.expectedEnergy) / a.buildingSize
+      case a: MedicalOffice => exp(a.expectedEnergy) / a.buildingSize
       case a: GenericBuilding => throw new Exception("Cannot compute Expected EUI - Generic Building: No Algorithm!")
       case a: BaseLine => a.expectedEnergy
     }
   }
 
   def getEUIratio[T](targetBuilding: T,lookupPredictedEUI:Double,sourceEnergy:Double):Future[Double] = Future{
+
     targetBuilding match {
       case a: ResidenceHall => log(sourceEnergy) * 15.717 / lookupPredictedEUI
       case a: MedicalOffice => log(sourceEnergy) * 14.919 / lookupPredictedEUI
+      case a: DataCenter => sourceEnergy / a.annualITEnergyKBtu / lookupPredictedEUI
       case a: GenericBuilding => throw new Exception("Could not calculate EUI Ratio - Generic Building: No Algorithm!")
-      case a: BaseLine => sourceEnergy / a.floorArea / lookupPredictedEUI
+      case a: BaseLine => sourceEnergy / a.buildingSize / lookupPredictedEUI
     }
   }
 
 
   def getTargetEUIratio[T](targetBuilding: T,lookupPredictedEUI:Double,sourceEUI:Double):Future[Double] = Future{
-   targetBuilding match {
-      case a: ResidenceHall => log(sourceEUI * a.floorArea) * 15.717 / lookupPredictedEUI
-      case a: MedicalOffice => log(sourceEUI * a.floorArea) * 14.919 / lookupPredictedEUI
+    targetBuilding match {
+      case a: ResidenceHall => log(sourceEUI * a.buildingSize) * 15.717 / lookupPredictedEUI
+      case a: MedicalOffice => log(sourceEUI * a.buildingSize) * 14.919 / lookupPredictedEUI
       case a: GenericBuilding => throw new Exception("Could not calculate Target EUI Ratio - Generic Building: No Algorithm!")
       case a: BaseLine => sourceEUI  / lookupPredictedEUI
 
@@ -284,8 +274,9 @@ case class EUIMetrics(parameters: JsValue) {
 
   def getTargetEUI[T](targetBuilding: T,lookupEUI:Double,targetRatio:Double):Future[Double] = Future {
     targetBuilding match {
-      case a: ResidenceHall => exp(targetRatio / 15.717 * lookupEUI) / a.floorArea
-      case a: MedicalOffice => exp(targetRatio / 14.919 * lookupEUI) / a.floorArea
+      case a: ResidenceHall => exp(targetRatio / 15.717 * lookupEUI) / a.buildingSize
+      case a: MedicalOffice => exp(targetRatio / 14.919 * lookupEUI) / a.buildingSize
+      case a: DataCenter => targetRatio * lookupEUI * a.annualITEnergyKBtu
       case a:GenericBuilding => throw new Exception("Could not calculate Target EUI - Generic Building: No Algorithm!!")
       case a: BaseLine => targetRatio * lookupEUI
     }
@@ -313,7 +304,7 @@ case class EUIMetrics(parameters: JsValue) {
   }
 
   def getStateBuildingType(parameters: JsValue): Future[StateBuildingType] = Future{
-   parameters.asOpt[StateBuildingType] match {
+    parameters.asOpt[StateBuildingType] match {
       case Some(a) => a
       case _ => throw new Exception("Cannot find State and Building Type:")
     }
@@ -347,7 +338,7 @@ case class EUIMetrics(parameters: JsValue) {
     Future(r.getOrElse("Lookup Table Not Found"))
   }
 
-  def getBuilding(parameters: JsValue): Future[BaseLine] = Future{
+  def getBuilding(parameters: JsValue): BaseLine = {
     val building:JsResult[BaseLine] = parameters.asOpt[CountryBuildingType] match {
       case Some(CountryBuildingType("USA", "Office")) => parameters.validate[Office]
       case Some(CountryBuildingType("USA", "WorshipCenter")) => parameters.validate[WorshipCenter]
@@ -382,178 +373,308 @@ case class EUIMetrics(parameters: JsValue) {
 
     val countryBuilding = parameters.asOpt[CountryBuildingType]
 
-    val buildingType = countryBuilding match {
-      case Some(CountryBuildingType(_, b)) => b
-      case _ => JsError("No Building Type Provided!")
-  }
 
-    val sourceMedian:Double = buildingType match {
-      case ("AdultEducation") => 141.4
-      case ("College") => 262.6
-      case ("PreSchool") => 145.7
-      case ("DataCenter") => 1.821
-      case ("VocationalSchool") => 141.4
-      case ("OtherEducation") => 141.4
-      case ("ConventionCenter") => 69.8
-      case ("MovieTheater") => 85.1
-      case ("Museum") => 85.1
-      case ("PerformingArts") => 85.1
-      case ("BowlingAlley") => 96.8
-      case ("FitnessCenter") => 96.8
-      case ("IceRink") => 96.8
-      case ("RollerRink") => 96.8
-      case ("SwimmingPool") => 96.8
-      case ("OtherRecreation") => 96.8
-      case ("MeetingHall") => 69.8
-      case ("IndoorArena") => 85.1
-      case ("RaceTrack") => 85.1
-      case ("Stadium") => 85.1
-      case ("Aquarium") => 85.1
-      case ("Bar") => 85.1
-      case ("NightClub") => 85.1
-      case ("Casino") => 85.1
-      case ("Zoo") => 85.1
-      case ("OtherEntertainment") => 85.1
-      case ("ConvenienceStore") => 536.3
-      case ("GasStation") => 536.3
-      case ("FastFoodRestaurant") => 1015.3
-      case ("Restaurant") => 432.0
-      case ("OtherDining") => 432.0
-      case ("FoodSales") => 536.3
-      case ("FoodService") => 543.2
-      case ("AmbulatorySurgicalCenter") => 155.2
-      case ("DrinkingWaterTreatment") => 6.61
-      case ("SpecialtyHospital") => 389.8
-      case ("OutpatientCenter") => 155.2
-      case ("PhysicalTherapyCenter") => 155.2
-      case ("UrgentCareCenter") => 182.7
-      case ("Barracks") => 114.9
-      case ("Prison") => 169.9
-      case ("ResidentialLodging") => 155.5
-      case ("MixedUse") => 123.1
-      case ("VeterinaryOffice") => 182.7
-      case ("Courthouse") => 169.9
-      case ("FireStation") => 154.4
-      case ("Library") => 235.6
-      case ("MailingCenter") => 100.4
-      case ("PostOffice") => 100.4
-      case ("PoliceStation") => 154.4
-      case ("TransportationTerminal") => 85.1
-      case ("OtherPublicServices") => 123.1
-      case ("AutoDealership") => 130.1
-      case ("EnclosedMall") => 235.6
-      case ("StripMall") => 237.6
-      case ("Laboratory") => 123.1
-      case ("PersonalServices") => 100.4
-      case ("RepairServices") => 100.4
-      case ("OtherServices") => 100.4
-      case ("PowerStation") => 123.1
-      case ("OtherUtility") => 123.1
-      case ("SelfStorageFacility") => 47.6
-      case (_) => 123.1
+    val sourceMedian:Double = {
+      countryBuilding match {
+        case Some(CountryBuildingType("USA","AdultEducation")) => 141.4
+        case Some(CountryBuildingType("USA","College")) => 262.6
+        case Some(CountryBuildingType("USA","PreSchool")) => 145.7
+        case Some(CountryBuildingType("USA","DataCenter")) => 1.821 //this = Total Energy / IT Energy
+        case Some(CountryBuildingType("USA","VocationalSchool")) => 141.4
+        case Some(CountryBuildingType("USA","OtherEducation")) => 141.4
+        case Some(CountryBuildingType("USA","ConventionCenter")) => 69.8
+        case Some(CountryBuildingType("USA","MovieTheater")) => 85.1
+        case Some(CountryBuildingType("USA","Museum")) => 85.1
+        case Some(CountryBuildingType("USA","PerformingArts")) => 85.1
+        case Some(CountryBuildingType("USA","BowlingAlley")) => 96.8
+        case Some(CountryBuildingType("USA","FitnessCenter")) => 96.8
+        case Some(CountryBuildingType("USA","IceRink")) => 96.8
+        case Some(CountryBuildingType("USA","RollerRink")) => 96.8
+        case Some(CountryBuildingType("USA","SwimmingPool")) => 96.8
+        case Some(CountryBuildingType("USA","OtherRecreation")) => 96.8
+        case Some(CountryBuildingType("USA","MeetingHall")) => 69.8
+        case Some(CountryBuildingType("USA","IndoorArena")) => 85.1
+        case Some(CountryBuildingType("USA","RaceTrack")) => 85.1
+        case Some(CountryBuildingType("USA","Stadium")) => 85.1
+        case Some(CountryBuildingType("USA","Aquarium")) => 85.1
+        case Some(CountryBuildingType("USA","Bar")) => 85.1
+        case Some(CountryBuildingType("USA","NightClub")) => 85.1
+        case Some(CountryBuildingType("USA","Casino")) => 85.1
+        case Some(CountryBuildingType("USA","Zoo")) => 85.1
+        case Some(CountryBuildingType("USA","OtherEntertainment")) => 85.1
+        case Some(CountryBuildingType("USA","ConvenienceStore")) => 536.3
+        case Some(CountryBuildingType("USA","GasStation")) => 536.3
+        case Some(CountryBuildingType("USA","FastFoodRestaurant")) => 1015.3
+        case Some(CountryBuildingType("USA","Restaurant")) => 432.0
+        case Some(CountryBuildingType("USA","OtherDining")) => 432.0
+        case Some(CountryBuildingType("USA","FoodSales")) => 536.3
+        case Some(CountryBuildingType("USA","FoodService")) => 543.2
+        case Some(CountryBuildingType("USA","AmbulatorySurgicalCenter")) => 155.2
+        case Some(CountryBuildingType("USA","DrinkingWaterTreatment")) => 6.61
+        case Some(CountryBuildingType("USA","SpecialtyHospital")) => 389.8
+        case Some(CountryBuildingType("USA","OutpatientCenter")) => 155.2
+        case Some(CountryBuildingType("USA","PhysicalTherapyCenter")) => 155.2
+        case Some(CountryBuildingType("USA","UrgentCareCenter")) => 182.7
+        case Some(CountryBuildingType("USA","Barracks")) => 114.9
+        case Some(CountryBuildingType("USA","Prison")) => 169.9
+        case Some(CountryBuildingType("USA","ResidentialLodging")) => 155.5
+        case Some(CountryBuildingType("USA","MixedUse")) => 123.1
+        case Some(CountryBuildingType("USA","VeterinaryOffice")) => 182.7
+        case Some(CountryBuildingType("USA","Courthouse")) => 169.9
+        case Some(CountryBuildingType("USA","FireStation")) => 154.4
+        case Some(CountryBuildingType("USA","Library")) => 235.6
+        case Some(CountryBuildingType("USA","MailingCenter")) => 100.4
+        case Some(CountryBuildingType("USA","PostOffice")) => 100.4
+        case Some(CountryBuildingType("USA","PoliceStation")) => 154.4
+        case Some(CountryBuildingType("USA","TransportationTerminal")) => 85.1
+        case Some(CountryBuildingType("USA","OtherPublicServices")) => 123.1
+        case Some(CountryBuildingType("USA","AutoDealership")) => 130.1
+        case Some(CountryBuildingType("USA","EnclosedMall")) => 235.6
+        case Some(CountryBuildingType("USA","StripMall")) => 237.6
+        case Some(CountryBuildingType("USA","Laboratory")) => 123.1
+        case Some(CountryBuildingType("USA","PersonalServices")) => 100.4
+        case Some(CountryBuildingType("USA","RepairServices")) => 100.4
+        case Some(CountryBuildingType("USA","OtherServices")) => 100.4
+        case Some(CountryBuildingType("USA","PowerStation")) => 123.1
+        case Some(CountryBuildingType("USA","OtherUtility")) => 123.1
+        case Some(CountryBuildingType("USA","SelfStorageFacility")) => 47.6
+        case Some(CountryBuildingType("USA",_)) => 123.1
+        //Canadian Building Medians
+        case Some(CountryBuildingType("Canada","AdultEducation")) => 1.44
+        case Some(CountryBuildingType("Canada","College")) => 1.56
+        case Some(CountryBuildingType("Canada","PreSchool")) => 1.27
+        case Some(CountryBuildingType("Canada","VocationalSchool")) => 1.44
+        case Some(CountryBuildingType("Canada","OtherEducation")) => 1.27
+        case Some(CountryBuildingType("Canada","ConventionCenter")) => 2.47
+        case Some(CountryBuildingType("Canada","MovieTheater")) => 1.63
+        case Some(CountryBuildingType("Canada","Museum")) => 2.47
+        case Some(CountryBuildingType("Canada","PerformingArts")) => 2.47
+        case Some(CountryBuildingType("Canada","BowlingAlley")) => 1.93
+        case Some(CountryBuildingType("Canada","FitnessCenter")) => 1.93
+        case Some(CountryBuildingType("Canada","IceRink")) => 1.93
+        case Some(CountryBuildingType("Canada","RollerRink")) => 1.93
+        case Some(CountryBuildingType("Canada","SwimmingPool")) => 1.93
+        case Some(CountryBuildingType("Canada","OtherRecreation")) => 1.91
+        case Some(CountryBuildingType("Canada","MeetingHall")) => 2.47
+        case Some(CountryBuildingType("Canada","IndoorArena")) => 1.93
+        case Some(CountryBuildingType("Canada","RaceTrack")) => 1.91
+        case Some(CountryBuildingType("Canada","Stadium")) => 1.93
+        case Some(CountryBuildingType("Canada","Aquarium")) => 2.47
+        case Some(CountryBuildingType("Canada","Bar")) => 1.63
+        case Some(CountryBuildingType("Canada","NightClub")) => 1.63
+        case Some(CountryBuildingType("Canada","Casino")) => 1.63
+        case Some(CountryBuildingType("Canada","Zoo")) => 2.47
+        case Some(CountryBuildingType("Canada","OtherEntertainment")) => 2.47
+        case Some(CountryBuildingType("Canada","ConvenienceStore")) => 5.16
+        case Some(CountryBuildingType("Canada","GasStation")) => 5.16
+        case Some(CountryBuildingType("Canada","FastFoodRestaurant")) => 4.21
+        case Some(CountryBuildingType("Canada","Restaurant")) => 4.21
+        case Some(CountryBuildingType("Canada","OtherDining")) => 4.21
+        case Some(CountryBuildingType("Canada","FoodSales")) => 5.16
+        case Some(CountryBuildingType("Canada","FoodService")) => 4.21
+        case Some(CountryBuildingType("Canada","AmbulatorySurgicalCenter")) => 1.5
+        case Some(CountryBuildingType("Canada","DrinkingWaterTreatment")) => 1.84
+        case Some(CountryBuildingType("Canada","SpecialtyHospital")) => 3.12
+        case Some(CountryBuildingType("Canada","OutpatientCenter")) => 1.5
+        case Some(CountryBuildingType("Canada","PhysicalTherapyCenter")) => 1.5
+        case Some(CountryBuildingType("Canada","UrgentCareCenter")) => 1.5
+        case Some(CountryBuildingType("Canada","Barracks")) => 2.05
+        case Some(CountryBuildingType("Canada","Prison")) => 1.74
+        case Some(CountryBuildingType("Canada","ResidentialLodging")) => 1.75
+        case Some(CountryBuildingType("Canada","MixedUse")) => 1.23
+        case Some(CountryBuildingType("Canada","VeterinaryOffice")) => 1.5
+        case Some(CountryBuildingType("Canada","Courthouse")) => 1.74
+        case Some(CountryBuildingType("Canada","FireStation")) => 1.63
+        case Some(CountryBuildingType("Canada","Library")) => 2.47
+        case Some(CountryBuildingType("Canada","MailingCenter")) => 1.67
+        case Some(CountryBuildingType("Canada","PostOffice")) => 1.67
+        case Some(CountryBuildingType("Canada","PoliceStation")) => 1.74
+        case Some(CountryBuildingType("Canada","TransportationTerminal")) => 1.42
+        case Some(CountryBuildingType("Canada","OtherPublicServices")) => 1.23
+        case Some(CountryBuildingType("Canada","AutoDealership")) => 1.52
+        case Some(CountryBuildingType("Canada","EnclosedMall")) => 3.47
+        case Some(CountryBuildingType("Canada","StripMall")) => 2.25
+        case Some(CountryBuildingType("Canada","Laboratory")) => 1.23
+        case Some(CountryBuildingType("Canada","PersonalServices")) => 1.37
+        case Some(CountryBuildingType("Canada","RepairServices")) => 1.37
+        case Some(CountryBuildingType("Canada","OtherServices")) => 2.20
+        case Some(CountryBuildingType("Canada","PowerStation")) => 1.23
+        case Some(CountryBuildingType("Canada","OtherUtility")) => 1.23
+        case Some(CountryBuildingType("Canada","SelfStorageFacility")) => 0.93
+        // Canadian Building Medians for Buildings with US Algorithms
+        case Some(CountryBuildingType("Canada","Hotel")) => 1.75
+        case Some(CountryBuildingType("Canada","WorshipCenter")) => 1.06
+        case Some(CountryBuildingType("Canada","Warehouse")) => 0.93
+        case Some(CountryBuildingType("Canada","SeniorCare")) => 1.88
+        case Some(CountryBuildingType("Canada","Retail")) => 1.52
+        case Some(CountryBuildingType("Canada","ResidenceHall")) => 2.05
+        case Some(CountryBuildingType("Canada","DataCenter")) => 1.82 //this = Total Energy / IT Energy
+
+        case _ => 123.1
+      }
     }
 
-    val medianSourceEUI = countryBuilding match {
+   countryBuilding match {
       case Some(CountryBuildingType("USA", _)) => KBtus(sourceMedian)
-      case Some(CountryBuildingType("Canada", _)) => KBtus(sourceMedian) in Gigajoules
-      case Some(CountryBuildingType(_, _)) => throw new Exception("Could not find Country for Median EUI")
-      case None => throw new Exception("Could not find Country for Median EUI")
+      case Some(CountryBuildingType("Canada", _)) => Gigajoules(sourceMedian)
+      case Some(CountryBuildingType(_, _)) => throw new Exception("Could not find Country and Building Type for Median EUI")
+      case None => throw new Exception("Could not find Country and Building Type for Median EUI")
     }
-
-    medianSourceEUI
-
   }
 
   def siteMedianEUI(parameters:JsValue):Energy = {
 
     val countryBuilding = parameters.asOpt[CountryBuildingType]
 
-    val buildingType = countryBuilding match {
-      case Some(CountryBuildingType(_, b)) => b
-      case None => JsError("No Building Type Provided!")
-    }
-    val siteMedian:Double = buildingType match {
-      case ("AdultEducation") => 59.6
-      case ("College") => 130.7
-      case ("PreSchool") => 70.9
-      case ("DataCenter") => 1.821
-      case ("VocationalSchool") => 59.6
-      case ("OtherEducation") => 59.6
-      case ("ConventionCenter") => 45.3
-      case ("MovieTheater") => 45.3
-      case ("Museum") => 45.3
-      case ("PerformingArts") => 45.3
-      case ("BowlingAlley") => 41.2
-      case ("FitnessCenter") => 41.2
-      case ("IceRink") => 41.2
-      case ("RollerRink") => 41.2
-      case ("SwimmingPool") => 41.2
-      case ("OtherRecreation") => 41.2
-      case ("MeetingHall") => 45.3
-      case ("IndoorArena") => 45.3
-      case ("RaceTrack") => 45.3
-      case ("Stadium") => 45.3
-      case ("Aquarium") => 45.3
-      case ("Bar") => 45.3
-      case ("NightClub") => 45.3
-      case ("Casino") => 45.3
-      case ("Zoo") => 45.3
-      case ("OtherEntertainment") => 45.3
-      case ("ConvenienceStore") => 192.9
-      case ("GasStation") => 192.9
-      case ("FastFoodRestaurant") => 384.0
-      case ("Restaurant") => 223.8
-      case ("OtherDining") => 223.8
-      case ("FoodSales") => 192.9
-      case ("FoodService") => 266.8
-      case ("AmbulatorySurgicalCenter") => 63.0
-      case ("DrinkingWaterTreatment") => 2.27
-      case ("SpecialtyHospital") => 196.9
-      case ("OutpatientCenter") => 63.0
-      case ("PhysicalTherapyCenter") => 63.0
-      case ("UrgentCareCenter") => 66.8
-      case ("Barracks") => 73.9
-      case ("Prison") => 93.2
-      case ("ResidentialLodging") => 73.4
-      case ("MixedUse") => 78.8
-      case ("VeterinaryOffice") => 66.8
-      case ("Courthouse") => 93.2
-      case ("FireStation") => 88.3
-      case ("Library") => 91.6
-      case ("MailingCenter") => 49.6
-      case ("PostOffice") => 49.6
-      case ("PoliceStation") => 88.3
-      case ("TransportationTerminal") => 45.3
-      case ("OtherPublicServices") => 78.8
-      case ("AutoDealership") => 52.5
-      case ("EnclosedMall") => 93.7
-      case ("StripMall") => 94.2
-      case ("Laboratory") => 78.8
-      case ("PersonalServices") => 49.6
-      case ("RepairServices") => 49.6
-      case ("OtherServices") => 49.6
-      case ("PowerStation") => 78.8
-      case ("OtherUtility") => 78.8
-      case ("SelfStorageFacility") => 19.8
-      case (_) => 78.8
+    val siteMedian: Double = {
+      countryBuilding match {
+        case Some(CountryBuildingType("USA", "AdultEducation")) => 59.6
+        case Some(CountryBuildingType("USA", "College")) => 130.7
+        case Some(CountryBuildingType("USA", "PreSchool")) => 70.9
+        case Some(CountryBuildingType("USA", "DataCenter")) => 1.821
+        case Some(CountryBuildingType("USA", "VocationalSchool")) => 59.6
+        case Some(CountryBuildingType("USA", "OtherEducation")) => 59.6
+        case Some(CountryBuildingType("USA", "ConventionCenter")) => 45.3
+        case Some(CountryBuildingType("USA", "MovieTheater")) => 45.3
+        case Some(CountryBuildingType("USA", "Museum")) => 45.3
+        case Some(CountryBuildingType("USA", "PerformingArts")) => 45.3
+        case Some(CountryBuildingType("USA", "BowlingAlley")) => 41.2
+        case Some(CountryBuildingType("USA", "FitnessCenter")) => 41.2
+        case Some(CountryBuildingType("USA", "IceRink")) => 41.2
+        case Some(CountryBuildingType("USA", "RollerRink")) => 41.2
+        case Some(CountryBuildingType("USA", "SwimmingPool")) => 41.2
+        case Some(CountryBuildingType("USA", "OtherRecreation")) => 41.2
+        case Some(CountryBuildingType("USA", "MeetingHall")) => 45.3
+        case Some(CountryBuildingType("USA", "IndoorArena")) => 45.3
+        case Some(CountryBuildingType("USA", "RaceTrack")) => 45.3
+        case Some(CountryBuildingType("USA", "Stadium")) => 45.3
+        case Some(CountryBuildingType("USA", "Aquarium")) => 45.3
+        case Some(CountryBuildingType("USA", "Bar")) => 45.3
+        case Some(CountryBuildingType("USA", "NightClub")) => 45.3
+        case Some(CountryBuildingType("USA", "Casino")) => 45.3
+        case Some(CountryBuildingType("USA", "Zoo")) => 45.3
+        case Some(CountryBuildingType("USA", "OtherEntertainment")) => 45.3
+        case Some(CountryBuildingType("USA", "ConvenienceStore")) => 192.9
+        case Some(CountryBuildingType("USA", "GasStation")) => 192.9
+        case Some(CountryBuildingType("USA", "FastFoodRestaurant")) => 384.0
+        case Some(CountryBuildingType("USA", "Restaurant")) => 223.8
+        case Some(CountryBuildingType("USA", "OtherDining")) => 223.8
+        case Some(CountryBuildingType("USA", "FoodSales")) => 192.9
+        case Some(CountryBuildingType("USA", "FoodService")) => 266.8
+        case Some(CountryBuildingType("USA", "AmbulatorySurgicalCenter")) => 63.0
+        case Some(CountryBuildingType("USA", "DrinkingWaterTreatment")) => 2.27
+        case Some(CountryBuildingType("USA", "SpecialtyHospital")) => 196.9
+        case Some(CountryBuildingType("USA", "OutpatientCenter")) => 63.0
+        case Some(CountryBuildingType("USA", "PhysicalTherapyCenter")) => 63.0
+        case Some(CountryBuildingType("USA", "UrgentCareCenter")) => 66.8
+        case Some(CountryBuildingType("USA", "Barracks")) => 73.9
+        case Some(CountryBuildingType("USA", "Prison")) => 93.2
+        case Some(CountryBuildingType("USA", "ResidentialLodging")) => 73.4
+        case Some(CountryBuildingType("USA", "MixedUse")) => 78.8
+        case Some(CountryBuildingType("USA", "VeterinaryOffice")) => 66.8
+        case Some(CountryBuildingType("USA", "Courthouse")) => 93.2
+        case Some(CountryBuildingType("USA", "FireStation")) => 88.3
+        case Some(CountryBuildingType("USA", "Library")) => 91.6
+        case Some(CountryBuildingType("USA", "MailingCenter")) => 49.6
+        case Some(CountryBuildingType("USA", "PostOffice")) => 49.6
+        case Some(CountryBuildingType("USA", "PoliceStation")) => 88.3
+        case Some(CountryBuildingType("USA", "TransportationTerminal")) => 45.3
+        case Some(CountryBuildingType("USA", "OtherPublicServices")) => 78.8
+        case Some(CountryBuildingType("USA", "AutoDealership")) => 52.5
+        case Some(CountryBuildingType("USA", "EnclosedMall")) => 93.7
+        case Some(CountryBuildingType("USA", "StripMall")) => 94.2
+        case Some(CountryBuildingType("USA", "Laboratory")) => 78.8
+        case Some(CountryBuildingType("USA", "PersonalServices")) => 49.6
+        case Some(CountryBuildingType("USA", "RepairServices")) => 49.6
+        case Some(CountryBuildingType("USA", "OtherServices")) => 49.6
+        case Some(CountryBuildingType("USA", "PowerStation")) => 78.8
+        case Some(CountryBuildingType("USA", "OtherUtility")) => 78.8
+        case Some(CountryBuildingType("USA", "SelfStorageFacility")) => 19.8
+        case Some(CountryBuildingType("USA", _)) => 78.8
+          //Canadian Building Medians
+        case Some(CountryBuildingType("Canada", "AdultEducation")) => 1.18
+        case Some(CountryBuildingType("Canada", "College")) => 0.76
+        case Some(CountryBuildingType("Canada", "PreSchool")) => 0.92
+        case Some(CountryBuildingType("Canada", "VocationalSchool")) => 1.18
+        case Some(CountryBuildingType("Canada", "OtherEducation")) => 0.92
+        case Some(CountryBuildingType("Canada", "ConventionCenter")) => 1.74
+        case Some(CountryBuildingType("Canada", "MovieTheater")) => 0.93
+        case Some(CountryBuildingType("Canada", "Museum")) => 1.74
+        case Some(CountryBuildingType("Canada", "PerformingArts")) => 1.74
+        case Some(CountryBuildingType("Canada", "BowlingAlley")) => 1.51
+        case Some(CountryBuildingType("Canada", "FitnessCenter")) => 1.51
+        case Some(CountryBuildingType("Canada", "IceRink")) => 1.51
+        case Some(CountryBuildingType("Canada", "RollerRink")) => 1.51
+        case Some(CountryBuildingType("Canada", "SwimmingPool")) => 1.51
+        case Some(CountryBuildingType("Canada", "OtherRecreation")) => 1.11
+        case Some(CountryBuildingType("Canada", "MeetingHall")) => 1.74
+        case Some(CountryBuildingType("Canada", "IndoorArena")) => 1.51
+        case Some(CountryBuildingType("Canada", "RaceTrack")) => 1.11
+        case Some(CountryBuildingType("Canada", "Stadium")) => 1.51
+        case Some(CountryBuildingType("Canada", "Aquarium")) => 1.74
+        case Some(CountryBuildingType("Canada", "Bar")) => 0.93
+        case Some(CountryBuildingType("Canada", "NightClub")) => 0.93
+        case Some(CountryBuildingType("Canada", "Casino")) => 0.93
+        case Some(CountryBuildingType("Canada", "Zoo")) => 1.74
+        case Some(CountryBuildingType("Canada", "OtherEntertainment")) => 1.74
+        case Some(CountryBuildingType("Canada", "ConvenienceStore")) => 3.14
+        case Some(CountryBuildingType("Canada", "GasStation")) => 3.14
+        case Some(CountryBuildingType("Canada", "FastFoodRestaurant")) => 3.05
+        case Some(CountryBuildingType("Canada", "Restaurant")) => 3.05
+        case Some(CountryBuildingType("Canada", "OtherDining")) => 3.05
+        case Some(CountryBuildingType("Canada", "FoodSales")) => 3.14
+        case Some(CountryBuildingType("Canada", "FoodService")) => 3.05
+        case Some(CountryBuildingType("Canada", "AmbulatorySurgicalCenter")) => 1.02
+        case Some(CountryBuildingType("Canada", "DrinkingWaterTreatment")) => 0.63
+        case Some(CountryBuildingType("Canada", "SpecialtyHospital")) => 2.35
+        case Some(CountryBuildingType("Canada", "OutpatientCenter")) => 1.02
+        case Some(CountryBuildingType("Canada", "PhysicalTherapyCenter")) => 1.02
+        case Some(CountryBuildingType("Canada", "UrgentCareCenter")) => 1.02
+        case Some(CountryBuildingType("Canada", "Barracks")) => 1.45
+        case Some(CountryBuildingType("Canada", "Prison")) => 1.28
+        case Some(CountryBuildingType("Canada", "ResidentialLodging")) => 1.12
+        case Some(CountryBuildingType("Canada", "MixedUse")) => 0.90
+        case Some(CountryBuildingType("Canada", "VeterinaryOffice")) => 1.02
+        case Some(CountryBuildingType("Canada", "Courthouse")) => 1.28
+        case Some(CountryBuildingType("Canada", "FireStation")) => 1.23
+        case Some(CountryBuildingType("Canada", "Library")) => 1.74
+        case Some(CountryBuildingType("Canada", "MailingCenter")) => 1.37
+        case Some(CountryBuildingType("Canada", "PostOffice")) => 1.37
+        case Some(CountryBuildingType("Canada", "PoliceStation")) => 1.28
+        case Some(CountryBuildingType("Canada", "TransportationTerminal")) => 1.06
+        case Some(CountryBuildingType("Canada", "OtherPublicServices")) => 0.90
+        case Some(CountryBuildingType("Canada", "AutoDealership")) => 0.85
+        case Some(CountryBuildingType("Canada", "EnclosedMall")) => 2.10
+        case Some(CountryBuildingType("Canada", "StripMall")) => 1.38
+        case Some(CountryBuildingType("Canada", "Laboratory")) => 0.90
+        case Some(CountryBuildingType("Canada", "PersonalServices")) => 1.00
+        case Some(CountryBuildingType("Canada", "RepairServices")) => 1.00
+        case Some(CountryBuildingType("Canada", "OtherServices")) => 1.37
+        case Some(CountryBuildingType("Canada", "PowerStation")) => 0.90
+        case Some(CountryBuildingType("Canada", "OtherUtility")) => 0.90
+        case Some(CountryBuildingType("Canada", "SelfStorageFacility")) => 0.75
+        // Canadian Building Medians for Buildings with US Algorithms
+        case Some(CountryBuildingType("Canada","Hotel")) => 1.12
+        case Some(CountryBuildingType("Canada","WorshipCenter")) => 0.86
+        case Some(CountryBuildingType("Canada","Warehouse")) => 0.75
+        case Some(CountryBuildingType("Canada","SeniorCare")) => 1.12
+        case Some(CountryBuildingType("Canada","Retail")) => 0.85
+        case Some(CountryBuildingType("Canada","ResidenceHall")) => 1.45
+        case Some(CountryBuildingType("Canada","DataCenter")) => 1.82
+
+        case Some(CountryBuildingType("Canada", _)) => 78.8
+      }
     }
 
-    val medianSiteEUI = countryBuilding match {
+    countryBuilding match {
       case Some(CountryBuildingType("USA", _)) => KBtus(siteMedian)
-      case Some(CountryBuildingType("Canada", _)) => KBtus(siteMedian) in Gigajoules
-      case Some(CountryBuildingType(_, _)) => throw new Exception("Could not find correct Country for Median EUI")
-      case None => throw new Exception("Could not find correct Country for Median EUI")
-
-    }
-    medianSiteEUI
-  }
-
-  def getBuildingSize(parameters:JsValue):Future[Double] = Future{
-    parameters.validate[BuildingArea] match {
-      case JsSuccess(a, _) => a.GFA.value
-      case JsError(err) => throw new Exception("Could not determine building size for EUI Calculation!")
+      case Some(CountryBuildingType("Canada", _)) => Gigajoules(siteMedian)
+      case Some(CountryBuildingType(_, _)) => throw new Exception("Could not find Country and Building Type for Median EUI")
+      case None => throw new Exception("Could not find Country and Building Type for Median EUI")
     }
   }
+
+
 
   def getTargetES:Future[Int] = Future{
     parameters.asOpt[TargetES] match {
@@ -602,9 +723,10 @@ object PosDouble {
   * Base line trait, enables the reducing of equation segments and manages the lookup of energy star score values
   */
 sealed trait BaseLine {
-  val floorArea:Double
+  val country:String
+  val GFA:PosDouble
+  val areaUnits:String
   val regressionSegments: Seq[RegressionSegment]
-  val algorithm:String
 
   def energyReduce:Double = regressionSegments.map(_.reduce).sum
   def expectedEnergy = energyReduce
@@ -612,6 +734,14 @@ sealed trait BaseLine {
   implicit def boolOptToInt(b:Option[Boolean]):Int = if (b.getOrElse(false)) 1 else 0
 
   def converseBoolean(i:Int):Int = {if (i==0) {1} else if (i==1) {0} else {0}}
+
+  val buildingSize:Double = {
+    country match {
+      case "USA" => (Area((GFA.value,areaUnits)).get to SquareFeet)
+      case "Canada" => (Area((GFA.value,areaUnits)).get to SquareMeters)
+    }
+
+  }
 }
 /**
  *
@@ -632,20 +762,19 @@ object StateBuildingType {
 
 
 /**
-* Class to manage the decomposing of Country and Building from the input JSON
-* @param country country that the building resides in
-* @param buildingType type of building
-*/
+ * Class to manage the decomposing of Country and Building from the input JSON
+ * @param country country that the building resides in
+ * @param buildingType type of building
+ */
 case class CountryBuildingType(country: String, buildingType: String)
 
 object CountryBuildingType {
-implicit val countryBuildingTypeRead: Reads[CountryBuildingType] = Json.reads[CountryBuildingType]
+  implicit val countryBuildingTypeRead: Reads[CountryBuildingType] = Json.reads[CountryBuildingType]
 }
 
-case class GenericBuilding (GFA:PosDouble,areaUnits:String) extends BaseLine {
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "General"
+case class GenericBuilding (GFA:PosDouble,areaUnits:String, country:String) extends BaseLine {
   val regressionSegments = Seq[RegressionSegment]()
+
 }
 object GenericBuilding {
   implicit val genericBuildingTypeRead: Reads[GenericBuilding] = Json.reads[GenericBuilding]
@@ -654,46 +783,45 @@ object GenericBuilding {
 
 
 /**
-*   Building Type parameters
-* @param weeklyOperatingHours
-* @param numWorkersMainShift
-* @param numComputers
-* @param percentHeated
-* @param percentCooled
-* @param HDD
-* @param CDD
-* @param isSmallBank  "if is bank branch or financial office AND < 50,000 sq ft in area"
-* @param GFA
-* @param areaUnits
-*/
+ *   Building Type parameters
+ * @param weeklyOperatingHours
+ * @param numWorkersMainShift
+ * @param numComputers
+ * @param percentHeated
+ * @param percentCooled
+ * @param HDD
+ * @param CDD
+ * @param isSmallBank  "if is bank branch or financial office AND < 50,000 sq ft in area"
+ * @param GFA
+ * @param areaUnits
+ */
 
 case class Office(GFA:PosDouble, numComputers:PosDouble, weeklyOperatingHours: PosDouble, percentHeated:PosDouble,
                   percentCooled:PosDouble, HDD:PosDouble, CDD:PosDouble, isSmallBank:Option[Boolean], numWorkersMainShift:PosDouble,
-                  areaUnits:String) extends BaseLine {
+                  areaUnits:String, country:String) extends BaseLine {
 
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(186.6, 0, 1), // regression constant
-    RegressionSegment(34.17, 9.535, math.min(log(floorArea),200000)),
-    RegressionSegment(17.28, 2.231, math.min(numComputers.value / floorArea * 1000, 11.1)),
+    RegressionSegment(34.17, 9.535, math.min(log(buildingSize),200000)),
+    RegressionSegment(17.28, 2.231, math.min(numComputers.value / buildingSize * 1000, 11.1)),
     RegressionSegment(55.96, 3.972, log(weeklyOperatingHours.value)),
-    RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.value / floorArea * 1000)),
+    RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.value / buildingSize * 1000)),
     RegressionSegment(0.0077, 4411, HDD.value * percentHeated.value / 100),
     RegressionSegment(0.0144, 1157, CDD.value * percentCooled.value / 100),
-    RegressionSegment(-64.83 * isSmallBank, 9.535, log(floorArea)),
-    RegressionSegment(34.2 * isSmallBank, .5616, log(numWorkersMainShift.value / floorArea * 1000)),
+    RegressionSegment(-64.83 * isSmallBank, 9.535, log(buildingSize)),
+    RegressionSegment(34.2 * isSmallBank, .5616, log(numWorkersMainShift.value / buildingSize * 1000)),
     RegressionSegment(56.3 * isSmallBank, 0, 1)
   )
 }
 
 /**
-* Office companion object.  Contains built in JSON validation.
-*/
+ * Office companion object.  Contains built in JSON validation.
+ */
 object Office {
-implicit val officeReads: Reads[Office] = Json.reads[Office]
+  implicit val officeReads: Reads[Office] = Json.reads[Office]
 }
 
 /**
@@ -710,19 +838,19 @@ implicit val officeReads: Reads[Office] = Json.reads[Office]
  */
 
 case class CanadaOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, numComputers:PosDouble,
-                percentCooled:PosDouble, HDD:PosDouble, CDD:PosDouble, numServers:PosDouble, GFA:PosDouble,
-                areaUnits:String) extends BaseLine {
+                        percentCooled:PosDouble, HDD:PosDouble, CDD:PosDouble, numServers:PosDouble, GFA:PosDouble,
+                        areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(1.788, 0, 1), // regression constant
     RegressionSegment(.006325, 57.95, weeklyOperatingHours.value),
-    RegressionSegment(.06546, 3.492, numWorkersMainShift.value / floorArea * 100),
-    RegressionSegment(.07455, 3.335, (numComputers.value + numServers.value) / floorArea * 100),
-    RegressionSegment(.3643, 7.36, log(math.min(floorArea,5000))), // floorArea capped @ 5,000 sq meters during analysis
-    RegressionSegment(-0.00002596, 2933, math.min(floorArea,5000)), // floorArea capped @ 5,000 sq meters during analysis
+    RegressionSegment(.06546, 3.492, numWorkersMainShift.value / buildingSize * 100),
+    RegressionSegment(.07455, 3.335, (numComputers.value + numServers.value) / buildingSize * 100),
+    RegressionSegment(.3643, 7.36, log(math.min(buildingSize,5000))), // buildingSize capped @ 5,000 sq meters during analysis
+    RegressionSegment(-0.00002596, 2933, math.min(buildingSize,5000)), // buildingSize capped @ 5,000 sq meters during analysis
     RegressionSegment(.0002034, 4619, HDD.value),
     RegressionSegment(.06386, 3.703, log(CDD.value) * percentCooled.value / 100)
   )
@@ -751,19 +879,19 @@ object CanadaOffice {
 
 case class WorshipCenter(weeklyOperatingHours:PosDouble, seatingCapacity:PosDouble, numComputers:PosDouble,
                          numRefrUnits:PosDouble, HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, hasFoodPreparation:Option[Boolean],
-                         isOpenAllWeekdays:Option[Boolean], areaUnits:String) extends BaseLine {
+                         isOpenAllWeekdays:Option[Boolean], areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(73.91, 0, 1), // regression constant
-    RegressionSegment(0.6532, 38.81, seatingCapacity.value / floorArea * 1000),
+    RegressionSegment(0.6532, 38.81, seatingCapacity.value / buildingSize * 1000),
     RegressionSegment(19.14 * isOpenAllWeekdays, 0, 1),
     RegressionSegment(.2717, 33.28, weeklyOperatingHours.value),
-    RegressionSegment(26.55, 0.2036, numComputers.value / floorArea * 1000),
+    RegressionSegment(26.55, 0.2036, numComputers.value / buildingSize * 1000),
     RegressionSegment(15.83 * hasFoodPreparation, 0, 1),
-    RegressionSegment(113.1, 0.0183, numRefrUnits.value / floorArea * 1000),
+    RegressionSegment(113.1, 0.0183, numRefrUnits.value / buildingSize * 1000),
     RegressionSegment(0.0081, 4523, HDD.value),
     RegressionSegment(.0141, 1313, CDD.value)
   )
@@ -793,10 +921,10 @@ object WorshipCenter {
 case class WastewaterCenter(wastewaterAvgInfluentInflow:PosDouble, wastewaterInfluentBiologicalOxygenDemand:PosDouble,
                             wastewaterEffluentBiologicalOxygenDemand:PosDouble, wastewaterPlantDesignFlowRate:PosDouble,
                             wastewaterHasTrickleFiltration:Option[Boolean], wastewaterHasNutrientRemoval:Option[Boolean],
-                            wastewaterLoadFactor:PosDouble, HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                            wastewaterLoadFactor:PosDouble, HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
   // for predicted EUI you do not divide by GFA, you divide by average influent flow in Gallons per Day
 
 
@@ -835,22 +963,22 @@ object WastewaterCenter {
  */
 case class Warehouse(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, numWalkinRefrUnits:PosDouble,
                      HDD:PosDouble, CDD:PosDouble,isWarehouseRefrigerated:Option[Boolean], percentHeated:PosDouble,
-                     percentCooled:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                     percentCooled:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
 
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(82.18, 0, 1), // regression constant
     RegressionSegment(168.6 * isWarehouseRefrigerated, 0, 1),
-    RegressionSegment(13.63, 9.806, log(floorArea)),
-    RegressionSegment(41.84, 0.5943, numWorkersMainShift.value * 1000 / floorArea),
+    RegressionSegment(13.63, 9.806, log(buildingSize)),
+    RegressionSegment(41.84, 0.5943, numWorkersMainShift.value * 1000 / buildingSize),
     RegressionSegment(0.3111, 60.93, weeklyOperatingHours.value),
     RegressionSegment(0.0708 * isWarehouseRefrigerated,1570,CDD.value),
     RegressionSegment(0.011 * converseBoolean(isWarehouseRefrigerated),2707,HDD.value * percentHeated.value / 100),
     RegressionSegment(.0205 * converseBoolean(isWarehouseRefrigerated), 378.7, CDD.value * percentCooled.value / 100),
-    RegressionSegment(262.3 * converseBoolean(isWarehouseRefrigerated), 0.0096, numWalkinRefrUnits.value * 1000 / floorArea )
+    RegressionSegment(262.3 * converseBoolean(isWarehouseRefrigerated), 0.0096, numWalkinRefrUnits.value * 1000 / buildingSize )
   )
 }
 
@@ -875,20 +1003,20 @@ object Warehouse {
  * @param areaUnits
  */
 case class Supermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, numWalkinRefrUnits:PosDouble,
-                     HDD:PosDouble, CDD:PosDouble,hasCooking:Option[Boolean], percentHeated:PosDouble,
-                     percentCooled:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                       HDD:PosDouble, CDD:PosDouble,hasCooking:Option[Boolean], percentHeated:PosDouble,
+                       percentCooled:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
 
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(581.1, 0, 1), // regression constant
-    RegressionSegment(84.97, 9.679, log(floorArea)),
-    RegressionSegment(115.6, -0.1084, log(numWorkersMainShift.value * 1000 / floorArea)),
+    RegressionSegment(84.97, 9.679, log(buildingSize)),
+    RegressionSegment(115.6, -0.1084, log(numWorkersMainShift.value * 1000 / buildingSize)),
     RegressionSegment(125.8, 4.657, log(weeklyOperatingHours.value)),
-    RegressionSegment(794.4, 0.2345, numWalkinRefrUnits.value * 1000 / floorArea ),
-    RegressionSegment(902.8, .0254, hasCooking * 1000 / floorArea ),
+    RegressionSegment(794.4, 0.2345, numWalkinRefrUnits.value * 1000 / buildingSize ),
+    RegressionSegment(902.8, .0254, hasCooking * 1000 / buildingSize ),
     RegressionSegment(.0947, 1219, CDD.value * percentCooled.value / 100),
     RegressionSegment(0.0326, 3510, HDD.value * percentHeated.value / 100)
   )
@@ -915,18 +1043,18 @@ object Supermarket {
 
 case class CanadaSupermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, HDD:PosDouble,
                              lengthRefrFoodDisplayCases:PosDouble, numComputers:PosDouble, numCashRegisters:PosDouble,
-                             GFA:PosDouble, areaUnits:String) extends BaseLine {
+                             GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(4.828, 0, 1), // regression constant
-    RegressionSegment(0.001342, 1038, math.min(floorArea,2500)),
-    RegressionSegment(1.612, 1.802, math.min(math.max(numWorkersMainShift.value * 100 / floorArea, 0.4490),3.687)),
-    RegressionSegment(1.35, 0.3955, numCashRegisters.value * 100 / floorArea),
-    RegressionSegment(0.698, 0.5244, numComputers.value * 100 / floorArea),
-    RegressionSegment(0.08314, 2.827, lengthRefrFoodDisplayCases.value * 100 / floorArea),
+    RegressionSegment(0.001342, 1038, math.min(buildingSize,2500)),
+    RegressionSegment(1.612, 1.802, math.min(math.max(numWorkersMainShift.value * 100 / buildingSize, 0.4490),3.687)),
+    RegressionSegment(1.35, 0.3955, numCashRegisters.value * 100 / buildingSize),
+    RegressionSegment(0.698, 0.5244, numComputers.value * 100 / buildingSize),
+    RegressionSegment(0.08314, 2.827, lengthRefrFoodDisplayCases.value * 100 / buildingSize),
     RegressionSegment(0.0004642, 4798, HDD.value)
   )
 }
@@ -962,21 +1090,21 @@ case class SeniorCare(weeklyOperatingHours:PosDouble, avgNumResidents:PosDouble,
                       numRezUnits:PosDouble, numElectronicLifts:PosDouble, numWorkersMainShift:PosDouble,
                       numComputers:PosDouble, numRefrUnits:PosDouble, numCommWashingMachines:PosDouble,
                       numRezWashingMachines:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
-                      HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                      HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(253, 0, 1), // regression constant
-    RegressionSegment(24.1, 1.582, numRezUnits.value * 1000 / floorArea),
+    RegressionSegment(24.1, 1.582, numRezUnits.value * 1000 / buildingSize),
     RegressionSegment(0.9156, 87.61, avgNumResidents.value/maxNumResidents.value * 100),
-    RegressionSegment(256.5, 0.0692, numElectronicLifts.value * 1000 / floorArea),
-    RegressionSegment(35.42, 0.937, numWorkersMainShift.value * 1000 / floorArea),
-    RegressionSegment(90.3, 0.3636, numComputers.value * 1000 / floorArea),
-    RegressionSegment(251.5, 0.0905, numRefrUnits.value * 1000 / floorArea),
-    RegressionSegment(378.2, 0.0432, numCommWashingMachines.value * 1000 / floorArea),
-    RegressionSegment(253, 0.0584, numRezWashingMachines.value * 1000 / floorArea),
+    RegressionSegment(256.5, 0.0692, numElectronicLifts.value * 1000 / buildingSize),
+    RegressionSegment(35.42, 0.937, numWorkersMainShift.value * 1000 / buildingSize),
+    RegressionSegment(90.3, 0.3636, numComputers.value * 1000 / buildingSize),
+    RegressionSegment(251.5, 0.0905, numRefrUnits.value * 1000 / buildingSize),
+    RegressionSegment(378.2, 0.0432, numCommWashingMachines.value * 1000 / buildingSize),
+    RegressionSegment(253, 0.0584, numRezWashingMachines.value * 1000 / buildingSize),
     RegressionSegment(0.02004, 1184, CDD.value * percentCooled.value/100),
     RegressionSegment(0.005879, 4524, HDD.value * percentHeated.value/100)
 
@@ -1010,20 +1138,20 @@ object SeniorCare {
 case class Retail(weeklyOperatingHours:PosDouble, numOpenClosedRefrCases:PosDouble, numCashRegisters:PosDouble,
                   numWorkersMainShift:PosDouble, numComputers:PosDouble, numRefrUnits:PosDouble,
                   numWalkinRefrUnits:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
-                  HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                  HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(153.1, 0, 1), // regression constant
-    RegressionSegment(20.19, 9.371, log(floorArea)),
+    RegressionSegment(20.19, 9.371, log(buildingSize)),
     RegressionSegment(1.373, 63.74, weeklyOperatingHours.value),
-    RegressionSegment(61.76, 0.6279, numWorkersMainShift.value * 1000 / floorArea),
-    RegressionSegment(70.6, 0.3149, numComputers.value * 1000 / floorArea),
-    RegressionSegment(249.1, 0.1905, numCashRegisters.value * 1000 / floorArea),
-    RegressionSegment(720.2, 0.0038, numWalkinRefrUnits.value * 1000 / floorArea),
-    RegressionSegment(81.9, 0.045, numOpenClosedRefrCases.value * 1000 / floorArea),
+    RegressionSegment(61.76, 0.6279, numWorkersMainShift.value * 1000 / buildingSize),
+    RegressionSegment(70.6, 0.3149, numComputers.value * 1000 / buildingSize),
+    RegressionSegment(249.1, 0.1905, numCashRegisters.value * 1000 / buildingSize),
+    RegressionSegment(720.2, 0.0038, numWalkinRefrUnits.value * 1000 / buildingSize),
+    RegressionSegment(81.9, 0.045, numOpenClosedRefrCases.value * 1000 / buildingSize),
     RegressionSegment(0.0125, 972.1, CDD.value * percentCooled.value/100),
     RegressionSegment(0.0113, 3811, HDD.value * percentHeated.value/100)
 
@@ -1048,14 +1176,14 @@ object Retail {
  * @param areaUnits
  */
 case class ResidenceHall(numBedrooms:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
-                      HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                         HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(4.99455, 0, 1), // regression constant
-    RegressionSegment(0.91309, 0, log(floorArea)),
+    RegressionSegment(0.91309, 0, log(buildingSize)),
     RegressionSegment(0.09455, 0, log(numBedrooms.value)),
     RegressionSegment(0.00009744, 0, HDD.value * percentHeated.value/100),
     RegressionSegment(0.00016279, 0, CDD.value * percentCooled.value/100)
@@ -1086,14 +1214,14 @@ object ResidenceHall {
 
 case class MultiFamily(weeklyOperatingHours:PosDouble, numRezUnits:PosDouble, numBedrooms:PosDouble,
                        numUnitsLowRise1to4: PosDouble, numUnitsMidRise5to9:PosDouble, numUnitsHighRise10plus: PosDouble,
-                       HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                       HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(140.8, 0, 1), // regression constant
-    RegressionSegment(52.57, 1.215, numRezUnits.value * 1000 / floorArea),
+    RegressionSegment(52.57, 1.215, numRezUnits.value * 1000 / buildingSize),
     RegressionSegment(24.45, 1.238, numBedrooms.value/numRezUnits.value),
     RegressionSegment(-18.76, 0, numUnitsLowRise1to4.value/(numUnitsLowRise1to4.value + numUnitsMidRise5to9.value
       + numUnitsHighRise10plus.value)),
@@ -1120,15 +1248,15 @@ object MultiFamily {
  * @param areaUnits
  */
 case class CanadaMedicalOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, percentCooled:PosDouble,
-                      HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                               HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
-  val algorithm:String = "Specific"
-  val workerDensity:Double = numWorkersMainShift.value * 100 / floorArea
+
+
+  val workerDensity:Double = numWorkersMainShift.value * 100 / buildingSize
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(1.384, 0, 1), // regression constant
-    RegressionSegment(0.00004511, 1635, min(floorArea,20000.0)),
+    RegressionSegment(0.00004511, 1635, min(buildingSize,20000.0)),
     RegressionSegment(0.007505, 58.94, weeklyOperatingHours.value),
     RegressionSegment(0.2428, 2.466, min(max(workerDensity,0.3),7)),
     RegressionSegment(0.001297, 100.1, CDD.value * percentCooled.value/100),
@@ -1158,14 +1286,14 @@ object CanadaMedicalOffice {
 
 case class MedicalOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, percentCooled:PosDouble,
                          percentHeated:PosDouble, HDD:PosDouble, CDD:PosDouble, GFA:PosDouble,
-                         areaUnits:String) extends BaseLine {
+                         areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(2.78889, 0, 1), // regression constant
-    RegressionSegment(0.91433, 0, log(floorArea)),
+    RegressionSegment(0.91433, 0, log(buildingSize)),
     RegressionSegment(0.46768, 0, log(weeklyOperatingHours.value)),
     RegressionSegment(0.21568, 0, log(numWorkersMainShift.value)),
     RegressionSegment(0.00020111, 0, CDD.value * percentCooled.value/100),
@@ -1199,10 +1327,10 @@ object MedicalOffice {
 case class CanadaK12School(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble,
                            gymFloorArea:PosDouble, studentSeatingCapacity:PosDouble, isSecondarySchool:Option[Boolean],
                            percentHeated:PosDouble, percentCooled:PosDouble,HDD:PosDouble, CDD:PosDouble,
-                           GFA:PosDouble, areaUnits:String) extends BaseLine {
+                           GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(1.021, 0, 1), // regression constant
@@ -1210,7 +1338,7 @@ case class CanadaK12School(weeklyOperatingHours:PosDouble, numWorkersMainShift:P
     RegressionSegment(0.0304, 4.983, log(gymFloorArea.value)),
     RegressionSegment(0.0004402, 418.3, studentSeatingCapacity.value),
     RegressionSegment(0.1218, 3.175, log(numWorkersMainShift.value)),
-    RegressionSegment(-0.3942, 8.118, log(floorArea)),
+    RegressionSegment(-0.3942, 8.118, log(buildingSize)),
     RegressionSegment(0.0005647, 47.88, CDD.value * percentCooled.value/100),
     RegressionSegment(0.0001635, 4584, HDD.value * percentHeated.value/100)
   )
@@ -1238,25 +1366,25 @@ object CanadaK12School {
 case class K12School(isOpenWeekends:Option[Boolean],
                      isHighSchool:Option[Boolean],hasCooking:Option[Boolean],numComputers:PosDouble,
                      numWalkinRefrUnits:PosDouble,percentHeated:PosDouble, percentCooled:PosDouble,HDD:PosDouble,
-                     CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                     CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(131.9, 0, 1), // regression constant
     RegressionSegment(4.377 * isHighSchool, 0, 1),
     RegressionSegment(8.974, 7.716, log(HDD.value) * percentHeated.value / 100),
     RegressionSegment(6.389, 5.045, log(CDD.value) * percentCooled.value / 100),
-    RegressionSegment(-19.26, 10.2, log(floorArea)),
+    RegressionSegment(-19.26, 10.2, log(buildingSize)),
     RegressionSegment(18.43 * isOpenWeekends, 0, 1),
-    RegressionSegment(574.7, 0.0109, numWalkinRefrUnits.value / floorArea * 1000),
+    RegressionSegment(574.7, 0.0109, numWalkinRefrUnits.value / buildingSize * 1000),
     RegressionSegment(24.2 * hasCooking, 0, 1),
-    RegressionSegment(9.568, 1.742, numComputers.value / floorArea * 1000),
+    RegressionSegment(9.568, 1.742, numComputers.value / buildingSize * 1000),
 
 
     //if High School also include the following
-    RegressionSegment(0.00021 * isHighSchool, 47310, floorArea),
+    RegressionSegment(0.00021 * isHighSchool, 47310, buildingSize),
     RegressionSegment(0.0285 * isHighSchool, 1316, CDD.value * percentCooled.value / 100),
     RegressionSegment(-11.75 * isHighSchool, 5.045, log(CDD.value) * percentCooled.value / 100)
 
@@ -1286,18 +1414,18 @@ object K12School {
  */
 
 case class Hotel(numBedrooms:PosDouble, hasFoodPreparation:Option[Boolean], numWorkersMainShift:PosDouble,
-                      numRefrUnits:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
-                      HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                 numRefrUnits:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
+                 HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(169.1, 0, 1), // regression constant
-    RegressionSegment(33.22, 1.951, numBedrooms.value * 1000 / floorArea),
-    RegressionSegment(20.81, -1.395, log(numWorkersMainShift.value * 1000 / floorArea)),
+    RegressionSegment(33.22, 1.951, numBedrooms.value * 1000 / buildingSize),
+    RegressionSegment(20.81, -1.395, log(numWorkersMainShift.value * 1000 / buildingSize)),
     RegressionSegment(65.14 * hasFoodPreparation, 0, 1),
-    RegressionSegment(249.8, 0.0227, numRefrUnits.value * 1000 / floorArea),
+    RegressionSegment(249.8, 0.0227, numRefrUnits.value * 1000 / buildingSize),
     RegressionSegment(0.0169, 1224, CDD.value * percentCooled.value/100),
     RegressionSegment(0.0107, 4120, HDD.value * percentHeated.value/100)
 
@@ -1322,16 +1450,16 @@ object Hotel {
  */
 
 case class Hospital(numFTEWorkers:PosDouble, numStaffedBeds:PosDouble, numMRIMachines:PosDouble,
-                     CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
+                    CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+
+
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(484.8, 0, 1), // regression constant
-    RegressionSegment(26.64, 2.6, numFTEWorkers.value * 1000 / floorArea),
-    RegressionSegment(120.3, 0.4636, numStaffedBeds.value * 1000 / floorArea),
-    RegressionSegment(8961, 0.0031, numMRIMachines.value * 1000 / floorArea),
+    RegressionSegment(26.64, 2.6, numFTEWorkers.value * 1000 / buildingSize),
+    RegressionSegment(120.3, 0.4636, numStaffedBeds.value * 1000 / buildingSize),
+    RegressionSegment(8961, 0.0031, numMRIMachines.value * 1000 / buildingSize),
     RegressionSegment(0.0227, 1392, CDD.value)
 
   )
@@ -1359,19 +1487,16 @@ object Hospital {
  */
 
 case class CanadaHospital(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble,
-                    licensedBedCapacity:PosDouble, hasLaundryFacility:Option[Boolean],
-                    percentHeated:PosDouble, percentCooled:PosDouble,
-                    HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String) extends BaseLine {
-
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareMeters)
-  val algorithm:String = "Specific"
+                          licensedBedCapacity:PosDouble, hasLaundryFacility:Option[Boolean],
+                          percentHeated:PosDouble, percentCooled:PosDouble,
+                          HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(2.984, 0, 1), // regression constant
-    RegressionSegment(0.6092, 1.417, numWorkersMainShift.value * 100 / floorArea),
+    RegressionSegment(0.6092, 1.417, numWorkersMainShift.value * 100 / buildingSize),
     RegressionSegment(-0.0984, 2.726, numWorkersMainShift.value/licensedBedCapacity.value),
     RegressionSegment(0.4596 * hasLaundryFacility, 0, 1),
-    RegressionSegment(9.3598e-06, 19004, min(100000,floorArea)),
+    RegressionSegment(9.3598e-06, 19004, min(100000,buildingSize)),
     RegressionSegment(0.2775, 4.03, log(CDD.value+50) * percentCooled.value/100),
     RegressionSegment(0.00047986, 4787, HDD.value * percentHeated.value/100)
 
@@ -1387,16 +1512,21 @@ object CanadaHospital {
 
 
 
-case class DataCenter(annualITEnergyKwh:PosDouble, country:String, reportingUnits:String,
-                      GFA:PosDouble, areaUnits:String) extends BaseLine {
+// Data Centers don't follow the same rules as other buildings, to include them need to expand code with PUE based analysis
+case class DataCenter(annualITEnergy:PosDouble, reportingUnits:String,
+                      GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
-  val floorArea:Double = (Area((GFA.value,areaUnits)).get to SquareFeet)
-  val algorithm:String = "Specific"
+  val siteToSourceITConvert: Double = country match {
+    case "USA" => 3.14
+    case _ => 2.05
+  }
 
-  val regressionSegments = Seq[RegressionSegment] (
-    RegressionSegment(2.984, 0, 1), // regression constant
-    RegressionSegment(0.6092, 1.417, annualITEnergyKwh.value)
+  val annualITEnergyTBtu: Double = (Energy((annualITEnergy.value, "KWh")).get to TBtus) * siteToSourceITConvert
+  val annualITEnergyKBtu: Double = (Energy((annualITEnergy.value, "KWh")).get to KBtus) * siteToSourceITConvert
 
+  val regressionSegments = Seq[RegressionSegment](
+    RegressionSegment(1.924, 0, 1), // regression constant
+    RegressionSegment(-0.9506, 0.2091, annualITEnergyTBtu)
   )
 }
 
@@ -1406,6 +1536,7 @@ case class DataCenter(annualITEnergyKwh:PosDouble, country:String, reportingUnit
 object DataCenter {
   implicit val dataCenterReads: Reads[DataCenter] = Json.reads[DataCenter]
 }
+
 
 
 

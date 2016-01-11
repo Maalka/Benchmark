@@ -1,7 +1,8 @@
 /**
  * Dashboard controllers.
  */
-define(["./test/sample_response_test_data"], function(sampleTestData) {
+//define(["./test/sample_response_test_data"], function(sampleTestData) {
+define([], function() {
   'use strict';
   var DashboardCtrl = function($rootScope, $scope, benchmarkServices) {
 
@@ -17,7 +18,7 @@ define(["./test/sample_response_test_data"], function(sampleTestData) {
 
     // for testing purposes, display a sample result
     $scope.showTestResponse = true;
-    $scope.bechmarkResult = sampleTestData;
+    $scope.benchmarkResult = null;
 
     //For Delayed Error Pointing After Submit Button Click (ugly if done on watch, though watch is good for removing errors)
     $scope.cityRequired = false;
@@ -33,6 +34,28 @@ define(["./test/sample_response_test_data"], function(sampleTestData) {
     $scope.energyTypeRequired = false;
     $scope.energyUnitsRequired = false;
     $scope.energyUseRequired = false;
+
+    $scope.requireDataCenter = false;
+    $scope.requireHospital = false;
+    $scope.requireHospitalCanada = false;
+    $scope.requireHotel = false;
+    $scope.requireK12School = false;
+    $scope.requireK12SchoolCanada = false;
+    $scope.requireMedicalOffice = false;
+    $scope.requireMedicalOfficeCanada = false;
+    $scope.requireMultiFamily = false;
+    $scope.requireOffice = false;
+    $scope.requireOfficeCanada = false;
+    $scope.requireParking = false;
+    $scope.requirePool = false;
+    $scope.requireResidenceHall = false;
+    $scope.requireRetail = false;
+    $scope.requireSeniorCare = false;
+    $scope.requireSupermarket = false;
+    $scope.requireSupermarketCanada = false;
+    $scope.requireWarehouse = false;
+    $scope.requireWastewaterCenter = false;
+    $scope.requireWorshipCenter = false;
 
     //watch on buildingType dropdown, clears parameters on change and opens additional inputs for building types for which
     // energystar scores can be calculated via Algorithm
@@ -286,257 +309,102 @@ define(["./test/sample_response_test_data"], function(sampleTestData) {
             var country = $scope.propertyModel.country;
             if(v){
                 $scope.reset();
-                if(v==="Office"){
-                    if(country===null || country!=="Canada"){
-                        $scope.showNumComputers = true;
-                        $scope.showWeeklyOperatingHours = true;
-                        $scope.showPercentHeated = true;
-                        $scope.showPercentCooled = true;
-                        $scope.showHDD = true;
-                        $scope.showCDD = true;
-                        $scope.showIsSmallBank = true;
-                        $scope.showNumWorkersMainShift = true;
-                    }
-                    else if(country==="Canada"){
-                        $scope.showWeeklyOperatingHours = true;
-                        $scope.showNumWorkersMainShift = true;
-                        $scope.showNumComputers = true;
-                        $scope.showNumServers = true;
-                        $scope.showPercentCooled = true;
-                        $scope.showHDD = true;
-                        $scope.showCDD = true;
-                    }
-                }
-                else if(v==="WorshipCenter"){
-                        $scope.showNumComputers = true;
-                        $scope.showWeeklyOperatingHours = true;
-                        $scope.showSeatingCapacity = true;
-                        $scope.showNumRefrUnits = true;
-                        $scope.showHasFoodPreparation = true;
-                        $scope.showIsOpenAllWeekdays = true;
-                        $scope.showHDD = true;
-                        $scope.showCDD = true;
-                }
-                else if(v==="WastewaterCenter"){
-                        $scope.showWastewaterAvgInfluentInflow=true;
-                        $scope.showWastewaterLoadFactor=true;
-                        $scope.showWastewaterInfluentBiologicalOxygenDemand=true;
-                        $scope.showWastewaterEffluentBiologicalOxygenDemand=true;
-                        $scope.showWastewaterPlantDesignFlowRate=true;
-                        $scope.showWastewaterHasTrickleFiltration=true;
-                        $scope.showWastewaterHasNutrientRemoval=true;
-                        $scope.showHDD = true;
-                        $scope.showCDD = true;
-                }
-                else if(v==="Warehouse"){
-                        $scope.showWeeklyOperatingHours = true;
-                        $scope.showNumWorkersMainShift = true;
-                        $scope.showNumWalkinRefrUnits = true;
-                        $scope.showIsWarehouseRefrigerated = true;
-                        $scope.showPercentHeated = true;
-                        $scope.showPercentCooled = true;
-                        $scope.showHDD = true;
-                        $scope.showCDD = true;
-                }
-                else if(v==="Supermarket"){
-                    if(country===null || country!=="Canada"){
-                        $scope.showWeeklyOperatingHours = true;
-                        $scope.showNumWorkersMainShift = true;
-                        $scope.showNumWalkinRefrUnits = true;
-                        $scope.showHasCooking = true;
-                        $scope.showPercentHeated = true;
-                        $scope.showPercentCooled = true;
-                        $scope.showHDD = true;
-                        $scope.showCDD = true;
-                    }
-                    else if(country==="Canada"){
-                        $scope.showWeeklyOperatingHours = true;
-                        $scope.showNumWorkersMainShift = true;
-                        $scope.showLengthRefrFoodDisplayCases = true;
-                        $scope.showNumCashRegisters = true;
-                        $scope.showNumComputers = true;
-                        $scope.showHDD = true;
-                    }
-                }
-                else if(v==="SeniorCare"){
-                        $scope.showWeeklyOperatingHours = true;
-                        $scope.showAvgNumResidents = true;
-                        $scope.showMaxNumResidents = true;
-                        $scope.showNumRezUnits = true;
-                        $scope.showNumElectronicLifts = true;
-                        $scope.showNumWorkersMainShift= true;
-                        $scope.showNumComputers= true;
-                        $scope.showNumRefrUnits= true;
-                        $scope.showNumCommWashingMachines= true;
-                        $scope.showNumRezWashingMachines= true;
-                        $scope.showPercentCooled= true;
-                        $scope.showPercentHeated= true;
-                        $scope.showHDD = true;
-                        $scope.showCDD = true;
-                }
-                else if(v==="Retail"){
-                        $scope.showWeeklyOperatingHours = true;
-                        $scope.showNumOpenClosedRefrCases = true;
-                        $scope.showNumCashRegisters = true;
-                        $scope.showNumWorkersMainShift = true;
-                        $scope.showNumComputers = true;
-                        $scope.showNumRefrUnits = true;
-                        $scope.showNumWalkinRefrUnits = true;
-                        $scope.showPercentCooled= true;
-                        $scope.showPercentHeated= true;
-                        $scope.showHDD = true;
-                        $scope.showCDD = true;
-                }
-                else if(v==="ResidenceHall"){
-                        $scope.showNumBedrooms = true;
-                        $scope.showPercentCooled= true;
-                        $scope.showPercentHeated= true;
-                        $scope.showHDD = true;
-                        $scope.showCDD = true;
-                }
-                else if(v==="MultiFamily"){
-                        $scope.showWeeklyOperatingHours = true;
-                        $scope.showNumRezUnits = true;
-                        $scope.showNumBedrooms = true;
-                        $scope.showNumUnitsLowRise1to4 = true;
-                        $scope.showNumUnitsMidRise5to9 = true;
-                        $scope.showNumUnitsHighRise10plus = true;
-                        $scope.showHDD = true;
-                        $scope.showCDD = true;
-                }
-                else if(v==="MedicalOffice"){
-                    if(country===null || country!=="Canada"){
-                            $scope.showNumWorkersMainShift = true;
-                            $scope.showWeeklyOperatingHours = true;
-                            $scope.showPercentCooled= true;
-                            $scope.showPercentHeated= true;
-                            $scope.showHDD = true;
-                            $scope.showCDD = true;
-                    }
-                     else if($scope.propertyModel.country==="Canada"){
-                            $scope.showNumWorkersMainShift = true;
-                            $scope.showWeeklyOperatingHours = true;
-                            $scope.showPercentCooled= true;
-                            $scope.showHDD = true;
-                            $scope.showCDD = true;
-                    }
-                }
-                else if(v==="K12School"){
-                    if(country===null || country!=="Canada"){
-                            $scope.showIsOpenWeekends = true;
-                            $scope.showIsHighSchool = true;
-                            $scope.showHasCooking= true;
-                            $scope.showNumComputers= true;
-                            $scope.showNumWalkinRefrUnits = true;
-                            $scope.showPercentCooled= true;
-                            $scope.showPercentHeated= true;
-                            $scope.showHDD = true;
-                            $scope.showCDD = true;
-                    }
-                     else if(country==="Canada"){
-                            $scope.showNumWorkersMainShift = true;
-                            $scope.showWeeklyOperatingHours = true;
-                            $scope.showGymFloorArea = true;
-                            $scope.showStudentSeatingCapacity = true;
-                            $scope.showIsSecondarySchool = true;
-                            $scope.showPercentCooled= true;
-                            $scope.showPercentHeated= true;
-                            $scope.showHDD = true;
-                            $scope.showCDD = true;
-                    }
-                }
-                else if(v==="Hotel"){
-                        $scope.showNumWorkersMainShift = true;
-                        $scope.showHasFoodPreparation = true;
-                        $scope.showNumBedrooms = true;
-                        $scope.showNumRefrUnits = true;
-                        $scope.showPercentCooled= true;
-                        $scope.showPercentHeated= true;
-                        $scope.showHDD = true;
-                        $scope.showCDD = true;
-                }
-                else if(v==="Hospital"){
-                    if(country===null || country!=="Canada"){
-                            $scope.showNumFTEWorkers= true;
-                            $scope.showNumStaffedBeds = true;
-                            $scope.showNumMRIMachines = true;
-                            $scope.showCDD = true;
-                    }
-                     else if(country==="Canada"){
-                            $scope.showNumWorkersMainShift = true;
-                            $scope.showWeeklyOperatingHours = true;
-                            $scope.showLicensedBedCapacity = true;
-                            $scope.showHasLaundryFacility = true;
-                            $scope.showPercentCooled= true;
-                            $scope.showPercentHeated= true;
-                            $scope.showHDD = true;
-                            $scope.showCDD = true;
-                    }
-                }
+
+                switch(v) {
+                    case "DataCenter":
+                        $scope.requireDataCenter = true;
+                        break;
+                    case "Hospital":
+                        if(country===null || country!=="Canada"){
+                                $scope.requireHospital = true;
+                        }
+                         else if(country==="Canada"){
+                                $scope.requireHospitalCanada = true;
+                        }
+                        break;
+                    case "Hotel":
+                        $scope.requireHotel = true;
+                        break;
+                    case "K12School":
+                        if(country===null || country!=="Canada"){
+                                $scope.requireK12School = true;
+                        }
+                         else if(country==="Canada"){
+                                $scope.requireK12SchoolCanada = true;
+                        }
+                        break;
+                    case "MedicalOffice":
+                        if(country===null || country!=="Canada"){
+                                $scope.requireMedicalOffice = true;
+                        }
+                         else if($scope.propertyModel.country==="Canada"){
+                                $scope.requireMedicalOfficeCanada = true;
+                        }
+                        break;
+                    case "MultiFamily":
+                        $scope.requireMultiFamily = true;
+                        break;
+                    case "ResidenceHall":
+                        $scope.requireResidenceHall = true;
+                        break;
+                    case "Retail":
+                        $scope.requireRetail = true;
+                        break;
+                    case "SeniorCare":
+                        $scope.requireSeniorCare = true;
+                        break;
+                    case "Supermarket":
+                        if(country===null || country!=="Canada"){
+                            $scope.requireSupermarket = true;
+                        }
+                        else if(country==="Canada"){
+                            $scope.requireSupermarketCanada = true;
+                        }
+                        break;
+                    case "Warehouse":
+                        $scope.requireWarehouse = true;
+                        break;
+                    case "WastewaterCenter":
+                        $scope.requireWastewaterCenter = true;
+                        break;
+                    case "Office":
+                        if(country===null || country!=="Canada"){
+                                $scope.requireOffice = true;
+                            }
+                            else if(country==="Canada"){
+                                $scope.requireOfficeCanada = true;
+                            }
+                        break;
+                    case "WorshipCenter":
+                        $scope.requireWorshipCenter = true;
+                        break;
+                }}
                 else {$scope.reset();}
-            }};
+            };
 
     $scope.reset = function() {
-            $scope.showNumBuildingsPartSingleMore=false;
-            $scope.showHDD=false;
-            $scope.showHDDbase40=false;
-            $scope.showCDD=false;
-            $scope.showPercentHeated=false;
-            $scope.showPercentCooled=false;
-            $scope.showAnnualITEnergyKwh=false;
-            $scope.showGFA=false;
-            $scope.showSeatingCapacity=false;
-            $scope.showIsOpenAllWeekdays=false;
-            $scope.showWeeklyOperatingHours=false;
-            $scope.showNumComputers=false;
-            $scope.showNumServers=false;
-            $scope.showHasFoodPreparation=false;
-            $scope.showNumRefrUnits=false;
-            $scope.showNumWorkersMainShift=false;
-            $scope.showIsWarehouseRefrigerated=false;
-            $scope.showNumWalkinRefrUnits=false;
-            $scope.showNumCashRegisters=false;
-            $scope.showLengthRefrFoodDisplayCases=false;
-            $scope.showHasCooking=false;
-            $scope.showAvgNumResidents=false;
-            $scope.showMaxNumResidents=false;
-            $scope.showNumRezUnits=false;
-            $scope.showNumElectronicLifts=false;
-            $scope.showNumCommWashingMachines=false;
-            $scope.showNumRezWashingMachines=false;
-            $scope.showNumOpenClosedRefrCases=false;
-            $scope.showIsSmallBank=false;
-            $scope.showNumBedrooms=false;
-            $scope.showNumUnitsLowRise1to4=false;
-            $scope.showNumUnitsMidRise5to9=false;
-            $scope.showNumUnitsHighRise10plus=false;
-            $scope.showGymFloorArea=false;
-            $scope.showStudentSeatingCapacity=false;
-            $scope.showIsSecondarySchool=false;
-            $scope.showIsHighSchool=false;
-            $scope.showIsOpenWeekends=false;
-            $scope.showNumStaffedBeds=false;
-            $scope.showNumMRIMachines=false;
-            $scope.showNumFTEWorkers=false;
-            $scope.showLicensedBedCapacity=false;
-            $scope.showHasLaundryFacility=false;
-            $scope.showHasPool=false;
-            $scope.showHasParking=false;
-            $scope.showIndoorOutdoor=false;
-            $scope.showIsOutdoorPool=false;
-            $scope.showPoolType=false;
-            $scope.showParkingAreaUnits=false;
-            $scope.showOpenParkingArea=false;
-            $scope.showPartiallyEnclosedParkingArea=false;
-            $scope.showFullyEnclosedParkingArea=false;
-            $scope.showHasParkingHeating=false;
-            $scope.showWastewaterAvgInfluentInflow=false;
-            $scope.showWastewaterLoadFactor=false;
-            $scope.showWastewaterInfluentBiologicalOxygenDemand=false;
-            $scope.showWastewaterEffluentBiologicalOxygenDemand=false;
-            $scope.showWastewaterPlantDesignFlowRate=false;
-            $scope.showWastewaterHasTrickleFiltration=false;
-            $scope.showWastewaterHasNutrientRemoval=false;
+            $scope.requireDataCenter = false;
+            $scope.requireHospital = false;
+            $scope.requireHospitalCanada = false;
+            $scope.requireHotel = false;
+            $scope.requireK12School = false;
+            $scope.requireK12SchoolCanada = false;
+            $scope.requireMedicalOffice = false;
+            $scope.requireMedicalOfficeCanada = false;
+            $scope.requireMultiFamily = false;
+            $scope.requireOffice = false;
+            $scope.requireOfficeCanada = false;
+            $scope.requireParking = false;
+            $scope.requirePool = false;
+            $scope.requireResidenceHall = false;
+            $scope.requireRetail = false;
+            $scope.requireSeniorCare = false;
+            $scope.requireSupermarket = false;
+            $scope.requireSupermarketCanada = false;
+            $scope.requireWarehouse = false;
+            $scope.requireWastewaterCenter = false;
+            $scope.requireWorshipCenter = false;
+
         };
     $scope.clearParams = function() {
             $scope.propertyModel.isOpenAllWeekdays=false;
@@ -789,7 +657,7 @@ define(["./test/sample_response_test_data"], function(sampleTestData) {
                 {id:"EnclosedMall",name:"Enclosed Mall"},
                 {id:"StripMall",name:"Strip Mall"},
                 {id:"Retail",name:"Retail Store"},
-                {id:"DataCenter",name:"Data Center"},
+                {id:"DataCenter",name:"Data Center"}, //Data Centers behave very different and require custom script
                 {id:"PersonalServices",name:"Personal Services (Health/Beauty, Dry Cleaning, etc.)"},
                 {id:"RepairServices",name:"Repair Services (Vehicle, Shoe Locksmith, etc.)"},
                 {id:"OtherServices",name:"Other Services"},
@@ -969,7 +837,6 @@ define(["./test/sample_response_test_data"], function(sampleTestData) {
         {id:"WoodTon",name:"Tons",filter_id:"wood"},
         {id:"WoodTonne",name:"Tonnes (Metric)",filter_id:"wood"},
 
-
         //<!--Other-->
         {id:"KBtu",name:"kBtu (thousand Btu)",filter_id:"other"},
         {id:"GJ",name:"GJ (billion Joules)",filter_id:"other"}
@@ -984,7 +851,7 @@ define(["./test/sample_response_test_data"], function(sampleTestData) {
 
             benchmarkServices.submit($scope.propertyModel).then(function (response) {
                 console.log(response);
-                $scope.bechmarkResult = response;
+                $scope.benchmarkResult = response;
             });
         } else {
             if($scope.baselineForm.city.$error.required){$scope.cityRequired = true;}

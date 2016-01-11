@@ -4,7 +4,6 @@ package models
  * Created by rimukas on 10/20/15.
  */
 
-
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import squants.energy.{Gigajoules, KBtus}
@@ -22,6 +21,21 @@ case class EUICalculator(parameters: JsValue) {
 
   implicit def boolOptToInt(b: Option[Boolean]): Int = if (b.getOrElse(false)) 1 else 0
 
+
+  val country:String = {
+    parameters.asOpt[ConversionInfo] match {
+      case Some(a) => a.country
+      case _ => throw new Exception("Could not retrieve Country")
+    }
+  }
+
+  val reportingUnits:String = {
+    parameters.asOpt[ConversionInfo] match {
+      case Some(a) => a.reportingUnits
+      case _ => throw new Exception("Could not retrieve Reporting Units")
+    }
+  }
+
   def getSiteEnergy: Future[List[Energy]] = {
     for {
       entries <- getEnergyList
@@ -34,19 +48,17 @@ case class EUICalculator(parameters: JsValue) {
   def getTotalSiteEnergy: Future[Energy] = {
     for {
       entries <- getEnergyList
-      conversionInfo <- getConversionInfo
       siteEnergyList <- computeSiteEnergy(entries)
-      siteEnergySum <- getSiteEnergySum(siteEnergyList, conversionInfo)
+      siteEnergySum <- getSiteEnergySum(siteEnergyList)
 
     } yield siteEnergySum
   }
 
-  def getSiteEnergySum(energies: List[Energy], convert: ConversionInfo): Future[Energy] = {
+  def getSiteEnergySum(energies: List[Energy]): Future[Energy] = {
 
-    val f = convert.reportingUnits match {
-      case "us" => energies.map {case a:Energy => a in KBtus}.sum in KBtus
-      case "metric" => energies.map {case a:Energy => a in Gigajoules}.sum in Gigajoules
-      case _ => throw new Exception("Could not recognize reporting unit conversion")
+    val f = country match {
+      case "USA" => energies.map {case a:Energy => a in KBtus}.sum in KBtus
+      case _ => energies.map {case a:Energy => a in Gigajoules}.sum in Gigajoules
     }
     Future(f)
   }
@@ -68,9 +80,8 @@ case class EUICalculator(parameters: JsValue) {
   def getSourceEnergy: Future[List[Energy]] = {
     for {
       entries <- getEnergyList
-      conversionInfo <- getConversionInfo
-      sourceEnergyList <- computeSourceEnergy(entries, conversionInfo)
-      sourceEnergyListConverted <- convertOutput(sourceEnergyList, conversionInfo)
+      sourceEnergyList <- computeSourceEnergy(entries)
+      sourceEnergyListConverted <- convertOutput(sourceEnergyList)
     } yield {
       sourceEnergyListConverted
     }
@@ -79,9 +90,8 @@ case class EUICalculator(parameters: JsValue) {
   def getTotalSourceEnergy: Future[Energy] = {
     for {
       entries <- getEnergyList
-      conversionInfo <- getConversionInfo
-      sourceEnergyList <- computeSourceEnergy(entries, conversionInfo)
-      sourceEnergyListConverted <- convertOutputSum(sourceEnergyList, conversionInfo)
+      sourceEnergyList <- computeSourceEnergy(entries)
+      sourceEnergyListConverted <- convertOutputSum(sourceEnergyList)
 
     } yield sourceEnergyListConverted
 
@@ -96,10 +106,10 @@ case class EUICalculator(parameters: JsValue) {
     } yield sourceEnergyListConverted - poolEnergy - parkingEnergy
   }
 
-  def computeSourceEnergy[T](entries: T, convert: ConversionInfo): Future[List[Energy]] = Future{
+  def computeSourceEnergy[T](entries: T): Future[List[Energy]] = Future{
     entries match {
       case a: EnergyList => a.energies.map {
-        case a: EnergyMetrics => sourceConvert(a.energyType, convert.country, Energy((a.energyUse, a.energyUnits)))
+        case a: EnergyMetrics => sourceConvert(a.energyType, Energy((a.energyUse, a.energyUnits)))
       }
       case _ => throw new Exception("Could not compute Source Energy from Site Energy")
     }
@@ -119,39 +129,24 @@ case class EUICalculator(parameters: JsValue) {
     } yield siteEnergyList
   }
 
-  def getConversionInfo: Future[ConversionInfo] = {
-    for {
-      info <- Future {
-        parameters.validate[ConversionInfo]
-      }
-      check <- {
-        info match {
-          case JsSuccess(a, _) => Future(a)
-          case JsError(err) => throw new Exception("Could not read Site to Source Conversion Parameters")
-        }
-      }
-    } yield check
-  }
 
-  def convertOutput(energies: List[Energy], convert: ConversionInfo): Future[List[Energy]] = Future {
-    convert.reportingUnits match {
-      case "us" => energies.map {case a:Energy => a in KBtus}
-      case "metric" => energies.map {case a:Energy => a in Gigajoules}
-      case _ => throw new Exception("Could not recognize reporting unit conversion")
+  def convertOutput(energies: List[Energy]): Future[List[Energy]] = Future {
+    country match {
+      case "USA" => energies.map {case a:Energy => a in KBtus}
+      case _ => energies.map {case a:Energy => a in Gigajoules}
     }
   }
 
 
-  def convertOutputSum(energies: List[Energy], convert: ConversionInfo): Future[Energy] = Future {
-    convert.reportingUnits match {
-      case "us" => energies.map {case a:Energy => a in KBtus}.sum in KBtus
-      case "metric" => energies.map {case a:Energy => a in Gigajoules}.sum in Gigajoules
-      case _ => throw new Exception("Could not recognize reporting unit conversion")
+  def convertOutputSum(energies: List[Energy]): Future[Energy] = Future {
+    country match {
+      case "USA" => energies.map {case a:Energy => a in KBtus}.sum in KBtus
+      case _ => energies.map {case a:Energy => a in Gigajoules}.sum in Gigajoules
     }
   }
 
 
-  def sourceConvert(energyType: String, country: String, siteEnergy: Try[Energy]): Energy = {
+  def sourceConvert(energyType: String, siteEnergy: Try[Energy]): Energy = {
     siteEnergy match {
       case a: Success[Energy] => {
         (energyType, country) match {
@@ -245,7 +240,7 @@ case class EUICalculator(parameters: JsValue) {
   }
 }
 
-case class ConversionInfo(country:String, reportingUnits: String)
+case class  ConversionInfo(country:String, reportingUnits: String, buildingType:String)
 object ConversionInfo {
   implicit val conversionInfoReads: Reads[ConversionInfo] = Json.reads[ConversionInfo]
 }

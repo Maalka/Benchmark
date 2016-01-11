@@ -1,29 +1,18 @@
 
-<div class="inline fields" ng-show="showIsSmallBank">
+<div class="inline fields">
     <div class="field">
-        <input type="checkbox" ng-model="propertyModel.isSmallBank" ng-init="propertyModel.isSmallBank=false"
-               ng-true-value=true ng-false-value=false>
-        <label>Property is a Small Bank (Y/N)</label>
+        <input type="checkbox" ng-model="propertyModel.hasCooking"
+               ng-true-value=true ng-false-value=false name="hasCooking" ng-init="propertyModel.hasCooking=false">
     </div>
-</div>
-
-<div class="inline fields" ng-show="numComputers">
     <div class="four wide field">
-        <input type="number" ng-model="propertyModel.numComputers"
-               ng-required="showNumComputers" name="numComputers" min="0" placeholder="numComputers">
-    </div>
-    <div class="field">
-        <label>Number of Computers</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.numComputers.$valid"><font color="red">[Must Be Number]</font></label>
+        <label>Facility Has Cooking (Y/N)</label>
     </div>
 </div>
 
-<div class="inline fields" ng-show="showWeeklyOperatingHours">
+<div class="inline fields">
     <div class="four wide field">
         <input type="number" ng-model="propertyModel.weeklyOperatingHours"
-               ng-required="showWeeklyOperatingHours" name="weeklyOperatingHours" min="0" placeholder="weeklyOperatingHours">
+               ng-required="requireSupermarket" name="weeklyOperatingHours" min="0" placeholder="weeklyOperatingHours">
     </div>
     <div class="field">
         <label>Number of Weekly Operating Hours</label>
@@ -33,13 +22,40 @@
     </div>
 </div>
 
-<div class="inline fields" ng-show="showPercentHeated">
+<div class="inline fields">
+    <div class="four wide field">
+        <input type="number" ng-model="propertyModel.numWorkersMainShift"
+               ng-required="requireSupermarket" name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
+    </div>
+    <div class="field">
+        <label>Number of Workers on Main Shift</label>
+    </div>
+    <div class="field">
+        <label ng-show="!baselineForm.numWorkersMainShift.$valid"><font color="red">[Must Be Number]</font></label>
+    </div>
+</div>
+
+<div class="inline fields">
+    <div class="four wide field">
+        <input type="number" ng-model="propertyModel.numRefrUnits"
+               ng-required="requireSupermarket" name="numRefrUnits" min="0" placeholder="numRefrUnits">
+    </div>
+    <div class="field">
+        <label>Number of Refrigerator Units</label>
+    </div>
+    <div class="field">
+        <label ng-show="!baselineForm.numRefrUnits.$valid"><font color="red">[Must Be Number]</font></label>
+    </div>
+</div>
+
+
+<div class="inline fields">
     <div class="field">
         <select class="select"
                 dropdown
                 ng-model="propertyModel.percentHeated"
                 ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                ng-required="showPercentHeated"
+                ng-required="requireSupermarket"
                 name="percentHeated">
         </select>
     </div>
@@ -51,13 +67,13 @@
     </div>
 </div>
 
-<div class="inline fields" ng-show="showPercentCooled">
+<div class="inline fields">
     <div class="field">
         <select class="select"
                 dropdown
                 ng-model="propertyModel.percentCooled"
                 ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                ng-required="showPercentCooled"
+                ng-required="requireSupermarket"
                 name="percentCooled">>
         </select>
     </div>
@@ -68,45 +84,5 @@
         <label ng-show="!baselineForm.percentCooled.$valid"><font color="red">[Required]</font></label>
     </div>
 </div>
-
-<div class="inline fields" ng-show="showHDD">
-    <div class="four wide field">
-        <input type="number" ng-model="propertyModel.HDD"
-               ng-required="showHDD" name="HDD" min="0" placeholder="HDD">
-    </div>
-    <div class="field">
-        <label>HDD: Heating Degree Days</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.HDD.$valid"><font color="red">[Must Be Number]</font></label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="showCDD">
-    <div class="four wide field">
-        <input type="number" ng-model="propertyModel.CDD"
-               ng-required="showCDD" name="CDD" min="0" placeholder="CDD">
-    </div>
-    <div class="field">
-        <label>CDD: Cooling Degree Days</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.CDD.$valid"><font color="red">[Must Be Number]</font></label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="showNumWorkersMainShift">
-    <div class="four wide field">
-        <input type="number" ng-model="propertyModel.numWorkersMainShift"
-               ng-required="showNumWorkersMainShift" name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
-    </div>
-    <div class="field">
-        <label>Number of Workers on Main Shift</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.numWorkersMainShift.$valid"><font color="red">[Must Be Number]</font></label>
-    </div>
-</div>
-
 
 

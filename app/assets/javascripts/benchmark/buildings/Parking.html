@@ -1,112 +1,67 @@
 
-<div class="inline fields" ng-show="showIsSmallBank">
-    <div class="field">
-        <input type="checkbox" ng-model="propertyModel.isSmallBank" ng-init="propertyModel.isSmallBank=false"
-               ng-true-value=true ng-false-value=false>
-        <label>Property is a Small Bank (Y/N)</label>
-    </div>
-</div>
 
-<div class="inline fields" ng-show="numComputers">
+<div class="inline fields">
     <div class="four wide field">
-        <input type="number" ng-model="propertyModel.numComputers"
-               ng-required="showNumComputers" name="numComputers" min="0" placeholder="numComputers">
-    </div>
-    <div class="field">
-        <label>Number of Computers</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.numComputers.$valid"><font color="red">[Must Be Number]</font></label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="showWeeklyOperatingHours">
-    <div class="four wide field">
-        <input type="number" ng-model="propertyModel.weeklyOperatingHours"
-               ng-required="showWeeklyOperatingHours" name="weeklyOperatingHours" min="0" placeholder="weeklyOperatingHours">
-    </div>
-    <div class="field">
-        <label>Number of Weekly Operating Hours</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.weeklyOperatingHours.$valid"><font color="red">[Must Be Number]</font></label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="showPercentHeated">
-    <div class="field">
-        <select class="select"
+        <select class="ui dropdown search"
                 dropdown
-                ng-model="propertyModel.percentHeated"
-                ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                ng-required="showPercentHeated"
-                name="percentHeated">
+                ng-model="propertyModel.parkingAreaUnits"
+                ng-options="item.id as item.name for item in buildingProperties.areaUnits"
+                ng-required="requireParking" name="parkingAreaUnits">
+            <option value="">Select</option>
         </select>
     </div>
     <div class="field">
-        <label>Percent Heated</label>
+        <label>Parking Area Units</label>
     </div>
     <div class="field">
-        <label ng-show="!baselineForm.percentHeated.$valid"><font color="red">[Required]</font></label>
+        <label ng-show="!baselineForm.parkingAreaUnits.$valid"><font color="red">[Required]</font></label>
     </div>
 </div>
-
-<div class="inline fields" ng-show="showPercentCooled">
-    <div class="field">
-        <select class="select"
-                dropdown
-                ng-model="propertyModel.percentCooled"
-                ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                ng-required="showPercentCooled"
-                name="percentCooled">>
-        </select>
-    </div>
-    <div class="field">
-        <label>Percent Cooled</label>
-    </div>
-    <div class="field">
-        <label ng-show="!baselineForm.percentCooled.$valid"><font color="red">[Required]</font></label>
-    </div>
-</div>
-
-<div class="inline fields" ng-show="showHDD">
+<div class="inline fields">
     <div class="four wide field">
-        <input type="number" ng-model="propertyModel.HDD"
-               ng-required="showHDD" name="HDD" min="0" placeholder="HDD">
+        <input type="number" ng-model="propertyModel.openParkingArea"
+               ng-required="requireParking" name="openParkingArea" min="0" placeholder="openParkingArea">
     </div>
     <div class="field">
-        <label>HDD: Heating Degree Days</label>
+        <label>Open Parking Area Coverage</label>
     </div>
     <div class="field">
-        <label ng-show="!baselineForm.HDD.$valid"><font color="red">[Must Be Number]</font></label>
+        <label ng-show="!baselineForm.openParkingArea.$valid"><font color="red">[Must Be Number]</font></label>
     </div>
 </div>
-
-<div class="inline fields" ng-show="showCDD">
+<div class="inline fields">
     <div class="four wide field">
-        <input type="number" ng-model="propertyModel.CDD"
-               ng-required="showCDD" name="CDD" min="0" placeholder="CDD">
+        <input type="number" ng-model="propertyModel.partiallyEnclosedParkingArea"
+               ng-required="requireParking" name="partiallyEnclosedParkingArea" min="0" placeholder="partiallyEnclosedParkingArea">
     </div>
     <div class="field">
-        <label>CDD: Cooling Degree Days</label>
+        <label>Partially Enclosed Parking Area Coverage</label>
     </div>
     <div class="field">
-        <label ng-show="!baselineForm.CDD.$valid"><font color="red">[Must Be Number]</font></label>
+        <label ng-show="!baselineForm.partiallyEnclosedParkingArea.$valid"><font color="red">[Must Be Number]</font></label>
     </div>
 </div>
-
-<div class="inline fields" ng-show="showNumWorkersMainShift">
+<div class="inline fields">
     <div class="four wide field">
-        <input type="number" ng-model="propertyModel.numWorkersMainShift"
-               ng-required="showNumWorkersMainShift" name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
+        <input type="number" ng-model="propertyModel.fullyEnclosedParkingArea"
+               ng-required="requireParking" name="fullyEnclosedParkingArea" min="0" placeholder="fullyEnclosedParkingArea">
     </div>
     <div class="field">
-        <label>Number of Workers on Main Shift</label>
+        <label>Fully Enclosed Parking Area Coverage</label>
     </div>
     <div class="field">
-        <label ng-show="!baselineForm.numWorkersMainShift.$valid"><font color="red">[Must Be Number]</font></label>
+        <label ng-show="!baselineForm.fullyEnclosedParkingArea.$valid"><font color="red">[Must Be Number]</font></label>
     </div>
 </div>
-
-
-
+<div class="inline fields">
+    <div class="four wide field">
+        <input type="checkbox" ng-model="propertyModel.hasParkingHeating"
+               ng-required="requireParking" name="hasParkingHeating" ng-init="propertyModel.hasParkingHeating=false">
+    </div>
+    <div class="field">
+        <label>Has Parking Area Heating (Y/N)</label>
+    </div>
+    <div class="field">
+        <label ng-show="!baselineForm.hasParkingHeating.$valid"><font color="red">[Must Be Number]</font></label>
+    </div>
+</div>
