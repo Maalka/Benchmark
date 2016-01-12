@@ -32,7 +32,7 @@
   "CDD": 285,
   "percentHeated": 100,
   "percentCooled": 20,
-  "annualITEnergyKwh": null,
+  "annualITEnergy": null,
   "GFA": 8250,
   "seatingCapacity": null,
   "isOpenAllWeekdays": null,

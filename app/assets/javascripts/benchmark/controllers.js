@@ -436,6 +436,8 @@ define([], function() {
             $scope.defaultValues = false;
             $scope.reset();
             $scope.clearParams();
+            $scope.propertyModel.energies = [];
+            $scope.energies = [];
 
          } else {$scope.submitErrors();}
     };
@@ -446,7 +448,7 @@ define([], function() {
         var propArr = $scope.propList;
 
         for( var i = 0; i < propArr.length; i++ ) {
-            window.alert(propArr[i].buildingType);
+
             if(propArr[i].buildingType === propType) {
 
                 index = i;
@@ -460,12 +462,87 @@ define([], function() {
         if ($scope.propList.length === 0){$scope.showPropTable = false;}
     };
 
-     $scope.createProp = function(){
-     return {
-            'buildingType': $scope.propertyModel.buildingType,
-            'GFA':$scope.propertyModel.GFA,
-            'areaUnits':$scope.propertyModel.areaUnits
-            };};
+    $scope.createProp = function(){
+
+        if($scope.energies.length===0){$scope.propertyModel.energies=null;}
+            else {$scope.propertyModel.energies = $scope.energies;}
+
+        return {
+            "name": $scope.propertyModel.name,
+            "country": $scope.propertyModel.country ,
+            "address1": $scope.propertyModel.address1,
+            "address2": $scope.propertyModel.address2,
+            "city": $scope.propertyModel.city,
+            "state": $scope.propertyModel.state,
+            "postalCode": $scope.propertyModel.postalCode,
+            "reportingUnits": $scope.propertyModel.reportingUnits,
+            "areaUnits": $scope.propertyModel.areaUnits,
+            "primaryType": $scope.propertyModel.primaryType,
+            "numBuildingsPartSingleMore": $scope.propertyModel.numBuildingsPartSingleMore,
+            "energies": $scope.propertyModel.energies ,
+            "targetScore": $scope.propertyModel.targetScore,
+            "percentBetterThanMedian": $scope.propertyModel.percentBetterThanMedian,
+            "buildingType": $scope.propertyModel.buildingType,
+            "HDD": $scope.propertyModel.HDD,
+            "HDDbase40": $scope.propertyModel.HDDbase40,
+            "CDD": $scope.propertyModel.CDD,
+            "percentHeated": $scope.propertyModel.percentHeated,
+            "percentCooled": $scope.propertyModel.percentCooled,
+            "annualITEnergy": $scope.propertyModel.annualITEnergy,
+            "GFA": $scope.propertyModel.GFA,
+            "seatingCapacity": $scope.propertyModel.seatingCapacity,
+            "isOpenAllWeekdays": $scope.propertyModel.isOpenAllWeekdays,
+            "weeklyOperatingHours": $scope.propertyModel.weeklyOperatingHours,
+            "numComputers": $scope.propertyModel.numComputers,
+            "numServers": $scope.propertyModel.numServers,
+            "hasFoodPreparation": $scope.propertyModel.hasFoodPreparation,
+            "numRefrUnits": $scope.propertyModel.numRefrUnits,
+            "numWorkersMainShift": $scope.propertyModel.numWorkersMainShift,
+            "isWarehouseRefrigerated": $scope.propertyModel.isWarehouseRefrigerated,
+            "numWalkinRefrUnits":$scope.propertyModel.numWalkinRefrUnits,
+            "numCashRegisters": $scope.propertyModel.numCashRegisters,
+            "lengthRefrFoodDisplayCases": $scope.propertyModel.lengthRefrFoodDisplayCases,
+            "hasCooking": $scope.propertyModel.hasCooking,
+            "avgNumResidents": $scope.propertyModel.avgNumResidents,
+            "maxNumResidents": $scope.propertyModel.maxNumResidents,
+            "numRezUnits": $scope.propertyModel.numRezUnits,
+            "numElectronicLifts": $scope.propertyModel.numElectronicLifts,
+            "numCommWashingMachines": $scope.propertyModel.numCommWashingMachines,
+            "numRezWashingMachines": $scope.propertyModel.numRezWashingMachines,
+            "numOpenClosedRefrCases": $scope.propertyModel.numOpenClosedRefrCases,
+            "isSmallBank": $scope.propertyModel.isSmallBank,
+            "numBedrooms": $scope.propertyModel.numBedrooms,
+            "numUnitsLowRise1to4": $scope.propertyModel.numUnitsLowRise1to4,
+            "numUnitsMidRise5to9": $scope.propertyModel.numUnitsMidRise5to9,
+            "numUnitsHighRise10plus": $scope.propertyModel.numUnitsHighRise10plus,
+            "gymFloorArea": $scope.propertyModel.gymFloorArea,
+            "studentSeatingCapacity": $scope.propertyModel.studentSeatingCapacity,
+            "isSecondarySchool": $scope.propertyModel.isSecondarySchool,
+            "isHighSchool": $scope.propertyModel.isHighSchool,
+            "isOpenWeekends": $scope.propertyModel.isOpenWeekends,
+            "numStaffedBeds": $scope.propertyModel.numStaffedBeds,
+            "numMRIMachines": $scope.propertyModel.numMRIMachines,
+            "numFTEWorkers": $scope.propertyModel.numFTEWorkers,
+            "licensedBedCapacity": $scope.propertyModel.licensedBedCapacity,
+            "hasLaundryFacility": $scope.propertyModel.hasLaundryFacility,
+            "hasPool": $scope.propertyModel.hasPool,
+            "hasParking": $scope.propertyModel.hasParking,
+            "indoorOutdoor": $scope.propertyModel.indoorOutdoor,
+            "isOutdoorPool": $scope.propertyModel.isOutdoorPool,
+            "poolType": $scope.propertyModel.poolType,
+            "openParkingArea": $scope.propertyModel.openParkingArea,
+            "partiallyEnclosedParkingArea": $scope.propertyModel.partiallyEnclosedParkingArea,
+            "fullyEnclosedParkingArea": $scope.propertyModel.fullyEnclosedParkingArea,
+            "hasParkingHeating": $scope.propertyModel.hasParkingHeating,
+            "wastewaterAvgInfluentInflow": $scope.propertyModel.wastewaterAvgInfluentInflow,
+            "wastewaterLoadFactor": $scope.propertyModel.wastewaterLoadFactor,
+            "wastewaterInfluentBiologicalOxygenDemand": $scope.propertyModel.wastewaterInfluentBiologicalOxygenDemand,
+            "wastewaterEffluentBiologicalOxygenDemand": $scope.propertyModel.wastewaterEffluentBiologicalOxygenDemand,
+            "wastewaterPlantDesignFlowRate": $scope.propertyModel.wastewaterPlantDesignFlowRate,
+            "wastewaterHasTrickleFiltration": $scope.propertyModel.wastewaterHasTrickleFiltration,
+            "wastewaterHasNutrientRemoval": $scope.propertyModel.wastewaterHasNutrientRemoval
+        };
+    };
 
 
     $scope.clearParams = function() {

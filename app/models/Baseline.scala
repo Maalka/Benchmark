@@ -35,6 +35,7 @@ case class EUIMetrics(parameters: JsValue) {
       siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
     } yield siteTotalEnergy.value / targetBuilding.buildingSize
 
+  val buildingGFA: Future[Double] = Future{targetBuilding.buildingSize}
 
 
   val expectedSourceEUI:Future[Double] = {

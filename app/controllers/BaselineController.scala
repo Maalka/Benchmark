@@ -63,7 +63,9 @@ trait BaselineActions {
 
       "medianES", "medianSourceEUI", "medianSiteEUI", "medianSourceEnergy", "medianSiteEnergy",
 
-      "sourceEnergy", "siteEnergy", "poolEnergy", "parkingEnergy", "totalSourceEnergyNoPoolNoParking")
+      "sourceEnergy", "siteEnergy", "poolEnergy", "parkingEnergy", "totalSourceEnergyNoPoolNoParking",
+
+      "buildingSize")
 
     val EUIConversionConstant:Double = {
       (energyCalcs.country, energyCalcs.reportingUnits) match {
@@ -119,8 +121,10 @@ trait BaselineActions {
       energyCalcs.getSiteEnergy.map(api(_,EUIConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
       energyCalcs.getPoolEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
       energyCalcs.getParkingEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      energyCalcs.getTotalSourceEnergyNoPoolNoParking.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)}
-  ))
+      energyCalcs.getTotalSourceEnergyNoPoolNoParking.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
+
+      getBaseline.buildingGFA.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},getBaseline.buildingGFA.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+    ))
 
     futures.map(fieldNames.zip(_)).map { r =>
       val errors = r.collect {
