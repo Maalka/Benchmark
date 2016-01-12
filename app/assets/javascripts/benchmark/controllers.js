@@ -436,8 +436,11 @@ define([], function() {
             $scope.defaultValues = false;
             $scope.reset();
             $scope.clearParams();
+
             $scope.propertyModel.energies = [];
             $scope.energies = [];
+            $scope.showEnergyTable = false;
+            $scope.hasAlgo = false;
 
          } else {$scope.submitErrors();}
     };
