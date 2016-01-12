@@ -418,21 +418,24 @@ define([], function() {
 
     $scope.addProperty = function(){
 
+
         if(!$scope.propList) {$scope.propList = [];}
+
 
         if($scope.baselineForm.$valid){
 
-            var tempProp = [$scope.propertyModel];
+
+            var tempProp = $scope.createProp();
             $scope.propList.push(tempProp);
             $scope.showPropTable = true;
 
             console.log($scope.propList);
 
-            //$scope.propertyModel.buildingType = null;
-            //$scope.propertyModel.areaUnits = null;
-            //$scope.defaultValues = false;
-            //$scope.reset();
-            //$scope.clearParams();
+            $scope.propertyModel.buildingType = null;
+            $scope.propertyModel.areaUnits = null;
+            $scope.defaultValues = false;
+            $scope.reset();
+            $scope.clearParams();
 
          } else {$scope.submitErrors();}
     };
@@ -441,9 +444,10 @@ define([], function() {
 
         var index = -1;
         var propArr = $scope.propList;
+
         for( var i = 0; i < propArr.length; i++ ) {
-            window.alert(propArr[0][i].buildingType);
-            if(propArr[0][i].buildingType === propType) {
+            window.alert(propArr[i].buildingType);
+            if(propArr[i].buildingType === propType) {
 
                 index = i;
                 break;
@@ -455,6 +459,14 @@ define([], function() {
         $scope.propList.splice(index, 1);
         if ($scope.propList.length === 0){$scope.showPropTable = false;}
     };
+
+     $scope.createProp = function(){
+     return {
+            'buildingType': $scope.propertyModel.buildingType,
+            'GFA':$scope.propertyModel.GFA,
+            'areaUnits':$scope.propertyModel.areaUnits
+            };};
+
 
     $scope.clearParams = function() {
             $scope.propertyModel.isOpenAllWeekdays=false;

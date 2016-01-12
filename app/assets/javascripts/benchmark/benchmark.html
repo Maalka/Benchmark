@@ -70,11 +70,11 @@
                 <th>Units</th>
             </tr>
             <tr ng-repeat="prop in propList">
-                <td>Office</td>
-                <td>30000</td>
-                <td>Sq.Ft</td>
+                <td>{{prop.buildingType}}</td>
+                <td>{{prop.GFA}}</td>
+                <td>{{prop.areaUnits}}</td>
                 <td>
-                    <div class="ui labeled button" tabindex="0"  ng-click="removeProp('Office')">
+                    <div class="ui labeled button" tabindex="0"  ng-click="removeProp(prop.buildingType)">
                         <i class="minus circle icon"></i> Remove Property
                     </div>
                 </td>
