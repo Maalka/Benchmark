@@ -63,6 +63,24 @@
 
         <div class="ui segment" style="background-color:#f0f7fe">
 
+        <table class="ui table" ng-show="showPropTable">
+            <tr>
+                <th>Building Type</th>
+                <th>Area</th>
+                <th>Units</th>
+            </tr>
+            <tr ng-repeat="prop in propList">
+                <td>Office</td>
+                <td>30000</td>
+                <td>Sq.Ft</td>
+                <td>
+                    <div class="ui labeled button" tabindex="0"  ng-click="removeProp('Office')">
+                        <i class="minus circle icon"></i> Remove Property
+                    </div>
+                </td>
+            </tr>
+        </table>
+
         <div class="field">
             <span>
                 <label>Primary Function of Building</label>
@@ -197,6 +215,10 @@
             <div class="field">
                 <label ng-show="!baselineForm.HDDbase40.$valid"><font color="red">[Must Be Number]</font></label>
             </div>
+        </div>
+
+        <div class="ui labeled button" ng-show="nextProp" ng-click="addProperty()">
+            <i class="add circle icon"></i> Add Another Property
         </div>
 
 

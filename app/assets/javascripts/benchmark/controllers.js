@@ -57,6 +57,10 @@ define([], function() {
     $scope.requireWastewaterCenter = false;
     $scope.requireWorshipCenter = false;
 
+    $scope.nextProp = false;
+    $scope.showPropTable = false;
+
+
     //watch on buildingType dropdown, clears parameters on change and opens additional inputs for building types for which
     // energystar scores can be calculated via Algorithm
     $scope.$watch("propertyModel.buildingType", function (v) {
@@ -309,7 +313,7 @@ define([], function() {
             var country = $scope.propertyModel.country;
             if(v){
                 $scope.reset();
-
+                $scope.nextProp = true;
                 switch(v) {
                     case "DataCenter":
                         $scope.requireDataCenter = true;
@@ -379,33 +383,79 @@ define([], function() {
                         $scope.requireWorshipCenter = true;
                         break;
                 }}
-                else {$scope.reset();}
+                else {
+                    $scope.addProp = false;
+                    $scope.reset();
+                }
             };
 
     $scope.reset = function() {
-            $scope.requireDataCenter = false;
-            $scope.requireHospital = false;
-            $scope.requireHospitalCanada = false;
-            $scope.requireHotel = false;
-            $scope.requireK12School = false;
-            $scope.requireK12SchoolCanada = false;
-            $scope.requireMedicalOffice = false;
-            $scope.requireMedicalOfficeCanada = false;
-            $scope.requireMultiFamily = false;
-            $scope.requireOffice = false;
-            $scope.requireOfficeCanada = false;
-            $scope.requireParking = false;
-            $scope.requirePool = false;
-            $scope.requireResidenceHall = false;
-            $scope.requireRetail = false;
-            $scope.requireSeniorCare = false;
-            $scope.requireSupermarket = false;
-            $scope.requireSupermarketCanada = false;
-            $scope.requireWarehouse = false;
-            $scope.requireWastewaterCenter = false;
-            $scope.requireWorshipCenter = false;
+        $scope.requireDataCenter = false;
+        $scope.requireHospital = false;
+        $scope.requireHospitalCanada = false;
+        $scope.requireHotel = false;
+        $scope.requireK12School = false;
+        $scope.requireK12SchoolCanada = false;
+        $scope.requireMedicalOffice = false;
+        $scope.requireMedicalOfficeCanada = false;
+        $scope.requireMultiFamily = false;
+        $scope.requireOffice = false;
+        $scope.requireOfficeCanada = false;
+        $scope.requireParking = false;
+        $scope.requirePool = false;
+        $scope.requireResidenceHall = false;
+        $scope.requireRetail = false;
+        $scope.requireSeniorCare = false;
+        $scope.requireSupermarket = false;
+        $scope.requireSupermarketCanada = false;
+        $scope.requireWarehouse = false;
+        $scope.requireWastewaterCenter = false;
+        $scope.requireWorshipCenter = false;
 
-        };
+        $scope.nextProp = false;
+
+    };
+
+    $scope.addProperty = function(){
+
+        if(!$scope.propList) {$scope.propList = [];}
+
+        if($scope.baselineForm.$valid){
+
+            var tempProp = [$scope.propertyModel];
+            $scope.propList.push(tempProp);
+            $scope.showPropTable = true;
+
+            console.log($scope.propList);
+
+            //$scope.propertyModel.buildingType = null;
+            //$scope.propertyModel.areaUnits = null;
+            //$scope.defaultValues = false;
+            //$scope.reset();
+            //$scope.clearParams();
+
+         } else {$scope.submitErrors();}
+    };
+
+    $scope.removeProp = function(propType){
+
+        var index = -1;
+        var propArr = $scope.propList;
+        for( var i = 0; i < propArr.length; i++ ) {
+            window.alert(propArr[0][i].buildingType);
+            if(propArr[0][i].buildingType === propType) {
+
+                index = i;
+                break;
+            }
+        }
+        if( index === -1 ) {
+            window.alert( "Error" );
+        }
+        $scope.propList.splice(index, 1);
+        if ($scope.propList.length === 0){$scope.showPropTable = false;}
+    };
+
     $scope.clearParams = function() {
             $scope.propertyModel.isOpenAllWeekdays=false;
             $scope.propertyModel.isWarehouseRefrigerated=false;
@@ -429,7 +479,7 @@ define([], function() {
             $scope.propertyModel.CDD=null;
             $scope.propertyModel.percentHeated=null;
             $scope.propertyModel.percentCooled=null;
-            $scope.propertyModel.annualITEnergyKwh=null;
+            $scope.propertyModel.annualITEnergy=null;
             $scope.propertyModel.GFA=null;
             $scope.propertyModel.seatingCapacity=null;
             $scope.propertyModel.weeklyOperatingHours=null;
@@ -843,6 +893,18 @@ define([], function() {
         ]
     };
 
+    $scope.submitErrors = function () {
+
+        if($scope.baselineForm.city.$error.required){$scope.cityRequired = true;}
+        if($scope.baselineForm.postalCode.$error.required){$scope.postalCodeRequired = true;}
+        if($scope.baselineForm.country.$error.required){$scope.countryRequired = true;}
+        if($scope.baselineForm.state.$error.required){$scope.stateRequired = true;}
+        if($scope.baselineForm.buildingType.$error.required){$scope.buildingTypeRequired = true;}
+        if($scope.baselineForm.GFA.$error.required){$scope.GFARequired = true;}
+        if($scope.baselineForm.areaUnits.$error.required){$scope.areaUnitsRequired = true;}
+        window.alert("Please check form for errors!");
+    };
+
     $scope.submit = function () {
 
         if($scope.baselineForm.$valid){
@@ -853,16 +915,7 @@ define([], function() {
                 console.log(response);
                 $scope.benchmarkResult = response;
             });
-        } else {
-            if($scope.baselineForm.city.$error.required){$scope.cityRequired = true;}
-            if($scope.baselineForm.postalCode.$error.required){$scope.postalCodeRequired = true;}
-            if($scope.baselineForm.country.$error.required){$scope.countryRequired = true;}
-            if($scope.baselineForm.state.$error.required){$scope.stateRequired = true;}
-            if($scope.baselineForm.buildingType.$error.required){$scope.buildingTypeRequired = true;}
-            if($scope.baselineForm.GFA.$error.required){$scope.GFARequired = true;}
-            if($scope.baselineForm.areaUnits.$error.required){$scope.areaUnitsRequired = true;}
-            window.alert("Please check form for errors!");
-        }
+        } else {$scope.submitErrors();}
     };
   };
   DashboardCtrl.$inject = ['$rootScope', '$scope', 'benchmarkServices'];
