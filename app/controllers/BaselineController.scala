@@ -24,10 +24,10 @@ import scala.language.implicitConversions
 trait BaselineActions {
   this: Controller =>
 
-  implicit def roundDouble(d:Double):Double = roundAt(2)(d)
-  implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(roundAt(1)(b.value))
+  //implicit def roundDouble(d:Double):Double = roundAt(2)(d)
+  implicit def energyToJSValue(b: Energy): JsValue = Json.toJson((b.value))
   implicit def listEnergyToJSValue(v: List[Energy]): JsValue = Json.toJson(v.map{
-    case e:Energy => roundAt(1)(e.value)
+    case e:Energy => e.value
   })
 
 
@@ -39,11 +39,11 @@ trait BaselineActions {
     }
   }
 
-  def api(response: Any, conversionFactor:Double=1.0,rounder:Int=2):Either[String, JsValue] = {
+  def api(response: Any, conversionFactor:Double=1.0):Either[String, JsValue] = {
 
     response match {
       case v: Energy => Right(v*conversionFactor)
-      case v: Double => Right(Json.toJson(roundAt(rounder)(v*conversionFactor)))
+      case v: Double => Right(Json.toJson((v*conversionFactor)))
       case v: Int => Right(Json.toJson(v*conversionFactor))
       case v: List[Energy] => Right(v.map(_*conversionFactor))
       case v: String => Right(Json.toJson(v))
@@ -125,7 +125,7 @@ trait BaselineActions {
       energyCalcs.getTotalSourceEnergyNoPoolNoParking.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
 
       getBaseline.buildingGFA.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.sourceSiteRatio.map(api(_,1,4)).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.sourceSiteRatio.map(api(_,1)).recover{ case NonFatal(th) => apiRecover(th)},
       getBaseline.getBuildingClass.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
 
     ))
