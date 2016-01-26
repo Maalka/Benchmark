@@ -5,66 +5,66 @@
       "ES": 44
     },
     {
-      "sourceEUI": 1.4
+      "sourceEUI": 1.4049
     },
     {
-      "siteEUI": 0.95
+      "siteEUI": 0.9478
     },
     {
-      "totalSourceEnergy": 7727.2
+      "totalSourceEnergy": 7727.2011
     },
     {
-      "totalSiteEnergy": 5212.7
+      "totalSiteEnergy": 5212.7462
     },
     {
       "targetES": 75
     },
     {
-      "targetSourceEUI": 0.98
+      "targetSourceEUI": 0.976
     },
     {
-      "targetSiteEUI": 0.66
+      "targetSiteEUI": 0.6584
     },
     {
-      "targetSourceEnergy": 5368.1
+      "targetSourceEnergy": 5368.097
     },
     {
-      "targetSiteEnergy": 3621.3
+      "targetSiteEnergy": 3621.3018
     },
     {
       "percentBetterES": 82
     },
     {
-      "percentBetterSourceEUI": 0.86
+      "percentBetterSourceEUI": 0.8607
     },
     {
-      "percentBetterSiteEUI": 0.58
+      "percentBetterSiteEUI": 0.5806
     },
     {
-      "percentBetterSourceEnergy": 4733.68
+      "percentBetterSourceEnergy": 4733.675
     },
     {
-      "percentBetterSiteEnergy": 3193.32
+      "percentBetterSiteEnergy": 3193.3227
     },
     {
       "medianES": 50
     },
     {
-      "medianSourceEUI": 1.32
+      "medianSourceEUI": 1.3241
     },
     {
-      "medianSiteEUI": 0.89
+      "medianSiteEUI": 0.8932
     },
     {
-      "medianSourceEnergy": 7282.58
+      "medianSourceEnergy": 7282.577
     },
     {
-      "medianSiteEnergy": 4912.8
+      "medianSiteEnergy": 4912.8041
     },
     {
       "sourceEnergy": [
         4797,
-        2930.2
+        2930.2011
       ]
     },
     {
@@ -80,10 +80,16 @@
       "parkingEnergy": 0
     },
     {
-      "totalSourceEnergyNoPoolNoParking": 7727.2
+      "totalSourceEnergyNoPoolNoParking": 7727.2011
     },
     {
       "buildingSize": 5500
+    },
+    {
+      "sourceSiteRatio": 0.6746
+    },
+    {
+      "buildingClass": "class models.CanadaMedicalOffice"
     }
   ]
 }

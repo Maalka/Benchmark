@@ -74,7 +74,7 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
     "be valid" in successfulBaselineTest("/baseline/adult_education/adult_education.json", "/baseline/adult_education/expected/successful_baseline_test.json")
     "ES response be invalid" in errorFieldBaselineTest("/baseline/adult_education/adult_education.json", "ES")
     "totalSiteEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/adult_education/adult_education.json", "totalSiteEnergy").as[Double] mustBe 12342512.3
+      successFieldBaselineTest("/baseline/adult_education/adult_education.json", "totalSiteEnergy").as[Double] mustBe 12342512.3201
     }
   }
 
@@ -89,7 +89,7 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
       successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "medianSourceEUI").as[Double] mustBe 141.4
     }
     "medianSiteEUI response be valid" in {
-      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "medianSiteEUI").as[Double] mustBe 88.86
+      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "medianSiteEUI").as[Double] mustBe 88.8576
     }
     "ES response not be valid" in {
       errorValueBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "ES")
@@ -100,7 +100,7 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
   "makeBaseline - office post body" should {
     "be valid" in successfulBaselineTest("/baseline/office/office.json", "/baseline/office/expected/successful_baseline_test.json")
     "totalSiteEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/office/office.json", "totalSiteEnergy").as[Double] mustBe 12342512.3
+      successFieldBaselineTest("/baseline/office/office.json", "totalSiteEnergy").as[Double] mustBe 12342512.3201
     }
   }
 
@@ -110,13 +110,13 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
     "ES errors be invalid" in noErrorFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "ES")
     "targetES errors be invalid" in noErrorFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "targetES")
     "totalSiteEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "totalSiteEnergy").as[Double] mustBe 5775.8
+      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "totalSiteEnergy").as[Double] mustBe 5775.779
     }
     "percentBetterSourceEUI response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "percentBetterSourceEUI").as[Double] mustBe 0.82
+      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "percentBetterSourceEUI").as[Double] mustBe 0.822
     }
     "medianSourceEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "medianSourceEnergy").as[Double] mustBe 10432.51
+      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "medianSourceEnergy").as[Double] mustBe 10432.5103
     }
   }
 
@@ -124,10 +124,10 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
   "makeBaseline - multifamily post body" should {
     "be valid" in successfulBaselineTest("/baseline/multifamily/multifamily.json", "/baseline/multifamily/expected/successful_baseline_test.json")
     "totalSourceEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/multifamily/multifamily.json", "totalSourceEnergy").as[Double] mustBe 22583665.4
+      successFieldBaselineTest("/baseline/multifamily/multifamily.json", "totalSourceEnergy").as[Double] mustBe 22583665.4157
     }
     "percentBetterSourceEUI response be valid" in {
-      successFieldBaselineTest("/baseline/multifamily/multifamily.json", "percentBetterSourceEUI").as[Double] mustBe 130
+      successFieldBaselineTest("/baseline/multifamily/multifamily.json", "percentBetterSourceEUI").as[Double] mustBe 130.0049
     }
   }
 
