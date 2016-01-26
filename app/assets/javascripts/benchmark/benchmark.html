@@ -1,4 +1,7 @@
 <div class="ui page">
+    <div class="ui labeled button" ng-click="quickFill()">
+        <i class="add circle icon"></i> Quick Fill
+    </div>
 	<form class="ui form" name="baselineForm">
 	  <h4 class="ui dividing header"><i class="large world icon"></i>Geographical Information</h4>
         <div class="ui segment" style="background-color:#f0f7fe">
@@ -161,6 +164,7 @@
         <div ng-include ng-if='requireWastewaterCenter && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/WastewaterCenter.html'">Not Wasterwater Center</div>
         <div ng-include ng-if='requireWorshipCenter && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/WorshipCenter.html'">Not Worship Center</div>
 
+
         <div class="inline fields" ng-show="hasAlgo">
             <div class="four wide field">
                 <input type="number" ng-model="propertyModel.HDD"
@@ -186,6 +190,9 @@
                 <label ng-show="!baselineForm.CDD.$valid"><font color="red">[Must Be Number]</font></label>
             </div>
         </div>
+        <div class="inline fields" ng-show="hasAlgo">
+            <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" target="_blank"><font color="red">Click Here to Retrieve HDD and CDD parameters if they aren't populated</font></a>
+        </div>
         <div class="inline fields" ng-show="showHDDbase40">
             <div class="four wide field">
                 <input type="number" ng-model="propertyModel.HDDbase40"
@@ -200,95 +207,98 @@
         </div>
 
 
+
         </div>
         <h4 class="ui dividing header"><i class="power icon"></i>Energy Use Information</h4>
         <h4 class="ui header">You can enter energy use information for 12 months (yearly) to calculate your buildings
             current ENERGY STAR Score, Site EUI, and Source EUI.</h4>
 
-        <div class="ui segment" style="background-color:#f0f7fe">
-            <div class="inline fields">
-                <div class="field">
-                    <input type="checkbox" ng-model="hideEnergies" name="hideEnergies"
-                           ng-true-value=true ng-false-value=false ng-init="hideEnergies=false">
-                    <label>I want to enter my Energy-use Information</label>
-                </div>
-            </div>
-            <div ng-show="hideEnergies">
-                <div class="fields">
-                    <div class="five wide field">
-                        <span>
-                            <label>Energy Type</label>
-                            <label ng-show="energyTypeRequired"><font color="red">[Please Select]</font></label>
-                        </span>
-                        <select class="ui dropdown"
-                            dropdown
-                            name="energyType"
-                            ng-model="propertyModel.energies.energyType"
-                            ng-options="item.id as item.name for item in energyProperties.energyType">
-                            <option value="">Select</option>
-                        </select>
-                    </div>
-                    <div class="four wide field">
-                        <span>
-                            <label>Units</label>
-                            <label ng-show="energyUnitsRequired"><font color="red">[Please Select]</font></label>
-                        </span>
-                        <select class="ui dropdown"
-                            dropdown
-                            name="energyUnits"
-                            ng-model="propertyModel.energies.energyUnits"
-                            ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: propertyModel.energies.energyType}">
-                            <option value="">Select</option>
-                        </select>
-                    </div>
-                    <div class="four wide field">
-                        <span>
-                            <label>Annual Energy Use</label>
-                            <label ng-show="energyUseRequired"><font color="red">[Required]</font></label>
-                            <label ng-show="baselineForm.energyUse.$error.number"><font color="red">[Must be a Number]</font></label>
-                        </span>
-                        <input type="number" ng-model="propertyModel.energies.energyUse"
-                               name="energyUse" min="0"
-                               placeholder="Energy Use">
-                    </div>
-                    <div class="three wide field">
-                        <span>
-                        <label>Energy Rate ($/unit)</label>
-                        <label ng-show="baselineForm.energyRate.$error.number"><font color="red">[Must be a Number]</font></label>
-                        </span>
-                        <input type="number" ng-model="propertyModel.energies.energyRate"
-                               name="energyRate" min="0"
-                               placeholder="$/unit">
+            <div class="ui segment" style="background-color:#f0f7fe">
+                <div class="inline fields">
+                    <div class="field">
+                        <input type="checkbox" ng-model="hideEnergies" name="hideEnergies"
+                               ng-true-value=true ng-false-value=false ng-init="hideEnergies=false">
+                        <label>I want to enter my Energy-use Information for my Whole Building</label>
                     </div>
                 </div>
 
-                <div class="ui labeled button" ng-click="addEnergiesRow()">
-                    <i class="add circle icon"></i> Save Entry
+                <div ng-show="hideEnergies">
+                    <div class="fields">
+                        <div class="five wide field">
+                            <span>
+                                <label>Energy Type</label>
+                                <label ng-show="energyTypeRequired"><font color="red">[Please Select]</font></label>
+                            </span>
+                            <select class="ui dropdown"
+                                dropdown
+                                name="energyType"
+                                ng-model="propertyModel.energies.energyType"
+                                ng-options="item.id as item.name for item in energyProperties.energyType">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                        <div class="four wide field">
+                            <span>
+                                <label>Units</label>
+                                <label ng-show="energyUnitsRequired"><font color="red">[Please Select]</font></label>
+                            </span>
+                            <select class="ui dropdown"
+                                dropdown
+                                name="energyUnits"
+                                ng-model="propertyModel.energies.energyUnits"
+                                ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: propertyModel.energies.energyType}">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                        <div class="four wide field">
+                            <span>
+                                <label>Annual Energy Use</label>
+                                <label ng-show="energyUseRequired"><font color="red">[Required]</font></label>
+                                <label ng-show="baselineForm.energyUse.$error.number"><font color="red">[Must be a Number]</font></label>
+                            </span>
+                            <input type="number" ng-model="propertyModel.energies.energyUse"
+                                   name="energyUse" min="0"
+                                   placeholder="Energy Use">
+                        </div>
+                        <div class="three wide field">
+                            <span>
+                            <label>Energy Rate ($/unit)</label>
+                            <label ng-show="baselineForm.energyRate.$error.number"><font color="red">[Must be a Number]</font></label>
+                            </span>
+                            <input type="number" ng-model="propertyModel.energies.energyRate"
+                                   name="energyRate" min="0"
+                                   placeholder="$/unit">
+                        </div>
+                    </div>
+
+                    <div class="ui labeled button" ng-click="addEnergiesRow()">
+                        <i class="add circle icon"></i> Save Entry
+                    </div>
+
                 </div>
 
-            </div>
+            <table class="ui table" ng-show="showEnergyTable">
+                <tr>
+                    <th>Energy Type</th>
+                    <th>Units</th>
+                    <th>Total Annual Energy Use</th>
+                    <th>Energy Rate ($/unit)</th>
+                </tr>
+                <tr ng-repeat="energyEntry in energies">
+                    <td>{{energyEntry.energyType}}</td>
+                    <td>{{energyEntry.energyUnits}}</td>
+                    <td>{{energyEntry.energyUse}}</td>
+                    <td>{{energyEntry.energyRate}}</td>
+                    <td>
+                        <div class="ui labeled button" tabindex="0"  ng-click="removeRow(energyEntry.energyType,
+                                     energyEntry.energyUnits,energyEntry.energyUse)">
+                            <i class="minus circle icon"></i> Remove Entry
+                        </div>
+                    </td>
+                </tr>
+            </table>
 
-                <table class="ui table" ng-show="showEnergyTable">
-                    <tr>
-                        <th>Energy Type</th>
-                        <th>Units</th>
-                        <th>Total Annual Energy Use</th>
-                        <th>Energy Rate ($/unit)</th>
-                    </tr>
-                    <tr ng-repeat="energyEntry in energies">
-                        <td>{{energyEntry.energyType}}</td>
-                        <td>{{energyEntry.energyUnits}}</td>
-                        <td>{{energyEntry.energyUse}}</td>
-                        <td>{{energyEntry.energyRate}}</td>
-                        <td>
-                            <div class="ui labeled button" tabindex="0"  ng-click="removeRow(energyEntry.energyType,
-                                         energyEntry.energyUnits,energyEntry.energyUse)">
-                                <i class="minus circle icon"></i> Remove Entry
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+        </div>
 
         <h4 class="ui dividing header"><i class="bar chart icon"></i>Report Preferences</h4>
         <div class="ui segment" style="background-color:#f0f7fe">
@@ -367,8 +377,8 @@
             </tr>
         </table>
         <div class="inline fields">
-            <div class="ui big labeled button" ng-show="nextProp" ng-click="addProperty()">
-                <i class="add circle icon"></i> Add Another Property
+            <div class="ui big labeled button" ng-click="addProperty()">
+                <i class="add circle icon"></i> Add Property
             </div>
             <div class="ui big labeled button" ng-click="submit()">
                 <i class="arrow right icon"></i>  Compute Target

@@ -22,6 +22,8 @@ case class EUIMetrics(parameters: JsValue) {
   val energyCalcs:EUICalculator = EUICalculator(parameters)
   val targetBuilding:BaseLine = getBuilding(parameters)
 
+  val getBuildingClass: Future[String] = Future{targetBuilding.getClass.toString}
+
   val sourceEUI: Future[Double] =
     for {
       poolEnergy <- energyCalcs.getPoolEnergy
@@ -36,6 +38,7 @@ case class EUIMetrics(parameters: JsValue) {
     } yield siteTotalEnergy.value / targetBuilding.buildingSize
 
   val buildingGFA: Future[Double] = Future{targetBuilding.buildingSize}
+  val sourceSiteRatio: Future[Double] = siteToSourceRatio
 
 
   val expectedSourceEUI:Future[Double] = {

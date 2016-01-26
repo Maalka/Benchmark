@@ -32,21 +32,13 @@ define(['angular'], function(angular) {
 
         var getResultValue = function (key) { 
           // look in errors
-          var value = getValue(scope.result, key);
+          var value = getValue(scope.result.errors, key);
           var returnValue;
-          if(value !== undefined) {
-              if(isNaN(value)) {
-                returnValue = {
-                'ok': false,
-                'value': "Not Available"
-                };
-              }else{
-                returnValue = {
-                'ok': true,
-                'value': getValue(scope.result, key)
-                };
-              }
-
+          if(value === undefined) {
+            returnValue = {
+              'ok': true,
+              'value': getValue(scope.result.values, key)
+            };
           } else {
             $log.debug("Failed to fetch value (" + key + "): " + value);
             returnValue = {

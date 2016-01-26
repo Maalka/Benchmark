@@ -39,13 +39,14 @@ trait BaselineActions {
     }
   }
 
-  def api(response: Any, conversionFactor:Double=1.0):Either[String, JsValue] = {
+  def api(response: Any, conversionFactor:Double=1.0,rounder:Int=2):Either[String, JsValue] = {
 
     response match {
       case v: Energy => Right(v*conversionFactor)
-      case v: Double => Right(Json.toJson(roundAt(2)(v*conversionFactor)))
+      case v: Double => Right(Json.toJson(roundAt(rounder)(v*conversionFactor)))
       case v: Int => Right(Json.toJson(v*conversionFactor))
       case v: List[Energy] => Right(v.map(_*conversionFactor))
+      case v: String => Right(Json.toJson(v))
       case None => Left("Could not recognize input type")
     }
   }
@@ -65,7 +66,7 @@ trait BaselineActions {
 
       "sourceEnergy", "siteEnergy", "poolEnergy", "parkingEnergy", "totalSourceEnergyNoPoolNoParking",
 
-      "buildingSize")
+      "buildingSize", "sourceSiteRatio", "buildingClass")
 
     val EUIConversionConstant:Double = {
       (energyCalcs.country, energyCalcs.reportingUnits) match {
@@ -123,7 +124,10 @@ trait BaselineActions {
       energyCalcs.getParkingEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
       energyCalcs.getTotalSourceEnergyNoPoolNoParking.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
 
-      getBaseline.buildingGFA.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},getBaseline.buildingGFA.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+      getBaseline.buildingGFA.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.sourceSiteRatio.map(api(_,1,4)).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.getBuildingClass.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+
     ))
 
     futures.map(fieldNames.zip(_)).map { r =>

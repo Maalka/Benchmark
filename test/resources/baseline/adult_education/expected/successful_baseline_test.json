@@ -82,6 +82,9 @@
     },
     {
       "totalSourceEnergyNoPoolNoParking": 37919454
+    },
+    {
+      "buildingSize": 200000
     }
   ]
 }

@@ -76,6 +76,9 @@
     },
     {
       "parkingEnergy": 0
+    },
+    {
+      "buildingSize": 200000
     }
   ]
 }
