@@ -1164,7 +1164,7 @@ define([], function() {
         mixSourceEUI = $scope.getMixedSourceEUI(sumPropSize,sourceEnergies,siteEnergies);
 
         if(results.length > 2){
-            mixTargetSourceEUI = null;
+
             if($scope.propertyModel.reportingUnits==="us"){
                 mixMedianSourceEUI = 123.1;
             }else{
