@@ -8,10 +8,11 @@ define(['angular'], function(angular) {
 
   var mod = angular.module('common.directives', []);
   mod.directive('benchmarkResultRow', ['$log', function($log) {
-    var getValue = function(root, key) { 
+
+    var getValue = function(root, key) {
       var returnValue;
-      for (var i =0; i < root.length; i ++) { 
-        if (root[i][key] !== undefined) { 
+      for (var i =0; i < root.length; i ++) {
+        if (root[i][key] !== undefined) {
           returnValue = root[i][key];
           break;
         }
@@ -27,10 +28,11 @@ define(['angular'], function(angular) {
       },
       templateUrl: '/assets/javascripts/common/partials/benchmark_result_row.html',
       link: function(scope) {
-        $log.info('Here prints the example directive from /common/directives.');
-        
 
-        var getResultValue = function (key) { 
+        $log.info('Here prints the example directive from /common/directives.');
+
+
+        var getResultValue = function (key) {
           // look in errors
           var value = getValue(scope.result, key);
           var returnValue;
@@ -56,12 +58,14 @@ define(['angular'], function(angular) {
           }
           return returnValue;
         };
-        scope.$watch('result', function(result) { 
+
+        scope.$watch('result', function(result) {
           var columns = [];
-          if (result !== undefined){ 
+          if (result !== undefined){
             for (var i =0; i < scope.columns.length; i++) {
+              console.log(getResultValue(scope.columns[i]));
               columns[i] = getResultValue(scope.columns[i]) || "undefined";
-            } 
+            }
           }
           scope.resultColumns = columns;
         });

@@ -1,0 +1,31 @@
+
+<div class="field">
+    <label ng-show="propFieldsRequired"><font color="red">[Please Complete All Fields for the Property Type]</font></label>
+</div>
+
+<div class="inline fields">
+
+    <div class="five wide field">
+        <label>Gross Floor Area</label>
+    </div>
+
+
+    <div class="five wide field">
+        <input type="number" ng-model="propertyModel.GFA"
+               name="GFA"
+               required
+               min="0"
+               placeholder="GFA">
+    </div>
+
+
+
+        <select class="ui dropdown two wide"
+                dropdown
+                ng-model="propertyModel.areaUnits"
+                ng-options="item.id as item.name for item in buildingProperties.areaUnits"
+                required name="areaUnits">
+            <option value="">Select</option>
+        </select>
+
+</div>

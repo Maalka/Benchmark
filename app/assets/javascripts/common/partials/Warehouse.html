@@ -1,0 +1,84 @@
+<div class="field">
+    <form class="ui form" name="baselineForm">
+        <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Use Default Values? (Y/N)</label>
+                <input type="checkbox" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
+                       ng-true-value=true ng-false-value=false>
+            </div>
+        </div>
+
+        <div class="inline fields">
+            <div class="four wide field">
+                <label>Is the Warehouse Refrigerated?</label>
+            </div>
+            <div class="field">
+                <input type="checkbox" ng-model="propertyModel.isWarehouseRefrigerated"
+                       ng-true-value=true ng-false-value=false name="isWarehouseRefrigerated" ng-init="propertyModel.isWarehouseRefrigerated=false">
+            </div>
+        </div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Number of Weekly Operating Hours</label>
+            </div>
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.weeklyOperatingHours"
+                       required name="weeklyOperatingHours" min="0" placeholder="weeklyOperatingHours">
+            </div>
+        </div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Number of Workers on Main Shift</label>
+            </div>
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numWorkersMainShift"
+                       required name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
+            </div>
+        </div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Number of Walk-in Refrigeration Units</label>
+            </div>
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numWalkinRefrUnits"
+                       required name="numWalkinRefrUnits" min="0" placeholder="numWalkinRefrUnits">
+            </div>
+        </div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Percent Heated</label>
+            </div>
+            <div class="field">
+                <select class="select"
+                        dropdown
+                        ng-model="propertyModel.percentHeated"
+                        ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                        required
+                        name="percentHeated">
+                </select>
+            </div>
+        </div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Percent Cooled</label>
+            </div>
+            <div class="field">
+                <select class="select"
+                        dropdown
+                        ng-model="propertyModel.percentCooled"
+                        ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                        required
+                        name="percentCooled">>
+                </select>
+            </div>
+        </div>
+
+    </form>
+</div>

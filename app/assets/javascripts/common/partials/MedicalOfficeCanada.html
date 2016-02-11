@@ -1,0 +1,44 @@
+<div class="field">
+    <form class="ui form" name="baselineForm">
+        <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
+        <div class="inline fields">
+            <div class="field">
+                <label>Number of Workers on Main Shift</label>
+            </div>
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.numWorkersMainShift"
+                       required name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
+            </div>
+        </div>
+
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Number of Weekly Operating Hours</label>
+            </div>
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.weeklyOperatingHours"
+                       required name="weeklyOperatingHours" min="0" placeholder="weeklyOperatingHours">
+            </div>
+        </div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Percent Cooled</label>
+            </div>
+            <div class="field">
+                <select class="select"
+                        dropdown
+                        ng-model="propertyModel.percentCooled"
+                        ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                        required
+                        name="percentCooled">>
+                </select>
+            </div>
+        </div>
+
+        <div ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"></div>
+    </form>
+</div>
+
+

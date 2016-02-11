@@ -1,385 +1,317 @@
 <div class="ui page">
-    <div class="ui labeled button" ng-click="quickFill()">
-        <i class="add circle icon"></i> Quick Fill
-    </div>
+
 	<form class="ui form" name="baselineForm">
-	  <h4 class="ui dividing header"><i class="large world icon"></i>Geographical Information</h4>
-        <div class="ui segment" style="background-color:#f0f7fe">
-	  <div class="field">
-          <span>
-              <label>City/Municipality</label>
-              <label ng-show="cityRequired"><font color="red">[Required]</font></label>
-          </span>
-          <div class="field">
-              <div class="eight wide field">
-                  <input type="text" ng-model="propertyModel.city"
-                         required name="city" placeholder="City">
-              </div>
-          </div>
-          <span>
-              <label>Postal Code</label>
-              <label ng-show="postalCodeRequired"><font color="red">[Required]</font></label>
-              <label ng-show="baselineForm.postalCode.$error.number"><font color="red">[Must be Numeric]</font></label>
-          </span>
-          <div class="field">
-              <div class="eight wide field">
-                  <input type="number" ng-model="propertyModel.postalCode"
-                         required name="postalCode" min="0" placeholder="Postal Code">
-              </div>
-          </div>
-	  </div>
+        <div class="eight wide field">
+            <h4 class="ui dividing header"><i class="globe icon"></i>ABOUT YOUR DESIGN PROJECT</h4>
+            <div class="ui segment" style="background-color:#f0f7fe">
+                <label ng-show="!baselineForm.$valid"><font color="red">[All Fields Required]</font></label>
+                <div class="inline fields">
 
-        <div class="field">
-            <span>
-                <label>Country</label>
-                <label ng-show="countryRequired"><font color="red">[Required]</font></label>
-            </span>
+                    <div class="field">
+                        <label>Country</label>
+                    </div>
+
+                    <div class="fourteen wide field">
+                        <select class="ui dropdown search"
+                                dropdown
+                                ng-model="propertyModel.country"
+                                ng-options="item.id as item.name for item in geographicProperties.country"
+                                required
+                                name="country">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="inline fields">
+                    <div class="field">
+                        <label>City</label>
+                    </div>
+
+                    <div class="five wide field">
+                        <input type="text" ng-model="propertyModel.city"
+                             required name="city" placeholder="City">
+                    </div>
+
+                    <div class="field">
+                        <label>State/Prov.</label>
+                    </div>
+
+                    <div class="field">
+                        <select class="ui dropdown search"
+                                dropdown
+                                ng-model="propertyModel.state"
+                                ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: propertyModel.country}"
+                                required
+                                name="state">
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="inline fields">
+
+                    <div class="field">
+                        <label>Postal Code</label>
+                    </div>
+
+                    <div class="twelve wide field">
+                      <input type="number" ng-model="propertyModel.postalCode"
+                             required name="postalCode" min="0" placeholder="Postal Code">
+                    </div>
+                    <label ng-show="baselineForm.postalCode.$error.number"><font color="red">[Must be Numeric]</font></label>
+                </div>
+
+                <div ng-include src="'assets/javascripts/common/partials/DegreeDays.html'"></div>
+                <div class="inline fields">
+                    <div class="field">
+                        <label><h6>Is this a new construction?</h6></label>
+                        <input type="checkbox" ng-model="propertyModel.newConstruction" ng-init="propertyModel.newConstruction=false"
+                               ng-true-value=true ng-false-value=false>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="eight wide field">
+            <h4 class="ui dividing header"><i class="building icon"></i>PROPERTY USE DETAILS</h4>
+            <div ng-repeat="prop in propTypes">
+                <div class="ui segment" style="background-color:#f0f7fe">
+                    <div class="inline fields">
+                        <div class="eleven wide field">
+                            <h2>{{prop.type}}</h2>
+                        </div>
+
+                        <button
+                            class="ui labeled large button"
+                            ng-click="removeProp(prop)">
+                            <i class="minus icon"></i>
+                            Remove
+                        </button>
+
+                    </div>
+                    <div class="ui divider"></div>
+
+                    <div ng-if="prop.type=='DataCenter' && prop.country=='USA'" building-Info type='DataCenter' model="prop"></div>
+                    <div ng-if="prop.type=='Hospital' && prop.country=='USA'" building-Info type='Hospital' model="prop"></div>
+                    <div ng-if="prop.type=='Hotel' && prop.country=='USA'" building-Info type='Hotel' model="prop"></div>
+                    <div ng-if="prop.type=='K12School' && prop.country=='USA'" building-Info type='K12School' model="prop"></div>
+                    <div ng-if="prop.type=='MedicalOffice' && prop.country=='USA'" building-Info type='MedicalOffice' model="prop"></div>
+                    <div ng-if="prop.type=='Office' && prop.country=='USA'" building-Info type='Office' model="prop"></div>
+                    <div ng-if="prop.type=='ResidenceHall' && prop.country=='USA'" building-Info type='ResidenceHall' model="prop"></div>
+                    <div ng-if="prop.type=='Retail' && prop.country=='USA'" building-Info type='Retail' model="prop"></div>
+                    <div ng-if="prop.type=='SeniorCare' && prop.country=='USA'" building-Info type='SeniorCare' model="prop"></div>
+                    <div ng-if="prop.type=='Supermarket' && prop.country=='USA'" building-Info type='Supermarket' model="prop"></div>
+                    <div ng-if="prop.type=='Warehouse' && prop.country=='USA'" building-Info type='Warehouse' model="prop"></div>
+                    <div ng-if="prop.type=='WastewaterCenter' && prop.country=='USA'" building-Info type='WastewaterCenter' model="prop"></div>
+                    <div ng-if="prop.type=='WorshipCenter' && prop.country=='USA'" building-Info type='WorshipCenter' model="prop"></div>
+                    <div ng-if="prop.type=='MultiFamily' && prop.country=='USA'" building-Info type='MultiFamily' model="prop"></div>
+
+                    <div ng-if="prop.type=='Hospital' && prop.country=='Canada'" building-Info type='HospitalCanada' model="prop"></div>
+                    <div ng-if="prop.type=='K12School' && prop.country=='Canada'" building-Info type='K12SchoolCanada' model="prop"></div>
+                    <div ng-if="prop.type=='MedicalOffice' && prop.country=='Canada'" building-Info type='MedicalOfficeCanada' model="prop"></div>
+                    <div ng-if="prop.type=='Office' && prop.country=='Canada'" building-Info type='OfficeCanada' model="prop"></div>
+                    <div ng-if="prop.type=='Supermarket' && prop.country=='Canada'" building-Info type='SupermarketCanada' model="prop"></div>
+
+                    <div ng-if="prop.type!='DataCenter' && prop.type!='Hospital' &&
+                    prop.type!='Hotel' && prop.type!='K12School' && prop.type!='MedicalOffice' &&
+                    prop.type!='Office' && prop.type!='ResidenceHall' && prop.type!='Retail' &&
+                    prop.type!='SeniorCare' && prop.type!='Supermarket' && prop.type!='Warehouse' &&
+                    prop.type!='WastewaterCenter' && prop.type!='WorshipCenter'" building-Info type='Generic' model="prop">
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="eight wide field">
+            <div class="ui segment" style="background-color:#f0f7fe">
+                <h6>Please select the primary function of your building below. If your property
+                    has multiple uses, add each of them in order to correctly classify your design property.</h6>
+
+                <div class="inline fields">
+
+                    <div class="field">
+                        <label><h6>{{propText}}</h6></label>
+                        <label ng-show="buildingTypeRequired"><font color="red">[Required]</font></label>
+                    </div>
+
+
+                    <select class="ui dropdown search"
+                            dropdown
+                            ng-model="propertyModel.buildingType"
+                            ng-options="item.id as item.name for item in buildingProperties.buildingType"
+                            required name="buildingType">
+                        <option value="">Select</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="eight wide field">
+            <h4 class="ui dividing header"><i class="lightning icon"></i>ESTIMATED DESIGN ENERGY (OPTIONAL)</h4>
+
+                <div class="ui segment" style="background-color:#f0f7fe">
+
+                    <h6>If you want to compare your actual to target performance, please enter
+                        your annual energy use metrics below.</h6>
+
+                    <div class="inline fields">
+                        <label><h6>I want to enter annual Energy-use Information</h6></label>
+                        <div class="field">
+                            <input type="checkbox" ng-model="hideEnergies" name="hideEnergies"
+                                   ng-true-value=true ng-false-value=false ng-init="hideEnergies=false">
+
+                        </div>
+                    </div>
+
+                    <div ng-show="hideEnergies">
+                        <div class="inline fields">
+                            <div class="field">
+                                <span>
+                                    <label>Energy Type</label>
+                                    <label ng-show="energyTypeRequired"><font color="red">[Please Select]</font></label>
+                                </span>
+                                <select class="ui dropdown"
+                                    dropdown
+                                    name="energyType"
+                                    ng-model="propertyModel.energies.energyType"
+                                    ng-options="item.id as item.name for item in energyProperties.energyType">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <span>
+                                    <label>Units</label>
+                                    <label ng-show="energyUnitsRequired"><font color="red">[Please Select]</font></label>
+                                </span>
+                                <select class="ui dropdown"
+                                    dropdown
+                                    name="energyUnits"
+                                    ng-model="propertyModel.energies.energyUnits"
+                                    ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: propertyModel.energies.energyType}">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <span>
+                                    <label>Annual Use</label>
+                                    <label ng-show="energyUseRequired"><font color="red">[Required]</font></label>
+                                    <label ng-show="baselineForm.energyUse.$error.number"><font color="red">[Must be a Number]</font></label>
+                                </span>
+                                <input type="number" ng-model="propertyModel.energies.energyUse"
+                                       name="energyUse" min="0"
+                                       placeholder="Energy Use">
+                            </div>
+                            <!-- This is an extra field that might be required in the energy form, other part is in controllers.js
+                            <div class="field">
+                                    <span>
+                                        <label>Rate ($/unit)</label>
+                                        <label ng-show="baselineForm.energyRate.$error.number"><font color="red">[Must be a Number]</font></label>
+                                    </span>
+
+                                    <input type="number" ng-model="propertyModel.energies.energyRate"
+                                           name="energyRate" min="0"
+                                           placeholder="$/unit">
+                            </div>-->
+                        </div>
+
+                        <div class="ui labeled button" ng-click="addEnergiesRow()">
+                            <i class="add circle icon"></i> Save Entry
+                        </div>
+
+                    </div>
+
+                <table class="ui table" ng-show="showEnergyTable">
+                    <tr>
+                        <th>Energy Type</th>
+                        <th>Units</th>
+                        <th>Total Annual Energy Use</th>
+                        <!--<th>Energy Rate ($/unit)</th>-->
+                    </tr>
+                    <tr ng-repeat="energyEntry in energies">
+                        <td>{{energyEntry.energyType}}</td>
+                        <td>{{energyEntry.energyUnits}}</td>
+                        <td>{{energyEntry.energyUse}}</td>
+                        <!--<td>{{energyEntry.energyRate}}</td>-->
+                        <td>
+                            <div class="ui labeled button" tabindex="0"  ng-click="removeRow(energyEntry.energyType,
+                                         energyEntry.energyUnits,energyEntry.energyUse)">
+                                <i class="minus circle icon"></i> Remove
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+
+        <div class="eight wide field">
+            <h4 class="ui dividing header"><i class="bar chart icon"></i>Reporting Units</h4>
+            <div class="ui segment" style="background-color:#f0f7fe">
+                <div ng-init="propertyModel.reportingUnits='us'">
+                    <div class="inline fields">
+                        <div class="field">
+                            <label><h6>Conventional: kBtu/ft²</h6></label>
+                            <input type="radio" ng-model="propertyModel.reportingUnits" name="reportingUnits" value="us">
+                        </div>
+                        <div class="field">
+                            <label><h6>Metric: GJ/m²</h6></label>
+                            <input type="radio" ng-model="propertyModel.reportingUnits" name="reportingUnits" value="metric">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       <!-- These fields finish target finder replication, but are not needed specifically for the 2030 Baseline Tool-->
             <div class="eight wide field">
-                <select class="ui dropdown search"
-                        dropdown
-                        ng-model="propertyModel.country"
-                        ng-options="item.id as item.name for item in geographicProperties.country"
-                        required
-                        name="country">
-                </select>
-            </div>
-        </div>
-
-        <div class="field">
-            <span>
-                <label>State/Province</label>
-                <label ng-show="stateRequired"><font color="red">[Required]</font></label>
-            </span>
-            <div class="eight wide field">
-                <select class="ui dropdown search"
-                        dropdown
-                        ng-model="propertyModel.state"
-                        ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: propertyModel.country}"
-                        required
-                        name="state">
-                </select>
-            </div>
-            </div>
-    </div>
-
-	  <h4 class="ui dividing header"><i class="building icon"></i>Building Information</h4>
-
-        <div class="ui segment" style="background-color:#f0f7fe">
-
-        <div class="field">
-            <span>
-                <label>Primary Function of Building</label>
-                <label ng-show="buildingTypeRequired"><font color="red">[Required]</font></label>
-            </span>
-            <div class="eight wide field">
-                <select class="ui dropdown search"
-                        dropdown
-                        ng-model="propertyModel.buildingType"
-                        ng-options="item.id as item.name for item in buildingProperties.buildingType"
-                        required name="buildingType">
-                    <option value="">Select</option>
-                </select>
-            </div>
-        </div>
-        <div class="fields">
-            <div class="six wide field">
-                <span>
-                    <label>Gross Floor Area</label>
-                    <label ng-show="GFARequired"><font color="red">[Required]</font></label>
-                    <label ng-show="baselineForm.GFA.$error.number"><font color="red">[Must Be Number]</font></label>
-                </span>
-
-                <input type="number" ng-model="propertyModel.GFA"
-                     name="GFA"
-                     required
-                     min="0"
-                     placeholder="GFA">
-            </div>
-            <div class="four wide field">
-                <span>
-                    <label>Area Units</label>
-                    <label ng-show="areaUnitsRequired"><font color="red">[Required]</font></label>
-                </span>
-
-              <select class="ui dropdown search"
-                dropdown
-                ng-model="propertyModel.areaUnits"
-                ng-options="item.id as item.name for item in buildingProperties.areaUnits"
-                required name="areaUnits">
-                <option value="">Select</option>
-              </select>
-            </div>
-            <br>
-        </div>
-
-        <!--Checkbox entries-->
-        <div class="inline fields" ng-show="hasAlgo">
-            <div class="field">
-                <input type="checkbox" ng-model="defaultValues" name="defaultValues" ng-true-value=true ng-false-value=false>
-                <label>I want to use default values for my building parameters.</label>
-                <label ng-show="!baselineForm.GFA.$valid || !baselineForm.areaUnits.$valid" style="color:red">[Must enter Gross Floor Area to enable Default Values]</label>
-            </div>
-        </div>
-
-        <!--Add Pool and Parking Parameters to Property-->
-        <div class="inline fields" ng-show="showHasPool">
-            <div class="field">
-                <input type="checkbox" ng-model="propertyModel.hasPool"
-                       ng-true-value=true ng-false-value=false name="hasPool" ng-init="propertyModel.hasPool=false">
-            </div>
-            <div class="four wide field">
-                <label>Has Pool (Y/N)</label>
-            </div>
-        </div>
-        <div class="inline fields" ng-show="showHasParking">
-            <div class="field">
-                <input type="checkbox" ng-model="propertyModel.hasParking"
-                       ng-true-value=true ng-false-value=false name="hasParking" ng-init="propertyModel.hasParking=false">
-            </div>
-            <div class="four wide field">
-                <label>Has Parking (Y/N)</label>
-            </div>
-        </div>
-
-
-        <div ng-include ng-if='requireDataCenter && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/DataCenter.html'">Not Data Center</div>
-        <div ng-include ng-if='requireHospital && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/Hospital.html'">Not Hospital</div>
-        <div ng-include ng-if='requireHospitalCanada && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/HospitalCanada.html'">Not Hospital</div>
-        <div ng-include ng-if='requireHotel && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/Hotel.html'">Not a Hotel</div>
-        <div ng-include ng-if='requireK12School && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/K12School.html'">Not School</div>
-        <div ng-include ng-if='requireK12SchoolCanada && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/K12SchoolCanada.html'">Not School</div>
-        <div ng-include ng-if='requireMedicalOffice && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/MedicalOffice.html'">Not Medical Office</div>
-        <div ng-include ng-if='requireMedicalOfficeCanada && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/MedicalOfficeCanada.html'">Not Medical Office</div>
-        <div ng-include ng-if='requireMultiFamily && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/MultiFamily.html'">Not MultiFamily</div>
-        <div ng-include ng-if='requireOffice && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/Office.html'">Not Office</div>
-        <div ng-include ng-if='requireOfficeCanada && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/OfficeCanada.html'">Not Office</div>
-        <div ng-include ng-if='requireParking && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/Parking.html'">No Parking</div>
-        <div ng-include ng-if='requirePool && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/Pool.html'">No Pool</div>
-        <div ng-include ng-if='requireResidenceHall && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/ResidenceHall.html'">Not Residence Hall</div>
-        <div ng-include ng-if='requireRetail && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/Retail.html'">Not Retail</div>
-        <div ng-include ng-if='requireSeniorCare && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/SeniorCare.html'">Not Senior Care</div>
-        <div ng-include ng-if='requireSupermarket && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/Supermarket.html'">Not Supermarket</div>
-        <div ng-include ng-if='requireSupermarketCanada && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/SupermarketCanada.html'">Not Supermarket</div>
-        <div ng-include ng-if='requireWarehouse && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/Warehouse.html'">Not Warehouse</div>
-        <div ng-include ng-if='requireWastewaterCenter && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/WastewaterCenter.html'">Not Wasterwater Center</div>
-        <div ng-include ng-if='requireWorshipCenter && baselineForm.GFA.$valid && baselineForm.areaUnits.$valid' src="'assets/javascripts/benchmark/buildings/WorshipCenter.html'">Not Worship Center</div>
-
-
-        <div class="inline fields" ng-show="hasAlgo">
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.HDD"
-                       ng-required="hasAlgo" name="HDD" min="0" placeholder="HDD">
-            </div>
-            <div class="field">
-                <label>HDD: Heating Degree Days</label>
-            </div>
-            <div class="field">
-                <label ng-show="!baselineForm.HDD.$valid"><font color="red">[Must Be Number]</font></label>
-            </div>
-        </div>
-
-        <div class="inline fields" ng-show="hasAlgo">
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.CDD"
-                       ng-required="hasAlgo" name="CDD" min="0" placeholder="CDD">
-            </div>
-            <div class="field">
-                <label>CDD: Cooling Degree Days</label>
-            </div>
-            <div class="field">
-                <label ng-show="!baselineForm.CDD.$valid"><font color="red">[Must Be Number]</font></label>
-            </div>
-        </div>
-        <div class="inline fields" ng-show="hasAlgo">
-            <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" target="_blank"><font color="red">Click Here to Retrieve HDD and CDD parameters if they aren't populated</font></a>
-        </div>
-        <div class="inline fields" ng-show="showHDDbase40">
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.HDDbase40"
-                       ng-required="showHDDbase40" name="HDDbase40" min="0" placeholder="HDDbase40">
-            </div>
-            <div class="field">
-                <label>HDD (40): Heating Degree Days Base 40</label>
-            </div>
-            <div class="field">
-                <label ng-show="!baselineForm.HDDbase40.$valid"><font color="red">[Must Be Number]</font></label>
-            </div>
-        </div>
-
-
-
-        </div>
-        <h4 class="ui dividing header"><i class="power icon"></i>Energy Use Information</h4>
-        <h4 class="ui header">You can enter energy use information for 12 months (yearly) to calculate your buildings
-            current ENERGY STAR Score, Site EUI, and Source EUI.</h4>
+            <h4 class="ui header">Additional Computations (Optional)</h4>
 
             <div class="ui segment" style="background-color:#f0f7fe">
-                <div class="inline fields">
-                    <div class="field">
-                        <input type="checkbox" ng-model="hideEnergies" name="hideEnergies"
-                               ng-true-value=true ng-false-value=false ng-init="hideEnergies=false">
-                        <label>I want to enter my Energy-use Information for my Whole Building</label>
-                    </div>
-                </div>
+                <div class="grouped fields">
 
-                <div ng-show="hideEnergies">
-                    <div class="fields">
-                        <div class="five wide field">
-                            <span>
-                                <label>Energy Type</label>
-                                <label ng-show="energyTypeRequired"><font color="red">[Please Select]</font></label>
-                            </span>
-                            <select class="ui dropdown"
-                                dropdown
-                                name="energyType"
-                                ng-model="propertyModel.energies.energyType"
-                                ng-options="item.id as item.name for item in energyProperties.energyType">
-                                <option value="">Select</option>
-                            </select>
+                    <div class="inline fields" ng-show="hasAlgo">
+                        <div class="field">
+                            <input type="checkbox" ng-model="getTargetScore"
+                                   name="targetScore" ng-true-value=true
+                                   ng-false-value=false ng-init="getTargetScore=false">
+                            <label>Target ENERGY STAR Score</label>
                         </div>
-                        <div class="four wide field">
-                            <span>
-                                <label>Units</label>
-                                <label ng-show="energyUnitsRequired"><font color="red">[Please Select]</font></label>
-                            </span>
-                            <select class="ui dropdown"
-                                dropdown
-                                name="energyUnits"
-                                ng-model="propertyModel.energies.energyUnits"
-                                ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: propertyModel.energies.energyType}">
-                                <option value="">Select</option>
-                            </select>
+                        <div class="four wide field" ng-show="getTargetScore">
+                            <input type="number" ng-model="propertyModel.targetScore"
+                                   name="targetScore" placeholder="Target Score"
+                                   min="0" max="100">
+
                         </div>
-                        <div class="four wide field">
-                            <span>
-                                <label>Annual Energy Use</label>
-                                <label ng-show="energyUseRequired"><font color="red">[Required]</font></label>
-                                <label ng-show="baselineForm.energyUse.$error.number"><font color="red">[Must be a Number]</font></label>
-                            </span>
-                            <input type="number" ng-model="propertyModel.energies.energyUse"
-                                   name="energyUse" min="0"
-                                   placeholder="Energy Use">
-                        </div>
-                        <div class="three wide field">
-                            <span>
-                            <label>Energy Rate ($/unit)</label>
-                            <label ng-show="baselineForm.energyRate.$error.number"><font color="red">[Must be a Number]</font></label>
-                            </span>
-                            <input type="number" ng-model="propertyModel.energies.energyRate"
-                                   name="energyRate" min="0"
-                                   placeholder="$/unit">
+                        <div class="field">
+                            <label ng-show="!baselineForm.targetScore.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
                         </div>
                     </div>
-
-                    <div class="ui labeled button" ng-click="addEnergiesRow()">
-                        <i class="add circle icon"></i> Save Entry
-                    </div>
-
-                </div>
-
-            <table class="ui table" ng-show="showEnergyTable">
-                <tr>
-                    <th>Energy Type</th>
-                    <th>Units</th>
-                    <th>Total Annual Energy Use</th>
-                    <th>Energy Rate ($/unit)</th>
-                </tr>
-                <tr ng-repeat="energyEntry in energies">
-                    <td>{{energyEntry.energyType}}</td>
-                    <td>{{energyEntry.energyUnits}}</td>
-                    <td>{{energyEntry.energyUse}}</td>
-                    <td>{{energyEntry.energyRate}}</td>
-                    <td>
-                        <div class="ui labeled button" tabindex="0"  ng-click="removeRow(energyEntry.energyType,
-                                     energyEntry.energyUnits,energyEntry.energyUse)">
-                            <i class="minus circle icon"></i> Remove Entry
+                    <div class="inline fields">
+                        <div class="field">
+                            <input type="checkbox" ng-model="getPercentBetterThanMedian"
+                                   name="percentBetterThanMedian" ng-true-value=true
+                                   ng-false-value=false ng-init="getPercentBetterThanMedian=false">
+                            <label>Target % Better than Median</label>
                         </div>
-                    </td>
-                </tr>
-            </table>
 
-        </div>
-
-        <h4 class="ui dividing header"><i class="bar chart icon"></i>Report Preferences</h4>
-        <div class="ui segment" style="background-color:#f0f7fe">
-            <div ng-init="propertyModel.reportingUnits='us'">
-                <div class="inline fields">
-                    <label>What units would you like your report to output?</label>
-                    <div class="field">
-                        <input type="radio" ng-model="propertyModel.reportingUnits" name="reportingUnits" value="us">
-                        <label>Conventional EPA Units (e.g., kBtu/ft²) </label>
-                    </div>
-                    <div class="field">
-                        <input type="radio" ng-model="propertyModel.reportingUnits" name="reportingUnits" value="metric">
-                        <label>Metric Units (e.g., GJ/m²)</label>
+                        <div class="four wide field" ng-show="getPercentBetterThanMedian">
+                            <input type="number" ng-model="propertyModel.percentBetterThanMedian"
+                                   name="percentBetterThanMedian" placeholder="Target %"
+                                   min="0" max="100">
+                        </div>
+                        <div class="field">
+                            <label ng-show="!baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <h4 class="ui header">You can choose either a Target ENERGY STAR Score or a Target % Better than Median to see how
-            much energy your property would need to be consuming annually to reach your target.</h4>
-        <div class="ui segment" style="background-color:#f0f7fe">
-            <label>Select Target EUI Calculation Option:</label>
-            <div class="grouped fields">
-
-                <div class="inline fields" ng-show="hasAlgo">
-                    <div class="field">
-                        <input type="checkbox" ng-model="getTargetScore"
-                               name="targetScore" ng-true-value=true
-                               ng-false-value=false ng-init="getTargetScore=false">
-                        <label>Target ENERGY STAR Score</label>
-                    </div>
-                    <div class="four wide field" ng-show="getTargetScore">
-                        <input type="number" ng-model="propertyModel.targetScore"
-                               name="targetScore" placeholder="Target Score"
-                               min="0" max="100">
-
-                    </div>
-                    <div class="field">
-                        <label ng-show="!baselineForm.targetScore.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                    </div>
-                </div>
-                <div class="inline fields">
-                    <div class="field">
-                        <input type="checkbox" ng-model="getPercentBetterThanMedian"
-                               name="percentBetterThanMedian" ng-true-value=true
-                               ng-false-value=false ng-init="getPercentBetterThanMedian=false">
-                        <label>Target % Better than Median</label>
-                    </div>
-
-                    <div class="four wide field" ng-show="getPercentBetterThanMedian">
-                        <input type="number" ng-model="propertyModel.percentBetterThanMedian"
-                               name="percentBetterThanMedian" placeholder="Target %"
-                               min="0" max="100">
-                    </div>
-                    <div class="field">
-                        <label ng-show="!baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <table class="ui table" ng-show="showPropTable">
-            <tr>
-                <th>Building Type</th>
-                <th>Area</th>
-                <th>Units</th>
-            </tr>
-            <tr ng-repeat="prop in propList">
-                <td>{{prop.buildingType}}</td>
-                <td>{{prop.GFA}}</td>
-                <td>{{prop.areaUnits}}</td>
-                <td>
-                    <div class="ui labeled button" tabindex="0"  ng-click="removeProp(prop.buildingType)">
-                        <i class="minus circle icon"></i> Remove Property
-                    </div>
-                </td>
-            </tr>
-        </table>
         <div class="inline fields">
-            <div class="ui big labeled button" ng-click="addProperty()">
-                <i class="add circle icon"></i> Add Property
-            </div>
+
             <div class="ui big labeled button" ng-click="submit()">
                 <i class="arrow right icon"></i>  Compute Target
             </div>

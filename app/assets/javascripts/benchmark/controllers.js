@@ -16,88 +16,30 @@ define([], function() {
     //For displaying user-input energy entries after having been saved
     $scope.showEnergyTable = false;
     $scope.propList = [];
-    $scope.propTable = [];
-
-
-    // for testing purposes, display a sample result
-    $scope.showTestResponse = true;
     $scope.benchmarkResult = null;
-
-    //For Delayed Error Pointing After Submit Button Click (ugly if done on watch, though watch is good for removing errors)
-    $scope.cityRequired = false;
-    $scope.postalCodeRequired = false;
-    $scope.countryRequired = false;
-    $scope.stateRequired = false;
-
     $scope.buildingTypeRequired = false;
-    $scope.GFARequired = false;
-    $scope.areaUnitsRequired = false;
+
 
 
     $scope.energyTypeRequired = false;
     $scope.energyUnitsRequired = false;
     $scope.energyUseRequired = false;
 
-    $scope.requireDataCenter = false;
-    $scope.requireHospital = false;
-    $scope.requireHospitalCanada = false;
-    $scope.requireHotel = false;
-    $scope.requireK12School = false;
-    $scope.requireK12SchoolCanada = false;
-    $scope.requireMedicalOffice = false;
-    $scope.requireMedicalOfficeCanada = false;
-    $scope.requireMultiFamily = false;
-    $scope.requireOffice = false;
-    $scope.requireOfficeCanada = false;
-    $scope.requireParking = false;
-    $scope.requirePool = false;
-    $scope.requireResidenceHall = false;
-    $scope.requireRetail = false;
-    $scope.requireSeniorCare = false;
-    $scope.requireSupermarket = false;
-    $scope.requireSupermarketCanada = false;
-    $scope.requireWarehouse = false;
-    $scope.requireWastewaterCenter = false;
-    $scope.requireWorshipCenter = false;
+    $scope.propTypes = [];
 
-    $scope.showPropTable = false;
+    $scope.propText = "Primary Function of Building";
 
 
-    //watch on buildingType dropdown, clears parameters on change and opens additional inputs for building types for which
-    // energystar scores can be calculated via Algorithm
     $scope.$watch("propertyModel.buildingType", function (v) {
+
         if($scope.baselineForm.buildingType.$valid){$scope.buildingTypeRequired = false;}
         if(($scope.propertyModel.country) && (v)){
             $scope.hasAlgo = ($scope.propsWithAlgorithms.indexOf(v) > -1);
-            $scope.getProp();
-            $scope.defaultValues = false;
-            $scope.clearParams();}
+            $scope.propTypes.push({type:v,country:$scope.propertyModel.country});
+            $scope.propText="Add Another Use";
+        }
     });
 
-    //watch on GFA, remove errors if user input positive number
-    $scope.$watch("propertyModel.GFA", function () {
-        if($scope.baselineForm.GFA.$valid){$scope.GFARequired = false;}
-    });
-
-    //watch on areaUnits dropdown, remove errors upon user selection
-    $scope.$watch("propertyModel.areaUnits", function () {
-        if($scope.baselineForm.areaUnits.$valid){$scope.areaUnitsRequired = false;}
-    });
-
-    //watch on city text input, remove errors upon user text input
-    $scope.$watch("propertyModel.city", function () {
-        if($scope.baselineForm.city.$valid){$scope.cityRequired = false;}
-    });
-
-    //watch on postalCode, remove errors if user input positive number
-    $scope.$watch("propertyModel.postalCode", function () {
-        if($scope.baselineForm.postalCode.$valid){$scope.postalCodeRequired = false;}
-    });
-
-    //watch on state dropdown, remove errors upon user selection
-    $scope.$watch("propertyModel.state", function () {
-        if($scope.baselineForm.state.$valid){$scope.stateRequired = false;}
-    });
 
     //watch on country dropdown, combined with buildingType dropdown to decide what building related
     //user inputs to display in order to calculate Energy Star Score related variables
@@ -105,9 +47,9 @@ define([], function() {
         if($scope.baselineForm.country.$valid){$scope.countryRequired = false;}
         if((v)&&($scope.propertyModel.buildingType)){
             $scope.hasAlgo = ($scope.propsWithAlgorithms.indexOf($scope.propertyModel.buildingType) > -1);
-            $scope.getProp();
-            $scope.defaultValues = false;
-            $scope.clearParams();}
+            $scope.propTypes.push({type:$scope.propertyModel.buildingType,country:v});
+            $scope.propText="Add Another Use";
+            }
     });
 
     //watch on energyType dropdown, remove errors upon user selection
@@ -123,43 +65,30 @@ define([], function() {
         if(v){$scope.energyUseRequired = false;}
     });
 
-    //auto-populate default parameters by building type and country
-    $scope.$watch("defaultValues", function () {
-        if($scope.baselineForm.GFA.$valid && $scope.baselineForm.areaUnits.$valid){
-            $scope.setDefaults();
-            } else {
-            if($scope.baselineForm.GFA.$error.required){$scope.GFARequired = true;}
-            if($scope.baselineForm.areaUnits.$error.required){$scope.areaUnitsRequired = true;}
-            $scope.defaultValues = false;
-            }
-        });
+
 
     //populate user-input energy information table to calculate site/source EUI and Energy Star metrics
     //display errors when present
     $scope.addEnergiesRow = function(){
 
-    if(!$scope.propertyModel.energies) {$scope.propertyModel.energies = {};}
+        if(!$scope.propertyModel.energies) {$scope.propertyModel.energies = {};}
 
-    if($scope.energies===null){$scope.energies=[];}
-    if(!$scope.propertyModel.energies.energyType){$scope.energyTypeRequired = true;}
-    if(!$scope.propertyModel.energies.energyUnits){$scope.energyUnitsRequired = true;}
-    if(!$scope.propertyModel.energies.energyUse){$scope.energyUseRequired = true;}
+        if($scope.energies===null){$scope.energies=[];}
+        if(!$scope.propertyModel.energies.energyType){$scope.energyTypeRequired = true;}
+        if(!$scope.propertyModel.energies.energyUnits){$scope.energyUnitsRequired = true;}
+        if(!$scope.propertyModel.energies.energyUse){$scope.energyUseRequired = true;}
 
-    if ($scope.baselineForm.energyType.$valid && $scope.propertyModel.energies.energyType &&
-        $scope.baselineForm.energyUnits.$valid && $scope.propertyModel.energies.energyUnits &&
-        $scope.baselineForm.energyUse.$valid && $scope.propertyModel.energies.energyUse &&
-        $scope.baselineForm.energyRate.$valid) {
+        if ($scope.baselineForm.energyType.$valid && $scope.propertyModel.energies.energyType &&
+            $scope.baselineForm.energyUnits.$valid && $scope.propertyModel.energies.energyUnits &&
+            $scope.baselineForm.energyUse.$valid && $scope.propertyModel.energies.energyUse){
+            // && $scope.baselineForm.energyRate.$valid) {
 
-        $scope.energies.push({'energyType':$scope.propertyModel.energies.energyType,
-                                'energyUnits': $scope.propertyModel.energies.energyUnits,
-                                'energyUse':$scope.propertyModel.energies.energyUse,
-                                'energyRate':$scope.propertyModel.energies.energyRate || null});
+            $scope.energies.push({'energyType':$scope.propertyModel.energies.energyType,
+                                    'energyUnits': $scope.propertyModel.energies.energyUnits,
+                                    'energyUse':$scope.propertyModel.energies.energyUse,
+                                    'energyRate':$scope.propertyModel.energies.energyRate || null});
 
-        $scope.propertyModel.energies.energyType=null;
-        $scope.propertyModel.energies.energyUnits=null;
-        $scope.propertyModel.energies.energyUse=null;
-        $scope.propertyModel.energies.energyRate=null;
-        $scope.showEnergyTable = true;
+            $scope.showEnergyTable = true;
 
         }
     };
@@ -167,7 +96,7 @@ define([], function() {
     $scope.removeRow = function(energyType, energyUnits, energyUse){
         var index = -1;
         var energyArr = $scope.energies;
-        for( var i = 0; i < energyArr.length; i++ ) {
+        for(var i = 0; i < energyArr.length; i++ ) {
             if(energyArr[i].energyType === energyType && energyArr[i].energyUnits === energyUnits && energyArr[i].energyUse === energyUse) {
                 index = i;
                 break;
@@ -181,339 +110,10 @@ define([], function() {
     };
 
 
-    //for setting defaults based on building Type, Country does not matter here due to unused parameters upon analysis
-    $scope.setDefaults = function() {
-        if($scope.baselineForm.GFA.$valid &&
-            $scope.baselineForm.buildingType.$valid &&
-            $scope.baselineForm.areaUnits.$valid){
-
-            var prop = $scope.propertyModel.buildingType;
-            var GFA = $scope.propertyModel.GFA;
-            var areaUnits = $scope.propertyModel.areaUnits;
-
-            if(areaUnits==="mSQ"){GFA = GFA*10.7639;}
-
-            if(prop==="Hospital"){
-                $scope.propertyModel.licensedBedCapacity = 0.69*GFA/1000;
-                $scope.propertyModel.numStaffedBeds = 0.46*GFA/1000;
-                $scope.propertyModel.numFTEWorkers = 2.6*GFA/1000;
-                $scope.propertyModel.numWorkersMainShift = 1.32*GFA/1000;
-                $scope.propertyModel.numMRIMachines = 1;
-                $scope.propertyModel.hasLaundryFacility = true;
-                $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-            } else
-            if(prop==="Hotel"){
-                $scope.propertyModel.numBedrooms = 1.95*GFA/1000;
-                $scope.propertyModel.numWorkersMainShift = 0.32*GFA/1000;
-                $scope.propertyModel.hasFoodPreparation = false;
-                $scope.propertyModel.numRefrUnits = 0.023*GFA/1000;
-                $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-            } else
-            if(prop==="K12School"){
-                $scope.propertyModel.gymFloorArea = 0.0;
-                $scope.propertyModel.isHighSchool = false;
-                $scope.propertyModel.numWorkersMainShift = 0.77*GFA/1000;
-                $scope.propertyModel.studentSeatingCapacity = 10.0*GFA/1000;
-                $scope.propertyModel.numWalkinRefrUnits = 0.01*GFA/1000;
-                $scope.propertyModel.isOpenWeekends = false;
-                $scope.propertyModel.hasCooking = true;
-                $scope.propertyModel.numComputers = 1.75*GFA/1000;
-                $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-            } else
-            if(prop==="MedicalOffice"){
-                $scope.propertyModel.weeklyOperatingHours = 65;
-                $scope.propertyModel.numWorkersMainShift = 2.2*GFA/1000;
-                $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-            } else
-            if(prop==="MultiFamily"){
-                $scope.propertyModel.numRezUnits = 1.2*GFA/1000;
-                $scope.propertyModel.numUnitsLowRise1to4 = 1.2*GFA/1000;
-                $scope.propertyModel.numUnitsMidRise5to9 = 0.0;
-                $scope.propertyModel.numUnitsHighRise10plus = 0.0;
-                $scope.propertyModel.numBedrooms = 1.4*GFA/1000;
-            } else
-            if(prop==="Office"){
-                $scope.propertyModel.weeklyOperatingHours = 65;
-                $scope.propertyModel.numWorkersMainShift = 2.3*GFA/1000;
-                $scope.propertyModel.numComputers = 2*GFA/1000;
-                $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-            } else
-            if(prop==="ResidenceHall"){
-                $scope.propertyModel.numBedrooms = 100;
-                $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-            } else
-            if(prop==="Retail"){
-                $scope.propertyModel.weeklyOperatingHours = 65;
-                $scope.propertyModel.numOpenClosedRefrCases = 0.0;
-                $scope.propertyModel.numCashRegisters = 0.3*GFA/1000;
-                $scope.propertyModel.numWorkersMainShift = 1.0*GFA/1000;
-                $scope.propertyModel.numComputers = 0.2*GFA/1000;
-                $scope.propertyModel.numRefrUnits = 0.0;
-                $scope.propertyModel.numWalkinRefrUnits = 0.0;
-                $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-            } else
-            if(prop==="SeniorCare"){
-                $scope.propertyModel.maxNumResidents = 2.374*GFA/1000;
-                $scope.propertyModel.avgNumResidents = 2.075*GFA/1000;
-                $scope.propertyModel.numRezUnits = 1.584*GFA/1000;
-                $scope.propertyModel.numWorkersMainShift = 0.9523*GFA/1000;
-                $scope.propertyModel.numComputers = 0.367*GFA/1000;
-                $scope.propertyModel.numRezWashingMachines = 0.05757*GFA/1000;
-                $scope.propertyModel.numCommWashingMachines = 0.04422*GFA/1000;
-                $scope.propertyModel.numElectronicLifts = 0.0704*GFA/1000;
-                $scope.propertyModel.numRefrUnits = 0.09065*GFA/1000;
-                $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-            } else
-            if(prop==="Supermarket"){
-                $scope.propertyModel.weeklyOperatingHours = 105;
-                $scope.propertyModel.numWorkersMainShift = 1.0*GFA/1000;
-                $scope.propertyModel.numCashRegisters = 0.38*GFA/1000;
-                $scope.propertyModel.numComputers = 0.51*GFA/1000;
-                $scope.propertyModel.lengthRefrFoodDisplayCases = 2.6*GFA/1000;
-                $scope.propertyModel.numWalkinRefrUnits = 0.25*GFA/1000;
-                $scope.propertyModel.hasCooking = true;
-                $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-            } else
-            if(prop==="WastewaterCenter"){
-                $scope.propertyModel.wastewaterInfluentBiologicalOxygenDemand = 200.0;
-                $scope.propertyModel.wastewaterEffluentBiologicalOxygenDemand = 8.0;
-                $scope.propertyModel.wastewaterHasTrickleFiltration = false;
-                $scope.propertyModel.wastewaterHasNutrientRemoval = false;
-            } else
-            if(prop==="WorshipCenter"){
-                $scope.propertyModel.weeklyOperatingHours = 33;
-                $scope.propertyModel.isOpenAllWeekdays = false;
-                $scope.propertyModel.seatingCapacity = 40.0*GFA/1000;
-                $scope.propertyModel.numComputers = 0.2*GFA/1000;
-                $scope.propertyModel.hasFoodPreparation = false;
-                $scope.propertyModel.numRefrUnits = 0.018*GFA/1000;
-                $scope.propertyModel.numWalkinRefrUnits = 0.0;
-                $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-            } else
-            if(prop==="Warehouse"){
-                $scope.propertyModel.weeklyOperatingHours = 60;
-                $scope.propertyModel.numWorkersMainShift = 0.59*GFA/1000;
-                $scope.propertyModel.numWalkinRefrUnits = 0.0;
-                $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[5].id;
-                $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[2].id;
-            }
-    }};
-
-    //for displaying the relevant fields by building type and country
-    $scope.getProp = function() {
-            var v = $scope.propertyModel.buildingType;
-            var country = $scope.propertyModel.country;
-            if(v){
-                $scope.reset();
-                switch(v) {
-                    case "DataCenter":
-                        $scope.requireDataCenter = true;
-                        break;
-                    case "Hospital":
-                        if(country===null || country!=="Canada"){
-                                $scope.requireHospital = true;
-                        }
-                         else if(country==="Canada"){
-                                $scope.requireHospitalCanada = true;
-                        }
-                        break;
-                    case "Hotel":
-                        $scope.requireHotel = true;
-                        break;
-                    case "K12School":
-                        if(country===null || country!=="Canada"){
-                                $scope.requireK12School = true;
-                        }
-                         else if(country==="Canada"){
-                                $scope.requireK12SchoolCanada = true;
-                        }
-                        break;
-                    case "MedicalOffice":
-                        if(country===null || country!=="Canada"){
-                                $scope.requireMedicalOffice = true;
-                        }
-                         else if($scope.propertyModel.country==="Canada"){
-                                $scope.requireMedicalOfficeCanada = true;
-                        }
-                        break;
-                    case "MultiFamily":
-                        $scope.requireMultiFamily = true;
-                        break;
-                    case "ResidenceHall":
-                        $scope.requireResidenceHall = true;
-                        break;
-                    case "Retail":
-                        $scope.requireRetail = true;
-                        break;
-                    case "SeniorCare":
-                        $scope.requireSeniorCare = true;
-                        break;
-                    case "Supermarket":
-                        if(country===null || country!=="Canada"){
-                            $scope.requireSupermarket = true;
-                        }
-                        else if(country==="Canada"){
-                            $scope.requireSupermarketCanada = true;
-                        }
-                        break;
-                    case "Warehouse":
-                        $scope.requireWarehouse = true;
-                        break;
-                    case "WastewaterCenter":
-                        $scope.requireWastewaterCenter = true;
-                        break;
-                    case "Office":
-                        if(country===null || country!=="Canada"){
-                                $scope.requireOffice = true;
-                            }
-                            else if(country==="Canada"){
-                                $scope.requireOfficeCanada = true;
-                            }
-                        break;
-                    case "WorshipCenter":
-                        $scope.requireWorshipCenter = true;
-                        break;
-                }}
-                else {
-                    $scope.addProp = false;
-                    $scope.reset();
-                }
-            };
-
-    $scope.reset = function() {
-        $scope.requireDataCenter = false;
-        $scope.requireHospital = false;
-        $scope.requireHospitalCanada = false;
-        $scope.requireHotel = false;
-        $scope.requireK12School = false;
-        $scope.requireK12SchoolCanada = false;
-        $scope.requireMedicalOffice = false;
-        $scope.requireMedicalOfficeCanada = false;
-        $scope.requireMultiFamily = false;
-        $scope.requireOffice = false;
-        $scope.requireOfficeCanada = false;
-        $scope.requireParking = false;
-        $scope.requirePool = false;
-        $scope.requireResidenceHall = false;
-        $scope.requireRetail = false;
-        $scope.requireSeniorCare = false;
-        $scope.requireSupermarket = false;
-        $scope.requireSupermarketCanada = false;
-        $scope.requireWarehouse = false;
-        $scope.requireWastewaterCenter = false;
-        $scope.requireWorshipCenter = false;
-
-    };
-
-    $scope.quickFill = function(){
-
-        //console.log($scope.buildingProperties.areaUnits[1].id);
-
-        $scope.propertyModel.areaUnits = "ftSQ";//$scope.buildingProperties.areaUnits[0].id;
-        $scope.propertyModel.targetScore = 75;
-        $scope.propertyModel.percentBetterThanMedian = 65;
-        $scope.propertyModel.country = "USA";
-        $scope.propertyModel.city = "Chicago";
-        $scope.propertyModel.postalCode = 60190;
-        $scope.propertyModel.state = "IL";
-        $scope.propertyModel.buildingType = "Office";
-        $scope.propertyModel.numBuildingsPartSingleMore=null;
-        $scope.propertyModel.HDD=6620;
-        $scope.propertyModel.HDDbase40=null;
-        $scope.propertyModel.CDD=705;
-        $scope.propertyModel.percentHeated=100;
-        $scope.propertyModel.percentCooled=100;
-        $scope.propertyModel.annualITEnergy=null;
-        $scope.propertyModel.GFA=200000;
-        $scope.propertyModel.seatingCapacity=null;
-        $scope.propertyModel.weeklyOperatingHours=80;
-        $scope.propertyModel.numComputers=250;
-        $scope.propertyModel.numServers=0;
-        $scope.propertyModel.hasFoodPreparation=null;
-        $scope.propertyModel.numRefrUnits=null;
-        $scope.propertyModel.numWorkersMainShift=250;
-        $scope.propertyModel.numWalkinRefrUnits=null;
-        $scope.propertyModel.numCashRegisters=null;
-        $scope.propertyModel.lengthRefrFoodDisplayCases=null;
-        $scope.propertyModel.avgNumResidents=null;
-        $scope.propertyModel.maxNumResidents=null;
-        $scope.propertyModel.numRezUnits=null;
-        $scope.propertyModel.numElectronicLifts=null;
-        $scope.propertyModel.numCommWashingMachines=null;
-        $scope.propertyModel.numRezWashingMachines=null;
-        $scope.propertyModel.numOpenClosedRefrCases=null;
-        $scope.propertyModel.numBedrooms=null;
-        $scope.propertyModel.numUnitsLowRise1to4=null;
-        $scope.propertyModel.numUnitsMidRise5to9=null;
-        $scope.propertyModel.numUnitsHighRise10plus=null;
-        $scope.propertyModel.gymFloorArea=null;
-        $scope.propertyModel.studentSeatingCapacity=null;
-        $scope.propertyModel.numStaffedBeds=200;
-        $scope.propertyModel.numMRIMachines=20;
-        $scope.propertyModel.numFTEWorkers=250;
-        $scope.propertyModel.licensedBedCapacity=null;
-        $scope.propertyModel.poolType=null;
-        $scope.propertyModel.parkingAreaUnits=null;
-        $scope.propertyModel.openParkingArea=null;
-        $scope.propertyModel.partiallyEnclosedParkingArea=null;
-        $scope.propertyModel.fullyEnclosedParkingArea=null;
-        $scope.propertyModel.wastewaterAvgInfluentInflow=null;
-        $scope.propertyModel.wastewaterLoadFactor=null;
-        $scope.propertyModel.wastewaterInfluentBiologicalOxygenDemand=null;
-        $scope.propertyModel.wastewaterEffluentBiologicalOxygenDemand=null;
-        $scope.propertyModel.wastewaterPlantDesignFlowRate=null;
-
-
-    };
-
-
-
-    $scope.addProperty = function(){
-
-
-        if(!$scope.propList) {$scope.propList = [];}
-
-
-        if($scope.baselineForm.$valid){
-
-            $scope.updateAllProps();
-
-            var tempProp = $scope.createProp();
-            $scope.propList.push(tempProp);
-            $scope.showPropTable = true;
-
-            console.log($scope.propList);
-
-            $scope.propertyModel.buildingType = null;
-            $scope.propertyModel.areaUnits = null;
-            $scope.defaultValues = false;
-            $scope.reset();
-            $scope.clearParams();
-
-            $scope.hasAlgo = false;
-
-         } else {$scope.submitErrors();}
-    };
-
-    $scope.removeProp = function(propType){
-
-        var index = -1;
-        var propArr = $scope.propList;
-
-        for( var i = 0; i < propArr.length; i++ ) {
-
-            if(propArr[i].buildingType === propType) {
-
+    $scope.removeProp = function(prop){
+        var index;
+        for(var i = 0; i < $scope.propTypes.length; i++ ) {
+            if($scope.propTypes[i].type === prop.type && $scope.propTypes[i].country === prop.country) {
                 index = i;
                 break;
             }
@@ -521,11 +121,11 @@ define([], function() {
         if( index === -1 ) {
             window.alert( "Error" );
         }
-        $scope.propList.splice(index, 1);
-        if ($scope.propList.length === 0){
-            $scope.showPropTable = false;
-            $scope.benchmarkResult = null;
-            }
+        $scope.propTypes.splice(index, 1);
+
+        if($scope.propTypes.length === 0){
+            $scope.propText="Primary Function of Building";
+        }
     };
 
     $scope.createProp = function(){
@@ -611,86 +211,6 @@ define([], function() {
     };
 
 
-    $scope.clearParams = function() {
-            $scope.propertyModel.isOpenAllWeekdays=false;
-            $scope.propertyModel.isWarehouseRefrigerated=false;
-            $scope.propertyModel.hasCooking=false;
-            $scope.propertyModel.isSmallBank=false;
-            $scope.propertyModel.isSecondarySchool=false;
-            $scope.propertyModel.isHighSchool=false;
-            $scope.propertyModel.hasPool=false;
-            $scope.propertyModel.hasParking=false;
-            $scope.propertyModel.indoorOutdoor=false;
-            $scope.propertyModel.isOutdoorPool=false;
-            $scope.propertyModel.isOpenWeekends=false;
-            $scope.propertyModel.hasLaundryFacility=false;
-            $scope.propertyModel.wastewaterHasTrickleFiltration=false;
-            $scope.propertyModel.wastewaterHasNutrientRemoval=false;
-            $scope.propertyModel.hasParkingHeating=false;
-
-            $scope.propertyModel.numBuildingsPartSingleMore=null;
-            $scope.propertyModel.HDD=null;
-            $scope.propertyModel.HDDbase40=null;
-            $scope.propertyModel.CDD=null;
-            $scope.propertyModel.percentHeated=null;
-            $scope.propertyModel.percentCooled=null;
-            $scope.propertyModel.annualITEnergy=null;
-            $scope.propertyModel.GFA=null;
-            $scope.propertyModel.seatingCapacity=null;
-            $scope.propertyModel.weeklyOperatingHours=null;
-            $scope.propertyModel.numComputers=null;
-            $scope.propertyModel.numServers=null;
-            $scope.propertyModel.hasFoodPreparation=null;
-            $scope.propertyModel.numRefrUnits=null;
-            $scope.propertyModel.numWorkersMainShift=null;
-            $scope.propertyModel.numWalkinRefrUnits=null;
-            $scope.propertyModel.numCashRegisters=null;
-            $scope.propertyModel.lengthRefrFoodDisplayCases=null;
-            $scope.propertyModel.avgNumResidents=null;
-            $scope.propertyModel.maxNumResidents=null;
-            $scope.propertyModel.numRezUnits=null;
-            $scope.propertyModel.numElectronicLifts=null;
-            $scope.propertyModel.numCommWashingMachines=null;
-            $scope.propertyModel.numRezWashingMachines=null;
-            $scope.propertyModel.numOpenClosedRefrCases=null;
-            $scope.propertyModel.numBedrooms=null;
-            $scope.propertyModel.numUnitsLowRise1to4=null;
-            $scope.propertyModel.numUnitsMidRise5to9=null;
-            $scope.propertyModel.numUnitsHighRise10plus=null;
-            $scope.propertyModel.gymFloorArea=null;
-            $scope.propertyModel.studentSeatingCapacity=null;
-            $scope.propertyModel.numStaffedBeds=null;
-            $scope.propertyModel.numMRIMachines=null;
-            $scope.propertyModel.numFTEWorkers=null;
-            $scope.propertyModel.licensedBedCapacity=null;
-            $scope.propertyModel.poolType=null;
-            $scope.propertyModel.parkingAreaUnits=null;
-            $scope.propertyModel.openParkingArea=null;
-            $scope.propertyModel.partiallyEnclosedParkingArea=null;
-            $scope.propertyModel.fullyEnclosedParkingArea=null;
-            $scope.propertyModel.wastewaterAvgInfluentInflow=null;
-            $scope.propertyModel.wastewaterLoadFactor=null;
-            $scope.propertyModel.wastewaterInfluentBiologicalOxygenDemand=null;
-            $scope.propertyModel.wastewaterEffluentBiologicalOxygenDemand=null;
-            $scope.propertyModel.wastewaterPlantDesignFlowRate=null;
-
-        };
-    $scope.propsWithAlgorithms = [
-            "DataCenter",
-            "Hospital",
-            "Hotel",
-            "K12School",
-            "MedicalOffice",
-            "MultiFamily",
-            "Office",
-            "Parking",
-            "ResidenceHall",
-            "Retail",
-            "SeniorCare",
-            "Supermarket",
-            "Warehouse",
-            "WastewaterCenter",
-            "WorshipCenter"];
 
     $scope.geographicProperties = {
             country:
@@ -765,34 +285,7 @@ define([], function() {
         };
 
     $scope.buildingProperties = {
-        areaUnits: [
-                {id:"ftSQ",name:"Square Feet (sq. ft)"},
-                {id:"mSQ",name:"Square Meters (sq. m)"}
-        ],
-        areaHVAC: [
-                {id:0,name:"0%"},
-                {id:10,name:"10%"},
-                {id:20,name:"20%"},
-                {id:30,name:"30%"},
-                {id:40,name:"40%"},
-                {id:50,name:"50%"},
-                {id:60,name:"60%"},
-                {id:70,name:"70%"},
-                {id:80,name:"80%"},
-                {id:90,name:"90%"},
-                {id:100,name:"All of it: 100%"}
-        ],
 
-        poolType: [
-                        {id:"Recreational",name:"Recreational"},
-                        {id:"ShortCourse",name:"Short Course"},
-                        {id:"Olympic",name:"Olympic)"}
-                ],
-
-        poolInOut: [
-                            {id:"Indoor",name:"Indoor"},
-                            {id:"Outdoor",name:"Outdoor"}
-                    ],
 
         buildingType:[
                 {id:"Office",name:"Bank Branch"},
@@ -872,32 +365,50 @@ define([], function() {
                 {id:"Warehouse",name:"Warehouse / Distribution Center"}]
                 };
 
+    $scope.propsWithAlgorithms = [
+       "DataCenter",
+       "Hospital",
+       "Hotel",
+       "K12School",
+       "MedicalOffice",
+       "MultiFamily",
+       "Office",
+       "Parking",
+       "ResidenceHall",
+       "Retail",
+       "SeniorCare",
+       "Supermarket",
+       "Warehouse",
+       "WastewaterCenter",
+       "WorshipCenter"
+   ];
+
     $scope.energyProperties = {
 
         energyType:[
-                    {id:"grid",name:"Electric (Grid)"},
-                    {id:"onSiteElectricity",name:"Electric (Solar)"},
-                    {id:"onSiteElectricity",name:"Electric (Wind)"},
-                    {id:"naturalGas",name:"Natural Gas"},
-                    {id:"fuelOil1",name:"Fuel Oil 1"},
-                    {id:"fuelOil2",name:"Fuel Oil 2"},
-                    {id:"fuelOil4",name:"Fuel Oil 4"},
-                    {id:"fuelOil6",name:"Fuel Oil 5,6"},
-                    {id:"propane",name:"Propane"},
-                    {id:"kerosene",name:"Kerosene"},
-                    {id:"steam",name:"District Steam"},
-                    {id:"hotWater",name:"District Hot Water"},
-                    {id:"chilledWater",name:"District Chilled Water (Absorption)"},
-                    {id:"chilledWater",name:"District Chilled Water (Electric)"},
-                    {id:"chilledWater",name:"District Chilled Water (Engine)"},
-                    {id:"chilledWater",name:"District Chilled Water (Other)"},
-                    {id:"wood",name:"Wood"},
-                    {id:"coke",name:"Coke"},
-                    {id:"coalA",name:"Coal (Anthracite)"},
-                    {id:"coalB",name:"Coal (Bituminous) "},
-                    {id:"diesel",name:"Diesel"},
-                    {id:"other",name:"Other"}
-                    ],
+            {id:"grid",name:"Electric (Grid)"},
+            {id:"onSiteElectricity",name:"Electric (Solar)"},
+            {id:"onSiteElectricity",name:"Electric (Wind)"},
+            {id:"naturalGas",name:"Natural Gas"},
+            {id:"fuelOil1",name:"Fuel Oil 1"},
+            {id:"fuelOil2",name:"Fuel Oil 2"},
+            {id:"fuelOil4",name:"Fuel Oil 4"},
+            {id:"fuelOil6",name:"Fuel Oil 5,6"},
+            {id:"propane",name:"Propane"},
+            {id:"kerosene",name:"Kerosene"},
+            {id:"steam",name:"District Steam"},
+            {id:"hotWater",name:"District Hot Water"},
+            {id:"chilledWater",name:"District Chilled Water (Absorption)"},
+            {id:"chilledWater",name:"District Chilled Water (Electric)"},
+            {id:"chilledWater",name:"District Chilled Water (Engine)"},
+            {id:"chilledWater",name:"District Chilled Water (Other)"},
+            {id:"wood",name:"Wood"},
+            {id:"coke",name:"Coke"},
+            {id:"coalA",name:"Coal (Anthracite)"},
+            {id:"coalB",name:"Coal (Bituminous) "},
+            {id:"diesel",name:"Diesel"},
+            {id:"other",name:"Other"}
+        ],
 
         energyUnits: [
             //<!--Electricity - Grid -->
@@ -1054,9 +565,7 @@ define([], function() {
         if($scope.baselineForm.postalCode.$error.required){$scope.postalCodeRequired = true;}
         if($scope.baselineForm.country.$error.required){$scope.countryRequired = true;}
         if($scope.baselineForm.state.$error.required){$scope.stateRequired = true;}
-        if($scope.baselineForm.buildingType.$error.required){$scope.buildingTypeRequired = true;}
-        if($scope.baselineForm.GFA.$error.required){$scope.GFARequired = true;}
-        if($scope.baselineForm.areaUnits.$error.required){$scope.areaUnitsRequired = true;}
+
         window.alert("Please check form for errors!");
     };
 
@@ -1172,7 +681,6 @@ define([], function() {
             }
             mixPercentBetterSourceEUI = mixMedianSourceEUI*(1-$scope.propertyModel.percentBetterThanMedian / 100);
 
-
         } else {
             if(propClasses.indexOf("class models.GenericBuilding") === -1) {
                 mixTargetSourceEUI = $scope.dotProduct(targetSourceEUIs,propWeightsBySize);
@@ -1239,21 +747,7 @@ define([], function() {
 
     };
 
-    $scope.updateAllProps = function(){
-
-        if($scope.energies.length===0){$scope.propertyModel.energies=null;}
-        else {$scope.propertyModel.energies = $scope.energies;}
-
-        for (var i =0; i < $scope.propList.length; i ++) {
-           $scope.propList[i].energies = $scope.propertyModel.energies;
-           $scope.propList[i].percentBetterThanMedian = $scope.propertyModel.percentBetterThanMedian;
-           $scope.propList[i].targetScore = $scope.propertyModel.targetScore;
-        }
-    };
-
     $scope.computeBenchmarkResult = function(){
-
-        $scope.updateAllProps();
 
         $scope.futures = $scope.propList.map(function (r) {
             return benchmarkServices.submit(r);
@@ -1266,16 +760,26 @@ define([], function() {
 
     $scope.submit = function () {
 
-        if(!$scope.propList) {$scope.propList = [];}
+        $scope.propList = [];
+
+        if($scope.energies.length===0){$scope.propertyModel.energies=null;}
+                    else {$scope.propertyModel.energies = $scope.energies;}
+
+        if($scope.baselineForm.$valid){
+            for (var i = 0; i < $scope.propTypes.length; i++){
+                if($scope.propTypes[i].valid === true){
+                    var property = Object.assign($scope.propertyModel, $scope.propTypes[i].propertyModel);
+                    $scope.propList.push(property);
+                }else {console.log('Error in ' + $scope.propTypes[i].type);}
+            }
+        }else {console.log('Please Fix Form Errors');}
+
+        console.log($scope.propList);
 
         if ($scope.propList.length !== 0){
             $scope.computeBenchmarkResult();
-        } else {
-            $scope.addProperty();
-            if ($scope.propList.length !== 0){
-                $scope.computeBenchmarkResult();
-            } else {$scope.benchmarkResult = null;}
-        }
+        }else{$scope.benchmarkResult = null;}
+
     };
 
   };

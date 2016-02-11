@@ -1,0 +1,21 @@
+<div class="field">
+    <form class="ui form" name="baselineForm">
+        <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Annual IT Energy (kWh)</label>
+            </div>
+            <div class="four wide field">
+                <input type="number" ng-model="propertyModel.annualITEnergy"
+                       ng-required="requireDataCenter" name="annualITEnergy" min="0" placeholder="annualITEnergy">
+            </div>
+        </div>
+        <div ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"></div>
+    </form>
+</div>
+
+
+
+
+

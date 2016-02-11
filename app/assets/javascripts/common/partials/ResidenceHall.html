@@ -1,0 +1,57 @@
+<div class="field">
+    <form class="ui form" name="baselineForm">
+        <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Use Default Values? (Y/N)</label>
+                <input type="checkbox" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
+                       ng-true-value=true ng-false-value=false>
+            </div>
+        </div>
+        <div class="inline fields">
+            <div class="field">
+                <label>Number of Bedrooms</label>
+            </div>
+            <div class="two wide field">
+                <input type="number" ng-model="propertyModel.numBedrooms"
+                       required name="numBedrooms" min="0" placeholder="numBedrooms">
+            </div>
+        </div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Percent Heated</label>
+            </div>
+            <div class="field">
+                <select class="select"
+                        dropdown
+                        ng-model="propertyModel.percentHeated"
+                        ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                        required
+                        name="percentHeated">
+                </select>
+            </div>
+        </div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>Percent Cooled</label>
+            </div>
+            <div class="field">
+                <select class="select"
+                        dropdown
+                        ng-model="propertyModel.percentCooled"
+                        ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                        required
+                        name="percentCooled">>
+                </select>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+
+
+
