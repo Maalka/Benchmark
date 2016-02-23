@@ -3,10 +3,10 @@
  * prints out the value or an error based on the response from the benchmark web server
  * that references them all.
  */
-define(['angular'], function(angular) {
+define(['angular','./main'], function(angular) {
   'use strict';
 
-  var mod = angular.module('common.directives', []);
+  var mod = angular.module('common.directives');
   mod.directive('benchmarkResultRow', ['$log', function($log) {
 
     var getValue = function(root, key) {
@@ -28,9 +28,6 @@ define(['angular'], function(angular) {
       },
       templateUrl: '/assets/javascripts/common/partials/benchmark_result_row.html',
       link: function(scope) {
-
-        $log.info('Here prints the example directive from /common/directives.');
-
 
         var getResultValue = function (key) {
           // look in errors
@@ -63,7 +60,6 @@ define(['angular'], function(angular) {
           var columns = [];
           if (result !== undefined){
             for (var i =0; i < scope.columns.length; i++) {
-              console.log(getResultValue(scope.columns[i]));
               columns[i] = getResultValue(scope.columns[i]) || "undefined";
             }
           }

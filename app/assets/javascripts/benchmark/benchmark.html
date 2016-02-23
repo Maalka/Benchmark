@@ -14,7 +14,7 @@
                     <div class="fourteen wide field">
                         <select class="ui dropdown search"
                                 dropdown
-                                ng-model="propertyModel.country"
+                                ng-model="auxModel.country"
                                 ng-options="item.id as item.name for item in geographicProperties.country"
                                 required
                                 name="country">
@@ -28,7 +28,7 @@
                     </div>
 
                     <div class="five wide field">
-                        <input type="text" ng-model="propertyModel.city"
+                        <input type="text" ng-model="auxModel.city"
                              required name="city" placeholder="City">
                     </div>
 
@@ -39,8 +39,8 @@
                     <div class="field">
                         <select class="ui dropdown search"
                                 dropdown
-                                ng-model="propertyModel.state"
-                                ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: propertyModel.country}"
+                                ng-model="auxModel.state"
+                                ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: auxModel.country}"
                                 required
                                 name="state">
                         </select>
@@ -55,23 +55,21 @@
                     </div>
 
                     <div class="twelve wide field">
-                      <input type="number" ng-model="propertyModel.postalCode"
+                      <input type="text" ng-model="auxModel.postalCode"
                              required name="postalCode" min="0" placeholder="Postal Code">
                     </div>
-                    <label ng-show="baselineForm.postalCode.$error.number"><font color="red">[Must be Numeric]</font></label>
                 </div>
 
                 <div ng-include src="'assets/javascripts/common/partials/DegreeDays.html'"></div>
                 <div class="inline fields">
                     <div class="field">
                         <label><h6>Is this a new construction?</h6></label>
-                        <input type="checkbox" ng-model="propertyModel.newConstruction" ng-init="propertyModel.newConstruction=false"
+                        <input type="checkbox" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"
                                ng-true-value=true ng-false-value=false>
                     </div>
                 </div>
             </div>
         </div>
-
 
         <div class="eight wide field">
             <h4 class="ui dividing header"><i class="building icon"></i>PROPERTY USE DETAILS</h4>
@@ -140,7 +138,7 @@
 
                     <select class="ui dropdown search"
                             dropdown
-                            ng-model="propertyModel.buildingType"
+                            ng-model="auxModel.buildingType"
                             ng-options="item.id as item.name for item in buildingProperties.buildingType"
                             required name="buildingType">
                         <option value="">Select</option>
@@ -177,7 +175,7 @@
                                 <select class="ui dropdown"
                                     dropdown
                                     name="energyType"
-                                    ng-model="propertyModel.energies.energyType"
+                                    ng-model="auxModel.energies.energyType"
                                     ng-options="item.id as item.name for item in energyProperties.energyType">
                                     <option value="">Select</option>
                                 </select>
@@ -190,8 +188,8 @@
                                 <select class="ui dropdown"
                                     dropdown
                                     name="energyUnits"
-                                    ng-model="propertyModel.energies.energyUnits"
-                                    ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: propertyModel.energies.energyType}">
+                                    ng-model="auxModel.energies.energyUnits"
+                                    ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: auxModel.energies.energyType}">
                                     <option value="">Select</option>
                                 </select>
                             </div>
@@ -201,7 +199,7 @@
                                     <label ng-show="energyUseRequired"><font color="red">[Required]</font></label>
                                     <label ng-show="baselineForm.energyUse.$error.number"><font color="red">[Must be a Number]</font></label>
                                 </span>
-                                <input type="number" ng-model="propertyModel.energies.energyUse"
+                                <input type="number" ng-model="auxModel.energies.energyUse"
                                        name="energyUse" min="0"
                                        placeholder="Energy Use">
                             </div>
@@ -212,7 +210,7 @@
                                         <label ng-show="baselineForm.energyRate.$error.number"><font color="red">[Must be a Number]</font></label>
                                     </span>
 
-                                    <input type="number" ng-model="propertyModel.energies.energyRate"
+                                    <input type="number" ng-model="auxModel.energies.energyRate"
                                            name="energyRate" min="0"
                                            placeholder="$/unit">
                             </div>-->
@@ -251,28 +249,29 @@
         <div class="eight wide field">
             <h4 class="ui dividing header"><i class="bar chart icon"></i>Reporting Units</h4>
             <div class="ui segment" style="background-color:#f0f7fe">
-                <div ng-init="propertyModel.reportingUnits='us'">
+                <div ng-init="auxModel.reportingUnits='us'">
                     <div class="inline fields">
                         <div class="field">
                             <label><h6>Conventional: kBtu/ft²</h6></label>
-                            <input type="radio" ng-model="propertyModel.reportingUnits" name="reportingUnits" value="us">
+                            <input type="radio" ng-model="auxModel.reportingUnits" name="reportingUnits" value="us">
                         </div>
                         <div class="field">
                             <label><h6>Metric: GJ/m²</h6></label>
-                            <input type="radio" ng-model="propertyModel.reportingUnits" name="reportingUnits" value="metric">
+                            <input type="radio" ng-model="auxModel.reportingUnits" name="reportingUnits" value="metric">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-       <!-- These fields finish target finder replication, but are not needed specifically for the 2030 Baseline Tool-->
+
+       <!-- These fields finish target finder replication, but are not needed specifically for the 2030 Baseline Tool
             <div class="eight wide field">
             <h4 class="ui header">Additional Computations (Optional)</h4>
 
             <div class="ui segment" style="background-color:#f0f7fe">
                 <div class="grouped fields">
 
-                    <div class="inline fields" ng-show="hasAlgo">
+                    <div class="inline fields">
                         <div class="field">
                             <input type="checkbox" ng-model="getTargetScore"
                                    name="targetScore" ng-true-value=true
@@ -280,7 +279,7 @@
                             <label>Target ENERGY STAR Score</label>
                         </div>
                         <div class="four wide field" ng-show="getTargetScore">
-                            <input type="number" ng-model="propertyModel.targetScore"
+                            <input type="number" ng-model="auxModel.targetScore"
                                    name="targetScore" placeholder="Target Score"
                                    min="0" max="100">
 
@@ -298,7 +297,7 @@
                         </div>
 
                         <div class="four wide field" ng-show="getPercentBetterThanMedian">
-                            <input type="number" ng-model="propertyModel.percentBetterThanMedian"
+                            <input type="number" ng-model="auxModel.percentBetterThanMedian"
                                    name="percentBetterThanMedian" placeholder="Target %"
                                    min="0" max="100">
                         </div>
@@ -309,6 +308,7 @@
                 </div>
             </div>
         </div>
+        -->
 
         <div class="inline fields">
 

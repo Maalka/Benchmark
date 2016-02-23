@@ -3,12 +3,10 @@
  * changes form inputs based on property type
  * and supports multiple property types
  */
-define(['angular'], function(angular) {
+define(['angular','./main'], function(angular) {
   'use strict';
 
-  var mod = angular.module('common.directives', []);
-
-
+  var mod = angular.module('common.directives');
 
     mod.directive('buildingInfo', [function() {
         return {
@@ -27,6 +25,7 @@ define(['angular'], function(angular) {
 
                 $scope.propertyModel = {};
                 $scope.model.propertyModel = $scope.propertyModel ;
+                $scope.model.propertyModel.buildingType = $scope.model.type;
 
                 $scope.model.valid = false;
 

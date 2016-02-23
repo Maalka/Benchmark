@@ -21,7 +21,6 @@ case class EUICalculator(parameters: JsValue) {
 
   implicit def boolOptToInt(b: Option[Boolean]): Int = if (b.getOrElse(false)) 1 else 0
 
-
   val country:String = {
     parameters.asOpt[ConversionInfo] match {
       case Some(a) => a.country
@@ -240,7 +239,7 @@ case class EUICalculator(parameters: JsValue) {
   }
 }
 
-case class  ConversionInfo(country:String, reportingUnits: String, buildingType:String)
+case class  ConversionInfo(country:String, reportingUnits: String, buildingType:String, postalCode:String, state:String)
 object ConversionInfo {
   implicit val conversionInfoReads: Reads[ConversionInfo] = Json.reads[ConversionInfo]
 }

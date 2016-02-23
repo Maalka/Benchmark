@@ -13,7 +13,7 @@ import squants.space.{SquareFeet, SquareMeters}
 import scala.concurrent.Future
 import squants.energy.{Gigajoules, KBtus, Energy, KilowattHours}
 
-import models.{ConversionInfo, EUIMetrics, EUICalculator}
+import models.{Emissions, ConversionInfo, EUIMetrics, EUICalculator}
 import scala.util.control.NonFatal
 import scala.util.{ Success, Failure, Try}
 
@@ -29,7 +29,6 @@ trait BaselineActions {
   implicit def listEnergyToJSValue(v: List[Energy]): JsValue = Json.toJson(v.map{
     case e:Energy => roundAt(4)(e.value)
   })
-
 
   def roundAt(p: Int)(n: Double): Double = { val s = math pow (10, p); (math round n * s) / s }
 
@@ -54,6 +53,7 @@ trait BaselineActions {
   def makeBaseline() = Action.async(parse.json) { implicit request =>
     val getBaseline: EUIMetrics = EUIMetrics(request.body)
     val energyCalcs: EUICalculator = EUICalculator(request.body)
+    val emissionCalcs: Emissions = Emissions(request.body)
 
     val fieldNames = Seq(
       "ES", "sourceEUI", "siteEUI", "totalSourceEnergy", "totalSiteEnergy",
@@ -66,7 +66,7 @@ trait BaselineActions {
 
       "sourceEnergy", "siteEnergy", "poolEnergy", "parkingEnergy", "totalSourceEnergyNoPoolNoParking",
 
-      "buildingSize", "sourceSiteRatio", "buildingClass")
+      "buildingSize", "sourceSiteRatio", "buildingClass", "directSiteEmissions", "indirectSiteEmissions", "totalSiteEmissions")
 
     val EUIConversionConstant:Double = {
       (energyCalcs.country, energyCalcs.reportingUnits) match {
@@ -126,7 +126,11 @@ trait BaselineActions {
 
       getBaseline.buildingGFA.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       getBaseline.sourceSiteRatio.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.getBuildingClass.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+      getBaseline.getBuildingClass.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+      emissionCalcs.getDirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      emissionCalcs.getIndirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      emissionCalcs.getTotalEmissions().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
 
     ))
 
