@@ -42,9 +42,13 @@ case class Emissions(parameters:JsValue) {
     for {
       entries <- getEnergyList
       energyTuples <- computeEnergyAndType(entries)
-      directFactors <- emissionsDirectFactors(energyTuples)
+      directFactors <- {
+        println(energyTuples)
+        emissionsDirectFactors(energyTuples)
+      }
 
     } yield {
+      println(directFactors)
       directFactors
     }
   }
@@ -58,6 +62,7 @@ case class Emissions(parameters:JsValue) {
       indirectFactors <- emissionsIndirectFactors(energyTuples, eGridCode)
 
     } yield {
+      println(indirectFactors)
       indirectFactors
     }
   }
@@ -146,8 +151,8 @@ case class Emissions(parameters:JsValue) {
           case ("naturalGas", "Canada", "SK") => (50.29/1000*a._1.value,a._2)
           case ("naturalGas", "Canada", "YT") => (67.69/1000*a._1.value,a._2)
 
-          case ("grid", _, _) => (0.0,a._2)
-          case (_, _, _) => throw new Exception("Could Not Convert to Source Energy")
+          case (_, _, _) => (0.0,a._2)
+          //case (_, _, _) => throw new Exception("Could Not Convert to Source Energy")
         }
       }
     }
