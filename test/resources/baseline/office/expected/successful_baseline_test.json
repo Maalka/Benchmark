@@ -90,6 +90,29 @@
     },
     {
       "buildingClass": "class models.Office"
+    },
+    {
+      "directSiteEmissions": [
+        {
+          "grid": 0
+        },
+        {
+          "naturalGas": 21.24488184479389
+        }
+      ]
+    },
+    {
+      "indirectSiteEmissions": [
+        {
+          "grid": 990.3911697235508
+        },
+        {
+          "naturalGas": 0
+        }
+      ]
+    },
+    {
+      "totalSiteEmissions": 1011.6361
     }
   ]
 }

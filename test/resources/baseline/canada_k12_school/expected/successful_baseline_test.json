@@ -90,6 +90,29 @@
     },
     {
       "buildingClass": "class models.CanadaK12School"
+    },
+    {
+      "directSiteEmissions": [
+        {
+          "grid": 0
+        },
+        {
+          "naturalGas": 163.30493314850173
+        }
+      ]
+    },
+    {
+      "indirectSiteEmissions": [
+        {
+          "grid": 23.789451466168014
+        },
+        {
+          "naturalGas": 0
+        }
+      ]
+    },
+    {
+      "totalSiteEmissions": 187.0944
     }
   ]
 }

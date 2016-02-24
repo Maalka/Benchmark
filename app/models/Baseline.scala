@@ -1203,7 +1203,7 @@ object ResidenceHall {
 
 /**
  *
- * @param weeklyOperatingHours
+
  * @param numRezUnits
  * @param numBedrooms
  * @param numUnitsLowRise1to4
@@ -1215,7 +1215,7 @@ object ResidenceHall {
  * @param areaUnits
  */
 
-case class MultiFamily(weeklyOperatingHours:PosDouble, numRezUnits:PosDouble, numBedrooms:PosDouble,
+case class MultiFamily(numRezUnits:PosDouble, numBedrooms:PosDouble,
                        numUnitsLowRise1to4: PosDouble, numUnitsMidRise5to9:PosDouble, numUnitsHighRise10plus: PosDouble,
                        HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 

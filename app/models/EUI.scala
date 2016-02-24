@@ -34,6 +34,20 @@ case class EUICalculator(parameters: JsValue) {
       case _ => throw new Exception("Could not retrieve Reporting Units")
     }
   }
+  val postalCode:String = {
+    parameters.asOpt[ConversionInfo] match {
+      case Some(a) => a.postalCode
+      case _ => throw new Exception("Could not retrieve PostalCode")
+    }
+  }
+  val state:String = {
+    parameters.asOpt[ConversionInfo] match {
+      case Some(a) => a.state
+      case _ => throw new Exception("Could not retrieve State")
+    }
+  }
+
+
 
   def getSiteEnergy: Future[List[Energy]] = {
     for {

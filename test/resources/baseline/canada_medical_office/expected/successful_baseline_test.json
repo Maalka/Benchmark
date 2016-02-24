@@ -90,6 +90,31 @@
     },
     {
       "buildingClass": "class models.CanadaMedicalOffice"
+    },
+    {
+      "directSiteEmissions": [
+        {
+          "grid": 0
+        },
+        {
+          "naturalGas": 144.09258807220738
+        }
+      ]
+    },
+    {
+      "indirectSiteEmissions": [
+        {
+          "grid": 22.090204932870297
+        },
+        {
+          "naturalGas": 0
+        }
+      ]
+    },
+    {
+      "totalSiteEmissions": 166.1828
     }
+
+
   ]
 }

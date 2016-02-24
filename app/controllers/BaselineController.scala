@@ -10,6 +10,7 @@ import play.api.cache.CacheApi
 import play.api.libs.json._
 import play.api.mvc._
 import squants.space.{SquareFeet, SquareMeters}
+import scala.collection.generic.SeqFactory
 import scala.concurrent.Future
 import squants.energy.{Gigajoules, KBtus, Energy, KilowattHours}
 
@@ -24,11 +25,12 @@ import scala.language.implicitConversions
 trait BaselineActions {
   this: Controller =>
 
-  implicit def roundDouble(d:Double):Double = roundAt(4)(d)
+  implicit def roundDouble(d:Double):JsValue = Json.toJson(roundAt(4)(d))
   implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(roundAt(4)(b.value))
   implicit def listEnergyToJSValue(v: List[Energy]): JsValue = Json.toJson(v.map{
     case e:Energy => roundAt(4)(e.value)
   })
+
 
   def roundAt(p: Int)(n: Double): Double = { val s = math pow (10, p); (math round n * s) / s }
 
@@ -38,13 +40,19 @@ trait BaselineActions {
     }
   }
 
-  def api(response: Any, conversionFactor:Double=1.0):Either[String, JsValue] = {
+  def api[T](response: T, conversionFactor:Double=1.0):Either[String, JsValue] = {
 
     response match {
       case v: Energy => Right(v*conversionFactor)
-      case v: Double => Right(Json.toJson(roundAt(4)(v*conversionFactor)))
+      case v: Double => Right(v*conversionFactor)
       case v: Int => Right(Json.toJson(v*conversionFactor))
-      case v: List[Energy] => Right(v.map(_*conversionFactor))
+      case v: List[Any] => Right{
+        Json.toJson(v.map{
+          case a:Energy => energyToJSValue(a*conversionFactor)
+          case a:(Double,String) => JsObject(Seq(a._2 -> Json.toJson(a._1)))
+
+        })
+      }
       case v: String => Right(Json.toJson(v))
       case None => Left("Could not recognize input type")
     }

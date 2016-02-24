@@ -90,6 +90,29 @@
     },
     {
       "buildingClass": "class models.MultiFamily"
+    },
+    {
+      "directSiteEmissions": [
+        {
+          "grid": 0
+        },
+        {
+          "naturalGas": 4.248976368958778
+        }
+      ]
+    },
+    {
+      "indirectSiteEmissions": [
+        {
+          "grid": 594.2347018341305
+        },
+        {
+          "naturalGas": 0
+        }
+      ]
+    },
+    {
+      "totalSiteEmissions": 598.4837
     }
   ]
 }

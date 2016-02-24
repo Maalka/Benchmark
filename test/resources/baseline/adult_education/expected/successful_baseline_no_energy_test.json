@@ -38,6 +38,15 @@
     },
     {
       "totalSourceEnergyNoPoolNoParking": "Could not read provided energy list"
+    },
+    {
+      "directSiteEmissions": "Could not read provided energy list"
+    },
+    {
+      "indirectSiteEmissions": "Could not read provided energy list"
+    },
+    {
+      "totalSiteEmissions": "Could not read provided energy list"
     }
   ],
   "values": [
