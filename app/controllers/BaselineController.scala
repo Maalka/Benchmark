@@ -10,11 +10,10 @@ import play.api.cache.CacheApi
 import play.api.libs.json._
 import play.api.mvc._
 import squants.space.{SquareFeet, SquareMeters}
-import scala.collection.generic.SeqFactory
 import scala.concurrent.Future
 import squants.energy.{Gigajoules, KBtus, Energy, KilowattHours}
 
-import models.{Emissions, ConversionInfo, EUIMetrics, EUICalculator}
+import models._
 import scala.util.control.NonFatal
 import scala.util.{ Success, Failure, Try}
 
@@ -49,7 +48,8 @@ trait BaselineActions {
       case v: List[Any] => Right{
         Json.toJson(v.map{
           case a:Energy => energyToJSValue(a*conversionFactor)
-          case a:(Double,String) => JsObject(Seq(a._2 -> Json.toJson(a._1)))
+          case a:EmissionsTuple => JsObject(Seq(a.eType -> Json.toJson(a.eValue)))
+          case a:EnergyTuple => JsObject(Seq(a.energyType -> energyToJSValue(a.energyValue*conversionFactor)))
 
         })
       }
@@ -94,8 +94,6 @@ trait BaselineActions {
         case _ => 1.0
       }
     }
-
-
 
     val futures = Future.sequence(Seq(
       // first column table output

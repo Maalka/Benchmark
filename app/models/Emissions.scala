@@ -37,7 +37,7 @@ case class Emissions(parameters:JsValue) {
   }
 
 
-  def getDirectEmissionList(): Future[List[(Double,String)]] = {
+  def getDirectEmissionList(): Future[List[EmissionsTuple]] = {
 
     for {
       entries <- getEnergyList
@@ -47,7 +47,7 @@ case class Emissions(parameters:JsValue) {
 
   }
 
-  def getIndirectEmissionList(): Future[List[(Double,String)]] = {
+  def getIndirectEmissionList(): Future[List[EmissionsTuple]] = {
 
     for {
       entries <- getEnergyList
@@ -65,7 +65,7 @@ case class Emissions(parameters:JsValue) {
     for {
       direct <- getDirectEmissionList
       indirect <- getIndirectEmissionList
-    } yield direct.map(_._1).sum + indirect.map(_._1).sum
+    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum
   }
 
 
@@ -98,7 +98,7 @@ case class Emissions(parameters:JsValue) {
   }
 
 
-  def emissionsDirectFactors(energyEntry: List[(Energy, String)]): Future[List[(Double,String)]] = Future {
+  def emissionsDirectFactors(energyEntry: List[(Energy, String)]): Future[List[EmissionsTuple]] = Future {
 
     energyEntry.map {
       case a: (Energy, String) => {
@@ -145,7 +145,7 @@ case class Emissions(parameters:JsValue) {
 
           case (_, _, _) => 0.0
         }
-        (emissionValue/1000*a._1.value,a._2)
+        EmissionsTuple(a._2,emissionValue/1000*a._1.value)
       }
     }
   }
@@ -153,7 +153,7 @@ case class Emissions(parameters:JsValue) {
 
 
 
-  def emissionsIndirectFactors(energyEntry: List[(Energy, String)], eGrid: String): Future[List[(Double,String)]] = Future {
+  def emissionsIndirectFactors(energyEntry: List[(Energy, String)], eGrid: String): Future[List[EmissionsTuple]] = Future {
 
     energyEntry.map {
       case a: (Energy, String) => {
@@ -225,7 +225,7 @@ case class Emissions(parameters:JsValue) {
 
           case (_, _, _, _) => 0.0
         }
-        (emissionValue/1000*a._1.value,a._2)
+        EmissionsTuple(a._2,emissionValue/1000*a._1.value)
       }
       case _ => throw new Exception("Could not match correct postal code for Emissions Factor")
     }
@@ -255,9 +255,8 @@ case class Emissions(parameters:JsValue) {
       case _ => throw new Exception("Could not find PostalCode in eGridDict.json")
     }
   }
-
 }
 
 
-
+case class EmissionsTuple(eType: String, eValue: Double)
 

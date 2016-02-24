@@ -63,14 +63,22 @@
     },
     {
       "sourceEnergy": [
-        4797,
-        2930.2011
+        {
+          "grid": 4797
+        },
+        {
+          "naturalGas": 2930.2011
+        }
       ]
     },
     {
       "siteEnergy": [
-        650000,
-        75000
+        {
+          "grid": 650000
+        },
+        {
+          "naturalGas": 75000
+        }
       ]
     },
     {
@@ -114,7 +122,5 @@
     {
       "totalSiteEmissions": 166.1828
     }
-
-
   ]
 }
