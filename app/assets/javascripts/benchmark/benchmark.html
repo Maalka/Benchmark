@@ -71,6 +71,29 @@
             </div>
         </div>
 
+        <div class="eight wide field">
+            <h4 class="ui dividing header"><i class="bullseye icon"></i>Energy Reduction Target</h4>
+            <div class="ui segment" style="background-color:#f0f7fe">
+                <h6> Choose the reduction target for your building relative to
+                    its baseline energy consumption (EUI for a comparable
+                    building).</h6>
+                <div class="inline fields">
+
+                    <div class="field">
+                        <label>Target % Better than Median</label>
+                    </div>
+
+                    <div class="four wide field">
+                        <input type="number" ng-model="auxModel.percentBetterThanMedian"
+                               name="percentBetterThanMedian" placeholder="Target %"
+                               min="0" max="100">
+                    </div>
+                    <div class="field">
+                        <label ng-show="!baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="eight wide field">
             <h4 class="ui dividing header"><i class="building icon"></i>PROPERTY USE DETAILS</h4>
@@ -289,28 +312,9 @@
                         <div class="field">
                             <label ng-show="!baselineForm.targetScore.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
                         </div>
-                    </div>
-                    <div class="inline fields">
-                        <div class="field">
-                            <input type="checkbox" ng-model="getPercentBetterThanMedian"
-                                   name="percentBetterThanMedian" ng-true-value=true
-                                   ng-false-value=false ng-init="getPercentBetterThanMedian=false">
-                            <label>Target % Better than Median</label>
-                        </div>
+                    </div> -->
 
-                        <div class="four wide field" ng-show="getPercentBetterThanMedian">
-                            <input type="number" ng-model="auxModel.percentBetterThanMedian"
-                                   name="percentBetterThanMedian" placeholder="Target %"
-                                   min="0" max="100">
-                        </div>
-                        <div class="field">
-                            <label ng-show="!baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        -->
+
 
         <div class="inline fields">
 
