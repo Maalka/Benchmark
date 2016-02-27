@@ -168,8 +168,7 @@
                     <div ng-show="hideEnergies">
                         <div class=" fields">
                             <div class="six wide field required">
-                                <label>Energy Type</label>
-<!--                                <label ng-show="energyTypeRequired"><font color="red">[Please Select]</font></label> -->
+                                <span><label>Energy Type</label><label ng-show="energyTypeRequired || !baselineForm.energyType.$valid"><font color="red">*</font></label></span>
                                 <select class="ui dropdown"
                                     dropdown
                                     name="energyType"
@@ -179,8 +178,7 @@
                                 </select>
                             </div>
                             <div class="five wide field required">
-                                <label>Units</label>
-                                <!--<label ng-show="energyUnitsRequired"><font color="red">[Please Select]</font></label> -->
+                                <span><label>Units</label><label ng-show="energyUnitsRequired || !baselineForm.energyUnits.$valid"><font color="red">*</font></label></span>
                                 <select class="ui dropdown"
                                     dropdown
                                     name="energyUnits"
@@ -190,9 +188,7 @@
                                 </select>
                             </div>
                             <div class="five wide field">
-                                    <label>Annual Use</label>
-<!--                                    <label ng-show="energyUseRequired"><font color="red">[Required]</font></label>
-                                    <label ng-show="baselineForm.energyUse.$error.number"><font color="red">[Must be a Number]</font></label> -->
+                                <span><label>Annual Use</label><label ng-show="energyUseRequired || !baselineForm.energyUse.$valid"><font color="red">*</font></label></span>
                                 <input type="number" ng-model="auxModel.energies.energyUse"
                                        name="energyUse" min="0"
                                        placeholder="Energy Use">
