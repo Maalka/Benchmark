@@ -1,0 +1,22 @@
+<table class="ui definition table">
+
+
+    <tbody>
+
+        <tr>
+            <td>LOCATION</td>
+            <td>{{auxModel.city}}, {{auxModel.state}}</td>
+            <td>Postal Code:  {{auxModel.postalCode}}</td>
+        </tr>
+
+        
+        <tr ng-repeat="prop in propList">
+            <td>USES</td>
+            <td>{{prop.buildingType}}</td>
+            <td>{{prop.GFA}} {{prop.areaUnits}}</td>
+        </tr>
+
+
+
+    </tbody>
+</table>

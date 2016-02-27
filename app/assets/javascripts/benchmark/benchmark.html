@@ -256,56 +256,6 @@
                     </div>
                 </div>
 
-           <!-- These fields finish target finder replication, but are not needed specifically for the 2030 Baseline Tool
-                <div class="eight wide field">
-                <h4 class="ui header">Additional Computations (Optional)</h4>
-
-                <div class="ui segment" style="background-color:#f0f7fe">
-                    <div class="grouped fields">
-
-                        <div class="inline fields">
-                            <div class="field">
-                                <input type="checkbox" ng-model="getTargetScore"
-                                       name="targetScore" ng-true-value=true
-                                       ng-false-value=false ng-init="getTargetScore=false">
-                                <label>Target ENERGY STAR Score</label>
-                            </div>
-                            <div class="four wide field" ng-show="getTargetScore">
-                                <input type="number" ng-model="auxModel.targetScore"
-                                       name="targetScore" placeholder="Target Score"
-                                       min="0" max="100">
-
-                            </div>
-                            <div class="field">
-                                <label ng-show="!baselineForm.targetScore.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                            </div>
-                        </div>
-                        <div class="inline fields">
-                            <div class="field">
-                                <input type="checkbox" ng-model="getPercentBetterThanMedian"
-                                       name="percentBetterThanMedian" ng-true-value=true
-                                       ng-false-value=false ng-init="getPercentBetterThanMedian=false">
-                                <label>Target % Better than Median</label>
-                            </div>
-
-                            <div class="four wide field" ng-show="getPercentBetterThanMedian">
-                                <input type="number" ng-model="auxModel.percentBetterThanMedian"
-                                       name="percentBetterThanMedian" placeholder="Target %"
-                                       min="0" max="100">
-                            </div>
-                            <div class="field">
-                                <label ng-show="!baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                        <div class="field">
-                            <label ng-show="!baselineForm.targetScore.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                        </div>
-                    </div> -->
-
-
                 <div class="inline fields">
 
                     <div class="ui big labeled button" ng-click="submit()">
@@ -315,6 +265,7 @@
     	   </form>
         </div>
         <div class="column">
+            <div ng-include ng-if='benchmarkResult != undefined' src="'assets/javascripts/benchmark/proplist_result.html'">Not Defined</div>
             <div ng-include ng-if='benchmarkResult != undefined' src="'assets/javascripts/benchmark/benchmark_result.html'">Not Defined</div>
         </div>
     </div>

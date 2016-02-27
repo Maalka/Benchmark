@@ -39,14 +39,6 @@ define([], function() {
 
     $scope.$watch("auxModel.country", function () {
         $scope.clearGeography();
-        /*$scope.propTypes = [];
-        if( v && $scope.auxModel.buildingType ) {
-            $scope.propTypes.push({
-                type: $scope.auxModel.buildingType,
-                country: v
-            });
-            $scope.propText="Add Another Use";
-        }*/
     });
 
     $scope.$watch("auxModel.newConstruction", function (v) {
@@ -143,10 +135,6 @@ define([], function() {
             $scope.propText="Primary Function of Building";
         }
     };
-
-
-
-
 
     $scope.geographicProperties = {
             country:
@@ -666,10 +654,6 @@ define([], function() {
             mixTotalMedianEmissions = mixTotalSiteEmissions/mixSiteMedianRatio;
 
             mixTable = [
-                /*{"ES":$scope.round(mixES,2)},
-                  {"targetES":$scope.round(mixTargetES,2)},
-                  {"percentBetterES":$scope.round(mixPercentBetterES,2)},
-                  {"medianES":$scope.round(mixMedianES,2)},*/
 
                   {"actualZEPI":100*$scope.round(1-mixSiteEUI/mixMedianSiteEUI,2)},
                   {"targetZEPI":100*$scope.round(1-mixTargetSiteEUI/mixMedianSiteEUI,2)},
@@ -732,9 +716,6 @@ define([], function() {
                     $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
                     $scope.propTypes[i].propertyModel.targetScore = null;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
-
-                    //The following fields are driven by the 'New Construction' toggle for the Baseline 2030 Tool
-                    //$scope.propTypes[i].propertyModel.targetScore = $scope.auxModel.targetScore;
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
                 }
