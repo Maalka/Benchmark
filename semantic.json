@@ -1,0 +1,21 @@
+{
+  "base": "semantic/",
+  "paths": {
+    "source": {
+      "config": "src/theme.config",
+      "definitions": "src/definitions/",
+      "site": "src/site/",
+      "themes": "src/themes/"
+    },
+    "output": {
+      "packaged": "../public/javascripts/semantic/",
+      "uncompressed": "../public/javascripts/semantic/",
+      "compressed": "../public/javascripts/semantic/components/",
+      "themes": "../public/javascripts/semantic/themes/"
+    },
+    "clean": "../public/javascripts/semantic/"
+  },
+  "permission": false,
+  "rtl": false,
+  "version": "2.1.8"
+}

@@ -1,62 +1,50 @@
-<div class="field">
-    <form class="ui form" name="baselineForm">
-        <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
+<div>
+    <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Use Default Values? (Y/N)</label>
-                <input type="checkbox" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
-                       ng-true-value=true ng-false-value=false>
-            </div>
-        </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Residential Units</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numRezUnits"
-                       required name="numRezUnits" min="0" placeholder="numRezUnits">
-            </div>
+    <div class="field" ng-class="{'disabled': !baselineForm.GFA.$valid || !baselineForm.areaUnits.$valid}">
+        <div checkbox class="ui checkbox">
+            <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
+                   ng-true-value=true ng-false-value=false>
+            <label for="cb-default">Use Default Values? (Y/N)</label>
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Bedrooms</label>
-            </div>
-            <div class="two wide field">
-                <input type="number" ng-model="propertyModel.numBedrooms"
-                       required name="numBedrooms" min="0" placeholder="numBedrooms">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of Residential Units</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numRezUnits"
+                   required name="numRezUnits" min="0" placeholder="0">
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Low Rise (Floors 1-4) Units</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numUnitsLowRise1to4"
-                       required name="numUnitsLowRise1to4" min="0" placeholder="numUnitsLowRise1to4">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of Bedrooms</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numBedrooms"
+                   required name="numBedrooms" min="0" placeholder="0">
         </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Mid Rise (Floors 5-9) Units</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numUnitsMidRise5to9"
-                       required name="numUnitsMidRise5to9" min="0" placeholder="numUnitsMidRise5to9">
-            </div>
-        </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of High Rise (Floors above 10) Units</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numUnitsHighRise10plus"
-                       required name="numUnitsHighRise10plus" min="0" placeholder="numUnitsHighRise10plus">
-            </div>
-        </div>
+    </div>
 
-    </form>
+    <div class="inline fields required">
+        <label class="static">Number of Low Rise (Floors 1-4) Units</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numUnitsLowRise1to4"
+                   required name="numUnitsLowRise1to4" min="0" placeholder="0">
+        </div>
+    </div>
+    <div class="inline fields required">
+        <label class="static">Number of Mid Rise (Floors 5-9) Units</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numUnitsMidRise5to9"
+                   required name="numUnitsMidRise5to9" min="0" placeholder="0">
+        </div>
+    </div>
+    <div class="inline fields required">
+        <label class="static">Number of High Rise (Floors above 10) Units</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numUnitsHighRise10plus"
+                   required name="numUnitsHighRise10plus" min="0" placeholder="0">
+        </div>
+    </div>
 </div>

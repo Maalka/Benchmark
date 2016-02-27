@@ -1,41 +1,32 @@
-<div class="field">
-    <form class="ui form" name="baselineForm">
-        <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Use Default Values? (Y/N)</label>
-                <input type="checkbox" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
-                       ng-true-value=true ng-false-value=false>
-            </div>
+<div>
+    <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
+    <div class="field" ng-class="{'disabled': !baselineForm.GFA.$valid || !baselineForm.areaUnits.$valid}">
+        <div checkbox class="ui checkbox">
+            <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
+                   ng-true-value=true ng-false-value=false>
+            <label for="cb-default">Use Default Values?</label>
         </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Staffed Beds</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numStaffedBeds"
-                       required name="numStaffedBeds" min="0" placeholder="numStaffedBeds">
-            </div>
+    </div>
+    <div class="inline fields required">
+        <label class="static">Number of Staffed Beds</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numStaffedBeds"
+                   required name="numStaffedBeds" min="0" placeholder="0">
         </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Full Time Workers</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numFTEWorkers"
-                       required name="numFTEWorkers" min="0" placeholder="numFTEWorkers">
-            </div>
+    </div>
+    <div class="inline fields required">
+         <label class="static">Number of Full Time Workers</label>
+         <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numFTEWorkers"
+                   required name="numFTEWorkers" min="0" placeholder="0">
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of MRI Machines</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numMRIMachines"
-                       required name="numMRIMachines" min="0" placeholder="numMRIMachines">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of MRI Machines</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numMRIMachines"
+                   required name="numMRIMachines" min="0" placeholder="0">
         </div>
-
-    </form>
+    </div>
 </div>

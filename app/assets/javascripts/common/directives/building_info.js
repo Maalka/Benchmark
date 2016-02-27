@@ -12,7 +12,8 @@ define(['angular','./main'], function(angular) {
         return {
             restrict: 'A',
             scope: {
-            model: '=model'
+            model: '=model',
+            baselineForm: '=baselineForm'
             },
 
             templateUrl: function(elem, attr){
@@ -37,13 +38,17 @@ define(['angular','./main'], function(angular) {
                 $scope.$watch("propertyModel.defaultValues", function () {
 
                     if($scope.propertyModel.defaultValues){
-                        if($scope.baselineForm.GFA.$valid && $scope.baselineForm.areaUnits.$valid){$scope.setDefaults();}
-                         else {
-                            if($scope.baselineForm.GFA.$error.required){$scope.GFARequired = true;}
-                            $scope.propertyModel.defaultValues = false;
+                        if( $scope.baselineForm.GFA.$valid && $scope.baselineForm.areaUnits.$valid) {
+                            $scope.setDefaults();
+                        } else {
+                            if( $scope.baselineForm.GFA.$error.required ){
+                                $scope.GFARequired = true;
                             }
-
-                    } else {$scope.clearParams();}
+                            $scope.propertyModel.defaultValues = false;
+                        }
+                    } else {
+                        $scope.clearParams();
+                    }
 
                 });
 
@@ -62,8 +67,11 @@ define(['angular','./main'], function(angular) {
                 });
 
                 $scope.$watch("baselineForm.$valid", function () {
-                   if($scope.baselineForm.$valid){$scope.propFieldsRequired = false;}else
-                   {$scope.propFieldsRequired = true;}
+                    if($scope.baselineForm.$valid){
+                        $scope.propFieldsRequired = false;
+                    } else {
+                        $scope.propFieldsRequired = true;
+                    }
                 });
 
 
@@ -209,7 +217,7 @@ define(['angular','./main'], function(angular) {
                             {id:70,name:"70%"},
                             {id:80,name:"80%"},
                             {id:90,name:"90%"},
-                            {id:100,name:"All of it: 100%"}
+                            {id:100,name:"100%"}
                    ],
                    poolType: [
                             {id:"Recreational",name:"Recreational"},

@@ -1,22 +1,22 @@
 
-<div class="inline fields">
-    <div class="two wide field">
-        <label>HDD</label>
-    </div>
-    <div class="seven wide field">
-        <input type="number" ng-model="auxModel.HDD"
-               required name="HDD" min="0">
-    </div>
-
-    <div class="two wide field">
-        <label>CDD</label>
-    </div>
-    <div class="seven wide field">
-        <input type="number" ng-model="auxModel.CDD"
-               required name="CDD" min="0">
-    </div>
-    <div class="two wide field">
+<div class="inline fields required">
+    <div class="sixteen wide field">
+        <label class="static">
+            Degree Days
             <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator"><i class="large circle help icon"></i></a>
+        </label>
+        <div class="two fields">
+            <div class="eight wide field">
+                <label>HDD</label>
+                <input type="number" ng-model="auxModel.HDD"
+                       required name="HDD" min="0" placeholder="HDD">
+            </div>
+            <div class="eight wide field">
+                <label>CDD</label>            
+                <input type="number" ng-model="auxModel.CDD"
+                   required name="CDD" min="0" placeholder="CDD">
+            </div>
+        </div>
     </div>
 </div>
 

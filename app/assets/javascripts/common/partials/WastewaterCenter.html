@@ -1,74 +1,67 @@
 <div class="field">
     <form class="ui form" name="baselineForm">
         <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Use Default Values? (Y/N)</label>
-                <input type="checkbox" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
+    
+        <!-- Checkboxes -->
+        <div class="field" ng-class="{'disabled': !baselineForm.GFA.$valid || !baselineForm.areaUnits.$valid}">
+            <div checkbox class="ui checkbox">
+                <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
                        ng-true-value=true ng-false-value=false>
+                <label for="cb-default">Use Default Values</label>
             </div>
         </div>
-        <div class="inline fields">
-            <div class="four wide field">
-                <label>Has Nutrient Removal (Y/N)</label>
-            </div>
-            <div class="field">
-                <input type="checkbox" ng-model="propertyModel.wastewaterHasNutrientRemoval"
+
+        <div class="field">
+            <div class="ui checkbox">
+                <input type="checkbox" id="cb-nutrient" ng-model="propertyModel.wastewaterHasNutrientRemoval"
                        ng-true-value=true ng-false-value=false name="wastewaterHasNutrientRemoval" ng-init="propertyModel.wastewaterHasNutrientRemoval=false">
+                <label for="cb-nutrient">Has Nutrient Removal</label>                       
             </div>
         </div>
-        <div class="inline fields">
-            <div class="four wide field">
-                <label>Has Trickle Filtration (Y/N)</label>
-            </div>
-            <div class="field">
-                <input type="checkbox" ng-model="propertyModel.wastewaterHasTrickleFiltration"
+        <div class="field">
+            <div class="ui checkbox">
+                <input type="checkbox" id="cb-trickle" ng-model="propertyModel.wastewaterHasTrickleFiltration"
                        ng-true-value=true ng-false-value=false name="wastewaterHasTrickleFiltration" ng-init="propertyModel.wastewaterHasTrickleFiltration=false">
+                <label for="cb-trickle">Has Trickle Filtration</label>
             </div>
         </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Wastewater Average Influent Inflow</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.wastewaterAvgInfluentInflow"
-                       required name="wastewaterAvgInfluentInflow" min="0" placeholder="wastewaterAvgInfluentInflow">
+
+        <!-- inputs -->
+        <div class="inline fields required">
+            <label class="static">Wastewater Average Influent Inflow</label>
+            <div class="five wide field">            
+                <input type="number" id="cb-influent" ng-model="propertyModel.wastewaterAvgInfluentInflow"
+                       required name="wastewaterAvgInfluentInflow" min="0" placeholder="0">
+
             </div>
         </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Wastewater Load Factor</label>
-            </div>
-            <div class="four wide field">
+
+        <div class="inline fields required">
+            <label class="static">Wastewater Load Factor</label>
+            <div class="five wide field">
                 <input type="number" ng-model="propertyModel.wastewaterLoadFactor"
-                       required name="wastewaterLoadFactor" min="0" placeholder="wastewaterLoadFactor">
+                       required name="wastewaterLoadFactor" min="0" placeholder="0">
             </div>
         </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Influent Biological Oxygen Demand</label>
-            </div>
-            <div class="four wide field">
+        <div class="inline fields required">
+            <label class="static">Influent Biological Oxygen Demand</label>
+            <div class="five wide field">
                 <input type="number" ng-model="propertyModel.wastewaterInfluentBiologicalOxygenDemand"
-                       required name="wastewaterInfluentBiologicalOxygenDemand" min="0" placeholder="wastewaterInfluentBiologicalOxygenDemand">
+                       required name="wastewaterInfluentBiologicalOxygenDemand" min="0" placeholder="0">
             </div>
         </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Effluent Biological Oxygen Demand</label>
-            </div>
-            <div class="four wide field">
+        <div class="inline fields required">
+            <label class="static">Effluent Biological Oxygen Demand</label>
+            <div class="five wide field">
                 <input type="number" ng-model="propertyModel.wastewaterEffluentBiologicalOxygenDemand"
-                       required name="wastewaterEffluentBiologicalOxygenDemand" min="0" placeholder="wastewaterEffluentBiologicalOxygenDemand">
+                       required name="wastewaterEffluentBiologicalOxygenDemand" min="0" placeholder="0">
             </div>
         </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Plant Design Flow Rate</label>
-            </div>
-            <div class="four wide field">
+        <div class="inline fields required">
+            <label class="static">Plant Design Flow Rate</label>
+            <div class="five wide field">
                 <input type="number" ng-model="propertyModel.wastewaterPlantDesignFlowRate"
-                       required name="wastewaterPlantDesignFlowRate" min="0" placeholder="wastewaterPlantDesignFlowRate">
+                       required name="wastewaterPlantDesignFlowRate" min="0" placeholder="0">
             </div>
         </div>
 

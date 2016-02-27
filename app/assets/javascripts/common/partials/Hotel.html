@@ -1,85 +1,70 @@
-<div class="field">
-    <form class="ui form" name="baselineForm">
-        <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
+<div>
+    <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Use Default Values? (Y/N)</label>
-                <input type="checkbox" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
-                       ng-true-value=true ng-false-value=false>
-            </div>
+    <div class="field" ng-class="{'disabled': !baselineForm.GFA.$valid || !baselineForm.areaUnits.$valid}">
+        <div checkbox class="ui checkbox">
+            <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
+                   ng-true-value=true ng-false-value=false>
+            <label for="cb-default">Use Default Values</label>
         </div>
-        <div class="inline fields">
-            <div class="four wide field">
-                <label>Has Food Preparation (Y/N)</label>
-            </div>
-            <div class="field">
-                <input type="checkbox" ng-model="propertyModel.hasFoodPreparation"
-                       ng-true-value=true ng-false-value=false name="hasFoodPreparation" ng-init="propertyModel.hasFoodPreparation=false">
-            </div>
+    </div>
+    <div class="field">
+        <div class="ui checkbox">
+            <input type="checkbox" id="cb-food" ng-model="propertyModel.hasFoodPreparation"
+                   ng-true-value=true ng-false-value=false name="hasFoodPreparation" ng-init="propertyModel.hasFoodPreparation=false">
+            <label for="cb-food">Has Food Preparation</label>
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Workers on Main Shift</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numWorkersMainShift"
-                       required name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of Workers on Main Shift</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numWorkersMainShift"
+                   required name="numWorkersMainShift" min="0" placeholder="0">
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Bedrooms</label>
-            </div>
-            <div class="two wide field">
-                <input type="number" ng-model="propertyModel.numBedrooms"
-                       required name="numBedrooms" min="0" placeholder="numBedrooms">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of Bedrooms</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numBedrooms"
+                   required name="numBedrooms" min="0" placeholder="0">
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Refrigerator Units</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numRefrUnits"
-                       required name="numRefrUnits" min="0" placeholder="numRefrUnits">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of Refrigerator Units</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numRefrUnits"
+                   required name="numRefrUnits" min="0" placeholder="0">
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Percent Heated</label>
-            </div>
-            <div class="field">
-                <select class="select"
-                        dropdown
-                        ng-model="propertyModel.percentHeated"
-                        ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                        required
-                        name="percentHeated">
-                </select>
-            </div>
+    <div class="inline fields required">
+        <label class="static">Percent Heated</label>
+        <div class="five wide field">
+            <select class="ui dropdown"
+                    dropdown
+                    ng-model="propertyModel.percentHeated"
+                    ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                    required
+                    name="percentHeated">
+            </select>
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Percent Cooled</label>
-            </div>
-            <div class="field">
-                <select class="select"
-                        dropdown
-                        ng-model="propertyModel.percentCooled"
-                        ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                        required
-                        name="percentCooled">>
-                </select>
-            </div>
+    <div class="inline fields required">
+        <label class="static">Percent Cooled</label>
+        <div class="five wide field">
+            <select class="ui dropdown"
+                    dropdown
+                    ng-model="propertyModel.percentCooled"
+                    ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                    required
+                    name="percentCooled">>
+            </select>
         </div>
-
-    </form>
+    </div>
 </div>
 
 

@@ -1,0 +1,15 @@
+/*-------------------
+       Fonts
+--------------------*/
+
+@headerFont    : "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+@pageFont      : "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+
+@bodyBackground      : #FCFCFC;
+@textColor: #595959;
+
+@grey: #D9D9D9;
+@defaultBorderRadius: 0;
+@borderRadius: 0;
+@inputBorderRadius: 0;
+@absoluteBorderRadius: 0;

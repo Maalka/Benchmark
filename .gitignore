@@ -2,6 +2,7 @@ logs
 project/project
 project/target
 target
+node_modules
 tmp
 .history
 dist

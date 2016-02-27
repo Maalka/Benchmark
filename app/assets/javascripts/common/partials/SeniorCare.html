@@ -1,133 +1,111 @@
-<div class="field">
-    <form class="ui form" name="baselineForm">
-        <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
+<div >
+    <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Use Default Values? (Y/N)</label>
-                <input type="checkbox" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
-                       ng-true-value=true ng-false-value=false>
-            </div>
+    <div class="field" ng-class="{'disabled': !baselineForm.GFA.$valid || !baselineForm.areaUnits.$valid}">
+        <div checkbox class="ui checkbox">
+            <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
+                   ng-true-value=true ng-false-value=false>
+            <label for="cb-default">Use Default Values? (Y/N)</label>
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Workers on Main Shift</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numWorkersMainShift"
-                       required name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of Workers on Main Shift</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numWorkersMainShift"
+                   required name="numWorkersMainShift" min="0" placeholder="0">
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Computers</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numComputers"
-                       required name="numComputers" min="0" placeholder="numComputers">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of Computers</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numComputers"
+                   required name="numComputers" min="0" placeholder="0">
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Refrigerator Units</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numRefrUnits"
-                       required name="numRefrUnits" min="0" placeholder="numRefrUnits">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of Refrigerator Units</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numRefrUnits"
+                   required name="numRefrUnits" min="0" placeholder="0">
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Average Number of Residents</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.avgNumResidents"
-                       required="requireSeniorCare" name="avgNumResidents" min="0" placeholder="avgNumResidents">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Average Number of Residents</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.avgNumResidents"
+                   required="requireSeniorCare" name="avgNumResidents" min="0" placeholder="0">
         </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Maximum Number of Residents</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.maxNumResidents"
-                       required name="maxNumResidents" min="0" placeholder="maxNumResidents">
-            </div>
-        </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Residential Units</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numRezUnits"
-                       required name="numRezUnits" min="0" placeholder="numRezUnits">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Maximum Number of Residents</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.maxNumResidents"
+                   required name="maxNumResidents" min="0" placeholder="0">
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Electronic Lifts</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numElectronicLifts"
-                       required name="numElectronicLifts" min="0" placeholder="numElectronicLifts">
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of Residential Units</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numRezUnits"
+                   required name="numRezUnits" min="0" placeholder="0">
         </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Commercial Washing Machines</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numCommWashingMachines"
-                       required name="numCommWashingMachines" min="0" placeholder="numCommWashingMachines">
-            </div>
-        </div>
-        <div class="inline fields">
-            <div class="field">
-                <label>Number of Residential Washing Machines</label>
-            </div>
-            <div class="four wide field">
-                <input type="number" ng-model="propertyModel.numRezWashingMachines"
-                       required name="numRezWashingMachines" min="0" placeholder="numRezWashingMachines">
-            </div>
-        </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Percent Heated</label>
-            </div>
-            <div class="field">
-                <select class="select"
-                        dropdown
-                        ng-model="propertyModel.percentHeated"
-                        ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                        required
-                        name="percentHeated">
-                </select>
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of Electronic Lifts</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numElectronicLifts"
+                   required name="numElectronicLifts" min="0" placeholder="0">
         </div>
+    </div>
 
-        <div class="inline fields">
-            <div class="field">
-                <label>Percent Cooled</label>
-            </div>
-            <div class="field">
-                <select class="select"
-                        dropdown
-                        ng-model="propertyModel.percentCooled"
-                        ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                        required
-                        name="percentCooled">>
-                </select>
-            </div>
+    <div class="inline fields required">
+        <label class="static">Number of Commercial Washing Machines</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numCommWashingMachines"
+                   required name="numCommWashingMachines" min="0" placeholder="0">
         </div>
+    </div>
 
-    </form>
+    <div class="inline fields required">
+        <label class="static">Number of Residential Washing Machines</label>
+        <div class="five wide field">
+            <input type="number" ng-model="propertyModel.numRezWashingMachines"
+                   required name="numRezWashingMachines" min="0" placeholder="0">
+        </div>
+    </div>
+
+    <div class="inline fields required">
+        <label class="static">Percent Heated</label>
+        <div class="five wide field">
+            <select class="ui dropdown"
+                    dropdown
+                    ng-model="propertyModel.percentHeated"
+                    ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                    required
+                    name="percentHeated">
+            </select>
+        </div>
+    </div>
+
+    <div class="inline fields required">
+        <label class="static">Percent Cooled</label>
+        <div class="five wide field">
+            <select class="ui dropdown"
+                    dropdown
+                    ng-model="propertyModel.percentCooled"
+                    ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                    required
+                    name="percentCooled">>
+            </select>
+        </div>
+    </div>
 </div>
 
 
