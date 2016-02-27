@@ -15,7 +15,7 @@ define([], function() {
     $scope.showEnergyTable = false;
     $scope.propList = [];
     $scope.benchmarkResult = null;
-    $scope.buildingTypeRequired = false;
+
 
     $scope.energyTypeRequired = false;
     $scope.energyUnitsRequired = false;
@@ -28,7 +28,6 @@ define([], function() {
 
     $scope.$watch("auxModel.buildingType", function (v) {
 
-        if($scope.baselineForm.buildingType.$valid){$scope.buildingTypeRequired = false;}
         if(($scope.auxModel.country) && (v)){
             $scope.propTypes.push({
                 type: v,
@@ -38,17 +37,16 @@ define([], function() {
         }
     });
 
-    $scope.$watch("auxModel.country", function (v) {
-        if($scope.baselineForm.country.$valid){
-            $scope.countryRequired = false;
-        }
+    $scope.$watch("auxModel.country", function () {
+        $scope.clearGeography();
+        /*$scope.propTypes = [];
         if( v && $scope.auxModel.buildingType ) {
             $scope.propTypes.push({
                 type: $scope.auxModel.buildingType,
                 country: v
             });
             $scope.propText="Add Another Use";
-        }
+        }*/
     });
 
     $scope.$watch("auxModel.newConstruction", function (v) {
@@ -76,6 +74,13 @@ define([], function() {
         }
     });
 
+    $scope.clearGeography = function () {
+        $scope.auxModel.city = "";
+        $scope.auxModel.state = null;
+        $scope.auxModel.postalCode = "";
+        $scope.auxModel.buildingType = null;
+        $scope.propTypes = [];
+    };
 
 
     //populate user-input energy information table to calculate site/source EUI and Energy Star metrics
@@ -490,17 +495,6 @@ define([], function() {
             ]
     };
 
-    $scope.submitErrors = function () {
-
-        if($scope.baselineForm.city.$error.required){$scope.cityRequired = true;}
-        if($scope.baselineForm.postalCode.$error.required){$scope.postalCodeRequired = true;}
-        if($scope.baselineForm.country.$error.required){$scope.countryRequired = true;}
-        if($scope.baselineForm.state.$error.required){$scope.stateRequired = true;}
-
-        window.alert("Please check form for errors!");
-    };
-
-
 
     $scope.computeBenchmarkResult = function(){
 
@@ -509,12 +503,10 @@ define([], function() {
         });
 
         $q.all($scope.futures).then(function (results) {
-        //in combineResults.js
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
         });
     };
-    //is there a way to separate this code into another 'extra' controller?
-// ***********************************************************************************************
+
         $scope.round = function(value, decimals) {
             return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
         };
@@ -713,8 +705,12 @@ define([], function() {
             return mixTable;
         };
 
+    $scope.submitErrors = function () {
+        for (var i = 0; i < $scope.baselineForm.$error.required.length; i++){
+            console.log($scope.baselineForm.$error.required[i].$name);
+        }
+    };
 
-// ***********************************************************************************************
     $scope.submit = function () {
 
         $scope.propList = [];
@@ -737,18 +733,16 @@ define([], function() {
                     $scope.propTypes[i].propertyModel.targetScore = null;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
-
-
                     //The following fields are driven by the 'New Construction' toggle for the Baseline 2030 Tool
                     //$scope.propTypes[i].propertyModel.targetScore = $scope.auxModel.targetScore;
-
-
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
                 }
                 else {console.log('Error in ' + $scope.propTypes[i].type);}
             }
-        }else {console.log('Please Fix Form Errors');}
+        }else {
+            $scope.submitErrors();
+        }
 
         console.log($scope.propList);
 
