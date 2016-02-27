@@ -56,6 +56,26 @@
                             </div>
                         </div>
                     </div>
+
+                </div>
+                <h4 class="ui header"><i class="bullseye icon"></i>Energy Reduction Target</h4>
+                <div class="ui segment reduction">
+                    <p>
+                        Choose the reduction target for your building relative to
+                        its baseline energy consumption (EUI for a comparable
+                        building).
+                    </p>
+                    <div class="inline fields">
+                        <label class="static">Target % Better than Median</label>
+                        <div class="five wide field">
+                            <input type="number" ng-model="auxModel.percentBetterThanMedian"
+                                   name="percentBetterThanMedian" placeholder="Target %"
+                                   min="0" max="100">
+                        </div>
+                        <div class="field">
+                            <label ng-show="!baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
+                        </div>
+                    </div>
                 </div>
                 <h4 class="ui header"><i class="building icon"></i>PROPERTY USE DETAILS</h4>
                 <div ng-repeat="prop in propTypes">
@@ -64,14 +84,12 @@
                             <div class="eleven wide field">
                                 <h2>{{prop.type}}</h2>
                             </div>
-
                             <button
                                 class="ui labeled large button"
                                 ng-click="removeProp(prop)">
                                 <i class="minus icon"></i>
                                 Remove
                             </button>
-
                         </div>
                         <div class="ui divider"></div>
 
@@ -284,7 +302,11 @@
                     </div>
                 </div>
             </div>
-            -->
+                        <div class="field">
+                            <label ng-show="!baselineForm.targetScore.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
+                        </div>
+                    </div> -->
+
 
                 <div class="inline fields">
 

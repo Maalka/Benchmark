@@ -38,9 +38,6 @@ define([], function() {
         }
     });
 
-
-    //watch on country dropdown, combined with buildingType dropdown to decide what building related
-    //user inputs to display in order to calculate Energy Star Score related variables
     $scope.$watch("auxModel.country", function (v) {
         if($scope.baselineForm.country.$valid){
             $scope.countryRequired = false;
@@ -52,6 +49,12 @@ define([], function() {
             });
             $scope.propText="Add Another Use";
         }
+    });
+
+    $scope.$watch("auxModel.newConstruction", function (v) {
+        if(v === true){
+        $scope.auxModel.percentBetterThanMedian = 70;}else{
+        $scope.auxModel.percentBetterThanMedian = 20;}
     });
 
     //watch on energyType dropdown, remove errors upon user selection
@@ -671,30 +674,35 @@ define([], function() {
             mixTotalMedianEmissions = mixTotalSiteEmissions/mixSiteMedianRatio;
 
             mixTable = [
-                  {"ES":$scope.round(mixES,2)},
+                /*{"ES":$scope.round(mixES,2)},
                   {"targetES":$scope.round(mixTargetES,2)},
                   {"percentBetterES":$scope.round(mixPercentBetterES,2)},
-                  {"medianES":$scope.round(mixMedianES,2)},
+                  {"medianES":$scope.round(mixMedianES,2)},*/
 
-                  {"sourceEUI":$scope.round(mixSourceEUI,2)},
-                  {"targetSourceEUI":$scope.round(mixTargetSourceEUI,2)},
-                  {"percentBetterSourceEUI":$scope.round(mixPercentBetterSourceEUI,2)},
-                  {"medianSourceEUI":$scope.round(mixMedianSourceEUI,2)},
+                  {"actualZEPI":100*$scope.round(1-mixSiteEUI/mixMedianSiteEUI,2)},
+                  {"targetZEPI":100*$scope.round(1-mixTargetSiteEUI/mixMedianSiteEUI,2)},
+                  {"percentBetterZEPI":$scope.auxModel.percentBetterThanMedian},
+                  {"medianZEPI":100},
 
                   {"siteEUI":$scope.round(mixSiteEUI,2)},
                   {"targetSiteEUI":$scope.round(mixTargetSiteEUI,2)},
                   {"percentBetterSiteEUI":$scope.round(mixPercentBetterSiteEUI,2)},
                   {"medianSiteEUI":$scope.round(mixMedianSiteEUI,2)},
 
-                  {"totalSourceEnergy":$scope.round(mixTotalSourceEnergy,2)},
-                  {"targetSourceEnergy":$scope.round(mixTargetSourceEnergy,2)},
-                  {"percentBetterSourceEnergy":$scope.round(mixPercentBetterSourceEnergy,2)},
-                  {"medianSourceEnergy":$scope.round(mixMedianSourceEnergy,2)},
+                  {"sourceEUI":$scope.round(mixSourceEUI,2)},
+                  {"targetSourceEUI":$scope.round(mixTargetSourceEUI,2)},
+                  {"percentBetterSourceEUI":$scope.round(mixPercentBetterSourceEUI,2)},
+                  {"medianSourceEUI":$scope.round(mixMedianSourceEUI,2)},
 
                   {"totalSiteEnergy":$scope.round(mixTotalSiteEnergy,2)},
                   {"targetSiteEnergy":$scope.round(mixTargetSiteEnergy,2)},
                   {"percentBetterSiteEnergy":$scope.round(mixPercentBetterSiteEnergy,2)},
                   {"medianSiteEnergy":$scope.round(mixMedianSiteEnergy,2)},
+
+                  {"totalSourceEnergy":$scope.round(mixTotalSourceEnergy,2)},
+                  {"targetSourceEnergy":$scope.round(mixTargetSourceEnergy,2)},
+                  {"percentBetterSourceEnergy":$scope.round(mixPercentBetterSourceEnergy,2)},
+                  {"medianSourceEnergy":$scope.round(mixMedianSourceEnergy,2)},
 
                   {"totalSiteEmissions":$scope.round(mixTotalSiteEmissions,2)},
                   {"targetSiteEmissions":$scope.round(mixTotalTargetEmissions,2)},
@@ -727,13 +735,14 @@ define([], function() {
                     $scope.propTypes[i].propertyModel.energies = $scope.auxModel.energies;
                     $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
                     $scope.propTypes[i].propertyModel.targetScore = null;
+                    $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
-                    if($scope.auxModel.newConstruction === true){
-                    $scope.propTypes[i].propertyModel.percentBetterThanMedian = 50;}else{
-                    $scope.propTypes[i].propertyModel.percentBetterThanMedian = 25;}
+
+
                     //The following fields are driven by the 'New Construction' toggle for the Baseline 2030 Tool
-                    //$scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
                     //$scope.propTypes[i].propertyModel.targetScore = $scope.auxModel.targetScore;
+
+
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
                 }

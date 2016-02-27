@@ -2,7 +2,7 @@
 	width: 160px !important;
 	margin-right: 0 !important;
 }
-.building .static {
+.building .static, .reduction .static {
 	width: 100% !important;
 }
 input.small {
