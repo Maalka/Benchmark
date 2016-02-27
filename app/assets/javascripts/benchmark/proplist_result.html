@@ -9,11 +9,12 @@
             <td>Postal Code:  {{auxModel.postalCode}}</td>
         </tr>
 
-        
+
         <tr ng-repeat="prop in propList">
             <td>USES</td>
             <td>{{prop.buildingType}}</td>
-            <td>{{prop.GFA}} {{prop.areaUnits}}</td>
+            <td>{{prop.GFA}} {{prop.areaUnits}} ({{prop.GFA / sumPropSize * 100}})%</td>
+
         </tr>
 
 

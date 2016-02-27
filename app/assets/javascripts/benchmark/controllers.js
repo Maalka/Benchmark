@@ -15,6 +15,7 @@ define([], function() {
     $scope.showEnergyTable = false;
     $scope.propList = [];
     $scope.benchmarkResult = null;
+    $scope.sumPropSize = null;
 
 
     $scope.energyTypeRequired = false;
@@ -600,6 +601,7 @@ define([], function() {
             var primarySourceSiteRatio = $scope.getPrimarySourceSiteRatio(sourceSiteRatios,propSizes,sourceEnergies,siteEnergies);
 
             mixSourceEUI = $scope.getMixedSourceEUI(sumPropSize,sourceEnergies,siteEnergies);
+            $scope.sumPropSize = sumPropSize;
 
             if(results.length > 2){
 
