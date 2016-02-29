@@ -1,4 +1,7 @@
 <div>
+    <p>Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
+    existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
+    see the User Guide above.</p>
     <div class="ui two column grid">
         <div class="column">
     	   <form class="ui form" ng-class="{'error': !baselineForm.$valid}" name="baselineForm">
@@ -168,8 +171,7 @@
                     <div ng-show="hideEnergies">
                         <div class=" fields">
                             <div class="six wide field required">
-                                <label>Energy Type</label>
-<!--                                <label ng-show="energyTypeRequired"><font color="red">[Please Select]</font></label> -->
+                                <span><label>Energy Type</label><label ng-show="energyTypeRequired || !baselineForm.energyType.$valid"><font color="red">*</font></label></span>
                                 <select class="ui dropdown"
                                     dropdown
                                     name="energyType"
@@ -179,8 +181,7 @@
                                 </select>
                             </div>
                             <div class="five wide field required">
-                                <label>Units</label>
-                                <!--<label ng-show="energyUnitsRequired"><font color="red">[Please Select]</font></label> -->
+                                <span><label>Units</label><label ng-show="energyUnitsRequired || !baselineForm.energyUnits.$valid"><font color="red">*</font></label></span>
                                 <select class="ui dropdown"
                                     dropdown
                                     name="energyUnits"
@@ -190,9 +191,7 @@
                                 </select>
                             </div>
                             <div class="five wide field">
-                                    <label>Annual Use</label>
-<!--                                    <label ng-show="energyUseRequired"><font color="red">[Required]</font></label>
-                                    <label ng-show="baselineForm.energyUse.$error.number"><font color="red">[Must be a Number]</font></label> -->
+                                <span><label>Annual Use</label><label ng-show="energyUseRequired || !baselineForm.energyUse.$valid"><font color="red">*</font></label></span>
                                 <input type="number" ng-model="auxModel.energies.energyUse"
                                        name="energyUse" min="0"
                                        placeholder="Energy Use">
@@ -244,82 +243,20 @@
                     </table>
 
                 </div>
-                <h4 class="ui header"><i class="bar chart icon"></i>Reporting Units</h4>
-                <div class="ui segment">
-                    <div ng-init="auxModel.reportingUnits='us'">
-                        <div class="inline fields">
-                            <div class="field">
-                                <label>Conventional: kBtu/ft²</label>
-                                <input type="radio" ng-model="auxModel.reportingUnits" name="reportingUnits" value="us">
-                            </div>
-                            <div class="field">
-                                <label>Metric: GJ/m²</label>
-                                <input type="radio" ng-model="auxModel.reportingUnits" name="reportingUnits" value="metric">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-           <!-- These fields finish target finder replication, but are not needed specifically for the 2030 Baseline Tool
-                <div class="eight wide field">
-                <h4 class="ui header">Additional Computations (Optional)</h4>
-
-                <div class="ui segment" style="background-color:#f0f7fe">
-                    <div class="grouped fields">
-
-                        <div class="inline fields">
-                            <div class="field">
-                                <input type="checkbox" ng-model="getTargetScore"
-                                       name="targetScore" ng-true-value=true
-                                       ng-false-value=false ng-init="getTargetScore=false">
-                                <label>Target ENERGY STAR Score</label>
-                            </div>
-                            <div class="four wide field" ng-show="getTargetScore">
-                                <input type="number" ng-model="auxModel.targetScore"
-                                       name="targetScore" placeholder="Target Score"
-                                       min="0" max="100">
-
-                            </div>
-                            <div class="field">
-                                <label ng-show="!baselineForm.targetScore.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                            </div>
-                        </div>
-                        <div class="inline fields">
-                            <div class="field">
-                                <input type="checkbox" ng-model="getPercentBetterThanMedian"
-                                       name="percentBetterThanMedian" ng-true-value=true
-                                       ng-false-value=false ng-init="getPercentBetterThanMedian=false">
-                                <label>Target % Better than Median</label>
-                            </div>
-
-                            <div class="four wide field" ng-show="getPercentBetterThanMedian">
-                                <input type="number" ng-model="auxModel.percentBetterThanMedian"
-                                       name="percentBetterThanMedian" placeholder="Target %"
-                                       min="0" max="100">
-                            </div>
-                            <div class="field">
-                                <label ng-show="!baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                        <div class="field">
-                            <label ng-show="!baselineForm.targetScore.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                        </div>
-                    </div> -->
+               <div ng-include src="'assets/javascripts/common/partials/reportingUnitsSubmit.html'">Not Defined</div>
 
 
-                <div class="inline fields">
-
-                    <div class="ui big labeled button" ng-click="submit()">
-                        <i class="arrow right icon"></i>  Compute Target
-                    </div>
-                </div>
     	   </form>
         </div>
         <div class="column">
+            <h4 class="ui header"><i class="bar chart icon"></i>RESULTS</h4>
+            <h4 class="ui header">Your Building's Target EUI is {{percentBetterSiteEUI}} based on on a {{auxModel.percentBetterThanMedian}}% reduction</h4>
+
+            <div ng-include src="'assets/javascripts/benchmark/proplist_result.html'">Not Defined</div>
+            <br><br>
             <div ng-include src="'assets/javascripts/benchmark/benchmark_result.html'">Not Defined</div>
+            <br><br>
+            <div ng-include src="'assets/javascripts/common/partials/reportingUnitsSubmit.html'">Not Defined</div>
         </div>
     </div>
 </div>

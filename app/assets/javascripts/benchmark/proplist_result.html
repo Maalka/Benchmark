@@ -1,0 +1,30 @@
+
+<table class="ui definition table">
+
+    <thead>
+        <tr>
+            <td>BUILDING SUMMARY</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        <tr>
+            <td>LOCATION</td>
+            <td>{{auxModel.city}}, {{auxModel.state}}</td>
+            <td>Postal Code:  {{auxModel.postalCode}}</td>
+        </tr>
+
+
+        <tr ng-repeat="prop in propOutputList">
+            <td>{{prop.label}}</td>
+            <td>{{prop.propType}}</td>
+            <td>{{prop.propSize}} {{prop.areaUnits}} ({{prop.propPercent}})%</td>
+
+        </tr>
+
+    </tbody>
+</table>
+

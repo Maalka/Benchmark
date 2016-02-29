@@ -214,7 +214,6 @@ case class Emissions(parameters:JsValue) {
           case ("grid", "Canada", "YT", _) => 14.65
 
 
-
           case ("chilledWaterElectric", "USA", _, _) => 52.70
           case ("chilledWaterAbsorption", "USA", _, _) => 73.89
           case ("chilledWaterEngine", "USA", _, _) => 49.31

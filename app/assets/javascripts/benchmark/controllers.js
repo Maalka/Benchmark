@@ -15,7 +15,12 @@ define([], function() {
     $scope.showEnergyTable = false;
     $scope.propList = [];
     $scope.benchmarkResult = null;
-    $scope.buildingTypeRequired = false;
+
+    $scope.propOutputList = [];
+    $scope.percentBetterSiteEUI = [];
+    $scope.tableEUIUnits = null;
+    $scope.tableEnergyUnits = null;
+
 
     $scope.energyTypeRequired = false;
     $scope.energyUnitsRequired = false;
@@ -28,7 +33,6 @@ define([], function() {
 
     $scope.$watch("auxModel.buildingType", function (v) {
 
-        if($scope.baselineForm.buildingType.$valid){$scope.buildingTypeRequired = false;}
         if(($scope.auxModel.country) && (v)){
             $scope.propTypes.push({
                 type: v,
@@ -38,17 +42,9 @@ define([], function() {
         }
     });
 
-    $scope.$watch("auxModel.country", function (v) {
-        if($scope.baselineForm.country.$valid){
-            $scope.countryRequired = false;
-        }
-        if( v && $scope.auxModel.buildingType ) {
-            $scope.propTypes.push({
-                type: $scope.auxModel.buildingType,
-                country: v
-            });
-            $scope.propText="Add Another Use";
-        }
+    $scope.$watch("auxModel.country", function () {
+        $scope.benchmarkResult = null;
+        $scope.clearGeography();
     });
 
     $scope.$watch("auxModel.newConstruction", function (v) {
@@ -76,6 +72,13 @@ define([], function() {
         }
     });
 
+    $scope.clearGeography = function () {
+        $scope.auxModel.city = "";
+        $scope.auxModel.state = null;
+        $scope.auxModel.postalCode = "";
+        $scope.auxModel.buildingType = null;
+        $scope.propTypes = [];
+    };
 
 
     //populate user-input energy information table to calculate site/source EUI and Energy Star metrics
@@ -138,10 +141,6 @@ define([], function() {
             $scope.propText="Primary Function of Building";
         }
     };
-
-
-
-
 
     $scope.geographicProperties = {
             country:
@@ -490,17 +489,6 @@ define([], function() {
             ]
     };
 
-    $scope.submitErrors = function () {
-
-        if($scope.baselineForm.city.$error.required){$scope.cityRequired = true;}
-        if($scope.baselineForm.postalCode.$error.required){$scope.postalCodeRequired = true;}
-        if($scope.baselineForm.country.$error.required){$scope.countryRequired = true;}
-        if($scope.baselineForm.state.$error.required){$scope.stateRequired = true;}
-
-        window.alert("Please check form for errors!");
-    };
-
-
 
     $scope.computeBenchmarkResult = function(){
 
@@ -509,12 +497,10 @@ define([], function() {
         });
 
         $q.all($scope.futures).then(function (results) {
-        //in combineResults.js
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
         });
     };
-    //is there a way to separate this code into another 'extra' controller?
-// ***********************************************************************************************
+
         $scope.round = function(value, decimals) {
             return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
         };
@@ -621,6 +607,26 @@ define([], function() {
 
             mixSourceEUI = $scope.getMixedSourceEUI(sumPropSize,sourceEnergies,siteEnergies);
 
+            $scope.propOutputList = [];
+            for (var i =0; i < results.length; i ++) {
+                var tempProp = {};
+                tempProp.propType = $scope.propList[i].buildingType;
+                tempProp.propSize = propSizes[i];
+                tempProp.propPercent = $scope.round(propSizes[i]/sumPropSize*100,2);
+                if($scope.auxModel.country === "USA"){
+                    tempProp.areaUnits = "sq.ft";
+                }else{
+                    tempProp.areaUnits = "sq.m";
+                }
+                if(i === 0){
+                    tempProp.label = "USES";
+                }else{
+                    tempProp.label = null;
+                }
+                $scope.propOutputList.push(tempProp);
+            }
+
+
             if(results.length > 2){
 
                 if($scope.auxModel.reportingUnits==="us"){
@@ -673,15 +679,13 @@ define([], function() {
             mixTotalPercentBetterEmissions = mixTotalSiteEmissions/mixSitePercentBetterRatio;
             mixTotalMedianEmissions = mixTotalSiteEmissions/mixSiteMedianRatio;
 
-            mixTable = [
-                /*{"ES":$scope.round(mixES,2)},
-                  {"targetES":$scope.round(mixTargetES,2)},
-                  {"percentBetterES":$scope.round(mixPercentBetterES,2)},
-                  {"medianES":$scope.round(mixMedianES,2)},*/
+            $scope.percentBetterSiteEUI = mixPercentBetterSiteEUI;
 
-                  {"actualZEPI":100*$scope.round(1-mixSiteEUI/mixMedianSiteEUI,2)},
-                  {"targetZEPI":100*$scope.round(1-mixTargetSiteEUI/mixMedianSiteEUI,2)},
-                  {"percentBetterZEPI":$scope.auxModel.percentBetterThanMedian},
+            mixTable = [
+
+                  {"actualZEPI":100-100*$scope.round(1-mixSiteEUI/mixMedianSiteEUI,2)},
+                  {"targetZEPI":100-100*$scope.round(1-mixTargetSiteEUI/mixMedianSiteEUI,2)},
+                  {"percentBetterZEPI":100-$scope.auxModel.percentBetterThanMedian},
                   {"medianZEPI":100},
 
                   {"siteEUI":$scope.round(mixSiteEUI,2)},
@@ -713,11 +717,24 @@ define([], function() {
             return mixTable;
         };
 
+    $scope.submitErrors = function () {
+        for (var i = 0; i < $scope.baselineForm.$error.required.length; i++){
+            console.log($scope.baselineForm.$error.required[i].$name);
+        }
+    };
 
-// ***********************************************************************************************
     $scope.submit = function () {
 
         $scope.propList = [];
+
+        if($scope.auxModel.reportingUnits==="us"){
+            $scope.tableEnergyUnits="kBtu";
+            $scope.tableEUIUnits="kBtu/ft²";
+        }else {
+            $scope.tableEnergyUnits="GJ";
+            $scope.tableEUIUnits="GJ/m²";
+        }
+
 
         if($scope.energies.length===0){$scope.auxModel.energies=null;}
                     else {$scope.auxModel.energies = $scope.energies;}
@@ -737,18 +754,13 @@ define([], function() {
                     $scope.propTypes[i].propertyModel.targetScore = null;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
-
-
-                    //The following fields are driven by the 'New Construction' toggle for the Baseline 2030 Tool
-                    //$scope.propTypes[i].propertyModel.targetScore = $scope.auxModel.targetScore;
-
-
-
                     $scope.propList.push($scope.propTypes[i].propertyModel);
                 }
                 else {console.log('Error in ' + $scope.propTypes[i].type);}
             }
-        }else {console.log('Please Fix Form Errors');}
+        }else {
+            $scope.submitErrors();
+        }
 
         console.log($scope.propList);
 
