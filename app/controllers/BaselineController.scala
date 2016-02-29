@@ -95,6 +95,16 @@ trait BaselineActions {
       }
     }
 
+    val GFAConversionConstant:Double = {
+      (energyCalcs.country, energyCalcs.reportingUnits) match {
+        case ("USA", "us") => 1.0
+        case ("USA", "metric") => SquareFeet(1) to SquareMeters
+        case (_, "metric") => 1.0
+        case (_, "us") => SquareMeters(1) to SquareFeet
+        case _ => 1.0
+      }
+    }
+
     val futures = Future.sequence(Seq(
       // first column table output
       getBaseline.ES.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -130,7 +140,7 @@ trait BaselineActions {
       energyCalcs.getParkingEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
       energyCalcs.getTotalSourceEnergyNoPoolNoParking.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
 
-      getBaseline.buildingGFA.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.buildingGFA.map(api(_,GFAConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
       getBaseline.sourceSiteRatio.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       getBaseline.getBuildingClass.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
@@ -152,7 +162,6 @@ trait BaselineActions {
         "errors" -> errors
       ))
     }
-
   }
 }
 class BaselineController @Inject() (val cache: CacheApi) extends Controller with Security with Logging with BaselineActions

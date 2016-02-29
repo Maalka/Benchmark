@@ -1,4 +1,7 @@
 <div>
+    <h3>Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
+    existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
+    see the User Guide above.</h3>
     <div class="ui two column grid">
         <div class="column">
     	   <form class="ui form" ng-class="{'error': !baselineForm.$valid}" name="baselineForm">
@@ -240,33 +243,22 @@
                     </table>
 
                 </div>
-                <h4 class="ui header"><i class="bar chart icon"></i>Reporting Units</h4>
-                <div class="ui segment">
-                    <div ng-init="auxModel.reportingUnits='us'">
-                        <div class="inline fields">
-                            <div class="field">
-                                <label>Conventional: kBtu/ft²</label>
-                                <input type="radio" ng-model="auxModel.reportingUnits" name="reportingUnits" value="us">
-                            </div>
-                            <div class="field">
-                                <label>Metric: GJ/m²</label>
-                                <input type="radio" ng-model="auxModel.reportingUnits" name="reportingUnits" value="metric">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+               <div ng-include src="'assets/javascripts/common/partials/reportingUnitsSubmit.html'">Not Defined</div>
 
-                <div class="inline fields">
 
-                    <div class="ui big labeled button" ng-click="submit()">
-                        <i class="arrow right icon"></i>  Compute Target
-                    </div>
-                </div>
     	   </form>
         </div>
-        <div class="column">
+        <div class="column" ng-show='benchmarkResult != undefined'>
+            <h4 class="ui header"><i class="bar chart icon"></i>RESULTS</h4>
+            <h4 class="ui header">Your Building's Target EUI is {{percentBetterSiteEUI}} based on on a {{auxModel.percentBetterThanMedian}}% reduction</h4>
+
             <div ng-include ng-if='benchmarkResult != undefined' src="'assets/javascripts/benchmark/proplist_result.html'">Not Defined</div>
+            <br><br>
             <div ng-include ng-if='benchmarkResult != undefined' src="'assets/javascripts/benchmark/benchmark_result.html'">Not Defined</div>
+            <br><br>
+            <div ng-include ng-if='benchmarkResult != undefined' src="'assets/javascripts/common/partials/reportingUnitsSubmit.html'">Not Defined</div>
+
+
         </div>
     </div>
 </div>

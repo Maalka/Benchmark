@@ -23,7 +23,8 @@ define(['angular','./main'], function(angular) {
       restrict: 'A',
       scope: {
         'result': "=",
-        'title': "=",
+        'field': "=",
+        'units': "=",
         'columns': "="
       },
       templateUrl: '/assets/javascripts/common/partials/benchmark_result_row.html',
@@ -57,6 +58,7 @@ define(['angular','./main'], function(angular) {
         };
 
         scope.$watch('result', function(result) {
+
           var columns = [];
           if (result !== undefined){
             for (var i =0; i < scope.columns.length; i++) {
@@ -64,6 +66,8 @@ define(['angular','./main'], function(angular) {
             }
           }
           scope.resultColumns = columns;
+
+          scope.title = scope.field + " (" + scope.units + ")";
         });
       }
     };

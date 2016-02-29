@@ -1,0 +1,29 @@
+<h4 class="ui header"><i class="bar chart icon"></i>Reporting Units</h4>
+<div class="ui segment">
+
+    <div class="inline fields required">
+        <div class="field">
+            <div class="ui radio checkbox" ng-init="auxModel.reportingUnits='us'">
+                <input type="radio" ng-model="auxModel.reportingUnits"
+                       id="project-reporting-us" value='us'>
+                <label for='project-reporting-us'>Conventional: kBtu/ft²</label>
+
+            </div>
+        </div>
+        <div class="field">
+            <div class="ui radio checkbox">
+                <input type="radio" ng-model="auxModel.reportingUnits"
+                       id="project-reporting-metric" value='metric'>
+                <label for="project-reporting-metric">Metric: GJ/m²</label>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class="ui big labeled button" ng-click="submit()">
+    <i class="arrow right icon"></i>  Compute Target
+</div>

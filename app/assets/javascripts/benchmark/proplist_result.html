@@ -1,5 +1,13 @@
+
 <table class="ui definition table">
 
+    <thead>
+        <tr>
+            <td>BUILDING SUMMARY</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </thead>
 
     <tbody>
 
@@ -10,14 +18,13 @@
         </tr>
 
 
-        <tr ng-repeat="prop in propList">
-            <td>USES</td>
-            <td>{{prop.buildingType}}</td>
-            <td>{{prop.GFA}} {{prop.areaUnits}} ({{prop.GFA / sumPropSize * 100}})%</td>
+        <tr ng-repeat="prop in propOutputList">
+            <td>{{prop.label}}</td>
+            <td>{{prop.propType}}</td>
+            <td>{{prop.propSize}} {{prop.areaUnits}} ({{prop.propPercent}})%</td>
 
         </tr>
 
-
-
     </tbody>
 </table>
+

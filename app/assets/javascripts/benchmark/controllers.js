@@ -15,7 +15,11 @@ define([], function() {
     $scope.showEnergyTable = false;
     $scope.propList = [];
     $scope.benchmarkResult = null;
-    $scope.sumPropSize = null;
+
+    $scope.propOutputList = [];
+    $scope.percentBetterSiteEUI = [];
+    $scope.tableEUIUnits = null;
+    $scope.tableEnergyUnits = null;
 
 
     $scope.energyTypeRequired = false;
@@ -39,6 +43,7 @@ define([], function() {
     });
 
     $scope.$watch("auxModel.country", function () {
+        $scope.benchmarkResult = null;
         $scope.clearGeography();
     });
 
@@ -601,7 +606,26 @@ define([], function() {
             var primarySourceSiteRatio = $scope.getPrimarySourceSiteRatio(sourceSiteRatios,propSizes,sourceEnergies,siteEnergies);
 
             mixSourceEUI = $scope.getMixedSourceEUI(sumPropSize,sourceEnergies,siteEnergies);
-            $scope.sumPropSize = sumPropSize;
+
+            $scope.propOutputList = [];
+            for (var i =0; i < results.length; i ++) {
+                var tempProp = {};
+                tempProp.propType = $scope.propList[i].buildingType;
+                tempProp.propSize = propSizes[i];
+                tempProp.propPercent = $scope.round(propSizes[i]/sumPropSize*100,2);
+                if($scope.auxModel.country === "USA"){
+                    tempProp.areaUnits = "sq.ft";
+                }else{
+                    tempProp.areaUnits = "sq.m";
+                }
+                if(i === 0){
+                    tempProp.label = "USES";
+                }else{
+                    tempProp.label = null;
+                }
+                $scope.propOutputList.push(tempProp);
+            }
+
 
             if(results.length > 2){
 
@@ -655,11 +679,13 @@ define([], function() {
             mixTotalPercentBetterEmissions = mixTotalSiteEmissions/mixSitePercentBetterRatio;
             mixTotalMedianEmissions = mixTotalSiteEmissions/mixSiteMedianRatio;
 
+            $scope.percentBetterSiteEUI = mixPercentBetterSiteEUI;
+
             mixTable = [
 
-                  {"actualZEPI":100*$scope.round(1-mixSiteEUI/mixMedianSiteEUI,2)},
-                  {"targetZEPI":100*$scope.round(1-mixTargetSiteEUI/mixMedianSiteEUI,2)},
-                  {"percentBetterZEPI":$scope.auxModel.percentBetterThanMedian},
+                  {"actualZEPI":100-100*$scope.round(1-mixSiteEUI/mixMedianSiteEUI,2)},
+                  {"targetZEPI":100-100*$scope.round(1-mixTargetSiteEUI/mixMedianSiteEUI,2)},
+                  {"percentBetterZEPI":100-$scope.auxModel.percentBetterThanMedian},
                   {"medianZEPI":100},
 
                   {"siteEUI":$scope.round(mixSiteEUI,2)},
@@ -700,6 +726,15 @@ define([], function() {
     $scope.submit = function () {
 
         $scope.propList = [];
+
+        if($scope.auxModel.reportingUnits==="us"){
+            $scope.tableEnergyUnits="kBtu";
+            $scope.tableEUIUnits="kBtu/ft²";
+        }else {
+            $scope.tableEnergyUnits="GJ";
+            $scope.tableEUIUnits="GJ/m²";
+        }
+
 
         if($scope.energies.length===0){$scope.auxModel.energies=null;}
                     else {$scope.auxModel.energies = $scope.energies;}
