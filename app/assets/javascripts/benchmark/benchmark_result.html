@@ -1,33 +1,35 @@
-<table class="ui definition table">
+<div>
+    <div graph result="'a'"></div>
+    <table class="ui definition table">
+        <thead>
+            <tr>
+                <th/>
+                <th>Baseline</th>
+                <th>Target</th>
+                <th>Rating</th>
+            </tr>
+        </thead>
 
-    <thead>
-        <tr>
-            <th/>
-            <th>Baseline</th>
-            <th>Target</th>
-            <th>Rating</th>
-        </tr>
-    </thead>
+        <tbody>
 
-    <tbody>
+            <tr benchmark-result-row result="benchmarkResult" title="'zEPI Score'"
+                columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']"></tr>
 
-        <tr benchmark-result-row result="benchmarkResult" title="'zEPI Score'"
-            columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']"></tr>
+            <tr benchmark-result-row result="benchmarkResult" title="'Source EUI'"
+                columns="['medianSourceEUI', 'percentBetterSourceEUI', 'sourceEUI']"></tr>
 
-        <tr benchmark-result-row result="benchmarkResult" title="'Source EUI'"
-            columns="['medianSourceEUI', 'percentBetterSourceEUI', 'sourceEUI']"></tr>
+            <tr benchmark-result-row result="benchmarkResult" title="'Site EUI'"
+                columns="['medianSiteEUI', 'percentBetterSiteEUI', 'siteEUI']"></tr>
 
-        <tr benchmark-result-row result="benchmarkResult" title="'Site EUI'"
-            columns="['medianSiteEUI', 'percentBetterSiteEUI', 'siteEUI']"></tr>
+            <tr benchmark-result-row result="benchmarkResult" title="'Source Energy Use'"
+                columns="['medianSourceEnergy', 'percentBetterSourceEnergy', 'totalSourceEnergy']"></tr>
 
-        <tr benchmark-result-row result="benchmarkResult" title="'Source Energy Use'"
-            columns="['medianSourceEnergy', 'percentBetterSourceEnergy', 'totalSourceEnergy']"></tr>
+            <tr benchmark-result-row result="benchmarkResult" title="'Site Energy Use'"
+                columns="['medianSiteEnergy', 'percentBetterSiteEnergy', 'totalSiteEnergy']"></tr>
 
-        <tr benchmark-result-row result="benchmarkResult" title="'Site Energy Use'"
-            columns="['medianSiteEnergy', 'percentBetterSiteEnergy', 'totalSiteEnergy']"></tr>
+            <tr benchmark-result-row result="benchmarkResult" title="'Total GHG Emissions (Metric Tons CO2e)'"
+                columns="['medianSiteEmissions', 'percentBetterSiteEmissions', 'totalSiteEmissions']"></tr>
 
-        <tr benchmark-result-row result="benchmarkResult" title="'Total GHG Emissions (Metric Tons CO2e)'"
-            columns="['medianSiteEmissions', 'percentBetterSiteEmissions', 'totalSiteEmissions']"></tr>
-
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>

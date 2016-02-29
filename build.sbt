@@ -31,7 +31,9 @@ libraryDependencies ++= Seq(
   "org.webjars" % "underscorejs" % "1.6.0-3",
   "org.webjars" % "jquery" % "1.11.1",
   "org.webjars" %% "webjars-play" % "2.4.0-1",
-  "org.webjars" % "angularjs" % "1.4.7" exclude("org.webjars", "jquery")
+  "org.webjars" % "angularjs" % "1.4.7" exclude("org.webjars", "jquery"),
+  "org.webjars" % "highcharts" % "4.1.10",
+  "org.webjars" % "highstock" % "2.1.10"
 )
 
 // Scala Compiler Options

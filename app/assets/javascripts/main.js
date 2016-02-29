@@ -5,6 +5,7 @@
   // -- RequireJS config --
   requirejs.config({
     // Packages = top-level folders; loads a contained file named 'main.js"
+    wrapShim: true,
     packages: ['common', 'benchmark'],
     shim: {
       'jsRoutes': {
@@ -19,6 +20,14 @@
       },
       'angular-route': ['angular'],
       'angular-cookies': ['angular'],
+      'highcharts-core': {
+        deps: ['jquery'],
+        exports: 'highcharts-core'
+      },
+      'highcharts': {
+        deps: ['highcharts-core'],
+        exports: 'highcharts'
+      },
       'semantic': ['angular'],
       'semantic-daterangepicker': ['moment']
       
@@ -29,6 +38,9 @@
       'angular': ['../lib/angularjs/angular'],
       'angular-route': ['../lib/angularjs/angular-route'],
       'angular-cookies': ['../lib/angularjs/angular-cookies'],
+      'highcharts-core': '../lib/highstock/highstock',
+      'highcharts-more': '../lib/highcharts/highcharts-more',
+      'highcharts': './highcharts-theme',
       'semantic': ['../lib/semantic-ui/semantic'],
       'jsRoutes': ['/jsroutes'],
       'semantic-daterangepicker': './semantic-ui-daterangepicker/daterangepicker',
