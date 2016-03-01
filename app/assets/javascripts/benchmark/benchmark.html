@@ -9,6 +9,13 @@
                 <div class="ui segment about">
                     <div class="inline fields">
                         <div class="sixteen wide field required">
+                            <label class="static">Building Name</label>
+                            <input type="text" ng-model="auxModel.buildingName"
+                                   required name="buildingName" min="0" placeholder="Building Name">
+                        </div>
+                    </div>
+                    <div class="inline fields">
+                        <div class="sixteen wide field required">
                             <label class="static">Country</label>
                             <select class="ui dropdown search"
                                     ng-model="auxModel.country"
@@ -169,9 +176,9 @@
                     </div>
 
                     <div ng-show="hideEnergies">
-                        <div class=" fields">
+                        <div class="fields">
                             <div class="six wide field required">
-                                <span><label>Energy Type</label><label ng-show="energyTypeRequired || !baselineForm.energyType.$valid"><font color="red">*</font></label></span>
+                                <label>Energy Type</label>
                                 <select class="ui dropdown"
                                     dropdown
                                     name="energyType"
@@ -181,7 +188,7 @@
                                 </select>
                             </div>
                             <div class="five wide field required">
-                                <span><label>Units</label><label ng-show="energyUnitsRequired || !baselineForm.energyUnits.$valid"><font color="red">*</font></label></span>
+                                <label>Units</label>
                                 <select class="ui dropdown"
                                     dropdown
                                     name="energyUnits"
@@ -191,21 +198,18 @@
                                 </select>
                             </div>
                             <div class="five wide field">
-                                <span><label>Annual Use</label><label ng-show="energyUseRequired || !baselineForm.energyUse.$valid"><font color="red">*</font></label></span>
+                                <label>Annual Use</label>
                                 <input type="number" ng-model="auxModel.energies.energyUse"
                                        name="energyUse" min="0"
                                        placeholder="Energy Use">
                             </div>
                             <!-- This is an extra field that might be required in the energy form, other part is in controllers.js
                             <div class="field">
-                                    <span>
-                                        <label>Rate ($/unit)</label>
-                                        <label ng-show="baselineForm.energyRate.$error.number"><font color="red">[Must be a Number]</font></label>
-                                    </span>
 
-                                    <input type="number" ng-model="auxModel.energies.energyRate"
-                                           name="energyRate" min="0"
-                                           placeholder="$/unit">
+                                <label>Rate ($/unit)</label>
+                                <input type="number" ng-model="auxModel.energies.energyRate"
+                                       name="energyRate" min="0"
+                                       placeholder="$/unit">
                             </div>-->
                         </div>
 

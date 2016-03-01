@@ -1,9 +1,13 @@
 
 <div class="inline fields">
+    <div class="four wide field required">
+        <label class="static">Degree Days</label>
+        <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" target="_blank"><i class="large circle help icon"></i></a>
+    </div>
     <div class="two wide field">
         <label>HDD</label>
     </div>
-    <div class="seven wide field">
+    <div class="four wide field">
         <input type="number" ng-model="auxModel.HDD"
                required name="HDD" min="0">
     </div>
@@ -11,13 +15,8 @@
     <div class="two wide field">
         <label>CDD</label>
     </div>
-    <div class="seven wide field">
+    <div class="four wide field">
         <input type="number" ng-model="auxModel.CDD"
                required name="CDD" min="0">
     </div>
-    <div class="two wide field">
-            <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" target="_blank"><i class="large circle help icon"></i></a>
-    </div>
 </div>
-
-<label ng-show="baselineForm.CDD.$error.number || baselineForm.HDD.$error.number"><font color="red">[Degree Days Must Be Numberical]</font></label>

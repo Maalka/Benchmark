@@ -21,11 +21,6 @@ define([], function() {
     $scope.tableEUIUnits = null;
     $scope.tableEnergyUnits = null;
 
-
-    $scope.energyTypeRequired = false;
-    $scope.energyUnitsRequired = false;
-    $scope.energyUseRequired = false;
-
     $scope.propTypes = [];
 
     $scope.propText = "Primary Function of Building";
@@ -53,24 +48,6 @@ define([], function() {
         $scope.auxModel.percentBetterThanMedian = 20;}
     });
 
-    //watch on energyType dropdown, remove errors upon user selection
-    $scope.$watch("auxModel.energies.energyType", function (v) {
-        if( v ){
-            $scope.energyTypeRequired = false;
-        }
-    });
-    //watch on energyUnits dropdown, remove errors upon user selection
-    $scope.$watch("auxModel.energies.energyUnits", function (v) {
-        if( v ){
-            $scope.energyUnitsRequired = false;
-        }
-    });
-    //watch on energyUse input text, remove errors if user input positive number (required)
-    $scope.$watch("auxModel.energies.energyUse", function (v) {
-        if( v ){
-            $scope.energyUseRequired = false;
-        }
-    });
 
     $scope.clearGeography = function () {
         $scope.auxModel.city = "";
@@ -88,9 +65,6 @@ define([], function() {
         if(!$scope.auxModel.energies) {$scope.auxModel.energies = {};}
 
         if($scope.energies===null){$scope.energies=[];}
-        if(!$scope.auxModel.energies.energyType){$scope.energyTypeRequired = true;}
-        if(!$scope.auxModel.energies.energyUnits){$scope.energyUnitsRequired = true;}
-        if(!$scope.auxModel.energies.energyUse){$scope.energyUseRequired = true;}
 
         if ($scope.baselineForm.energyType.$valid && $scope.auxModel.energies.energyType &&
             $scope.baselineForm.energyUnits.$valid && $scope.auxModel.energies.energyUnits &&
