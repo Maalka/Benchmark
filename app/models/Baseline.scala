@@ -1524,8 +1524,8 @@ case class DataCenter(annualITEnergy:PosDouble, reportingUnits:String,
     case _ => 2.05
   }
 
-  val annualITEnergyTBtu: Double = (Energy((annualITEnergy.value, "KWh")).get to TBtus) * siteToSourceITConvert
-  val annualITEnergyKBtu: Double = (Energy((annualITEnergy.value, "KWh")).get to KBtus) * siteToSourceITConvert
+  val annualITEnergyTBtu: Double = (Energy((annualITEnergy.value, "kWh")).get to TBtus) * siteToSourceITConvert
+  val annualITEnergyKBtu: Double = (Energy((annualITEnergy.value, "kWh")).get to KBtus) * siteToSourceITConvert
 
   val regressionSegments = Seq[RegressionSegment](
     RegressionSegment(1.924, 0, 1), // regression constant

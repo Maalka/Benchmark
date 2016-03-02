@@ -318,14 +318,14 @@ define([], function() {
             //<!--Electricity - Grid -->
             {id:"KBtu",name:"kBtu",filter_id:"grid"},
             {id:"MBtu",name:"MBtu",filter_id:"grid"},
-            {id:"KWh",name:"kWh",filter_id:"grid"},
+            {id:"kWh",name:"kWh",filter_id:"grid"},
             {id:"MWh",name:"MWh",filter_id:"grid"},
             {id:"GJ",name:"GJ",filter_id:"grid"},
 
             //<!--Electricity - Onsite Renewable-->
             {id:"KBtu",name:"kBtu",filter_id:"onSiteElectricity"},
             {id:"MBtu",name:"MBtu",filter_id:"onSiteElectricity"},
-            {id:"KWh",name:"kWh",filter_id:"onSiteElectricity"},
+            {id:"kWh",name:"kWh",filter_id:"onSiteElectricity"},
             {id:"MWh",name:"MWh",filter_id:"onSiteElectricity"},
             {id:"GJ",name:"GJ",filter_id:"onSiteElectricity"},
 

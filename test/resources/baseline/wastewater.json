@@ -13,7 +13,7 @@
   "energies": [
     {
       "energyType": "grid",
-      "energyUnits": "KWh",
+      "energyUnits": "kWh",
       "energyUse": 1307400.0,
       "energyRate": 0.25
     },
@@ -32,7 +32,7 @@
   "CDD": 756,
   "percentHeated": 1,
   "percentCooled": 1,
-  "annualITEnergyKwh": null,
+  "annualITEnergykWh": null,
   "GFA": 20000,
   "seatingCapacity": null,
   "isOpenAllWeekdays": null,
