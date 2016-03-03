@@ -10,5 +10,9 @@ define(['angular', 'benchmark'], function(angular) {
 
   // We must already declare most dependencies here (except for common), or the submodules' routes
   // will not be resolved
-  return angular.module('app', ['benchmark.dashboard']); //
+  return angular.module('app', ['benchmark.dashboard', 'matchmedia-ng']).config(['matchmediaProvider', function (matchmediaProvider) {
+      matchmediaProvider.rules.phone = "(max-width: 768px)";
+      matchmediaProvider.rules.tablet = "(max-width: 992px)";      
+      matchmediaProvider.rules.desktop = "(max-width: 1920px)";
+   }]);
 });

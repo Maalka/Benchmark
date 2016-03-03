@@ -1,9 +1,8 @@
 <div class="field">
-    <form class="ui form" name="baselineForm">
         <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
 
         <!-- Checkboxes -->
-        <div class="field" ng-class="{'disabled': !baselineForm.GFA.$valid || !baselineForm.areaUnits.$valid}">
+        <div class="field" ng-class="{'disabled': !forms.baselineForm.GFA.$valid || !forms.baselineForm.areaUnits.$valid}">
             <div checkbox class="ui checkbox">
                 <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
                        ng-true-value=true ng-false-value=false>
@@ -60,6 +59,5 @@
             </div>
         </div>
 
-    </form>
 </div>
 

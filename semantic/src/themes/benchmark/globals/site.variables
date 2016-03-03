@@ -9,7 +9,16 @@
 @textColor: #595959;
 
 @grey: #D9D9D9;
+@black: #000000;
+@teal: #359BB4;
+@tealBackground   : @teal;
 @defaultBorderRadius: 0;
 @borderRadius: 0;
 @inputBorderRadius: 0;
 @absoluteBorderRadius: 0;
+
+/* This is the single variable that controls them all */
+@emSize   : 12px;
+
+/* The size of page text  */
+@fontSize : 12px;

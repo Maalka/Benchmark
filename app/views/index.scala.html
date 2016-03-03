@@ -3,18 +3,16 @@
   <head>
     <title data-ng-bind="pageTitle"></title>
     <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("javascripts/semantic/semantic.css")" />
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("javascripts/semantic/transition.css")" />
+    <link rel="stylesheet" href="@routes.Assets.versioned("javascripts/semantic/semantic.css")" />
+    <link rel="stylesheet" href="@routes.Assets.versioned("javascripts/semantic/transition.css")" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald:300,400,700" />
     <!-- <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/semantic-ui/semantic.min.css")" /> -->
-
     @*-- Add More CSS here -- *@
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="stylesheet" media="print" href="@routes.Assets.versioned("stylesheets/print.css")">    
     <script data-main="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript" src="@routes.Assets.versioned("lib/requirejs/require.js")"></script>
   </head>
-  <body id="benchmark">
-    @* -- Main Content -- *@
-    <div class="ui page container" data-ng-cloak>
-      <div data-ng-view></div>
-    </div>
+  <body id="benchmark" data-ng-view>
+    <div data-ng-view></div>
   </body>
 </html>

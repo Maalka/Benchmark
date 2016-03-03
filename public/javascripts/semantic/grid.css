@@ -1395,7 +1395,7 @@
 .ui.grid > .teal.row,
 .ui.grid > .teal.column,
 .ui.grid > .row > .teal.column {
-  background-color: #00B5AD !important;
+  background-color: #359BB4 !important;
   color: #FFFFFF;
 }
 
@@ -1443,7 +1443,7 @@
 .ui.grid > .grey.row,
 .ui.grid > .grey.column,
 .ui.grid > .row > .grey.column {
-  background-color: #767676 !important;
+  background-color: #D9D9D9 !important;
   color: #FFFFFF;
 }
 
@@ -1451,7 +1451,7 @@
 .ui.grid > .black.row,
 .ui.grid > .black.column,
 .ui.grid > .row > .black.column {
-  background-color: #1B1C1D !important;
+  background-color: #000000 !important;
   color: #FFFFFF;
 }
 
@@ -2013,12 +2013,6 @@
     display: none !important;
   }
 }
-
-
-/*******************************
-         Theme Overrides
-*******************************/
-
 
 
 /*******************************

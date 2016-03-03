@@ -1,29 +1,26 @@
-<h4 class="ui header"><i class="bar chart icon"></i>Reporting Units</h4>
-<div class="ui segment">
+<div class="ui basic horizontal segments">
+    <div class="ui basic segment">
+        <form class="ui form " ng-class="{'error': !forms.baselineForm.$valid}">
+             <div class="inline fields  ">
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" id="project-cb-new" ng-model="auxModel.reportingUnits" ng-init="auxModel.reportingUnits='us'"
+                           value='us'>
+                        <label for='project-reporting-us'>imperial</label>
 
-    <div class="inline fields required">
-        <div class="field">
-            <div class="ui radio checkbox" ng-init="auxModel.reportingUnits='us'">
-                <input type="radio" ng-model="auxModel.reportingUnits"
-                       id="project-reporting-us" value='us'>
-                <label for='project-reporting-us'>Conventional: kBtu/ft²</label>
-
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" id="project-reporting-metric" ng-model="auxModel.reportingUnits"
+                           value='metric'>
+                        <label for="project-reporting-metric">metric</label>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="field">
-            <div class="ui radio checkbox">
-                <input type="radio" ng-model="auxModel.reportingUnits"
-                       id="project-reporting-metric" value='metric'>
-                <label for="project-reporting-metric">Metric: GJ/m²</label>
-
-            </div>
-        </div>
+        </form>
     </div>
-
-</div>
-
-
-
-<div class="ui big labeled button" ng-click="submit()">
-    <i class="arrow right icon"></i>  Compute Target
+    <div class="ui basic segment right aligned">
+        <a href ng-click="print()">print <i class="print icon"></i></a>
+    </div>
 </div>

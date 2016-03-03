@@ -20,6 +20,7 @@
       },
       'angular-route': ['angular'],
       'angular-cookies': ['angular'],
+      'matchmedia-ng': ['angular'],
       'highcharts-core': {
         deps: ['jquery'],
         exports: 'highcharts-core'
@@ -41,6 +42,7 @@
       'highcharts-core': '../lib/highstock/highstock',
       'highcharts-more': '../lib/highcharts/highcharts-more',
       'highcharts': './highcharts-theme',
+      'matchmedia-ng': '../lib/matchmedia-ng/matchmedia-ng',
       'semantic': ['../lib/semantic-ui/semantic'],
       'jsRoutes': ['/jsroutes'],
       'semantic-daterangepicker': './semantic-ui-daterangepicker/daterangepicker',
@@ -55,7 +57,7 @@
   // Load the app. This is kept minimal so it doesn't need much updating.
   require(['angular', 'angular-cookies', 'angular-route', 'jquery', 'semantic', './app'],
     function (angular) {
-      angular.bootstrap(document, ['app']);
+      angular.bootstrap(document, ['app', 'matchmedia-ng']);
     }
   );
 })(requirejs);

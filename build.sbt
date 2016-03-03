@@ -33,7 +33,8 @@ libraryDependencies ++= Seq(
   "org.webjars" %% "webjars-play" % "2.4.0-1",
   "org.webjars" % "angularjs" % "1.4.7" exclude("org.webjars", "jquery"),
   "org.webjars" % "highcharts" % "4.1.10",
-  "org.webjars" % "highstock" % "2.1.10"
+  "org.webjars" % "highstock" % "2.1.10",
+  "org.webjars" % "matchmedia-ng" % "1.0.5"
 )
 
 // Scala Compiler Options

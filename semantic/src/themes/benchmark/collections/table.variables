@@ -1,0 +1,2 @@
+@borderWidth: 0;
+@rowBorder: 0px solid @internalBorderColor;

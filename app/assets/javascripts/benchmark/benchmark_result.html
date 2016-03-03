@@ -1,32 +1,15 @@
 <div>
-    <div graph result="'a'"></div>
-    <table class="ui definition table">
-        <thead>
-            <tr>
-                <td>RESULTS</td>
-                <td>Baseline</td>
-                <td>Target</td>
-                <td>Rating</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr benchmark-result-row result="benchmarkResult" field="'zEPI Score'" units="'1-100'"
-                columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']"></tr>
-
-            <tr benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
-                columns="['medianSourceEUI', 'percentBetterSourceEUI', 'sourceEUI']"></tr>
-
-            <tr benchmark-result-row result="benchmarkResult" field="'Site EUI'" units="tableEUIUnits"
-                columns="['medianSiteEUI', 'percentBetterSiteEUI', 'siteEUI']"></tr>
-
-            <tr benchmark-result-row result="benchmarkResult" field="'Source Energy Use'" units="tableEnergyUnits"
-                columns="['medianSourceEnergy', 'percentBetterSourceEnergy', 'totalSourceEnergy']"></tr>
-
-            <tr benchmark-result-row result="benchmarkResult" field="'Site Energy Use'" units="tableEnergyUnits"
-                columns="['medianSiteEnergy', 'percentBetterSiteEnergy', 'totalSiteEnergy']"></tr>
-
-            <tr benchmark-result-row result="benchmarkResult" field="'Total GHG Emissions'" units="'Metric Tons CO2e'"
-                columns="['medianSiteEmissions', 'percentBetterSiteEmissions', 'totalSiteEmissions']"></tr>
-        </tbody>
-    </table>
+	<h4 class="ui header"><i class="bar chart icon"></i>RESULTS</h4>
+	<div class="ui padded one column grid">
+	    <div class="teal inverted column" ng-if="percentBetterSiteEUI">
+	         Your Building's Target EUI is <span style="font-size:24px">{{percentBetterSiteEUI | number : 1}}</span> based on on a {{auxModel.percentBetterThanMedian}}% reduction
+	    </div>
+	    <div class="column" style="padding:0px">
+	       <div ng-if="benchmarkResult" graph benchmark-result="benchmarkResult"></div>
+	    </div>
+	    <div class="teal column">
+	        <div ng-include src="'assets/javascripts/benchmark/proplist_result.html'">Not Defined</div>
+	    </div>
+	</div>
+	<div ng-include src="'assets/javascripts/common/partials/reportingUnitsSubmit.html'">Not Defined</div>
 </div>

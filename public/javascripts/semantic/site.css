@@ -20,7 +20,7 @@ body {
   height: 100%;
 }
 html {
-  font-size: 14px;
+  font-size: 12px;
 }
 body {
   margin: 0px;
@@ -29,7 +29,7 @@ body {
   min-width: 320px;
   background: #FFFFFF;
   font-family: "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.4285em;
   color: #595959;
   font-smoothing: antialiased;

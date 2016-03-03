@@ -13,7 +13,7 @@ define(['angular','./main'], function(angular) {
             restrict: 'A',
             scope: {
             model: '=model',
-            baselineForm: '=baselineForm'
+            forms: '=forms'
             },
 
             templateUrl: function(elem, attr){
@@ -23,14 +23,13 @@ define(['angular','./main'], function(angular) {
             controller: ["$scope", function ($scope) {
 
                 $scope.propFieldsRequired = false;
-
                 $scope.propertyModel = {};
                 $scope.model.propertyModel = $scope.propertyModel ;
                 $scope.model.propertyModel.buildingType = $scope.model.type;
 
                 $scope.model.valid = false;
 
-                $scope.$watch("baselineForm.$valid", function (validity) {
+                $scope.$watch("forms.baselineForm.$valid", function (validity) {
                     $scope.model.valid = validity;
                 });
 
@@ -38,10 +37,10 @@ define(['angular','./main'], function(angular) {
                 $scope.$watch("propertyModel.defaultValues", function () {
 
                     if($scope.propertyModel.defaultValues){
-                        if( $scope.baselineForm.GFA.$valid && $scope.baselineForm.areaUnits.$valid) {
+                        if( $scope.forms.baselineForm.GFA.$valid && $scope.forms.baselineForm.areaUnits.$valid) {
                             $scope.setDefaults();
                         } else {
-                            if( $scope.baselineForm.GFA.$error.required ){
+                            if( $scope.forms.baselineForm.GFA.$error.required ){
                                 $scope.GFARequired = true;
                             }
                             $scope.propertyModel.defaultValues = false;
@@ -54,20 +53,20 @@ define(['angular','./main'], function(angular) {
 
                 $scope.$watch("propertyModel.GFA", function () {
 
-                    if($scope.baselineForm.GFA && $scope.baselineForm.areaUnits){
+                    if($scope.forms.baselineForm.GFA && $scope.forms.baselineForm.areaUnits){
                         $scope.GFARequired = false;
                         if($scope.propertyModel.defaultValues){$scope.setDefaults();}
                     }
                 });
                 $scope.$watch("propertyModel.areaUnits", function () {
-                    if($scope.baselineForm.GFA && $scope.baselineForm.areaUnits){
+                    if($scope.forms.baselineForm.GFA && $scope.forms.baselineForm.areaUnits){
                         $scope.GFARequired = false;
                         if($scope.propertyModel.defaultValues===true){$scope.setDefaults();}
                     }
                 });
 
-                $scope.$watch("baselineForm.$valid", function () {
-                    if($scope.baselineForm.$valid){
+                $scope.$watch("forms.baselineForm.$valid", function () {
+                    if($scope.forms.baselineForm.$valid){
                         $scope.propFieldsRequired = false;
                     } else {
                         $scope.propFieldsRequired = true;

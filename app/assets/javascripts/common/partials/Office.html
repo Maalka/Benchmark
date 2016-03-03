@@ -1,6 +1,6 @@
 <div>
     <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
-    <div class="field" ng-class="{'disabled': !baselineForm.GFA.$valid || !baselineForm.areaUnits.$valid}">
+    <div class="field" ng-class="{'disabled': !forms.baselineForm.GFA.$valid || !forms.baselineForm.areaUnits.$valid}">
         <div checkbox class="ui checkbox checked">
             <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
                    ng-true-value=true ng-false-value=false>
@@ -19,36 +19,36 @@
 
 
     <!-- Num Computers -->
-    <div class="ui error message" ng-if="baselineForm.numWorkersMainShift.$error.number">
+    <div class="ui error message" ng-if="forms.baselineForm.numWorkersMainShift.$error.number">
         <p>[Must Be A Number]</p>
     </div>
     <div class="inline fields">
         <label class="static">Number of Workers on Main Shift</label>
-        <div class="five wide field required" ng-class="{'error': baselineForm.numWorkersMainShift.$error}">
+        <div class="five wide field required" ng-class="{'error': forms.baselineForm.numWorkersMainShift.$error}">
             <input type="number" ng-model="propertyModel.numWorkersMainShift"
                    required name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
         </div>
     </div>
 
     <!-- Num Computers -->
-    <div class="ui error message" ng-if="baselineForm.numComputers.$error.number">
+    <div class="ui error message" ng-if="forms.baselineForm.numComputers.$error.number">
         <p>[Must Be A Number]</p>
     </div>
     <div class="inline fields" >
         <label class="static">Number of Computers</label>    
-        <div class="five wide field required" ng-class="{'error': baselineForm.numComputers.$error}">
+        <div class="five wide field required" ng-class="{'error': forms.baselineForm.numComputers.$error}">
             <input type="number" ng-model="propertyModel.numComputers"
                    required name="numComputers" min="0">
         </div>
     </div>
 
     <!-- Weekly Operating Hours -->
-    <div class="ui error message" ng-if="baselineForm.weeklyOperatingHours.$error.number">
+    <div class="ui error message" ng-if="forms.baselineForm.weeklyOperatingHours.$error.number">
         <p>[Must Be A Number]</p>
     </div>
     <div class="inline fields">
         <label class="static">Number of Weekly Operating Hours</label>
-        <div class="five wide field required" ng-class="{'error': baselineForm.weeklyOperatingHours.$error}" >
+        <div class="five wide field required" ng-class="{'error': forms.baselineForm.weeklyOperatingHours.$error}" >
             <input type="number" ng-model="propertyModel.weeklyOperatingHours"
                    required name="weeklyOperatingHours" min="0">
         </div>
@@ -57,7 +57,7 @@
     <!-- Percent Heated -->
     <div class="inline fields">
         <label class="static">Percent Heated</label>
-        <div class="five wide field required" ng-class="{'error': baselineForm.percentHeated.$error}">
+        <div class="five wide field required" ng-class="{'error': forms.baselineForm.percentHeated.$error}">
             <select class="ui dropdown"
                     ng-model="propertyModel.percentHeated"
                     ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
@@ -70,7 +70,7 @@
     <!-- Percent Cooled -->
     <div class="inline fields">
         <label class="static">Percent Cooled</label>
-        <div class="five wide field required" ng-class="{'error': baselineForm.percentCooled.$error}">
+        <div class="five wide field required" ng-class="{'error': forms.baselineForm.percentCooled.$error}">
             <select class="ui dropdown"
                     dropdown
                     ng-model="propertyModel.percentCooled"

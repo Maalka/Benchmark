@@ -2,9 +2,9 @@
  * Dashboard controllers.
  */
 //define(["./test/sample_response_test_data"], function(sampleTestData) {
-define([], function() {
+define(['angular', 'matchmedia-ng'], function(angular) {
   'use strict';
-  var DashboardCtrl = function($rootScope, $scope, $q, benchmarkServices) {
+  var DashboardCtrl = function($rootScope, $scope, $window, $q, matchmedia, benchmarkServices) {
 
     $rootScope.pageTitle = "2030 Baseline";
     //The model that will be submitted for analysis
@@ -17,11 +17,36 @@ define([], function() {
     $scope.benchmarkResult = null;
 
     $scope.propOutputList = [];
-    $scope.percentBetterSiteEUI = [];
+    $scope.percentBetterSiteEUI = undefined;
     $scope.tableEUIUnits = null;
     $scope.tableEnergyUnits = null;
-
+    $scope.forms = {};
     $scope.propTypes = [];
+    $scope.matchmedia = matchmedia;
+
+
+    // check the media to handel the ng-if media statements
+    // it turns out that form elements do not respect "display: none" 
+    // and need to be removed from the dom
+    var setMedia = function (){ 
+        if (matchmedia.isPhone()) {
+            $scope.media = "phone";
+        } else if (matchmedia.isTablet()) {
+            $scope.media = "tablet";
+        } else if (matchmedia.isDesktop()) {
+            $scope.media = "desktop";
+        } else if (matchmedia.isPrint()) {
+            $scope.media = "print";
+        } else {
+            $scope.media = "other";
+        }
+        console.log($scope.media);
+    };
+    setMedia();
+    angular.element($window).bind("resize", function () {
+        setMedia();
+        $scope.$apply();
+    });
 
     $scope.propText = "Primary Function of Building";
 
@@ -66,10 +91,10 @@ define([], function() {
 
         if($scope.energies===null){$scope.energies=[];}
 
-        if ($scope.baselineForm.energyType.$valid && $scope.auxModel.energies.energyType &&
-            $scope.baselineForm.energyUnits.$valid && $scope.auxModel.energies.energyUnits &&
-            $scope.baselineForm.energyUse.$valid && $scope.auxModel.energies.energyUse){
-            // && $scope.baselineForm.energyRate.$valid) {
+        if ($scope.forms.baselineForm.energyType.$valid && $scope.auxModel.energies.energyType &&
+            $scope.forms.baselineForm.energyUnits.$valid && $scope.auxModel.energies.energyUnits &&
+            $scope.forms.baselineForm.energyUse.$valid && $scope.auxModel.energies.energyUse){
+            // && $scope.forms.baselineForm.energyRate.$valid) {
 
             $scope.energies.push({'energyType':$scope.auxModel.energies.energyType,
                                     'energyUnits': $scope.auxModel.energies.energyUnits,
@@ -80,6 +105,11 @@ define([], function() {
 
         }
     };
+
+    $scope.print = function () {
+        window.print();
+    };
+
 
     $scope.removeRow = function(energyType, energyUnits, energyUse){
         var index = -1;
@@ -692,10 +722,15 @@ define([], function() {
         };
 
     $scope.submitErrors = function () {
-        for (var i = 0; i < $scope.baselineForm.$error.required.length; i++){
-            console.log($scope.baselineForm.$error.required[i].$name);
+        for (var i = 0; i < $scope.forms.baselineForm.$error.required.length; i++){
+            console.log($scope.forms.baselineForm.$error.required[i].$name);
         }
     };
+
+    // 
+    $scope.$watch("auxModel.reportingUnits", function () {
+        $scope.submit();
+    });
 
     $scope.submit = function () {
 
@@ -713,7 +748,7 @@ define([], function() {
         if($scope.energies.length===0){$scope.auxModel.energies=null;}
                     else {$scope.auxModel.energies = $scope.energies;}
 
-        if($scope.baselineForm.$valid){
+        if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){
                 if($scope.propTypes[i].valid === true){
 
@@ -744,7 +779,7 @@ define([], function() {
     };
 
   };
-  DashboardCtrl.$inject = ['$rootScope', '$scope', '$q','benchmarkServices'];
+  DashboardCtrl.$inject = ['$rootScope', '$scope', '$window', '$q', 'matchmedia', 'benchmarkServices'];
   return {
     DashboardCtrl: DashboardCtrl
   };

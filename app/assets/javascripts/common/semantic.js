@@ -191,16 +191,17 @@ define(['angular', 'semantic-daterangepicker'], function(angular) {
                 $timeout(function () {
                     angular.element(elm).sticky({
                       context: scope.element,
-                      offset: 100,
-                      bottomOffset: 50,
-                    }).accordion({ "content": scope.element});
-                }, 0);
+                      pushing: true,
+                      debug: true
+                    });
+                }, 1000);
                 var height = 0;
                 var intervalP = $interval(function () { 
                     var h = angular.element(scope.element).height();
                     if (h !== height) {
                       angular.element(elm).parent().css({"max-height": h});
                       angular.element(elm).css({"max-height": h, "overflow": "scroll"}).sticky('refresh');
+                      height = h;
                     } 
                 }, 1000);
                 elm.on('$destroy', function () {

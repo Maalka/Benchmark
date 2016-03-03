@@ -1,266 +1,53 @@
-<div>
-    <p>Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
-    existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
-    see the User Guide above.</p>
-    <div class="ui two column grid">
-        <div class="column">
-    	   <form class="ui form" ng-class="{'error': !baselineForm.$valid}" name="baselineForm">
-                <h4 class="ui header"><i class="globe icon"></i>ABOUT YOUR DESIGN PROJECT</h4>
-                <div class="ui segment about">
-                    <div class="inline fields">
-                        <div class="sixteen wide field required">
-                            <label class="static">Building Name</label>
-                            <input type="text" ng-model="auxModel.buildingName"
-                                   required name="buildingName" min="0" placeholder="Building Name">
-                        </div>
-                    </div>
-                    <div class="inline fields">
-                        <div class="sixteen wide field required">
-                            <label class="static">Country</label>
-                            <select class="ui dropdown search"
-                                    ng-model="auxModel.country"
-                                    ng-options="item.id as item.name for item in geographicProperties.country"
-                                    required
-                                    name="country">
-                                    <option value="">Select</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="inline fields required">
-                        <label class="static">City | State/Prov.</label>
-                        <div class="ten wide field">
-                            <input type="text" ng-model="auxModel.city"
-                                 required name="city" placeholder="City">
-                        </div>
-                        <div class="six wide field">
-                            <select class="ui dropdown search"
-                                ng-model="auxModel.state"
-                                ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: auxModel.country}"
-                                required
-                                name="state">
-                                <option value="">Select</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="inline fields">
-                        <div class="sixteen wide field required">                                                
-                            <label class="static">Postal Code</label>
-                            <input type="text" ng-model="auxModel.postalCode"
-                                 required name="postalCode" min="0" placeholder="Postal Code">
-                        </div>
-                    </div>
-                    <div ng-include src="'assets/javascripts/common/partials/DegreeDays.html'"></div>
-                    <div class="inline fields required">
-                        <div class="field">
-                            <div class="ui radio checkbox">
-                                <input type="radio" id="project-cb-new" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"
-                                   ng-value='true'>
-                                <label for='project-cb-new'>New construction</label>
 
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="ui radio checkbox">
-                                <input type="radio" id="project-cb-existing" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"
-                                   ng-value='false'>
-                                <label for="project-cb-existing">Existing Building (&lt;40% New)</label>
-
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <h4 class="ui header"><i class="bullseye icon"></i>Energy Reduction Target</h4>
-                <div class="ui segment reduction">
-                    <p>
-                        Choose the reduction target for your building relative to
-                        its baseline energy consumption (EUI for a comparable
-                        building).
-                    </p>
-                    <div class="inline fields">
-                        <label class="static">Target % Better than Median</label>
-                        <div class="five wide field">
-                            <input type="number" ng-model="auxModel.percentBetterThanMedian"
-                                   name="percentBetterThanMedian" placeholder="Target %"
-                                   min="0" max="100">
-                        </div>
-                        <div class="field">
-                            <label ng-show="!baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                        </div>
-                    </div>
-                </div>
-                <h4 class="ui header"><i class="building icon"></i>PROPERTY USE DETAILS</h4>
-                <div ng-repeat="prop in propTypes">
-                    <div class="ui segment building">
-                        <div class="inline fields">
-                            <div class="eleven wide field">
-                                <h2>{{prop.type}}</h2>
-                            </div>
-                            <button
-                                class="ui labeled large button"
-                                ng-click="removeProp(prop)">
-                                <i class="minus icon"></i>
-                                Remove
-                            </button>
-                        </div>
-                        <div class="ui divider"></div>
-
-                        <div ng-if="prop.type=='DataCenter' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='DataCenter' model="prop"></div>
-                        <div ng-if="prop.type=='Hospital' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='Hospital' model="prop"></div>
-                        <div ng-if="prop.type=='Hotel' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='Hotel' model="prop"></div>
-                        <div ng-if="prop.type=='K12School' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='K12School' model="prop"></div>
-                        <div ng-if="prop.type=='MedicalOffice' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='MedicalOffice' model="prop"></div>
-                        <div ng-if="prop.type=='Office' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='Office' model="prop"></div>
-                        <div ng-if="prop.type=='ResidenceHall' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='ResidenceHall' model="prop"></div>
-                        <div ng-if="prop.type=='Retail' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='Retail' model="prop"></div>
-                        <div ng-if="prop.type=='SeniorCare' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='SeniorCare' model="prop"></div>
-                        <div ng-if="prop.type=='Supermarket' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='Supermarket' model="prop"></div>
-                        <div ng-if="prop.type=='Warehouse' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='Warehouse' model="prop"></div>
-                        <div ng-if="prop.type=='WastewaterCenter' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='WastewaterCenter' model="prop"></div>
-                        <div ng-if="prop.type=='WorshipCenter' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='WorshipCenter' model="prop"></div>
-                        <div ng-if="prop.type=='MultiFamily' && prop.country=='USA'" building-Info baseline-form='baselineForm' type='MultiFamily' model="prop"></div>
-
-                        <div ng-if="prop.type=='Hospital' && prop.country=='Canada'" building-Info baseline-form='baselineForm' type='HospitalCanada' model="prop"></div>
-                        <div ng-if="prop.type=='K12School' && prop.country=='Canada'" building-Info baseline-form='baselineForm' type='K12SchoolCanada' model="prop"></div>
-                        <div ng-if="prop.type=='MedicalOffice' && prop.country=='Canada'" building-Info baseline-form='baselineForm' type='MedicalOfficeCanada' model="prop"></div>
-                        <div ng-if="prop.type=='Office' && prop.country=='Canada'" building-Info baseline-form='baselineForm' type='OfficeCanada' model="prop"></div>
-                        <div ng-if="prop.type=='Supermarket' && prop.country=='Canada'" building-Info baseline-form='baselineForm' type='SupermarketCanada' model="prop"></div>
-
-                        <div ng-if="prop.type!='DataCenter' && prop.type!='Hospital' &&
-                            prop.type!='Hotel' && prop.type!='K12School' && prop.type!='MedicalOffice' &&
-                            prop.type!='Office' && prop.type!='ResidenceHall' && prop.type!='Retail' &&
-                            prop.type!='SeniorCare' && prop.type!='Supermarket' && prop.type!='Warehouse' &&
-                            prop.type!='WastewaterCenter' && prop.type!='MultiFamily' &&
-                            prop.type!='WorshipCenter'" building-Info baseline-form='baselineForm' type='Generic' model="prop">
-
-                        </div>
-
-                    </div>
-
-                </div>
-                <div class="ui segment" ng-class="{'disabled': !baselineForm.country.$valid}">
-                    <p>
-                        In order to provide you with an appropriate comparison
-                        for your building, we need to know how spaces in this
-                        building will be used. If your building has multiple uses,
-                        add them below.
-                    </p>
-
-                    <div class="inline fields">
-                        <div class="sixteen wide field">
-                            <label>{{propText}}</label>
-                            <label ng-show="buildingTypeRequired"><font color="red">[Required]</font></label>
-                            <select class="ui dropdown search"
-                                dropdown
-                                ng-model="auxModel.buildingType"
-                                ng-options="item.id as item.name for item in buildingProperties.buildingType"
-                                required name="buildingType">
-                                <option value="">Select</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <h4 class="ui header"><i class="lightning icon"></i>ESTIMATED DESIGN ENERGY (OPTIONAL)</h4>
-                <div class="ui segment">
-                    <p>
-                        If you want to compare your actual to target performance, please enter
-                        your annual energy use metrics below.
-                    </p>
-
-                    <div class="field">
-                        <div class="ui checkbox">
-                            <input type="checkbox" id="cb-enterenergy" ng-model="hideEnergies" name="hideEnergies"
-                                   ng-true-value=true ng-false-value=false ng-init="hideEnergies=false">
-                            <label for = "cb-enterenergy">I want to enter annual Energy-use Information</label>
-                        </div>
-                    </div>
-
-                    <div ng-show="hideEnergies">
-                        <div class="fields">
-                            <div class="six wide field required">
-                                <label>Energy Type</label>
-                                <select class="ui dropdown"
-                                    dropdown
-                                    name="energyType"
-                                    ng-model="auxModel.energies.energyType"
-                                    ng-options="item.id as item.name for item in energyProperties.energyType">
-                                    <option value="">Select</option>
-                                </select>
-                            </div>
-                            <div class="five wide field required">
-                                <label>Units</label>
-                                <select class="ui dropdown"
-                                    dropdown
-                                    name="energyUnits"
-                                    ng-model="auxModel.energies.energyUnits"
-                                    ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: auxModel.energies.energyType}">
-                                    <option value="">Select</option>
-                                </select>
-                            </div>
-                            <div class="five wide field">
-                                <label>Annual Use</label>
-                                <input type="number" ng-model="auxModel.energies.energyUse"
-                                       name="energyUse" min="0"
-                                       placeholder="Energy Use">
-                            </div>
-                            <!-- This is an extra field that might be required in the energy form, other part is in controllers.js
-                            <div class="field">
-
-                                <label>Rate ($/unit)</label>
-                                <input type="number" ng-model="auxModel.energies.energyRate"
-                                       name="energyRate" min="0"
-                                       placeholder="$/unit">
-                            </div>-->
-                        </div>
-
-                        <div class="ui labeled button" ng-click="addEnergiesRow()">
-                            <i class="add circle icon"></i> Save Entry
-                        </div>
-
-                    </div>
-
-                    <table class="ui compact celled table" ng-show="showEnergyTable">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Energy Type</th>
-                                <th>Units</th>
-                                <th>Total Annual Energy Use</th>
-                                <!--<th>Energy Rate ($/unit)</th>-->
-                            </tr>
-                        </thead>    
-                        <tbody>
-                            <tr ng-repeat="energyEntry in energies">
-                            <td>
-                                    <div class="ui labeled button" tabindex="0"  ng-click="removeRow(energyEntry.energyType,
-                                             energyEntry.energyUnits,energyEntry.energyUse)">
-                                        <i class="minus circle icon"></i> Remove
-                                    </div>
-                                </td>
-                                <td>{{energyEntry.energyType}}</td>
-                                <td>{{energyEntry.energyUnits}}</td>
-                                <td>{{energyEntry.energyUse}}</td>
-                                <!--<td>{{energyEntry.energyRate}}</td>-->
-                                
-                            </tr>
-                        </tbody>
-                    </table>
-
-                </div>
-               <div ng-include src="'assets/javascripts/common/partials/reportingUnitsSubmit.html'">Not Defined</div>
-
-
-    	   </form>
+<div style="background:black;padding-top:14px;margin-bottom:14px">
+    <div class="ui stackable grid container">
+        <div class="two wide column computer only tablet only"> 
+            <img src="/assets/images/2030logo.png" style="position:absolute;left: -10px">
         </div>
-        <div class="column">
-            <h4 class="ui header"><i class="bar chart icon"></i>RESULTS</h4>
-            <h4 class="ui header">Your Building's Target EUI is {{percentBetterSiteEUI}} based on on a {{auxModel.percentBetterThanMedian}}% reduction</h4>
+        <div class="two wide column mobile only non printable">
+            <img src="/assets/images/2030logo.png" class="ui image floated left">
+               <h2 class="ui header" style="font-family: Oswald;font-weight:300;font-size: 24px;margin-top:0;color:white">ENERGY<br>
+               <span style="font-family: Oswald;font-weight:700">TARGET & RATING TOOL</span></h2>
+        </div>
+        <div class="black seven wide column computer only tablet only" style="padding-top:0;padding-bottom:0">
+            <h2 style="position:absolute;bottom:-2px">
+               <span style="font-family: Oswald;font-weight:300">ENERGY</span>
+               <span style="font-family: Oswald;font-weight:400">TARGET & RATING TOOL</span>
+            </h2>
+        </div>
+         <div class="black seven wide column" style="padding-top:0;padding-bottom:0">
+            <div class="ui text inverted fluid three item menu">
+                <a class="item">about</a>
+                <a class="item">user guid</a>
+                <a class="item">home</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="background:white">
+    <div class="ui stackable grid container" style="padding-top:14px">
+        <div class="two wide column computer only tablet only"></div>
+        <div class="fourteen wide column">
+            Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
+            existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
+            see the User Guide above.
+        </div>
+        <!-- setup the response grids -->
+        <div class="two wide column" ng-if="media === 'desktop'"></div>
+        <div class="seven wide column" id="data-input" ng-if="media === 'desktop'">
+            <div ng-include src="'assets/javascripts/benchmark/form.html'">Not Defined</div>
+        </div>
+        <!-- tablet, mobile, print -->
+        <div class="eight wide column only" id="data-input" ng-if="media !== 'desktop'">
+            <div ng-include src="'assets/javascripts/benchmark/form.html'">Not Defined</div>
+        </div>
 
-            <div ng-include src="'assets/javascripts/benchmark/proplist_result.html'">Not Defined</div>
-            <br><br>
+        <div class="seven wide column" ng-if="media === 'desktop'" element="'#data-input'">
             <div ng-include src="'assets/javascripts/benchmark/benchmark_result.html'">Not Defined</div>
-            <br><br>
-            <div ng-include src="'assets/javascripts/common/partials/reportingUnitsSubmit.html'">Not Defined</div>
+        </div>
+        <!-- tablet, mobile, print -->
+        <div class="eight wide column only" ng-if="media !== 'desktop'" id="data-input">
+            <div ng-include src="'assets/javascripts/benchmark/benchmark_result.html'">Not Defined</div>
         </div>
     </div>
 </div>

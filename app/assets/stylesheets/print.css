@@ -1,0 +1,18 @@
+.non.printable {
+	display: none;
+	opacity: 0;
+}
+
+div.non.printable {
+	display: none !important;
+}
+div.only.print {
+	display: block !important;
+}
+
+body {
+	font-size: 12px;
+}
+.ui.grid {
+	margin-left: 0px !important;
+}
