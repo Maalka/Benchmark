@@ -59,6 +59,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 country:$scope.auxModel.country
             });
             $scope.propText="Add Another Use";
+            $scope.auxModel.buildingType = null;
         }
     });
 
@@ -140,6 +141,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             window.alert( "Error" );
         }
         $scope.propTypes.splice(index, 1);
+        $scope.auxModel.buildingType = null;
+
 
         if($scope.propTypes.length === 0){
             $scope.propText="Primary Function of Building";
