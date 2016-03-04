@@ -1,81 +1,33 @@
 <div>
     <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
-    <div class="field" ng-class="{'disabled': !forms.baselineForm.GFA.$valid || !forms.baselineForm.areaUnits.$valid}">
+    <div class="field" ng-if="propertyModelFields[model.type].length > 0" ng-class="{'disabled': !propertyModel.GFA || !propertyModel.areaUnits}">
         <div checkbox class="ui checkbox checked">
             <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
                    ng-true-value=true ng-false-value=false>
             <label for="cb-default">Use Default Values?</label>
         </div>
     </div>
-
-    <div class="inline field">
-        <div class="ui positive checkbox">
-            <input type="checkbox" ng-model="propertyModel.isSmallBank" id="office-bank" ng-init="propertyModel.isSmallBank=false"
-                   ng-true-value=true ng-false-value=false>
-            <label for="office-bank">Property is a Small Bank</label>
-
+    <div class="inline fields" ng-repeat="field in propertyModelFields[model.type] | orderBy: 'type'">
+        <div class="ui positive checkbox" ng-if="field.type === 'checkbox'">
+            <input type="checkbox" ng-model="propertyModel[field]" id="field-{{ field.name }}" 
+                ng-init="propertyModel[field.name] = field.default"
+                ng-true-value=true ng-false-value=false>
+            <label for="field-{{ field.name }}">{{ field.title }}</label>
         </div>
-    </div>
 
-
-    <!-- Num Computers -->
-    <div class="ui error message" ng-if="forms.baselineForm.numWorkersMainShift.$error.number">
-        <p>[Must Be A Number]</p>
-    </div>
-    <div class="inline fields">
-        <label class="static">Number of Workers on Main Shift</label>
-        <div class="five wide field required" ng-class="{'error': forms.baselineForm.numWorkersMainShift.$error}">
-            <input type="number" ng-model="propertyModel.numWorkersMainShift"
-                   required name="numWorkersMainShift" min="0">
+        <!-- Number input type -->
+        <label ng-if="field.type === 'number'" class="static">{{ field.title }}</label>
+        <div ng-if="field.type === 'number'" class="five wide field required">
+            <input type="{{field.type}}" ng-model="propertyModel[field.name]"
+                   required name="field.name" min="0">
         </div>
-    </div>
-
-    <!-- Num Computers -->
-    <div class="ui error message" ng-if="forms.baselineForm.numComputers.$error.number">
-        <p>[Must Be A Number]</p>
-    </div>
-    <div class="inline fields" >
-        <label class="static">Number of Computers</label>    
-        <div class="five wide field required" ng-class="{'error': forms.baselineForm.numComputers.$error}">
-            <input type="number" ng-model="propertyModel.numComputers"
-                   required name="numComputers" min="0">
-        </div>
-    </div>
-
-    <!-- Weekly Operating Hours -->
-    <div class="ui error message" ng-if="forms.baselineForm.weeklyOperatingHours.$error.number">
-        <p>[Must Be A Number]</p>
-    </div>
-    <div class="inline fields">
-        <label class="static">Number of Weekly Operating Hours</label>
-        <div class="five wide field required" ng-class="{'error': forms.baselineForm.weeklyOperatingHours.$error}" >
-            <input type="number" ng-model="propertyModel.weeklyOperatingHours"
-                   required name="weeklyOperatingHours" min="0">
-        </div>
-    </div>
-
-    <!-- Percent Heated -->
-    <div class="inline fields">
-        <label class="static">Percent Heated</label>
-        <div class="five wide field required" ng-class="{'error': forms.baselineForm.percentHeated.$error}">
+        <label ng-if="field.type === 'select'" class="static">{{ field.title }}</label>
+        <div ng-if="field.type === 'select'" class="five wide field required">
             <select class="ui dropdown"
-                    ng-model="propertyModel.percentHeated"
-                    ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
+                    ng-model="propertyModel[field.name]"
+                    ng-options="item.id as item.name for item in field.fields"
                     required
-                    name="percentHeated">
-            </select>
-        </div>
-    </div>
-
-    <!-- Percent Cooled -->
-    <div class="inline fields">
-        <label class="static">Percent Cooled</label>
-        <div class="five wide field required" ng-class="{'error': forms.baselineForm.percentCooled.$error}">
-            <select class="ui dropdown"
-                    ng-model="propertyModel.percentCooled"
-                    ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
-                    required
-                    name="percentCooled">
+                    name="field.name">
             </select>
         </div>
     </div>

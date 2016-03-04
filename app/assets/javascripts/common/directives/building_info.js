@@ -12,12 +12,12 @@ define(['angular','./main'], function(angular) {
         return {
             restrict: 'A',
             scope: {
-            model: '=model',
-            forms: '=forms'
+                model: '=model',
+                forms: '=forms'
             },
 
-            templateUrl: function(elem, attr){
-                   return '/assets/javascripts/common/partials/'+attr.type+'.html';
+            templateUrl: function(){
+                   return '/assets/javascripts/common/partials/Office.html';
             },
 
             controller: ["$scope", function ($scope) {
@@ -41,10 +41,10 @@ define(['angular','./main'], function(angular) {
                 $scope.$watch("propertyModel.defaultValues", function () {
 
                     if($scope.propertyModel.defaultValues){
-                        if( $scope.forms.baselineForm.GFA.$valid && $scope.forms.baselineForm.areaUnits.$valid) {
+                        if( $scope.propertyModel.GFA && $scope.propertyModel.areaUnits) {
                             $scope.setDefaults();
                         } else {
-                            if( $scope.forms.baselineForm.GFA.$error.required ){
+                            if( $scope.propertyModel.GFA ){
                                 $scope.GFARequired = true;
                             }
                             $scope.propertyModel.defaultValues = false;
@@ -57,13 +57,13 @@ define(['angular','./main'], function(angular) {
 
                 $scope.$watch("propertyModel.GFA", function () {
 
-                    if($scope.forms.baselineForm.GFA && $scope.forms.baselineForm.areaUnits){
+                    if($scope.propertyModel.GFA && $scope.propertyModel.areaUnits){
                         $scope.GFARequired = false;
                         if($scope.propertyModel.defaultValues){$scope.setDefaults();}
                     }
                 });
                 $scope.$watch("propertyModel.areaUnits", function () {
-                    if($scope.forms.baselineForm.GFA && $scope.forms.baselineForm.areaUnits){
+                    if($scope.propertyModel.GFA && $scope.propertyModel.areaUnits){
                         $scope.GFARequired = false;
                         if($scope.propertyModel.defaultValues===true){$scope.setDefaults();}
                     }
@@ -76,134 +76,6 @@ define(['angular','./main'], function(angular) {
                         $scope.propFieldsRequired = true;
                     }
                 });
-
-
-            //for setting defaults based on building Type, Country does not matter here due to unused parameters upon analysis
-                $scope.setDefaults = function() {
-
-                        var prop = $scope.model.type;
-                        var GFA = $scope.propertyModel.GFA;
-                        var areaUnits = $scope.propertyModel.areaUnits;
-
-                        if(areaUnits==="mSQ"){GFA = GFA*10.7639;}
-
-                        if(prop==="Hospital"){
-                            $scope.propertyModel.licensedBedCapacity = $scope.round(0.69*GFA/1000,2);
-                            $scope.propertyModel.numStaffedBeds = $scope.round(0.46*GFA/1000,2);
-                            $scope.propertyModel.numFTEWorkers = $scope.round(2.6*GFA/1000,2);
-                            $scope.propertyModel.numWorkersMainShift = $scope.round(1.32*GFA/1000,2);
-                            $scope.propertyModel.numMRIMachines = 1;
-                            $scope.propertyModel.hasLaundryFacility = true;
-                            $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                            $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-                        } else
-                        if(prop==="Hotel"){
-                            $scope.propertyModel.numBedrooms = $scope.round(1.95*GFA/1000,2);
-                            $scope.propertyModel.numWorkersMainShift = $scope.round(0.32*GFA/1000,2);
-                            $scope.propertyModel.hasFoodPreparation = false;
-                            $scope.propertyModel.numRefrUnits = $scope.round(0.023*GFA/1000,2);
-                            $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                            $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-                        } else
-                        if(prop==="K12School"){
-                            $scope.propertyModel.gymFloorArea = 0.0;
-                            $scope.propertyModel.isHighSchool = false;
-                            $scope.propertyModel.numWorkersMainShift = $scope.round(0.77*GFA/1000,2);
-                            $scope.propertyModel.studentSeatingCapacity = $scope.round(10.0*GFA/1000,2);
-                            $scope.propertyModel.numWalkinRefrUnits = $scope.round(0.01*GFA/1000,2);
-                            $scope.propertyModel.isOpenWeekends = false;
-                            $scope.propertyModel.hasCooking = true;
-                            $scope.propertyModel.numComputers = $scope.round(1.75*GFA/1000,2);
-                            $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                            $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-                        } else
-                        if(prop==="MedicalOffice"){
-                            $scope.propertyModel.weeklyOperatingHours = 65;
-                            $scope.propertyModel.numWorkersMainShift = $scope.round(2.2*GFA/1000,2);
-                            $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                            $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-                        } else
-                        if(prop==="MultiFamily"){
-                            $scope.propertyModel.numRezUnits = $scope.round(1.2*GFA/1000,2);
-                            $scope.propertyModel.numUnitsLowRise1to4 = $scope.round(1.2*GFA/1000,2);
-                            $scope.propertyModel.numUnitsMidRise5to9 = 0.0;
-                            $scope.propertyModel.numUnitsHighRise10plus = 0.0;
-                            $scope.propertyModel.numBedrooms = $scope.round(1.4*GFA/1000,2);
-                        } else
-                        if(prop==="Office"){
-                            $scope.propertyModel.weeklyOperatingHours = 65;
-                            $scope.propertyModel.numWorkersMainShift = $scope.round(2.3*GFA/1000,2);
-                            $scope.propertyModel.numComputers = $scope.round(2*GFA/1000,2);
-                            $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                            $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-                        } else
-                        if(prop==="ResidenceHall"){
-                            $scope.propertyModel.numBedrooms = 100;
-                            $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                            $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-                        } else
-                        if(prop==="Retail"){
-                            $scope.propertyModel.weeklyOperatingHours = 65;
-                            $scope.propertyModel.numOpenClosedRefrCases = 0.0;
-                            $scope.propertyModel.numCashRegisters = $scope.round(0.3*GFA/1000,2);
-                            $scope.propertyModel.numWorkersMainShift = $scope.round(1.0*GFA/1000,2);
-                            $scope.propertyModel.numComputers = $scope.round(0.2*GFA/1000,2);
-                            $scope.propertyModel.numRefrUnits = 0.0;
-                            $scope.propertyModel.numWalkinRefrUnits = 0.0;
-                            $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                            $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-                        } else
-                        if(prop==="SeniorCare"){
-                            $scope.propertyModel.maxNumResidents = $scope.round(2.374*GFA/1000,2);
-                            $scope.propertyModel.avgNumResidents = $scope.round(2.075*GFA/1000,2);
-                            $scope.propertyModel.numRezUnits = $scope.round(1.584*GFA/1000,2);
-                            $scope.propertyModel.numWorkersMainShift = $scope.round(0.9523*GFA/1000,2);
-                            $scope.propertyModel.numComputers = $scope.round(0.367*GFA/1000,2);
-                            $scope.propertyModel.numRezWashingMachines = $scope.round(0.05757*GFA/1000,2);
-                            $scope.propertyModel.numCommWashingMachines = $scope.round(0.04422*GFA/1000,2);
-                            $scope.propertyModel.numElectronicLifts = $scope.round(0.0704*GFA/1000,2);
-                            $scope.propertyModel.numRefrUnits = $scope.round(0.09065*GFA/1000,2);
-                            $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                            $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-                        } else
-                        if(prop==="Supermarket"){
-                            $scope.propertyModel.weeklyOperatingHours = 105;
-                            $scope.propertyModel.numWorkersMainShift = $scope.round(1.0*GFA/1000,2);
-                            $scope.propertyModel.numCashRegisters = $scope.round(0.38*GFA/1000,2);
-                            $scope.propertyModel.numComputers = $scope.round(0.51*GFA/1000,2);
-                            $scope.propertyModel.lengthRefrFoodDisplayCases = $scope.round(2.6*GFA/1000,2);
-                            $scope.propertyModel.numRefrUnits = $scope.round(0.25*GFA/1000,2);
-                            $scope.propertyModel.hasCooking = true;
-                            $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                            $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-                        } else
-                        if(prop==="WastewaterCenter"){
-                            $scope.propertyModel.wastewaterInfluentBiologicalOxygenDemand = 200.0;
-                            $scope.propertyModel.wastewaterEffluentBiologicalOxygenDemand = 8.0;
-                            $scope.propertyModel.wastewaterHasTrickleFiltration = false;
-                            $scope.propertyModel.wastewaterHasNutrientRemoval = false;
-                        } else
-                        if(prop==="WorshipCenter"){
-                            $scope.propertyModel.weeklyOperatingHours = 33;
-                            $scope.propertyModel.isOpenAllWeekdays = false;
-                            $scope.propertyModel.seatingCapacity = $scope.round(40.0*GFA/1000,2);
-                            $scope.propertyModel.numComputers = $scope.round(0.2*GFA/1000,2);
-                            $scope.propertyModel.hasFoodPreparation = false;
-                            $scope.propertyModel.numRefrUnits = $scope.round(0.018*GFA/1000,2);
-                            $scope.propertyModel.numWalkinRefrUnits = 0.0;
-                            $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
-                            $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
-                        } else
-                        if(prop==="Warehouse"){
-                            $scope.propertyModel.weeklyOperatingHours = 60;
-                            $scope.propertyModel.numWorkersMainShift = $scope.round(0.59*GFA/1000,2);
-                            $scope.propertyModel.numWalkinRefrUnits = 0.0;
-                            $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[5].id;
-                            $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[2].id;
-                        }
-
-                };
-
                 $scope.buildingProperties = {
                     areaUnits: [
                             {id:"ftSQ",name:"sq.ft"},
@@ -233,6 +105,634 @@ define(['angular','./main'], function(angular) {
                             {id:"Outdoor",name:"Outdoor"}
                    ]
                };
+
+                var GFA = 0;
+                var setPropertyModelFields = function(GFA)  {
+                    $scope.propertyModelFields = {
+                    Hospital: [
+                        {
+                            name: "licensedBedCapacity",
+                            default: $scope.round(0.69*GFA/1000,2),
+                            type: "number",
+                            title: "Licensed Bed Capacity"
+                        },
+                        {
+                            name: "numStaffedBeds",
+                            default: $scope.round(0.46*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Staffed Beds"
+                        },
+                        {
+                            name: "numFTEWorkers",
+                            default: $scope.round(2.6*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Full Time Workers"
+                        },
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(1.32*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift"
+                        },
+                        {
+                            name: "numMRIMachines",
+                            default: 1,
+                            type: "number",
+                            title: "Number of MRI Machines",
+                            required: ['Canada', "US"]
+
+                        },
+                        {
+                            name: "hasLaundryFacility",
+                            default: true,
+                            type: "checkbox",
+                            title: "Has Laundry Facility"
+                        },
+                        {
+                            name: "percentHeated",
+                            defualt:  $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Heated"
+                        },
+                        {
+                            name: "percentCooled",
+                            defualt:  $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Cooled"
+                        }
+                    ],
+                    Hotel: [
+                        {
+                           name: "numBedrooms",
+                           default: $scope.round(1.95*GFA/1000,2),
+                           type: "number",
+                           title: "Number of Bedrooms"
+                        },
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(0.32*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift"
+                        },
+                        {
+                            name: "hasFoodPreparation",
+                            default: false,
+                            type: "checkbox",
+                            title: "Has Food Preparation"
+                        },
+                        {
+                            name: "numRefrUnits",
+                            default: $scope.round(0.023*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Refrigerator Units"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Heated"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Cooled"
+                        }
+                    ],
+                    K12School: [
+                        {
+                            name: "gymFloorArea",
+                            default: 0.0,
+                            type: "number",
+                            title: "Gym Floor Area"
+                        },
+                        {
+                            name: "isHighSchool",
+                            default: false,
+                            type: "checkbox",
+                            title: "Property is a High School"
+                        },
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(0.77*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift"
+                        },
+                        {
+                            name: "studentSeatingCapacity",
+                            default: $scope.round(10.0*GFA/1000,2),
+                            type: "number",
+                            title: "Student Seeting Capacity"
+                        },
+                        {
+                            name: "numWalkinRefrUnits",
+                            default: $scope.round(0.01*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Walk-in Refrigeration Units"
+                        },
+                        {
+                            name: "isOpenWeekends",
+                            default: false,
+                            type: "checkbox",
+                            title: "Property is Open Weekends"
+                        },
+                        {
+                            name: "hasCooking",
+                            default: true,
+                            type: "checkbox",
+                            title: "Facility Has Cooking"
+                        },
+                        {
+                            name: "numComputers",
+                            default: $scope.round(1.75*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Computers"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Heated"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Cooled"
+                        }
+                    ],
+                    MedicalOffice: [
+                        {
+                            name: "weeklyOperatingHours",
+                            default: 65,
+                            type: "number",
+                            title: "Number of Weekly Operating Hours"
+                        },
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(0.77*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Heated"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Cooled"
+                        }
+                    ],
+                    MultiFamily: [
+                        {
+                            name: "numRezUnits",
+                            default: $scope.round(1.2*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Residential Units"
+                        },
+                        {
+                            name: "numUnitsLowRise1to4",
+                            default: $scope.round(1.2*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Low Rise (Floors 1-4) Units"
+                        },
+                        {
+                            name: "numUnitsMidRise5to9",
+                            default: 0.0,
+                            type: "number",
+                            title: "Number of Low Rise (Floors 5-9) Units"
+
+                        },
+                        {
+                            name: "numUnitsHighRise10plus",
+                            default: 0.0,
+                            type: "number",
+                            title: "Number of High Rise (Floors above 10) Units"
+                        },
+                        {
+                            name: "numBedrooms",
+                            default: $scope.round(1.4*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Bedrooms"
+                        }
+                    ],
+                    "Office": [
+                        {
+                            name: "isSmallBank",
+                            type: "checkbox",
+                            default: false,
+                            title: "Property is a Small Bank"
+                        },
+                        {
+                            name: "weeklyOperatingHours",
+                            default: 65,
+                            type: "number",
+                            title: "Number of Weekly Operating Hours"
+                        },
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(2.3*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift"
+                        },
+                                                {
+                            name: "numComputers",
+                            default: $scope.round(2*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Computers"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Heated"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Cooled"
+
+                        }
+                    ],
+                    "ResidenceHall": [
+                        {
+                           name: "numBedrooms",
+                           default: 100,
+                           type: "number",
+                           title: "Number of Bedrooms"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Heated"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Cooled"
+                        }
+                    ],
+                    "Retail": [
+                        {
+                            name: "weeklyOperatingHours",
+                            default: 65,
+                            type: "number",
+                            title: "Number of Weekly Operating Hours"
+                        },
+                        {
+                            name: "numOpenClosedRefrCases",
+                            default: 0.0,
+                            type: "number",
+                            title: "Number of Open/Closed Refrigeration Cases"
+                        },
+                        {
+                            name: "numCashRegisters",
+                            default: $scope.round(0.3*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Cash Registers"
+                        },
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(1.0*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift"
+                        },
+                        {
+                            name: "numComputers",
+                            default: $scope.round(0.2*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Computers"
+                        },
+                        {
+                            name: "numRefrUnits",
+                            default: 0.0,
+                            type: "number",
+                            title: "Number of Refrigerator Units"
+                        },
+                        {
+                            name: "numWalkinRefrUnits",
+                            default: 0.0,
+                            type: "number",
+                            title: "Number of Walk-in Refrigeration Units"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Heated"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Cooled"
+                        }
+                    ],
+                    "SeniorCare": [
+                        {
+                            name: "maxNumResidents",
+                            default: $scope.round(2.374*GFA/1000,2),
+                            type: "number",
+                            title: "Maximum Number of Residents"
+                        },
+                        {
+                            name: "avgNumResidents",
+                            default: $scope.round(2.075*GFA/1000,2),
+                            type: "number",
+                            title: "Average Number of Residents"
+                        },
+                        {
+                            name: "numRezUnits",
+                            default: $scope.round(1.584*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Residential Units"
+                        },
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(0.9523*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift"
+                        },
+                        {
+                            name: "numComputers",
+                            default: $scope.round(0.367*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Computers"
+                        },
+                        {
+                            name: "numRezWashingMachines",
+                            default: $scope.round(0.05757*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Residential Washing Machines"
+                        },
+                        {
+                            name: "numCommWashingMachines",
+                            default: $scope.round(0.04422*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Commercial Washing Machines"
+                        },
+                        {
+                            name: "numElectronicLifts",
+                            default: $scope.round(0.0704*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Electronic Lifts"
+                        },
+                        {
+                            name: "numRefrUnits",
+                            default: $scope.round(0.09065*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Refrigerator Units"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Heated"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Cooled"
+                        }
+                    ],
+                    Supermarket: [
+                        {
+                            name: "weeklyOperatingHours",
+                            default: 105,
+                            type: "number",
+                            title: "Number of Weekly Operating Hours"
+                        }, 
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(1.0*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift"
+                        },
+                        {
+                            name: "numCashRegisters",
+                            default: $scope.round(0.38*GFA/1000,2),
+                            type: "number"
+                        },
+                        {
+                            name: "numComputers",
+                            default: $scope.round(0.51*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Computers"
+                        },
+                        {
+                            name: "lengthRefrFoodDisplayCases",
+                            default: $scope.round(2.6*GFA/1000,2),
+                            type: "number"
+                        },
+                        {
+                            name: "numRefrUnits",
+                            default: $scope.round(0.25*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Refrigerator Units"
+                        },
+                        {
+                            name: "hasCooking",
+                            default: true,
+                            type: "checkbox",
+                            title: "Facility Has Cooking"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            fields: $scope.buildingProperties.areaHVAC,
+                            type: "select",
+                            title: "Percent Heated"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            fields: $scope.buildingProperties.areaHVAC,
+                            type: "select",
+                            title: "Percent Cooled"
+                        }
+                    ],
+                    WastewaterCenter: [
+                        {
+                            name: "wastewaterInfluentBiologicalOxygenDemand",
+                            default: 200.0,
+                            type: "number",
+                            title: "Influent Biological Oxygen Demand"
+                        },
+                        {
+                            name: "wastewaterEffluentBiologicalOxygenDemand",
+                            default: 8.0,
+                            type: "number",
+                            title: "Effluent Biological Oxygen Demand"
+                        },
+                        {
+                            name: "wastewaterAvgInfluentInflow",
+                            default: null,
+                            type: "number",
+                            title: "Wastewater Average Influent Inflow"
+                        },
+                        {
+                            name: "wastewaterHasTrickleFiltration",
+                            default: false,
+                            type: "checkbox",
+                            title: "Has Trickle Filtration"
+                        },
+                        {
+                            name: "wastewaterHasNutrientRemoval",
+                            default:false,
+                            type: "checkbox",
+                            title: "Has Nutrient Removal"
+                        },
+                        {
+                            name: "wastewaterPlantDesignFlowRate",
+                            default: null,
+                            type: "number",
+                            title: "Plant Design Flow Rate"
+                        },
+                        {
+                            name: "wastewaterLoadFactor",
+                            default: null,
+                            type: "number",
+                            title: "Wastewater Load Factor"
+                        }
+
+
+                    ],
+                    "WorshipCenter": [
+                        {
+                            name: "weeklyOperatingHours",
+                            default: 33,
+                            type: "number",
+                            title: "Number of Weekly Operating Hours"
+                        },
+                        {
+                            name: "isOpenAllWeekdays",
+                            default: false,
+                            type: "checkbox",
+                            title: "Is open All Weekdays"
+                        },
+                        {
+                            name: "seatingCapacity",
+                            default: $scope.round(40.0*GFA/1000,2),
+                            type: "number",
+                            title: "Seating Capacity"
+                        },
+                        {
+                            name: "numComputers",
+                            default: $scope.round(0.2*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Computers"
+                        },
+                        {
+                            name: "hasFoodPreparation",
+                            default: false,
+                            type: "checkbox",
+                            title: "Has Food Preparation"
+                        },
+                        {
+                            name: "numRefrUnits",
+                            default: $scope.round(0.018*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Refrigerator Units"
+                        },
+                        {
+                            name: "numWalkinRefrUnits",
+                            default: 0.0,
+                            type: "number",
+                            title: "Number of Walk-in Refrigeration Units"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            fields: $scope.buildingProperties.areaHVAC,
+                            type: "select",
+                            title: "Percent Heated"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            fields: $scope.buildingProperties.areaHVAC,
+                            type: "select",
+                            title: "Percent Cooled"
+                        }
+                    ],
+                    "Warehouse": [
+                        {
+                            name: "weeklyOperatingHours",
+                            default: 60,
+                            type: "number",
+                            title: "Number of Weekly Operating Hours"
+                        },
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(0.59*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift"
+                        }, 
+                        {
+                            name: "numWalkinRefrUnits",
+                            default: 0.0,
+                            type: "number",
+                            title: "Number of Walk-in Refrigeration Units"
+                        }, 
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            title: "Percent Heated"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            title: "Percent Cooled"
+                        }
+                    ]
+                    };
+                };
+                setPropertyModelFields(GFA);
+
+                //for setting defaults based on building Type, Country does not matter here due to unused parameters upon analysis
+                $scope.setDefaults = function() {
+
+                        var prop = $scope.model.type;
+                        GFA = $scope.propertyModel.GFA;
+                        var areaUnits = $scope.propertyModel.areaUnits;
+
+                        setPropertyModelFields(GFA);
+                        if( areaUnits === "mSQ" ) {
+                            GFA = GFA*10.7639;
+                        }
+
+                        // set the defaults
+                        $scope.propertyModelFields[prop].forEach(function (v){
+                            $scope.propertyModel[v.name] = v.default;
+
+                        });
+                };
 
                $scope.propsWithAlgorithms = [
                        "DataCenter",

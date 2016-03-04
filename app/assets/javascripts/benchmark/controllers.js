@@ -20,7 +20,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.percentBetterSiteEUI = undefined;
     $scope.tableEUIUnits = null;
     $scope.tableEnergyUnits = null;
-    $scope.forms = {};
+    $scope.forms = {'hasValidated': false};
     $scope.propTypes = [];
     $scope.matchmedia = matchmedia;
 
@@ -735,7 +735,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             return;
         }
         // only submit if the user has already CLICK on the submit button
-        if($scope.hasValidated) {
+        if($scope.forms.hasValidated) {
             $scope.submit();
         }
     });
@@ -743,7 +743,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         if($scope.forms.baselineForm === undefined) {
             return;
         }
-        $scope.hasValidated = true; /// only check the field errors if this form has attempted to validate. 
+        $scope.forms.hasValidated = true; /// only check the field errors if this form has attempted to validate. 
         $scope.propList = [];
 
         if($scope.auxModel.reportingUnits==="us"){
