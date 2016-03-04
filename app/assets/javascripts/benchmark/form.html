@@ -146,12 +146,11 @@
         <div class="inline fields">
             <div class="sixteen wide field">
                 <label>{{propText}}</label>
-                <label ng-show="buildingTypeRequired"><font color="red">[Required]</font></label>
                 <select class="ui dropdown search"
                     dropdown
                     ng-model="auxModel.buildingType"
                     ng-options="item.id as item.name for item in buildingProperties.buildingType"
-                    required name="buildingType">
+                    name="buildingType">
                     <option value="">Select</option>
                 </select>
             </div>
