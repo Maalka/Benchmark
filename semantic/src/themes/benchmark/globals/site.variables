@@ -33,3 +33,4 @@
 
 @inputVerticalPadding   : @relative5px;
 @inputHorizontalPadding : @relative5px;
+@negativeBorderColor     : #FF0000;

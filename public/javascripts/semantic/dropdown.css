@@ -870,20 +870,20 @@ select.ui.dropdown {
 }
 .ui.selection.dropdown.error {
   background: #FFF6F6;
-  border-color: #E0B4B4;
+  border-color: #FF0000;
 }
 .ui.selection.dropdown.error:hover {
-  border-color: #E0B4B4;
+  border-color: #FF0000;
 }
 .ui.dropdown.error > .menu,
 .ui.dropdown.error > .menu .menu {
-  border-color: #E0B4B4;
+  border-color: #FF0000;
 }
 .ui.dropdown.error > .menu > .item {
   color: #9F3A38;
 }
 .ui.multiple.selection.error.dropdown > .label {
-  border-color: #E0B4B4;
+  border-color: #FF0000;
 }
 
 /* Item Hover */

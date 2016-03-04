@@ -10771,7 +10771,7 @@ img.ui.bordered.image {
 
 .ui.input.error input {
   background-color: #FFF6F6;
-  border-color: #E0B4B4;
+  border-color: #FF0000;
   color: #9F3A38;
   box-shadow: none;
 }
@@ -16366,7 +16366,7 @@ ol.ui.horizontal.list li:before,
 .ui.form .field .prompt.label {
   white-space: normal;
   background: #FFFFFF !important;
-  border: 1px solid #E0B4B4 !important;
+  border: 1px solid #FF0000 !important;
   color: #9F3A38 !important;
 }
 
@@ -16592,7 +16592,7 @@ ol.ui.horizontal.list li:before,
 .ui.form .field.error input[type="text"],
 .ui.form .field.error input[type="url"] {
   background: #FFF6F6;
-  border-color: #E0B4B4;
+  border-color: #FF0000;
   color: #9F3A38;
   border-radius: '';
   box-shadow: none;
@@ -16612,7 +16612,7 @@ ol.ui.horizontal.list li:before,
 .ui.form .field.error input[type="text"]:focus,
 .ui.form .field.error input[type="url"]:focus {
   background: #FFF6F6;
-  border-color: #E0B4B4;
+  border-color: #FF0000;
   color: #9F3A38;
   -webkit-appearance: none;
   box-shadow: none;
@@ -16639,17 +16639,17 @@ ol.ui.horizontal.list li:before,
 
 .ui.form .fields.error .field .ui.dropdown,
 .ui.form .field.error .ui.dropdown {
-  border-color: #E0B4B4 !important;
+  border-color: #FF0000 !important;
 }
 
 .ui.form .fields.error .field .ui.dropdown:hover,
 .ui.form .field.error .ui.dropdown:hover {
-  border-color: #E0B4B4 !important;
+  border-color: #FF0000 !important;
 }
 
 .ui.form .fields.error .field .ui.dropdown:hover .menu,
 .ui.form .field.error .ui.dropdown:hover .menu {
-  border-color: #E0B4B4;
+  border-color: #FF0000;
 }
 
 .ui.form .fields.error .field .ui.multiple.selection.dropdown > .label,
@@ -16695,7 +16695,7 @@ ol.ui.horizontal.list li:before,
 .ui.form .fields.error .field .checkbox:not(.toggle):not(.slider) .box:before,
 .ui.form .field.error .checkbox:not(.toggle):not(.slider) .box:before {
   background: #FFF6F6;
-  border-color: #E0B4B4;
+  border-color: #FF0000;
 }
 
 .ui.form .fields.error .field .checkbox label:after,
@@ -22634,7 +22634,7 @@ Floated Menu / Item
 
 .ui.table tr.negative,
 .ui.table td.negative {
-  box-shadow: 0px 0px 0px #E0B4B4 inset;
+  box-shadow: 0px 0px 0px #FF0000 inset;
 }
 
 .ui.table tr.negative,
@@ -22649,7 +22649,7 @@ Floated Menu / Item
 
 .ui.table tr.error,
 .ui.table td.error {
-  box-shadow: 0px 0px 0px #E0B4B4 inset;
+  box-shadow: 0px 0px 0px #FF0000 inset;
 }
 
 .ui.table tr.error,
@@ -28737,16 +28737,16 @@ select.ui.dropdown {
 
 .ui.selection.dropdown.error {
   background: #FFF6F6;
-  border-color: #E0B4B4;
+  border-color: #FF0000;
 }
 
 .ui.selection.dropdown.error:hover {
-  border-color: #E0B4B4;
+  border-color: #FF0000;
 }
 
 .ui.dropdown.error > .menu,
 .ui.dropdown.error > .menu .menu {
-  border-color: #E0B4B4;
+  border-color: #FF0000;
 }
 
 .ui.dropdown.error > .menu > .item {
@@ -28754,7 +28754,7 @@ select.ui.dropdown {
 }
 
 .ui.multiple.selection.error.dropdown > .label {
-  border-color: #E0B4B4;
+  border-color: #FF0000;
 }
 
 /* Item Hover */

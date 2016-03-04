@@ -730,13 +730,20 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         }
     };
 
-    // 
-    $scope.$watch("auxModel.reportingUnits", function () {
-        $scope.submit();
+    $scope.$watch("auxModel.reportingUnits", function (value) {
+        if (value === undefined) {
+            return;
+        }
+        // only submit if the user has already CLICK on the submit button
+        if($scope.hasValidated) {
+            $scope.submit();
+        }
     });
-
     $scope.submit = function () {
-
+        if($scope.forms.baselineForm === undefined) {
+            return;
+        }
+        $scope.hasValidated = true; /// only check the field errors if this form has attempted to validate. 
         $scope.propList = [];
 
         if($scope.auxModel.reportingUnits==="us"){

@@ -300,7 +300,7 @@
 
 .ui.table tr.negative,
 .ui.table td.negative {
-  box-shadow: 0px 0px 0px #E0B4B4 inset;
+  box-shadow: 0px 0px 0px #FF0000 inset;
 }
 .ui.table tr.negative,
 .ui.table td.negative {
@@ -314,7 +314,7 @@
 
 .ui.table tr.error,
 .ui.table td.error {
-  box-shadow: 0px 0px 0px #E0B4B4 inset;
+  box-shadow: 0px 0px 0px #FF0000 inset;
 }
 .ui.table tr.error,
 .ui.table td.error {

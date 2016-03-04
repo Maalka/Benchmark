@@ -58,7 +58,9 @@ define(['angular','./main'], function(angular) {
         };
 
         scope.$watch('result', function(result) {
-
+          if (result === undefined || result === null) {
+            return;
+          }
           var columns = [];
           if (result !== undefined){
             for (var i =0; i < scope.columns.length; i++) {
