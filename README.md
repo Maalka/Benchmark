@@ -1,25 +1,14 @@
-# Example application for Play+AngularJS+RequireJS.
+# Architecture 2030 Baseline Tool for Assessing Building Energy Efficiency Relative to National Median Performance for
+ similar building types.
 
 ## Intro
 
-This template application shows how to organize your application with
-[Playframework 2](http://www.playframework.com), [WebJars](http://www.webjars.org),
-[RequireJS](http://www.requirejs.org) and [AngularJS](http://www.angularjs.org).
-
-It shows an alternative way of organizing modules than the official
-[Angular-Play-Seed](https://github.com/typesafehub/angular-seed-play).
-
-For a full explanation, read the following blog post:
-http://www.mariussoutier.com/blog/2013/08/25/requirejs-optimization-play-webjars/
-
-The updates made for Play 2.2 and newer WebJars are explained here:
-http://www.mariussoutier.com/blog/2014/03/25/requirejs-optimization-play-2-2-webjars-cdns/
-
-The changes for Play 2.3 and sbt-web are discussed in this series about sbt-web:
-http://mariussoutier.com/blog/2014/10/20/intro-sbt-web/ 
-
-The changes for Play 2.4 are summarized in this short summary post:
-http://mariussoutier.com/blog/2015/07/25/play-angular-require-seed-updates/
+The EPA is in the process of updating its comparison and goal setting tools to be driven by newly available 2012 data.
+ The goal of this tool is to provide users (e.g. building owners, 2030 members) with an engaging and intuitive tool
+ with which they can effectively compare their energy-use intensity with similar buildings types, understanding
+ the change of their energy-use efficiency over time, and to set energy-use intensity targets for achieving desired
+ performance scores based on 2003 CBECS data. Basing the tool functionality on the 2003 CBECS dataset will enable
+2030 members to maintain pre-existing goals and baselines so that progress can continue to be consistently measured
 
 ## Code Organization
 
@@ -84,7 +73,7 @@ Choose from these featured templates or enter a template name:
   2) minimal-scala
   3) play-java
   4) play-scala
-> 
+>
 ~~~
 
 Enter `play-angular-require-seed` (you can use tab completion).
