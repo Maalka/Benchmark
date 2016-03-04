@@ -1,5 +1,26 @@
 <div>
-    <div ng-include src="'assets/javascripts/common/partials/sizeInput.html'"></div>
+
+    <div class="inline fields">
+        <div class="sixteen wide field">
+            <label style="width: 200px">Gross Floor Area</label>
+            <div class="ten wide field required" ng-class="{error: !propertyModel.GFA && forms.hasValidated}">
+              <input type="number" ng-model="propertyModel.GFA"
+                   required
+                   min="0"
+                   placeholder="GFA">
+            </div>
+            <div class="six wide field required" ng-class="{error: !propertyModel.areaUnits && forms.hasValidated}">
+              <select class="ui dropdown"
+                  dropdown
+                  ng-model="propertyModel.areaUnits"
+                  ng-options="item.id as item.name for item in buildingProperties.areaUnits"
+                  required>
+                <option value="">Select</option>
+              </select>
+            </div>
+          </div>
+    </div>
+
     <div class="field" ng-if="propertyModelFields[model.type].length > 0" ng-class="{'disabled': !propertyModel.GFA || !propertyModel.areaUnits}">
         <div checkbox class="ui checkbox checked">
             <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
@@ -9,9 +30,12 @@
     </div>
     <div class="inline fields" ng-repeat="field in propertyModelFields[model.type] | orderBy: 'type'">
         <div class="ui positive checkbox" ng-if="field.type === 'checkbox'">
-            <input type="checkbox" ng-model="propertyModel[field]" id="field-{{ field.name }}" 
+            <input type="checkbox" 
+                ng-model="propertyModel[field]" id="field-{{ field.name }}" 
                 ng-init="propertyModel[field.name] = field.default"
-                ng-true-value=true ng-false-value=false>
+                ng-true-value=true 
+                ng-false-value=false
+                name="field.name">
             <label for="field-{{ field.name }}">{{ field.title }}</label>
         </div>
 
@@ -19,7 +43,8 @@
         <label ng-if="field.type === 'number'" class="static">{{ field.title }}</label>
         <div ng-if="field.type === 'number'" class="five wide field required">
             <input type="{{field.type}}" ng-model="propertyModel[field.name]"
-                   required name="field.name" min="0">
+                   required 
+                   name="field.name" min="0">
         </div>
         <label ng-if="field.type === 'select'" class="static">{{ field.title }}</label>
         <div ng-if="field.type === 'select'" class="five wide field required">

@@ -17,7 +17,7 @@ define(['angular','./main'], function(angular) {
             },
 
             templateUrl: function(){
-                   return '/assets/javascripts/common/partials/Office.html';
+                   return '/assets/javascripts/common/partials/property_fields.html';
             },
 
             controller: ["$scope", function ($scope) {
@@ -144,7 +144,6 @@ define(['angular','./main'], function(angular) {
                             type: "number",
                             title: "Number of MRI Machines",
                             required: "USA"
-
                         },
                         {
                             name: "hasLaundryFacility",
