@@ -29,30 +29,42 @@
         </div>
     </div>
     <div class="inline fields" ng-repeat="field in propertyModelFields[model.type] | orderBy: 'type'">
-        <div class="ui positive checkbox" ng-if="field.type === 'checkbox'">
-            <input type="checkbox" 
-                ng-model="propertyModel[field]" id="field-{{ field.name }}" 
-                ng-init="propertyModel[field.name] = field.default"
-                ng-true-value=true 
-                ng-false-value=false
-                name="field.name">
+        <div class="ui positive checkbox field" 
+            ng-if="field.type === 'checkbox' && isShown(field)">
+
+            <input type         = "checkbox"
+                ng-model        = "propertyModel[field]" id="field-{{ field.name }}" 
+                ng-init         = "propertyModel[field.name] = field.default"
+                ng-true-value   = true
+                ng-false-value  = false
+                name            = "{{ field.name }}">
             <label for="field-{{ field.name }}">{{ field.title }}</label>
         </div>
 
         <!-- Number input type -->
-        <label ng-if="field.type === 'number'" class="static">{{ field.title }}</label>
-        <div ng-if="field.type === 'number'" class="five wide field required">
-            <input type="{{field.type}}" ng-model="propertyModel[field.name]"
-                   required 
-                   name="field.name" min="0">
+        <label ng-if="field.type === 'number' && isShown(field)" 
+                class="static">{{ field.title }}</label>
+        <div 
+            ng-if    = "field.type === 'number' && isShown(field)"
+            class    = "five wide field {{ required(field) }}">
+            <input 
+                type        = "{{field.type}}"
+                ng-model    = "propertyModel[field.name]"
+                ng-required = "isRequired(field)"
+                name        = "{{ field.name }}"
+                min         = "0">
         </div>
-        <label ng-if="field.type === 'select'" class="static">{{ field.title }}</label>
-        <div ng-if="field.type === 'select'" class="five wide field required">
-            <select class="ui dropdown"
-                    ng-model="propertyModel[field.name]"
-                    ng-options="item.id as item.name for item in field.fields"
-                    required
-                    name="field.name">
+        <label  ng-if="field.type === 'select' && isShown(field)" 
+                class="static">{{ field.title }}</label>
+
+        <div ng-if="field.type === 'select' && isShown(field)" 
+            class="five wide field {{ required(field) }}">
+
+            <select class       = "ui dropdown"
+                    ng-model    = "propertyModel[field.name]"
+                    ng-options  = "item.id as item.name for item in field.fields"
+                    ng-required = "isRequired(field)"
+                    name        = " {{ field.name }}">
             </select>
         </div>
     </div>

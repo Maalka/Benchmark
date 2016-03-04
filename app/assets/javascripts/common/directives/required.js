@@ -11,19 +11,26 @@ define(['angular','./main'], function(angular) {
 //        var validNodes = ['input', 'select'];
         return {
             restrict: 'C',
-            controller: ["$scope", "$element", function ($scope, $element) {
+            controller: ["$scope", "$element", "$parse", function ($scope, $element, $parse) {
                 // the name of the field in the forms hash;
-                var formInputName = $element.find("[required]").attr("name");
-                console.log(formInputName);
-
-                // if there is a name then attach the validation handlers
-                if (formInputName !== undefined) {
+                $scope.$watch (
+                    function () { 
+                        return $element.find("[required]").attr("name");
+                    },
+                    function (newValue, oldValue) {
+                        if(newValue !== oldValue && newValue !== undefined) {
+                            refresh($parse(newValue)($scope) || newValue);
+                        }
+                    }
+                );
+                var refresh = function(formInputName) {
+                    if (formInputName === undefined) {
+                        return;
+                    }
                     // it is expected that the scope contains form.baselineForm.  The baseline
                     // controller will set this up
 
-                    $scope.$watch("forms.hasValidated", function () { 
-                        check();
-                    });
+                    var watch = "forms.baselineForm." + formInputName +".$valid";
                     var isValidated = function () {
                         return $scope.forms.hasValidated;
                     };
@@ -34,10 +41,12 @@ define(['angular','./main'], function(angular) {
                             }
                         }
                     };
+
                     check();
+                    $scope.$watch("forms.hasValidated", function () { 
+                        check();
+                    });
 
-
-                    var watch = "forms.baselineForm." + formInputName +".$valid";
                     $scope.$watch(watch, function (value) { 
                         if (isValidated() === true) {
                             if (value === true) {
@@ -47,7 +56,8 @@ define(['angular','./main'], function(angular) {
                             }
                         }
                     });
-                }
+                };
+                refresh($element.find("[required]").attr("name"));
             }]
         };
     }]);

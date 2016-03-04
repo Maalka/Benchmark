@@ -32,25 +32,19 @@
             see the User Guide above.
         </div>
         <!-- setup the response grids -->
-        <div class="two wide column" ng-if="media === 'desktop'"></div>
-        <div class="seven wide column" id="data-input" ng-if="media === 'desktop'" style="padding-right: 1em;">
-            <div class="ui hidden divider"></div>
-            <div ng-include src="'assets/javascripts/benchmark/form.html'">Not Defined</div>
-        </div>
-        <!-- tablet, mobile, print -->
-        <div class="eight wide column only" id="data-input" ng-if="media !== 'desktop'" style="padding-right: 1em;">
+        <!--<div class="two wide column" ng-if="media === 'desktop'"></div>-->
+        <div class="{{ mainColumnWidth }}" 
+            ng-class="{'desktop-padding-left': media === 'desktop'}"
+            id="data-input">
             <div class="ui hidden divider"></div>
             <div ng-include src="'assets/javascripts/benchmark/form.html'">Not Defined</div>
         </div>
 
-        <div class="seven wide column" ng-if="media === 'desktop'" element="'#data-input'" style="padding-left: 1em;">
+        <div class="{{ mainColumnWidth }}" 
+            ng-class="{'desktop-padding-right': media === 'desktop'}"
+            element="'#data-input'">
             <div class="ui hidden divider"></div>
             <div ng-include src="'assets/javascripts/benchmark/benchmark_result.html'" style="padding-left: 1em;">Not Defined</div>
-        </div>
-        <!-- tablet, mobile, print -->
-        <div class="eight wide column only" ng-if="media !== 'desktop'" id="data-input">
-            <div class="ui hidden divider"></div>
-            <div ng-include src="'assets/javascripts/benchmark/benchmark_result.html'">Not Defined</div>
         </div>
     </div>
 </div>

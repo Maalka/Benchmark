@@ -16,3 +16,12 @@ div.only.print {
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
 }
+
+div.desktop-padding-left {
+	padding-left: 13% !important;
+	padding-right: 1em !important;
+}
+div.desktop-padding-right {
+	padding-right: 13% !important;
+	padding-left: 1em !important;
+}

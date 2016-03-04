@@ -54,6 +54,33 @@ define(['angular','./main'], function(angular) {
                     }
 
                 });
+                $scope.isRequired = function(field) {
+                    if (field.required === undefined) {
+                        return false;
+                    } else if (field.required === $scope.model.country) {
+                        return true;
+                    } else if (field.required === "all") {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                };
+                $scope.isShown = function (field) {
+                    console.log(field);
+                    console.log($scope.model.country);
+                    if (field.required === undefined) {
+                        return true;
+                    } else if (field.required === $scope.model.country) {
+                        return true;
+                    } else if (field.required === "all") {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                };
+                $scope.required = function(field) {
+                    return $scope.isRequired(field) ? "required" : "";
+                };
 
                 $scope.$watch("propertyModel.GFA", function () {
 
@@ -271,7 +298,7 @@ define(['angular','./main'], function(angular) {
                             name: "isOpenWeekends",
                             default: false,
                             type: "checkbox",
-                            title: "Property is Open Weekends"
+                            title: "Property is Open Weekends",
                             required: "USA"
                         },
                         {
@@ -285,7 +312,7 @@ define(['angular','./main'], function(angular) {
                             name: "numComputers",
                             default: $scope.round(1.75*GFA/1000,2),
                             type: "number",
-                            title: "Number of Computers"
+                            title: "Number of Computers",
                             required: "USA"
                         },
                         {

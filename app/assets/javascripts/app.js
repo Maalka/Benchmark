@@ -12,7 +12,7 @@ define(['angular', 'benchmark'], function(angular) {
   // will not be resolved
   return angular.module('app', ['benchmark.dashboard', 'matchmedia-ng']).config(['matchmediaProvider', function (matchmediaProvider) {
       matchmediaProvider.rules.phone = "(max-width: 768px)";
-      matchmediaProvider.rules.tablet = "(max-width: 992px)";      
-      matchmediaProvider.rules.desktop = "(max-width: 1920px)";
+      matchmediaProvider.rules.tablet = "(max-width: 1200px)";
+      matchmediaProvider.rules.desktop = "(min-width: 1200px)";
    }]);
 });

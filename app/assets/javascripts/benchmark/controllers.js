@@ -23,7 +23,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.forms = {'hasValidated': false};
     $scope.propTypes = [];
     $scope.matchmedia = matchmedia;
-
+    $scope.mainColumnWidth = "";
 
     // check the media to handel the ng-if media statements
     // it turns out that form elements do not respect "display: none" 
@@ -31,14 +31,17 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     var setMedia = function (){ 
         if (matchmedia.isPhone()) {
             $scope.media = "phone";
+            $scope.mainColumnWidth = "eight wide column";
         } else if (matchmedia.isTablet()) {
             $scope.media = "tablet";
+            $scope.mainColumnWidth = "eight wide column";
         } else if (matchmedia.isDesktop()) {
             $scope.media = "desktop";
+            $scope.mainColumnWidth = "eight wide column";
         } else if (matchmedia.isPrint()) {
-            $scope.media = "print";
+            $scope.mainColumnWidth = "eight wide column";
         } else {
-            $scope.media = "other";
+            $scope.mainColumnWidth = "eight wide column";
         }
         console.log($scope.media);
     };
