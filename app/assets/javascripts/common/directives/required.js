@@ -14,6 +14,8 @@ define(['angular','./main'], function(angular) {
             controller: ["$scope", "$element", function ($scope, $element) {
                 // the name of the field in the forms hash;
                 var formInputName = $element.find("[required]").attr("name");
+                console.log(formInputName);
+
                 // if there is a name then attach the validation handlers
                 if (formInputName !== undefined) {
                     // it is expected that the scope contains form.baselineForm.  The baseline
