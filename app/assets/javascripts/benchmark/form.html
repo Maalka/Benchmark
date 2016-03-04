@@ -1,5 +1,5 @@
-<form class="ui form" ng-class="{'error': !forms.baselineForm.$valid}" name="forms.baselineForm">
-    <h4 class="ui header"><i class="globe icon"></i>ABOUT YOUR DESIGN PROJECT</h4>
+<form class="ui form" ng-class="{'error': !forms.baselineForm.$valid}" name="forms.baselineForm" ng-cloak>
+    <h3 class="ui header"><i class="globe icon"></i>ABOUT YOUR DESIGN PROJECT</h4>
     <div class="ui segment about">
         <div class="inline fields">
             <div class="sixteen wide field required">
@@ -22,11 +22,11 @@
         </div>
         <div class="inline fields required">
             <label class="static">City | State/Prov.</label>
-            <div class="ten wide field">
+            <div class="nine wide field">
                 <input type="text" ng-model="auxModel.city"
                      required name="city" placeholder="City">
             </div>
-            <div class="six wide field">
+            <div class="seven wide field">
                 <select class="ui dropdown search"
                     ng-model="auxModel.state"
                     ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: auxModel.country}"
@@ -64,7 +64,7 @@
         </div>
 
     </div>
-    <h4 class="ui header"><i class="bullseye icon"></i>Energy Reduction Target</h4>
+    <h3 class="ui header"><i class="bullseye icon"></i>Energy Reduction Target</h3>
     <div class="ui segment reduction">
         <p>
             Choose the reduction target for your building relative to
@@ -73,17 +73,20 @@
         </p>
         <div class="inline fields">
             <label class="static">Target % Better than Median</label>
-            <div class="five wide field">
-                <input type="number" ng-model="auxModel.percentBetterThanMedian"
-                       name="percentBetterThanMedian" placeholder="Target %"
-                       min="0" max="100">
+            <div class="five wide required field">
+                <div class="ui icon input">
+                    <input type="number" ng-model="auxModel.percentBetterThanMedian"
+                           name="percentBetterThanMedian" placeholder="Target %"
+                           min="0" max="100">
+                    <span class="icon">%</span>
+                </div>
             </div>
             <div class="field">
                 <label ng-show="!forms.baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
             </div>
         </div>
     </div>
-    <h4 class="ui header"><i class="building icon"></i>PROPERTY USE DETAILS</h4>
+    <h3 class="ui header"><i class="building icon"></i>PROPERTY USE DETAILS</h3>
     <div ng-repeat="prop in propTypes">
         <div class="ui segment building">
             <div class="inline fields">
@@ -154,13 +157,15 @@
             </div>
         </div>
     </div>
-    <h4 class="ui header"><i class="lightning icon"></i>ESTIMATED DESIGN ENERGY (OPTIONAL)</h4>
+    <h3 class="ui header"><i class="lightning icon"></i>Actuall Annual Energy Use</h3>
     <div class="ui segment">
         <p>
-            If you want to compare your actual to target performance, please enter
-            your annual energy use metrics below.
+            Enter the actual annual energy use for your building
+            below. This will generate a rating so that you can
+            compare your building’s performance to your target.
+            To get the most accurate metrics, provide total annual
+            energy use from all energy types. 
         </p>
-
         <div class="field">
             <div class="ui checkbox">
                 <input type="checkbox" id="cb-enterenergy" ng-model="hideEnergies" name="hideEnergies"
@@ -170,73 +175,82 @@
         </div>
 
         <div ng-show="hideEnergies">
-            <div class="fields">
-                <div class="six wide field required">
-                    <label>Energy Type</label>
-                    <select class="ui dropdown"
-                        dropdown
-                        name="energyType"
-                        ng-model="auxModel.energies.energyType"
-                        ng-options="item.id as item.name for item in energyProperties.energyType">
-                        <option value="">Select</option>
-                    </select>
+            <div class="ui grid">
+                <div class="five wide column">
+                    Energy Type
                 </div>
-                <div class="five wide field required">
-                    <label>Units</label>
-                    <select class="ui dropdown"
-                        dropdown
-                        name="energyUnits"
-                        ng-model="auxModel.energies.energyUnits"
-                        ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: auxModel.energies.energyType}">
-                        <option value="">Select</option>
-                    </select>
+                <div class="five wide column">
+                    Units
                 </div>
-                <div class="five wide field">
-                    <label>Annual Use</label>
-                    <input type="number" ng-model="auxModel.energies.energyUse"
-                           name="energyUse" min="0"
-                           placeholder="Energy Use">
+                <div class="five wide column">
+                    Total Anual<br />
+                    Energy Use
                 </div>
-                <!-- This is an extra field that might be required in the energy form, other part is in controllers.js
-                <div class="field">
-
-                    <label>Rate ($/unit)</label>
-                    <input type="number" ng-model="auxModel.energies.energyRate"
-                           name="energyRate" min="0"
-                           placeholder="$/unit">
-                </div>-->
+                <div class="one wide column"></div>
+                <div class="five wide column">
+                    <div class="field">
+                        <select class="ui dropdown"
+                            name="energyType"
+                            ng-model="auxModel.energies.energyType"
+                            ng-options="item.id as item.name for item in energyProperties.energyType">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="five wide column">
+                    <div class="field">
+                         <select class="ui dropdown"
+                            name="energyUnits"
+                            ng-model="auxModel.energies.energyUnits"
+                            ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: auxModel.energies.energyType}">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="five wide column">
+                    <div class="field">
+                        <input type="number" ng-model="auxModel.energies.energyUse"
+                               name="energyUse" min="0"
+                               placeholder="Energy Use">
+                    </div>
+                </div>
+                <div class="one wide column">
+                    <div class="ui large labeled button" ng-click="addEnergiesRow()" style="margin-top:.4em;">
+                        <i class="add green circle icon"></i>
+                    </div>
+                </div>
+                <div class="sixteen wide column">
+                    <div class="ui horizontal divider">values</div>
+                </div>
+                <div ng-repeat-start="energyEntry in energies" class="five wide column">
+                    <div class="field">
+                         <select class="ui dropdown"
+                            ng-model="energyEntry.energyType"
+                            ng-options="item.id as item.name for item in energyProperties.energyType">
+                        </select>
+                    </div>
+                </div>
+                <div class="five wide column">
+                    <div class="field">
+                         <select class="ui dropdown"
+                            ng-model="energyEntry.energyUnits"
+                            ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: auxModel.energies.energyType}">
+                        </select>
+                    </div>
+                </div>
+                <div class="five wide column">
+                    <div class="ui input">
+                        <input ng-model="energyEntry.energyUse" value ="{{energyEntry.energyUse}}">
+                    </div>
+                </div>
+                <div ng-repeat-end class="one wide column">
+                    <div class="ui large labeled button" ng-click="removeRow(energyEntry.energyType,
+                         energyEntry.energyUnits,energyEntry.energyUse)" style="margin-top:.4em;">
+                        <i class="minus red circle icon"></i>
+                    </div>
+                </div>
             </div>
-
-            <div class="ui labeled button" ng-click="addEnergiesRow()">
-                <i class="add circle icon"></i> Save Entry
-            </div>
-
         </div>
-
-        <table class="ui compact celled table" ng-show="showEnergyTable">
-            <thead>
-                <tr>
-                    <th>Energy Type</th>
-                    <th>Units</th>
-                    <th>Total Annual Energy Use</th>
-                    <!--<th>Energy Rate ($/unit)</th>-->
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="energyEntry in energies">
-                <td>
-                        <div class="ui labeled button" tabindex="0"  ng-click="removeRow(energyEntry.energyType,
-                                 energyEntry.energyUnits,energyEntry.energyUse)">
-                            <i class="minus circle icon"></i>
-                        </div>
-                    {{energyEntry.energyType}}</td>
-                    <td>{{energyEntry.energyUnits}}</td>
-                    <td>{{energyEntry.energyUse}}</td>
-                    <!--<td>{{energyEntry.energyRate}}</td>-->
-                </tr>
-            </tbody>
-        </table>
-
     </div>
     <div class="ui basic segment right aligned">
         <a href ng-click="submit()">Compute Target <i class="arrow right icon"></i> </a>

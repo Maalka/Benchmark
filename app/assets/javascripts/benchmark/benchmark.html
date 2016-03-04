@@ -6,14 +6,13 @@
         </div>
         <div class="two wide column mobile only non printable">
             <img src="/assets/images/2030logo.png" class="ui image floated left">
-               <h2 class="ui header" style="font-family: Oswald;font-weight:300;font-size: 24px;margin-top:0;color:white">ENERGY<br>
-               <span style="font-family: Oswald;font-weight:700">TARGET & RATING TOOL</span></h2>
+               <h1 class="ui inverted huge header">ENERGY<br>
+               <b>TARGET & RATING TOOL</b>
         </div>
         <div class="black seven wide column computer only tablet only" style="padding-top:0;padding-bottom:0">
-            <h2 style="position:absolute;bottom:-2px">
-               <span style="font-family: Oswald;font-weight:300">ENERGY</span>
-               <span style="font-family: Oswald;font-weight:400">TARGET & RATING TOOL</span>
-            </h2>
+            <h1 class="ui inverted huge header" style="position:absolute;bottom:-6px">
+               ENERGY <b>TARGET & RATING TOOL</b>
+            </h1>
         </div>
          <div class="black seven wide column" style="padding-top:0;padding-bottom:0">
             <div class="ui text inverted fluid three item menu">
@@ -35,18 +34,22 @@
         <!-- setup the response grids -->
         <div class="two wide column" ng-if="media === 'desktop'"></div>
         <div class="seven wide column" id="data-input" ng-if="media === 'desktop'">
+            <div class="ui hidden divider"></div>
             <div ng-include src="'assets/javascripts/benchmark/form.html'">Not Defined</div>
         </div>
         <!-- tablet, mobile, print -->
         <div class="eight wide column only" id="data-input" ng-if="media !== 'desktop'">
+            <div class="ui hidden divider"></div>
             <div ng-include src="'assets/javascripts/benchmark/form.html'">Not Defined</div>
         </div>
 
         <div class="seven wide column" ng-if="media === 'desktop'" element="'#data-input'">
+            <div class="ui hidden divider"></div>
             <div ng-include src="'assets/javascripts/benchmark/benchmark_result.html'">Not Defined</div>
         </div>
         <!-- tablet, mobile, print -->
         <div class="eight wide column only" ng-if="media !== 'desktop'" id="data-input">
+            <div class="ui hidden divider"></div>
             <div ng-include src="'assets/javascripts/benchmark/benchmark_result.html'">Not Defined</div>
         </div>
     </div>

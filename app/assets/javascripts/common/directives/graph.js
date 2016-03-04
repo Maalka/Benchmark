@@ -21,61 +21,65 @@ define(['angular','highcharts', './main'], function(angular) {
               bars.push([k, 120]);
             }
             var createMarker = function(topPNG, bottomPNG, title, yOff, x, color, series) {
-              return [{
-                      type: 'flags',
-                      color: '#333333',
-                      fillColor: 'rgba(255,255,255,0.8)',
-                      shape: "url(/assets/images/" + topPNG + ")",
-                      style: {
-                        color: color
-                      },
-                      y: yOff[0],
-                      data: [
-                          { x: fixX(x), 
-                            title: ""+x}
-                      ],
-                      onSeries: series,
-                      showInLegend: false
-                  },
-                  {
-                      type: 'flags',
-                      color: '#333333',
-                      style: {
-                        color: color
-                      },                      
-                      shape: "url(/assets/images/" + bottomPNG + ")",
-                      fillColor: 'rgba(255,255,255,0.8)',
-                      y: yOff[1],
-                      data: [ 
-                          { x: fixX(x), 
-                            title: ""+zepiToEUI(x)}
-                      ],
-                      onSeries: series,                      
-                      showInLegend: false
-                  },
-                  {
-                      type: 'flags',
-                      color: 'transparent',
-                      style: {
-                        color: "black",
-                        fontWeight: 'bold',
-                        fontSize: "13",
-                      },
-                      shape: "squarepin",
-                      fillColor: 'rgba(255,255,255,0.8)',
-                      y: yOff[2],
-                      data: [
-                          { x: fixX(x), 
-                            title: ""+title}
-                      ],
-                      onSeries: series,
-                      showInLegend: false
-                  }];
-
+              if (x !== undefined && !isNaN(x)) {
+                return [{
+                        type: 'flags',
+                        color: '#333333',
+                        fillColor: 'rgba(255,255,255,0.8)',
+                        shape: "url(/assets/images/" + topPNG + ")",
+                        style: {
+                          color: color
+                        },
+                        y: yOff[0],
+                        data: [
+                            { x: fixX(x), 
+                              title: ""+parseInt(x)}
+                        ],
+                        onSeries: series,
+                        showInLegend: false
+                    },
+                    {
+                        type: 'flags',
+                        color: '#333333',
+                        style: {
+                          color: color
+                        },                      
+                        shape: "url(/assets/images/" + bottomPNG + ")",
+                        fillColor: 'rgba(255,255,255,0.8)',
+                        y: yOff[1],
+                        data: [ 
+                            { x: fixX(x), 
+                              title: ""+zepiToEUI(x)}
+                        ],
+                        onSeries: series,                      
+                        showInLegend: false
+                    },
+                    {
+                        type: 'flags',
+                        color: 'transparent',
+                        style: {
+                          color: "black",
+                          fontWeight: 'bold',
+                          fontSize: "13",
+                        },
+                        shape: "squarepin",
+                        fillColor: 'rgba(255,255,255,0.8)',
+                        y: yOff[2],
+                        data: [
+                            { x: fixX(x), 
+                              title: ""+title}
+                        ],
+                        onSeries: series,
+                        showInLegend: false
+                    }];
+                  } else {
+                    return [];
+                  }
             };
             // flags don't seem to work on series where the axis is reversed
             var maxX = 120;
             var minX = -20;
+            /*
             var getBRByKey = function (key) {
               var r = $scope.benchmarkResult.filter(function (v) { 
                 return v[key];
@@ -86,15 +90,23 @@ define(['angular','highcharts', './main'], function(angular) {
                 return undefined;
               }
             };
-            var baselineEUI = getBRByKey("medianSiteEUI");
+            */
+            var baselineEUI;
             var labels = {};
-            var fixX = function(x) { 
+            var fixX = function(x) {
+              if (x > 100) {
+                x = 110;
+              }
+              if (x < 0) {
+                x = -10;
+              }
               return maxX - x;
             };
             var zepiToEUI = function(zepi) { 
               return  parseInt(zepi / 100 * baselineEUI);
             };
             var plot = function () {
+              baselineEUI = 100; //getBRByKey("medianSiteEUI");
               var options = {
                   chart: {
                       margin: [75, 0, 75, 0],
@@ -199,8 +211,8 @@ define(['angular','highcharts', './main'], function(angular) {
                     data: bars
                   }]
                     .concat(createMarker("boxTop.png", "boxBottom.png", "Baseline", [-70, -41, -100], 100, "black", "zepi"))
-                    .concat(createMarker("ratingTop.png", "ratingBottom.png", "Rating", [-30, -2, 22], getBRByKey("percentBetterSourceEUI"), "white"))
-                    .concat(createMarker("targetTop.png", "targetBottom.png", "Target", [-70, -41, -100], 80, "white", "zepi"))
+                    .concat(createMarker("ratingTop.png", "ratingBottom.png", "Rating", [-30, -2, 22], 7, "white")) //getBRByKey("actualZEPI"), "white"))
+                    .concat(createMarker("targetTop.png", "targetBottom.png", "Target", [-70, -41, -100], 80, "white", "zepi")) // getBRByKey("percentBetterZEPI"), "white", "zepi"))
                     .concat(createMarker("boxTop.png", "boxBottom.png", "Net Zero", [-70, -41, -100], 0, "black", "zepi"))
               };
               var loadMarkers = function(tag, obj, series, xOff, yOff) { 
@@ -234,6 +246,12 @@ define(['angular','highcharts', './main'], function(angular) {
               angular.element($element).highcharts(options);
             };
             plot();
+            $scope.$watch("benchmarkResult", function (br) { 
+              labels = {};
+              if (br !== undefined) {
+                plot();
+              }
+            });
           }]
         };
   }]);

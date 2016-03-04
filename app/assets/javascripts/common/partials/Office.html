@@ -4,7 +4,7 @@
         <div checkbox class="ui checkbox checked">
             <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
                    ng-true-value=true ng-false-value=false>
-            <label for="cb-default">Use Default Values? (Y/N)</label>
+            <label for="cb-default">Use Default Values?</label>
         </div>
     </div>
 
@@ -12,7 +12,7 @@
         <div class="ui positive checkbox">
             <input type="checkbox" ng-model="propertyModel.isSmallBank" id="office-bank" ng-init="propertyModel.isSmallBank=false"
                    ng-true-value=true ng-false-value=false>
-            <label for="office-bank">Property is a Small Bank (Y/N)</label>
+            <label for="office-bank">Property is a Small Bank</label>
 
         </div>
     </div>
@@ -26,7 +26,7 @@
         <label class="static">Number of Workers on Main Shift</label>
         <div class="five wide field required" ng-class="{'error': forms.baselineForm.numWorkersMainShift.$error}">
             <input type="number" ng-model="propertyModel.numWorkersMainShift"
-                   required name="numWorkersMainShift" min="0" placeholder="numWorkersMainShift">
+                   required name="numWorkersMainShift" min="0">
         </div>
     </div>
 
@@ -72,11 +72,10 @@
         <label class="static">Percent Cooled</label>
         <div class="five wide field required" ng-class="{'error': forms.baselineForm.percentCooled.$error}">
             <select class="ui dropdown"
-                    dropdown
                     ng-model="propertyModel.percentCooled"
                     ng-options="item.id as item.name for item in buildingProperties.areaHVAC"
                     required
-                    name="percentCooled">>
+                    name="percentCooled">
             </select>
         </div>
     </div>

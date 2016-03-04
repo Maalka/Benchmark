@@ -39,10 +39,10 @@
 -----------------------*/
 
 .ui.grid {
-  margin-top: -1rem;
-  margin-bottom: -1rem;
-  margin-left: -1rem;
-  margin-right: -1rem;
+  margin-top: -0.25rem;
+  margin-bottom: -0.25rem;
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
 }
 .ui.relaxed.grid {
   margin-left: -1.5rem;
@@ -55,7 +55,7 @@
 
 /* Preserve Rows Spacing on Consecutive Grids */
 .ui.grid + .grid {
-  margin-top: 1rem;
+  margin-top: 0.25rem;
 }
 
 /*-------------------
@@ -69,13 +69,13 @@
   position: relative;
   display: inline-block;
   width: 6.25%;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
   vertical-align: top;
 }
 .ui.grid > * {
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }
 
 /*-------------------
@@ -106,8 +106,8 @@
           align-items: stretch;
   width: 100% !important;
   padding: 0rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 }
 
 /*-------------------
@@ -117,8 +117,8 @@
 
 /* Vertical padding when no rows */
 .ui.grid > .column:not(.row) {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 }
 .ui.grid > .row > .column {
   margin-top: 0em;
@@ -159,10 +159,10 @@
   -webkit-flex-grow: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
-  margin: 1rem 1rem;
+  margin: 0.25rem 0.25rem;
 }
 .ui.grid .column + .ui.vertical.divider {
-  height: calc(50% -  1rem );
+  height: calc(50% -  0.25rem );
 }
 
 /* Remove Border on Last Horizontal Segment */
@@ -1060,8 +1060,8 @@
 /* Swap from padding to margin on columns to have dividers align */
 .ui[class*="vertically divided"].grid > .column:not(.row),
 .ui[class*="vertically divided"].grid > .row > .column {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
   padding-top: 0rem;
   padding-bottom: 0rem;
 }
@@ -1093,9 +1093,9 @@
   content: "";
   top: 0em;
   left: 0px;
-  width: calc(100% -  2rem );
+  width: calc(100% -  0.5rem );
   height: 1px;
-  margin: 0% 1rem;
+  margin: 0% 0.25rem;
   box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
 }
 
@@ -1345,10 +1345,10 @@
 .ui.grid > .row > .brown.column,
 .ui.grid > .row > .grey.column,
 .ui.grid > .row > .black.column {
-  margin-top: -1rem;
-  margin-bottom: -1rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  margin-top: -0.25rem;
+  margin-bottom: -0.25rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 }
 
 /* Red */
@@ -1371,7 +1371,7 @@
 .ui.grid > .yellow.row,
 .ui.grid > .yellow.column,
 .ui.grid > .row > .yellow.column {
-  background-color: #FBBD08 !important;
+  background-color: #ffff00 !important;
   color: #FFFFFF;
 }
 
@@ -1387,7 +1387,7 @@
 .ui.grid > .green.row,
 .ui.grid > .green.column,
 .ui.grid > .row > .green.column {
-  background-color: #21BA45 !important;
+  background-color: #0000FF !important;
   color: #FFFFFF;
 }
 
@@ -1639,8 +1639,8 @@
   .ui.grid > .doubling.row > .column,
   .ui.doubling.grid > .row > .column {
     display: inline-block !important;
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
     box-shadow: none !important;
     margin: 0em;
   }
@@ -1730,8 +1730,8 @@
   }
   .ui.grid > .doubling.row > .column,
   .ui.doubling.grid > .row > .column {
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
     margin: 0em !important;
     box-shadow: none !important;
   }
@@ -1832,7 +1832,7 @@
     width: 100% !important;
     margin: 0em 0em !important;
     box-shadow: none !important;
-    padding: 1rem 1rem !important;
+    padding: 0.25rem 0.25rem !important;
   }
   .ui.stackable.grid:not(.vertically) > .row {
     margin: 0em;
@@ -1849,8 +1849,8 @@
 /* Don't pad inside segment or nested grid */
   .ui.grid .ui.stackable.grid,
   .ui.segment:not(.vertical) .ui.stackable.page.grid {
-    margin-left: -1rem !important;
-    margin-right: -1rem !important;
+    margin-left: -0.25rem !important;
+    margin-right: -0.25rem !important;
   }
   
 /* Divided Stackable */
@@ -1872,8 +1872,8 @@
   .ui.stackable.divided:not(.vertically).grid > .row > .column {
     border-top: 1px solid rgba(34, 36, 38, 0.15);
     box-shadow: none !important;
-    padding-top: 2rem !important;
-    padding-bottom: 2rem !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
   }
   .ui.stackable.celled.grid > .row {
     box-shadow: none !important;

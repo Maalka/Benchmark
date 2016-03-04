@@ -57,7 +57,7 @@
   background: #F9FAFB;
   text-align: inherit;
   color: #595959;
-  padding: 0.91666667em 0.75em;
+  padding: 0.92307692em 0.5em;
   vertical-align: inherit;
   font-style: none;
   font-weight: bold;
@@ -88,7 +88,7 @@
   background: #F9FAFB;
   text-align: inherit;
   color: #595959;
-  padding: 0.75em 0.75em;
+  padding: 0.5em 0.5em;
   vertical-align: middle;
   font-style: normal;
   font-weight: normal;
@@ -117,7 +117,7 @@
 
 /* Table Cells */
 .ui.table td {
-  padding: 0.75em 0.75em;
+  padding: 0.5em 0.5em;
   text-align: inherit;
 }
 
@@ -488,7 +488,7 @@
 .ui.table tbody tr td.selectable > a:not(.ui) {
   display: block;
   color: inherit;
-  padding: 0.75em 0.75em;
+  padding: 0.5em 0.5em;
 }
 
 /* Other States */
@@ -623,10 +623,10 @@
 
 /* Yellow */
 .ui.yellow.table {
-  border-top: 0.2em solid #FBBD08;
+  border-top: 0.2em solid #ffff00;
 }
 .ui.inverted.yellow.table {
-  background-color: #FBBD08 !important;
+  background-color: #ffff00 !important;
   color: #FFFFFF !important;
 }
 
@@ -641,10 +641,10 @@
 
 /* Green */
 .ui.green.table {
-  border-top: 0.2em solid #21BA45;
+  border-top: 0.2em solid #0000FF;
 }
 .ui.inverted.green.table {
-  background-color: #21BA45 !important;
+  background-color: #0000FF !important;
   color: #FFFFFF !important;
 }
 
@@ -1090,7 +1090,7 @@
 }
 td.ui.yellow,
 th.ui.yellow {
-  color: #FBBD08 !important;
+  color: #ffff00 !important;
 }
 
 

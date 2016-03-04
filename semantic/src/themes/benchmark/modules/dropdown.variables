@@ -1,1 +1,4 @@
 @selectionMinWidth: 5em;
+@selectionPadding: @selectionVerticalPadding 0 @selectionVerticalPadding @selectionHorizontalPadding;
+
+@selectHeight: 24px;

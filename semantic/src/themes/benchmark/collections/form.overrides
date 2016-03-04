@@ -4,22 +4,18 @@
   width: 100%;
 }
 
-.ui.form .required.field>.checkbox:after, .ui.form .required.field>label:after, .ui.form .required.fields.grouped>label:after, .ui.form .required.fields:not(.grouped)>.field>.checkbox:after, .ui.form .required.fields:not(.grouped)>.field>label:after {
-    margin: -.2em 0 0 .2em;
-    content: '*';
-    color: #DB2828;
- }
-
- .ui.form .required.fields:not(.grouped) > .field > label:after,
+.ui.form .required.fields:not(.grouped) > .field > label:after,
 .ui.form .required.fields.grouped > label:after,
-.ui.form .required.fields:not(.inline) > .field > label:after,
-.ui.form .required.fields.inline > label:after,
 .ui.form .required.field > label:after,
 .ui.form .required.fields:not(.grouped) > .field > .checkbox:after,
-.ui.form .required.fields:not(.inline) > .field > .checkbox:after,
+.ui.form .required.field > .checkbox:after {}
 
-.ui.form .required.field > .checkbox:after {
+.ui.form .required.field:after, .ui.form .inline.fields.required > .field:after {
   margin: @requiredMargin;
   content: @requiredContent;
-  color: @requiredColor;
+  color: @requiredColor;	
+}
+
+.ui.form select {
+  -webkit-appearance: none;
 }

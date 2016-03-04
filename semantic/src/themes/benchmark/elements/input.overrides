@@ -1,0 +1,15 @@
+.ui.icon.input > span.icon {
+  cursor: default;
+  position: absolute;
+  line-height: 1;
+  text-align: center;
+  top: 0.5em;
+  right: 0px;
+  margin: 0em;
+  height: 100%;
+
+  width: @iconWidth;
+  opacity: @iconOpacity;
+  border-radius: 0em @borderRadius @borderRadius 0em;
+  transition: @iconTransition;
+}

@@ -1,11 +1,13 @@
 <div>
-	<h4 class="ui header"><i class="bar chart icon"></i>RESULTS</h4>
+	<h3 class="ui header"><i class="bar chart icon"></i>RESULTS</h3>
 	<div class="ui padded one column grid">
-	    <div class="teal inverted column" ng-if="percentBetterSiteEUI">
-	         Your Building's Target EUI is <span style="font-size:24px">{{percentBetterSiteEUI | number : 1}}</span> based on on a {{auxModel.percentBetterThanMedian}}% reduction
+	    <div class="teal inverted column" ng-if="percentBetterSiteEUI style="padding: 0.7em;">
+	         Target EUI is 
+	         <font style="font-size:2em; position: relative; top:3px">10{{percentBetterSiteEUI | number : 1}}</font>  
+    	     based on on a {{auxModel.percentBetterThanMedian}}% reduction
 	    </div>
 	    <div class="column" style="padding:0px">
-	       <div ng-if="benchmarkResult" graph benchmark-result="benchmarkResult"></div>
+	       <div ng-if="benchmarkResult || true" graph benchmark-result="benchmarkResult"></div>
 	    </div>
 	    <div class="teal column">
 	        <div ng-include src="'assets/javascripts/benchmark/proplist_result.html'">Not Defined</div>

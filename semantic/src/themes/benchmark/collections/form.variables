@@ -6,3 +6,10 @@
 @labelFontWeight: normal;
 @labelTextTransform: none;
 @labelColor: @textColor;
+
+@selectPadding: (@inputVerticalPadding + ((1em - @inputLineHeight) / 2)) @inputHorizontalPadding;
+
+@inputBorderRadius: 0;
+
+@gutterWidth: 0.5em;
+@rowDistance: 0.5em;

@@ -1,13 +1,11 @@
 
+<b style="padding-left: 0.5em;">BUILDING SUMMARY</b>
 <table class="ui basic inverted white table">
     <tbody>
-        <tr colspan="3">
-            <td>BUILDING SUMMARY</td>
-        </tr>
         <tr>
-            <td>LOCATION</td>
-            <td>{{auxModel.city || "Seattle"}}, {{auxModel.state || "WA"}}</td>
-            <td>{{auxModel.postalCode || "98101"}}</td>
+            <td class="five wide">LOCATION</td>
+            <td class="five wide">{{auxModel.city || "City"}}, {{auxModel.state || "ST"}}</td>
+            <td class="six wide">{{auxModel.postalCode || "000000"}}</td>
         </tr>
         <tr ng-repeat="prop in propOutputList">
             <td ng-if="$first" rowspan="{{propOutputList.length}}">USES</td>
