@@ -1139,7 +1139,7 @@ object SeniorCare {
  */
 
 case class Retail(weeklyOperatingHours:PosDouble, numOpenClosedRefrCases:PosDouble, numCashRegisters:PosDouble,
-                  numWorkersMainShift:PosDouble, numComputers:PosDouble, numRefrUnits:PosDouble,
+                  numWorkersMainShift:PosDouble, numComputers:PosDouble,
                   numWalkinRefrUnits:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
                   HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 

@@ -109,188 +109,234 @@ define(['angular','./main'], function(angular) {
                 var GFA = 0;
                 var setPropertyModelFields = function(GFA)  {
                     $scope.propertyModelFields = {
-                    Hospital: [
+                    Hospital    : [
                         {
                             name: "licensedBedCapacity",
                             default: $scope.round(0.69*GFA/1000,2),
                             type: "number",
-                            title: "Licensed Bed Capacity"
+                            title: "Licensed Bed Capacity",
+                            required: 'Canada'
                         },
                         {
                             name: "numStaffedBeds",
                             default: $scope.round(0.46*GFA/1000,2),
                             type: "number",
-                            title: "Number of Staffed Beds"
+                            title: "Number of Staffed Beds",
+                            required: 'USA'
                         },
                         {
                             name: "numFTEWorkers",
                             default: $scope.round(2.6*GFA/1000,2),
                             type: "number",
-                            title: "Number of Full Time Workers"
+                            title: "Number of Full Time Workers",
+                            required: 'USA'
                         },
                         {
                             name: "numWorkersMainShift",
                             default: $scope.round(1.32*GFA/1000,2),
                             type: "number",
-                            title: "Number of Workers on Main Shift"
+                            title: "Number of Workers on Main Shift",
+                            required: 'Canada'
                         },
                         {
                             name: "numMRIMachines",
                             default: 1,
                             type: "number",
-                            title: "Number of MRI Machines"
+                            title: "Number of MRI Machines",
+                            required: "USA"
                         },
                         {
                             name: "hasLaundryFacility",
                             default: true,
                             type: "checkbox",
-                            title: "Has Laundry Facility"
+                            title: "Has Laundry Facility",
+                            required: 'Canada'
                         },
                         {
                             name: "percentHeated",
-                            defualt:  $scope.buildingProperties.areaHVAC[10].id,
+                            default:  $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Heated"
+                            title: "Percent Heated",
+                            required: 'Canada'
                         },
                         {
                             name: "percentCooled",
-                            defualt:  $scope.buildingProperties.areaHVAC[10].id,
+                            default:  $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Cooled"
+                            title: "Percent Cooled",
+                            required: 'Canada'
+                        },
+                        {
+                            name: "weeklyOperatingHours",
+                            default: null,
+                            type: "number",
+                            title: "Number of Weekly Operating Hours",
+                            required: 'Canada'
                         }
                     ],
                     Hotel: [
+
                         {
                            name: "numBedrooms",
                            default: $scope.round(1.95*GFA/1000,2),
                            type: "number",
-                           title: "Number of Bedrooms"
+                           title: "Number of Bedrooms",
+                           required: "USA"
                         },
                         {
                             name: "numWorkersMainShift",
                             default: $scope.round(0.32*GFA/1000,2),
                             type: "number",
-                            title: "Number of Workers on Main Shift"
+                            title: "Number of Workers on Main Shift",
+                            required: "USA"
                         },
                         {
                             name: "hasFoodPreparation",
                             default: false,
                             type: "checkbox",
-                            title: "Has Food Preparation"
+                            title: "Has Food Preparation",
+                            required: "USA"
                         },
                         {
                             name: "numRefrUnits",
                             default: $scope.round(0.023*GFA/1000,2),
                             type: "number",
-                            title: "Number of Refrigerator Units"
+                            title: "Number of Refrigerator Units",
+                            required: "USA"
                         },
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Heated"
+                            title: "Percent Heated",
+                            required: "USA"
                         },
                         {
                             name: "percentCooled",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Cooled"
+                            title: "Percent Cooled",
+                            required: "USA"
                         }
                     ],
                     K12School: [
+
                         {
                             name: "gymFloorArea",
                             default: 0.0,
                             type: "number",
-                            title: "Gym Floor Area"
+                            title: "Gym Floor Area",
+                            required: "Canada"
                         },
                         {
                             name: "isHighSchool",
                             default: false,
                             type: "checkbox",
-                            title: "Property is a High School"
+                            title: "Property is a High School",
+                            required: "USA"
+                        },
+                        {
+                            name: "isSecondarySchool",
+                            default: false,
+                            type: "checkbox",
+                            title: "Property is a Secondary School",
+                            required: "Canada"
                         },
                         {
                             name: "numWorkersMainShift",
                             default: $scope.round(0.77*GFA/1000,2),
                             type: "number",
-                            title: "Number of Workers on Main Shift"
+                            title: "Number of Workers on Main Shift",
+                            required: "Canada"
                         },
                         {
                             name: "studentSeatingCapacity",
                             default: $scope.round(10.0*GFA/1000,2),
                             type: "number",
-                            title: "Student Seeting Capacity"
+                            title: "Student Seeting Capacity",
+                            required: "Canada"
                         },
                         {
                             name: "numWalkinRefrUnits",
                             default: $scope.round(0.01*GFA/1000,2),
                             type: "number",
-                            title: "Number of Walk-in Refrigeration Units"
+                            title: "Number of Walk-in Refrigeration Units",
+                            required: "USA"
                         },
                         {
                             name: "isOpenWeekends",
                             default: false,
                             type: "checkbox",
                             title: "Property is Open Weekends"
+                            required: "USA"
                         },
                         {
                             name: "hasCooking",
                             default: true,
                             type: "checkbox",
-                            title: "Facility Has Cooking"
+                            title: "Facility Has Cooking",
+                            required: "USA"
                         },
                         {
                             name: "numComputers",
                             default: $scope.round(1.75*GFA/1000,2),
                             type: "number",
                             title: "Number of Computers"
+                            required: "USA"
                         },
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Heated"
+                            title: "Percent Heated",
+                            required: "all"
                         },
                         {
                             name: "percentCooled",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Cooled"
+                            title: "Percent Cooled",
+                            required: "all"
                         }
                     ],
                     MedicalOffice: [
+
                         {
                             name: "weeklyOperatingHours",
                             default: 65,
                             type: "number",
-                            title: "Number of Weekly Operating Hours"
+                            title: "Number of Weekly Operating Hours",
+                            required: "all"
+
                         },
                         {
                             name: "numWorkersMainShift",
                             default: $scope.round(0.77*GFA/1000,2),
                             type: "number",
-                            title: "Number of Workers on Main Shift"
+                            title: "Number of Workers on Main Shift",
+                            required: "all"
                         },
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Heated"
+                            title: "Percent Heated",
+                            required: "USA"
                         },
                         {
                             name: "percentCooled",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Cooled"
+                            title: "Percent Cooled",
+                            required: "all"
                         }
                     ],
                     MultiFamily: [
@@ -298,223 +344,257 @@ define(['angular','./main'], function(angular) {
                             name: "numRezUnits",
                             default: $scope.round(1.2*GFA/1000,2),
                             type: "number",
-                            title: "Number of Residential Units"
+                            title: "Number of Residential Units",
+                            required: "USA"
                         },
                         {
                             name: "numUnitsLowRise1to4",
                             default: $scope.round(1.2*GFA/1000,2),
                             type: "number",
-                            title: "Number of Low Rise (Floors 1-4) Units"
+                            title: "Number of Low Rise (Floors 1-4) Units",
+                            required: "USA"
                         },
                         {
                             name: "numUnitsMidRise5to9",
                             default: 0.0,
                             type: "number",
-                            title: "Number of Low Rise (Floors 5-9) Units"
-
+                            title: "Number of Low Rise (Floors 5-9) Units",
+                            required: "USA"
                         },
                         {
                             name: "numUnitsHighRise10plus",
                             default: 0.0,
                             type: "number",
-                            title: "Number of High Rise (Floors above 10) Units"
+                            title: "Number of High Rise (Floors above 10) Units",
+                            required: "USA"
                         },
                         {
                             name: "numBedrooms",
                             default: $scope.round(1.4*GFA/1000,2),
                             type: "number",
-                            title: "Number of Bedrooms"
+                            title: "Number of Bedrooms",
+                            required: "USA"
                         }
                     ],
-                    "Office": [
+                    Office: [
+
                         {
                             name: "isSmallBank",
                             type: "checkbox",
                             default: false,
-                            title: "Property is a Small Bank"
+                            title: "Property is a Small Bank",
+                            required: "USA"
                         },
                         {
                             name: "weeklyOperatingHours",
                             default: 65,
                             type: "number",
-                            title: "Number of Weekly Operating Hours"
+                            title: "Number of Weekly Operating Hours",
+                            required: "all"
                         },
                         {
                             name: "numWorkersMainShift",
                             default: $scope.round(2.3*GFA/1000,2),
                             type: "number",
-                            title: "Number of Workers on Main Shift"
+                            title: "Number of Workers on Main Shift",
+                            required: "all"
                         },
                                                 {
                             name: "numComputers",
                             default: $scope.round(2*GFA/1000,2),
                             type: "number",
-                            title: "Number of Computers"
+                            title: "Number of Computers",
+                            required: "all"
                         },
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Heated"
+                            title: "Percent Heated",
+                            required: "all"
                         },
                         {
                             name: "percentCooled",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Cooled"
+                            title: "Percent Cooled",
+                            required: "all"
 
+                        },
+                        {
+                             name: "numServers",
+                             default: null,
+                             type: "number",
+                             title: "Number of Servers",
+                             required: "Canada"
                         }
                     ],
-                    "ResidenceHall": [
+                    ResidenceHall: [
                         {
                            name: "numBedrooms",
                            default: 100,
                            type: "number",
-                           title: "Number of Bedrooms"
+                           title: "Number of Bedrooms",
+                           required: "USA"
                         },
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Heated"
+                            title: "Percent Heated",
+                            required: "USA"
                         },
                         {
                             name: "percentCooled",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Cooled"
+                            title: "Percent Cooled",
+                            required: "USA"
                         }
                     ],
-                    "Retail": [
+                    Retail: [
                         {
                             name: "weeklyOperatingHours",
                             default: 65,
                             type: "number",
-                            title: "Number of Weekly Operating Hours"
+                            title: "Number of Weekly Operating Hours",
+                            required: "USA"
                         },
                         {
                             name: "numOpenClosedRefrCases",
                             default: 0.0,
                             type: "number",
-                            title: "Number of Open/Closed Refrigeration Cases"
+                            title: "Number of Open/Closed Refrigeration Cases",
+                            required: "USA"
                         },
                         {
                             name: "numCashRegisters",
                             default: $scope.round(0.3*GFA/1000,2),
                             type: "number",
-                            title: "Number of Cash Registers"
+                            title: "Number of Cash Registers",
+                            required: "USA"
                         },
                         {
                             name: "numWorkersMainShift",
                             default: $scope.round(1.0*GFA/1000,2),
                             type: "number",
-                            title: "Number of Workers on Main Shift"
+                            title: "Number of Workers on Main Shift",
+                            required: "USA"
                         },
                         {
                             name: "numComputers",
                             default: $scope.round(0.2*GFA/1000,2),
                             type: "number",
-                            title: "Number of Computers"
-                        },
-                        {
-                            name: "numRefrUnits",
-                            default: 0.0,
-                            type: "number",
-                            title: "Number of Refrigerator Units"
+                            title: "Number of Computers",
+                            required: "USA"
                         },
                         {
                             name: "numWalkinRefrUnits",
                             default: 0.0,
                             type: "number",
-                            title: "Number of Walk-in Refrigeration Units"
+                            title: "Number of Walk-in Refrigeration Units",
+                            required: "USA"
                         },
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Heated"
+                            title: "Percent Heated",
+                            required: "USA"
                         },
                         {
                             name: "percentCooled",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Cooled"
+                            title: "Percent Cooled",
+                            required: "USA"
                         }
                     ],
-                    "SeniorCare": [
+                    SeniorCare: [
                         {
                             name: "maxNumResidents",
                             default: $scope.round(2.374*GFA/1000,2),
                             type: "number",
-                            title: "Maximum Number of Residents"
+                            title: "Maximum Number of Residents",
+                            required: "USA"
                         },
                         {
                             name: "avgNumResidents",
                             default: $scope.round(2.075*GFA/1000,2),
                             type: "number",
-                            title: "Average Number of Residents"
+                            title: "Average Number of Residents",
+                            required: "USA"
                         },
                         {
                             name: "numRezUnits",
                             default: $scope.round(1.584*GFA/1000,2),
                             type: "number",
-                            title: "Number of Residential Units"
+                            title: "Number of Residential Units",
+                            required: "USA"
                         },
                         {
                             name: "numWorkersMainShift",
                             default: $scope.round(0.9523*GFA/1000,2),
                             type: "number",
-                            title: "Number of Workers on Main Shift"
+                            title: "Number of Workers on Main Shift",
+                            required: "USA"
                         },
                         {
                             name: "numComputers",
                             default: $scope.round(0.367*GFA/1000,2),
                             type: "number",
-                            title: "Number of Computers"
+                            title: "Number of Computers",
+                            required: "USA"
                         },
                         {
                             name: "numRezWashingMachines",
                             default: $scope.round(0.05757*GFA/1000,2),
                             type: "number",
-                            title: "Number of Residential Washing Machines"
+                            title: "Number of Residential Washing Machines",
+                            required: "USA"
                         },
                         {
                             name: "numCommWashingMachines",
                             default: $scope.round(0.04422*GFA/1000,2),
                             type: "number",
-                            title: "Number of Commercial Washing Machines"
+                            title: "Number of Commercial Washing Machines",
+                            required: "USA"
                         },
                         {
                             name: "numElectronicLifts",
                             default: $scope.round(0.0704*GFA/1000,2),
                             type: "number",
-                            title: "Number of Electronic Lifts"
+                            title: "Number of Electronic Lifts",
+                            required: "USA"
                         },
                         {
                             name: "numRefrUnits",
                             default: $scope.round(0.09065*GFA/1000,2),
                             type: "number",
-                            title: "Number of Refrigerator Units"
+                            title: "Number of Refrigerator Units",
+                            required: "USA"
                         },
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Heated"
+                            title: "Percent Heated",
+                            required: "USA"
                         },
                         {
                             name: "percentCooled",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
                             fields: $scope.buildingProperties.areaHVAC,
-                            title: "Percent Cooled"
+                            title: "Percent Cooled",
+                            required: "USA"
                         }
                     ],
                     Supermarket: [
@@ -522,55 +602,64 @@ define(['angular','./main'], function(angular) {
                             name: "weeklyOperatingHours",
                             default: 105,
                             type: "number",
-                            title: "Number of Weekly Operating Hours"
+                            title: "Number of Weekly Operating Hours",
+                            required: "all"
                         }, 
                         {
                             name: "numWorkersMainShift",
                             default: $scope.round(1.0*GFA/1000,2),
                             type: "number",
-                            title: "Number of Workers on Main Shift"
+                            title: "Number of Workers on Main Shift",
+                            required: "all"
                         },
                         {
                             name: "numCashRegisters",
                             default: $scope.round(0.38*GFA/1000,2),
-                            type: "number"
+                            type: "number",
+                            required: "Canada"
                         },
                         {
                             name: "numComputers",
                             default: $scope.round(0.51*GFA/1000,2),
                             type: "number",
-                            title: "Number of Computers"
+                            title: "Number of Computers",
+                            required: "Canada"
                         },
                         {
                             name: "lengthRefrFoodDisplayCases",
                             default: $scope.round(2.6*GFA/1000,2),
-                            type: "number"
+                            type: "number",
+                            required: "Canada"
                         },
                         {
                             name: "numRefrUnits",
                             default: $scope.round(0.25*GFA/1000,2),
                             type: "number",
-                            title: "Number of Refrigerator Units"
+                            title: "Number of Refrigerator Units",
+                            required: "USA"
                         },
                         {
                             name: "hasCooking",
                             default: true,
                             type: "checkbox",
-                            title: "Facility Has Cooking"
+                            title: "Facility Has Cooking",
+                            required: "USA"
                         },
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             fields: $scope.buildingProperties.areaHVAC,
                             type: "select",
-                            title: "Percent Heated"
+                            title: "Percent Heated",
+                            required: "USA"
                         },
                         {
                             name: "percentCooled",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             fields: $scope.buildingProperties.areaHVAC,
                             type: "select",
-                            title: "Percent Cooled"
+                            title: "Percent Cooled",
+                            required: "USA"
                         }
                     ],
                     WastewaterCenter: [
@@ -578,137 +667,166 @@ define(['angular','./main'], function(angular) {
                             name: "wastewaterInfluentBiologicalOxygenDemand",
                             default: 200.0,
                             type: "number",
-                            title: "Influent Biological Oxygen Demand"
+                            title: "Influent Biological Oxygen Demand",
+                            required: "USA"
                         },
                         {
                             name: "wastewaterEffluentBiologicalOxygenDemand",
                             default: 8.0,
                             type: "number",
-                            title: "Effluent Biological Oxygen Demand"
+                            title: "Effluent Biological Oxygen Demand",
+                            required: "USA"
                         },
                         {
                             name: "wastewaterAvgInfluentInflow",
                             default: null,
                             type: "number",
-                            title: "Wastewater Average Influent Inflow"
+                            title: "Wastewater Average Influent Inflow",
+                            required: "USA"
                         },
                         {
                             name: "wastewaterHasTrickleFiltration",
                             default: false,
                             type: "checkbox",
-                            title: "Has Trickle Filtration"
+                            title: "Has Trickle Filtration",
+                            required: "USA"
                         },
                         {
                             name: "wastewaterHasNutrientRemoval",
                             default:false,
                             type: "checkbox",
-                            title: "Has Nutrient Removal"
+                            title: "Has Nutrient Removal",
+                            required: "USA"
                         },
                         {
                             name: "wastewaterPlantDesignFlowRate",
                             default: null,
                             type: "number",
-                            title: "Plant Design Flow Rate"
+                            title: "Plant Design Flow Rate",
+                            required: "USA"
                         },
                         {
                             name: "wastewaterLoadFactor",
                             default: null,
                             type: "number",
-                            title: "Wastewater Load Factor"
+                            title: "Wastewater Load Factor",
+                            required: "USA"
                         }
 
 
                     ],
-                    "WorshipCenter": [
+                    WorshipCenter: [
                         {
                             name: "weeklyOperatingHours",
                             default: 33,
                             type: "number",
-                            title: "Number of Weekly Operating Hours"
+                            title: "Number of Weekly Operating Hours",
+                            required: "USA"
                         },
                         {
                             name: "isOpenAllWeekdays",
                             default: false,
                             type: "checkbox",
-                            title: "Is open All Weekdays"
+                            title: "Is open All Weekdays",
+                            required: "USA"
                         },
                         {
                             name: "seatingCapacity",
                             default: $scope.round(40.0*GFA/1000,2),
                             type: "number",
-                            title: "Seating Capacity"
+                            title: "Seating Capacity",
+                            required: "USA"
                         },
                         {
                             name: "numComputers",
                             default: $scope.round(0.2*GFA/1000,2),
                             type: "number",
-                            title: "Number of Computers"
+                            title: "Number of Computers",
+                            required: "USA"
                         },
                         {
                             name: "hasFoodPreparation",
                             default: false,
                             type: "checkbox",
-                            title: "Has Food Preparation"
+                            title: "Has Food Preparation",
+                            required: "USA"
                         },
                         {
                             name: "numRefrUnits",
                             default: $scope.round(0.018*GFA/1000,2),
                             type: "number",
-                            title: "Number of Refrigerator Units"
+                            title: "Number of Refrigerator Units",
+                            required: "USA"
                         },
                         {
                             name: "numWalkinRefrUnits",
                             default: 0.0,
                             type: "number",
-                            title: "Number of Walk-in Refrigeration Units"
+                            title: "Number of Walk-in Refrigeration Units",
+                            required: "USA"
                         },
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             fields: $scope.buildingProperties.areaHVAC,
                             type: "select",
-                            title: "Percent Heated"
+                            title: "Percent Heated",
+                            required: "USA"
                         },
                         {
                             name: "percentCooled",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             fields: $scope.buildingProperties.areaHVAC,
                             type: "select",
-                            title: "Percent Cooled"
+                            title: "Percent Cooled",
+                            required: "USA"
                         }
                     ],
-                    "Warehouse": [
+                    Warehouse: [
                         {
                             name: "weeklyOperatingHours",
                             default: 60,
                             type: "number",
-                            title: "Number of Weekly Operating Hours"
+                            title: "Number of Weekly Operating Hours",
+                            required: "USA"
                         },
                         {
                             name: "numWorkersMainShift",
                             default: $scope.round(0.59*GFA/1000,2),
                             type: "number",
-                            title: "Number of Workers on Main Shift"
+                            title: "Number of Workers on Main Shift",
+                            required: "USA"
                         }, 
                         {
                             name: "numWalkinRefrUnits",
                             default: 0.0,
                             type: "number",
-                            title: "Number of Walk-in Refrigeration Units"
+                            title: "Number of Walk-in Refrigeration Units",
+                            required: "USA"
                         }, 
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
-                            title: "Percent Heated"
+                            title: "Percent Heated",
+                            required: "USA"
                         },
                         {
                             name: "percentCooled",
                             default: $scope.buildingProperties.areaHVAC[10].id,
                             type: "select",
-                            title: "Percent Cooled"
+                            title: "Percent Cooled",
+                            required: "USA"
                         }
-                    ]
+                    ],
+                    DataCenter: [
+                        {
+                            name: "annualITEnergy",
+                            default: null,
+                            type: "number",
+                            title: "Annual IT Energy (kWh)"
+                        }
+                    ],
                     };
                 };
                 setPropertyModelFields(GFA);
