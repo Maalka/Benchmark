@@ -33,6 +33,10 @@ define(['angular','./main'], function(angular) {
                     $scope.model.valid = validity;
                 });
 
+                $scope.round = function(value, decimals) {
+                    return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+                };
+
                 //auto-populate default parameters by building type and country
                 $scope.$watch("propertyModel.defaultValues", function () {
 
@@ -84,52 +88,52 @@ define(['angular','./main'], function(angular) {
                         if(areaUnits==="mSQ"){GFA = GFA*10.7639;}
 
                         if(prop==="Hospital"){
-                            $scope.propertyModel.licensedBedCapacity = 0.69*GFA/1000;
-                            $scope.propertyModel.numStaffedBeds = 0.46*GFA/1000;
-                            $scope.propertyModel.numFTEWorkers = 2.6*GFA/1000;
-                            $scope.propertyModel.numWorkersMainShift = 1.32*GFA/1000;
+                            $scope.propertyModel.licensedBedCapacity = $scope.round(0.69*GFA/1000,2);
+                            $scope.propertyModel.numStaffedBeds = $scope.round(0.46*GFA/1000,2);
+                            $scope.propertyModel.numFTEWorkers = $scope.round(2.6*GFA/1000,2);
+                            $scope.propertyModel.numWorkersMainShift = $scope.round(1.32*GFA/1000,2);
                             $scope.propertyModel.numMRIMachines = 1;
                             $scope.propertyModel.hasLaundryFacility = true;
                             $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
                             $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
                         } else
                         if(prop==="Hotel"){
-                            $scope.propertyModel.numBedrooms = 1.95*GFA/1000;
-                            $scope.propertyModel.numWorkersMainShift = 0.32*GFA/1000;
+                            $scope.propertyModel.numBedrooms = $scope.round(1.95*GFA/1000,2);
+                            $scope.propertyModel.numWorkersMainShift = $scope.round(0.32*GFA/1000,2);
                             $scope.propertyModel.hasFoodPreparation = false;
-                            $scope.propertyModel.numRefrUnits = 0.023*GFA/1000;
+                            $scope.propertyModel.numRefrUnits = $scope.round(0.023*GFA/1000,2);
                             $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
                             $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
                         } else
                         if(prop==="K12School"){
                             $scope.propertyModel.gymFloorArea = 0.0;
                             $scope.propertyModel.isHighSchool = false;
-                            $scope.propertyModel.numWorkersMainShift = 0.77*GFA/1000;
-                            $scope.propertyModel.studentSeatingCapacity = 10.0*GFA/1000;
-                            $scope.propertyModel.numWalkinRefrUnits = 0.01*GFA/1000;
+                            $scope.propertyModel.numWorkersMainShift = $scope.round(0.77*GFA/1000,2);
+                            $scope.propertyModel.studentSeatingCapacity = $scope.round(10.0*GFA/1000,2);
+                            $scope.propertyModel.numWalkinRefrUnits = $scope.round(0.01*GFA/1000,2);
                             $scope.propertyModel.isOpenWeekends = false;
                             $scope.propertyModel.hasCooking = true;
-                            $scope.propertyModel.numComputers = 1.75*GFA/1000;
+                            $scope.propertyModel.numComputers = $scope.round(1.75*GFA/1000,2);
                             $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
                             $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
                         } else
                         if(prop==="MedicalOffice"){
                             $scope.propertyModel.weeklyOperatingHours = 65;
-                            $scope.propertyModel.numWorkersMainShift = 2.2*GFA/1000;
+                            $scope.propertyModel.numWorkersMainShift = $scope.round(2.2*GFA/1000,2);
                             $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
                             $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
                         } else
                         if(prop==="MultiFamily"){
-                            $scope.propertyModel.numRezUnits = 1.2*GFA/1000;
-                            $scope.propertyModel.numUnitsLowRise1to4 = 1.2*GFA/1000;
+                            $scope.propertyModel.numRezUnits = $scope.round(1.2*GFA/1000,2);
+                            $scope.propertyModel.numUnitsLowRise1to4 = $scope.round(1.2*GFA/1000,2);
                             $scope.propertyModel.numUnitsMidRise5to9 = 0.0;
                             $scope.propertyModel.numUnitsHighRise10plus = 0.0;
-                            $scope.propertyModel.numBedrooms = 1.4*GFA/1000;
+                            $scope.propertyModel.numBedrooms = $scope.round(1.4*GFA/1000,2);
                         } else
                         if(prop==="Office"){
                             $scope.propertyModel.weeklyOperatingHours = 65;
-                            $scope.propertyModel.numWorkersMainShift = 2.3*GFA/1000;
-                            $scope.propertyModel.numComputers = 2*GFA/1000;
+                            $scope.propertyModel.numWorkersMainShift = $scope.round(2.3*GFA/1000,2);
+                            $scope.propertyModel.numComputers = $scope.round(2*GFA/1000,2);
                             $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
                             $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
                         } else
@@ -141,34 +145,34 @@ define(['angular','./main'], function(angular) {
                         if(prop==="Retail"){
                             $scope.propertyModel.weeklyOperatingHours = 65;
                             $scope.propertyModel.numOpenClosedRefrCases = 0.0;
-                            $scope.propertyModel.numCashRegisters = 0.3*GFA/1000;
-                            $scope.propertyModel.numWorkersMainShift = 1.0*GFA/1000;
-                            $scope.propertyModel.numComputers = 0.2*GFA/1000;
+                            $scope.propertyModel.numCashRegisters = $scope.round(0.3*GFA/1000,2);
+                            $scope.propertyModel.numWorkersMainShift = $scope.round(1.0*GFA/1000,2);
+                            $scope.propertyModel.numComputers = $scope.round(0.2*GFA/1000,2);
                             $scope.propertyModel.numRefrUnits = 0.0;
                             $scope.propertyModel.numWalkinRefrUnits = 0.0;
                             $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
                             $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
                         } else
                         if(prop==="SeniorCare"){
-                            $scope.propertyModel.maxNumResidents = 2.374*GFA/1000;
-                            $scope.propertyModel.avgNumResidents = 2.075*GFA/1000;
-                            $scope.propertyModel.numRezUnits = 1.584*GFA/1000;
-                            $scope.propertyModel.numWorkersMainShift = 0.9523*GFA/1000;
-                            $scope.propertyModel.numComputers = 0.367*GFA/1000;
-                            $scope.propertyModel.numRezWashingMachines = 0.05757*GFA/1000;
-                            $scope.propertyModel.numCommWashingMachines = 0.04422*GFA/1000;
-                            $scope.propertyModel.numElectronicLifts = 0.0704*GFA/1000;
-                            $scope.propertyModel.numRefrUnits = 0.09065*GFA/1000;
+                            $scope.propertyModel.maxNumResidents = $scope.round(2.374*GFA/1000,2);
+                            $scope.propertyModel.avgNumResidents = $scope.round(2.075*GFA/1000,2);
+                            $scope.propertyModel.numRezUnits = $scope.round(1.584*GFA/1000,2);
+                            $scope.propertyModel.numWorkersMainShift = $scope.round(0.9523*GFA/1000,2);
+                            $scope.propertyModel.numComputers = $scope.round(0.367*GFA/1000,2);
+                            $scope.propertyModel.numRezWashingMachines = $scope.round(0.05757*GFA/1000,2);
+                            $scope.propertyModel.numCommWashingMachines = $scope.round(0.04422*GFA/1000,2);
+                            $scope.propertyModel.numElectronicLifts = $scope.round(0.0704*GFA/1000,2);
+                            $scope.propertyModel.numRefrUnits = $scope.round(0.09065*GFA/1000,2);
                             $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
                             $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
                         } else
                         if(prop==="Supermarket"){
                             $scope.propertyModel.weeklyOperatingHours = 105;
-                            $scope.propertyModel.numWorkersMainShift = 1.0*GFA/1000;
-                            $scope.propertyModel.numCashRegisters = 0.38*GFA/1000;
-                            $scope.propertyModel.numComputers = 0.51*GFA/1000;
-                            $scope.propertyModel.lengthRefrFoodDisplayCases = 2.6*GFA/1000;
-                            $scope.propertyModel.numRefrUnits = 0.25*GFA/1000;
+                            $scope.propertyModel.numWorkersMainShift = $scope.round(1.0*GFA/1000,2);
+                            $scope.propertyModel.numCashRegisters = $scope.round(0.38*GFA/1000,2);
+                            $scope.propertyModel.numComputers = $scope.round(0.51*GFA/1000,2);
+                            $scope.propertyModel.lengthRefrFoodDisplayCases = $scope.round(2.6*GFA/1000,2);
+                            $scope.propertyModel.numRefrUnits = $scope.round(0.25*GFA/1000,2);
                             $scope.propertyModel.hasCooking = true;
                             $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
                             $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
@@ -182,17 +186,17 @@ define(['angular','./main'], function(angular) {
                         if(prop==="WorshipCenter"){
                             $scope.propertyModel.weeklyOperatingHours = 33;
                             $scope.propertyModel.isOpenAllWeekdays = false;
-                            $scope.propertyModel.seatingCapacity = 40.0*GFA/1000;
-                            $scope.propertyModel.numComputers = 0.2*GFA/1000;
+                            $scope.propertyModel.seatingCapacity = $scope.round(40.0*GFA/1000,2);
+                            $scope.propertyModel.numComputers = $scope.round(0.2*GFA/1000,2);
                             $scope.propertyModel.hasFoodPreparation = false;
-                            $scope.propertyModel.numRefrUnits = 0.018*GFA/1000;
+                            $scope.propertyModel.numRefrUnits = $scope.round(0.018*GFA/1000,2);
                             $scope.propertyModel.numWalkinRefrUnits = 0.0;
                             $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[10].id;
                             $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[10].id;
                         } else
                         if(prop==="Warehouse"){
                             $scope.propertyModel.weeklyOperatingHours = 60;
-                            $scope.propertyModel.numWorkersMainShift = 0.59*GFA/1000;
+                            $scope.propertyModel.numWorkersMainShift = $scope.round(0.59*GFA/1000,2);
                             $scope.propertyModel.numWalkinRefrUnits = 0.0;
                             $scope.propertyModel.percentHeated =  $scope.buildingProperties.areaHVAC[5].id;
                             $scope.propertyModel.percentCooled =  $scope.buildingProperties.areaHVAC[2].id;
