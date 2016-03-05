@@ -34,17 +34,17 @@
       
     },
     paths: {
-      'requirejs': ['../lib/requirejs/require'],
-      'jquery': ['../lib/jquery/jquery'],
-      'angular': ['../lib/angularjs/angular'],
-      'angular-route': ['../lib/angularjs/angular-route'],
-      'angular-cookies': ['../lib/angularjs/angular-cookies'],
+      'requirejs': '../lib/requirejs/require',
+      'jquery': '../lib/jquery/jquery',
+      'angular': '../lib/angularjs/angular',
+      'angular-route': '../lib/angularjs/angular-route',
+      'angular-cookies': '../lib/angularjs/angular-cookies',
       'highcharts-core': '../lib/highstock/highstock',
       'highcharts-more': '../lib/highcharts/highcharts-more',
       'highcharts': './highcharts-theme',
       'matchmedia-ng': '../lib/matchmedia-ng/matchmedia-ng',
-      'semantic': ['../lib/semantic-ui/semantic'],
-      'jsRoutes': ['/jsroutes'],
+      'semantic': '../lib/semantic-ui/semantic',
+      'jsRoutes': '/jsroutes',
       'semantic-daterangepicker': './semantic-ui-daterangepicker/daterangepicker',
       'moment': './semantic-ui-daterangepicker/moment'
     }
