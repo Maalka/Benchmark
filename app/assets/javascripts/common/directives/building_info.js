@@ -66,8 +66,6 @@ define(['angular','./main'], function(angular) {
                     }
                 };
                 $scope.isShown = function (field) {
-                    console.log(field);
-                    console.log($scope.model.country);
                     if (field.required === undefined) {
                         return true;
                     } else if (field.required === $scope.model.country) {

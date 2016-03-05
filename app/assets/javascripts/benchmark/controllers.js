@@ -4,7 +4,7 @@
 //define(["./test/sample_response_test_data"], function(sampleTestData) {
 define(['angular', 'matchmedia-ng'], function(angular) {
   'use strict';
-  var DashboardCtrl = function($rootScope, $scope, $window, $q, matchmedia, benchmarkServices) {
+  var DashboardCtrl = function($rootScope, $scope, $window, $q, $log, matchmedia, benchmarkServices) {
 
     $rootScope.pageTitle = "2030 Baseline";
     //The model that will be submitted for analysis
@@ -43,7 +43,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         } else {
             $scope.mainColumnWidth = "eight wide column";
         }
-        console.log($scope.media);
     };
     setMedia();
     angular.element($window).bind("resize", function () {
@@ -540,10 +539,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             var returnValue;
 
             if(sourceEnergies.indexOf(undefined) === -1 && siteEnergies.indexOf(undefined) === -1) {
-                console.log("Ratio from energy input");
+                $log.info("Ratio from energy input");
                 returnValue = siteEnergies[0] / sourceEnergies[0];
             } else {
-                console.log("Ratio from largest prop size");
+                $log.info("Ratio from largest prop size");
                 returnValue = sourceSiteRatios[propSizes.indexOf(Math.max.apply(Math, propSizes))];
             }
             return returnValue;
@@ -553,7 +552,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             var returnValue;
 
             if(sourceEnergies.indexOf(undefined) === -1 && siteEnergies.indexOf(undefined) === -1) {
-                console.log("Mixed EUI from Energy Input");
+                $log.info("Mixed EUI from Energy Input");
                 returnValue = sourceEnergies[0] / sumPropSize;
             }
             return returnValue;
@@ -729,7 +728,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
     $scope.submitErrors = function () {
         for (var i = 0; i < $scope.forms.baselineForm.$error.required.length; i++){
-            console.log($scope.forms.baselineForm.$error.required[i].$name);
+            $log.info($scope.forms.baselineForm.$error.required[i].$name);
         }
     };
 
@@ -778,13 +777,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
                 }
-                else {console.log('Error in ' + $scope.propTypes[i].type);}
+                else {$log.info('Error in ' + $scope.propTypes[i].type);}
             }
         }else {
             $scope.submitErrors();
         }
 
-        console.log($scope.propList);
+        $log.info($scope.propList);
 
         if ($scope.propList.length !== 0){$scope.computeBenchmarkResult();}
         else{$scope.benchmarkResult = null;}
@@ -792,7 +791,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     };
 
   };
-  DashboardCtrl.$inject = ['$rootScope', '$scope', '$window', '$q', 'matchmedia', 'benchmarkServices'];
+  DashboardCtrl.$inject = ['$rootScope', '$scope', '$window', '$q', '$log', 'matchmedia', 'benchmarkServices'];
   return {
     DashboardCtrl: DashboardCtrl
   };

@@ -12,8 +12,6 @@ version := "0.0.1"
 scalaVersion in ThisBuild := "2.11.6"
 
 
-//lazy val squants = ProjectRef(file("/Users/rimukas/MaalkaLocal/squants/squants/"),"squantsJVM")
-
 lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
 lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, SbtNativePackager).dependsOn(squants)
 

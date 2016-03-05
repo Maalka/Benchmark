@@ -25,8 +25,12 @@
         deps: ['jquery'],
         exports: 'highcharts-core'
       },
-      'highcharts': {
+      'highcharts-more': {
         deps: ['highcharts-core'],
+        exports: 'highcharts-more'
+      },
+      'highcharts': {
+        deps: ['highcharts-more'],
         exports: 'highcharts'
       },
       'semantic': ['angular'],
