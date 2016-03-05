@@ -40,7 +40,7 @@
 }
 
 /* Tablet */
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+@media only screen and (min-width: 768px) and (max-width: 869px) {
   .ui.container {
     width: 723px;
     margin-left: auto !important;
@@ -58,20 +58,20 @@
 }
 
 /* Small Monitor */
-@media only screen and (min-width: 992px) and (max-width: 1199px) {
+@media only screen and (min-width: 870px) and (max-width: 1199px) {
   .ui.container {
-    width: 933px;
+    width: 811px;
     margin-left: auto !important;
     margin-right: auto !important;
   }
   .ui.grid.container {
-    width: calc( 933px  +  2rem ) !important;
+    width: calc( 811px  +  2rem ) !important;
   }
   .ui.relaxed.grid.container {
-    width: calc( 933px  +  3rem ) !important;
+    width: calc( 811px  +  3rem ) !important;
   }
   .ui.very.relaxed.grid.container {
-    width: calc( 933px  +  5rem ) !important;
+    width: calc( 811px  +  5rem ) !important;
   }
 }
 

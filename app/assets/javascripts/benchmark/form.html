@@ -44,7 +44,7 @@
             </div>
         </div>
         <div ng-include src="'assets/javascripts/common/partials/DegreeDays.html'"></div>
-        <div class="inline fields required">
+        <div class="inline fields">
             <div class="field">
                 <div class="ui radio checkbox">
                     <input type="radio" id="project-cb-new" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"
@@ -57,7 +57,7 @@
                 <div class="ui radio checkbox">
                     <input type="radio" id="project-cb-existing" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"
                        ng-value='false'>
-                    <label for="project-cb-existing">Existing Building (&lt;40% New)</label>
+                    <label for="project-cb-existing">Existing Building <sup style="font-size: 10px">&lt; 40% New</sup></label>
 
                 </div>
             </div>

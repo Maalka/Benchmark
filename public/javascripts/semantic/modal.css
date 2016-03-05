@@ -205,7 +205,7 @@
     margin: 0em 0em 0em -44%;
   }
 }
-@media only screen and (min-width: 992px) {
+@media only screen and (min-width: 870px) {
   .ui.modal {
     width: 850px;
     margin: 0em 0em 0em -425px;
@@ -225,7 +225,7 @@
 }
 
 /* Tablet and Mobile */
-@media only screen and (max-width: 991px) {
+@media only screen and (max-width: 869px) {
   .ui.modal > .header {
     padding-right: 2.25rem;
   }
@@ -328,7 +328,7 @@
 }
 
 /* Tablet and Mobile */
-@media only screen and (max-width: 991px) {
+@media only screen and (max-width: 869px) {
   .ui.basic.modal > .close {
     color: #FFFFFF;
   }
@@ -388,7 +388,7 @@
 .undetached.dimmable.dimmed > .pusher {
   z-index: auto;
 }
-@media only screen and (max-width: 991px) {
+@media only screen and (max-width: 869px) {
   .modals.dimmer .ui.scrolling.modal {
     margin-top: 1rem !important;
     margin-bottom: 1rem !important;
@@ -442,7 +442,7 @@
     margin: 0em 0em 0em -35.2%;
   }
 }
-@media only screen and (min-width: 992px) {
+@media only screen and (min-width: 870px) {
   .ui.small.modal {
     width: 680px;
     margin: 0em 0em 0em -340px;
@@ -477,7 +477,7 @@
     margin: 0em 0em 0em -44%;
   }
 }
-@media only screen and (min-width: 992px) {
+@media only screen and (min-width: 870px) {
   .ui.large.modal {
     width: 1020px;
     margin: 0em 0em 0em -510px;

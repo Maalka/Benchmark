@@ -342,7 +342,7 @@
 }
 
 /* Tablet Only */
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+@media only screen and (min-width: 768px) and (max-width: 869px) {
   .ui.items > .item {
     margin: 1em 0em;
   }

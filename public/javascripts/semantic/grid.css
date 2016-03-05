@@ -190,7 +190,7 @@
     margin-right: 0em;
   }
 }
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+@media only screen and (min-width: 768px) and (max-width: 869px) {
   .ui.page.grid {
     width: auto;
     margin-left: 0em;
@@ -199,7 +199,7 @@
     padding-right: 2em;
   }
 }
-@media only screen and (min-width: 992px) and (max-width: 1199px) {
+@media only screen and (min-width: 870px) and (max-width: 1199px) {
   .ui.page.grid {
     width: auto;
     margin-left: 0em;
@@ -568,7 +568,7 @@
 }
 
 /* Tablet Sizing Combinations */
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+@media only screen and (min-width: 768px) and (max-width: 869px) {
   .ui.grid > .row > [class*="one wide tablet"].column,
   .ui.grid > .column.row > [class*="one wide tablet"].column,
   .ui.grid > [class*="one wide tablet"].column,
@@ -668,7 +668,7 @@
 }
 
 /* Computer/Desktop Sizing Combinations */
-@media only screen and (min-width: 992px) {
+@media only screen and (min-width: 870px) {
   .ui.grid > .row > [class*="one wide computer"].column,
   .ui.grid > .column.row > [class*="one wide computer"].column,
   .ui.grid > [class*="one wide computer"].column,
@@ -1530,7 +1530,7 @@
 }
 
 /* Tablet */
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+@media only screen and (min-width: 768px) and (max-width: 869px) {
   .ui[class*="tablet reversed"].grid,
   .ui[class*="tablet reversed"].grid > .row,
   .ui.grid > [class*="tablet reversed"].row {
@@ -1576,7 +1576,7 @@
 }
 
 /* Computer */
-@media only screen and (min-width: 992px) {
+@media only screen and (min-width: 870px) {
   .ui[class*="computer reversed"].grid,
   .ui[class*="computer reversed"].grid > .row,
   .ui.grid > [class*="computer reversed"].row {
@@ -1627,7 +1627,7 @@
 
 
 /* Tablet Only */
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+@media only screen and (min-width: 768px) and (max-width: 869px) {
   .ui.doubling.grid {
     width: auto;
   }
@@ -1921,7 +1921,7 @@
 }
 
 /* Tablet Only Hide */
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+@media only screen and (min-width: 768px) and (max-width: 869px) {
   .ui[class*="mobile only"].grid.grid.grid:not(.tablet),
   .ui.grid.grid.grid > [class*="mobile only"].row:not(.tablet),
   .ui.grid.grid.grid > [class*="mobile only"].column:not(.tablet),
@@ -1949,7 +1949,7 @@
 }
 
 /* Computer Only Hide */
-@media only screen and (min-width: 992px) and (max-width: 1199px) {
+@media only screen and (min-width: 870px) and (max-width: 1199px) {
   .ui[class*="mobile only"].grid.grid.grid:not(.computer),
   .ui.grid.grid.grid > [class*="mobile only"].row:not(.computer),
   .ui.grid.grid.grid > [class*="mobile only"].column:not(.computer),

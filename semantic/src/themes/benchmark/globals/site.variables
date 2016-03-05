@@ -28,7 +28,13 @@
 @lineHeight  			: 1.1em;
 @h1 					: 2.2rem;
 
-
+/*
+@mobileBreakpoint            : 320px;
+@tabletBreakpoint            : 320px;
+@computerBreakpoint          : 1200px;
+@largeMonitorBreakpoint      : 1200px;
+@widescreenMonitorBreakpoint : 1920px;
+*/
 /* form stuff */
 
 @inputVerticalPadding   : @relative5px;
