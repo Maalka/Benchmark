@@ -1,49 +1,90 @@
 <form class="ui form" ng-class="{'error': !forms.baselineForm.$valid}" name="forms.baselineForm" ng-cloak>
     <h3 class="ui header"><i class="globe icon"></i>ABOUT YOUR DESIGN PROJECT</h4>
-    <div class="ui segment about">
-        <div class="inline fields">
-            <div class="sixteen wide field required">
-                <label class="static">Building Name</label>
-                <input type="text" ng-model="auxModel.buildingName"
-                       required name="buildingName" min="0" placeholder="Building Name">
+    <div class="ui segment">
+        <div class="ui grid">
+            <div class="five wide column">
+                <label>Building Name</label>
             </div>
-        </div>
-        <div class="inline fields">
-            <div class="sixteen wide field required">
-                <label class="static">Country</label>
-                <select class="ui dropdown search"
-                        ng-model="auxModel.country"
-                        ng-options="item.id as item.name for item in geographicProperties.country"
-                        required
-                        name="country">
-                        <option value="">Select</option>
-                </select>
+            <div class="eleven wide column">
+                <div class="inline fields">
+                    <div class="sixteen wide field required">
+                        <input type="text" ng-model="auxModel.buildingName"
+                               required name="buildingName" min="0" placeholder="Building Name">
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="inline fields required">
-            <label class="static">City | State/Prov.</label>
-            <div class="nine wide field">
-                <input type="text" ng-model="auxModel.city"
-                     required name="city" placeholder="City">
+            <div class="five wide column">
+                <label>Country</label>
             </div>
-            <div class="seven wide field">
-                <select class="ui dropdown search"
-                    ng-model="auxModel.state"
-                    ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: auxModel.country}"
-                    required
-                    name="state">
-                    <option value="">Select</option>
-                </select>
+            <div class="eleven wide column">
+                <div class="inline fields">
+                    <div class="sixteen wide field required">
+                        <select class="ui dropdown search"
+                                ng-model="auxModel.country"
+                                ng-options="item.id as item.name for item in geographicProperties.country"
+                                required
+                                name="country">
+                                <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="inline fields">
-            <div class="sixteen wide field required">
+            <div class="five wide column">
+                <label>City | State/Prov.</label>
+            </div>
+            <div class="eleven wide column">
+                <div class="inline fields required">
+                    <div class="nine wide field">
+                        <input type="text" ng-model="auxModel.city"
+                             required name="city" placeholder="City">
+                    </div>
+                    <div class="seven wide field">
+                        <select class="ui dropdown search"
+                            ng-model="auxModel.state"
+                            ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: auxModel.country}"
+                            required
+                            name="state">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="five wide column">
                 <label class="static">Postal Code</label>
-                <input type="text" ng-model="auxModel.postalCode"
-                     required name="postalCode" min="0" placeholder="Postal Code">
+            </div>
+            <div class="eleven wide column">
+                <div class="inline fields">
+                    <div class="sixteen wide field required">
+                        <input type="text" ng-model="auxModel.postalCode"
+                             required name="postalCode" min="0" placeholder="Postal Code">
+                    </div>
+                </div>
+            </div>
+            <div class="five wide column">
+                <label class="static">Degree Days
+                    <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" 
+                        target="_blank"><i class="large circle help icon"></i></a>
+                </label>
+            </div>
+            <div class="eleven wide column">
+                <div class="inline fields">
+                    <div class="two wide field">
+                        <label>HDD</label>
+                    </div>
+                    <div class="five wide field required">
+                        <input type="number" ng-model="auxModel.HDD"
+                               required name="HDD" min="0" placeholder="HDD">
+                    </div>
+                    <div class="two wide field">
+                        <label>CDD</label>
+                    </div>                    
+                    <div class="four wide field required">
+                        <input type="number" ng-model="auxModel.CDD"
+                       required name="CDD" min="0">
+                    </div>
+                </div>
             </div>
         </div>
-        <div ng-include src="'assets/javascripts/common/partials/DegreeDays.html'"></div>
         <div class="inline fields">
             <div class="field">
                 <div class="ui radio checkbox">
