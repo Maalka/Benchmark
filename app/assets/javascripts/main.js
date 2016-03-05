@@ -43,7 +43,7 @@
       'highcharts-more': '../lib/highcharts/highcharts-more',
       'highcharts': './highcharts-theme',
       'matchmedia-ng': '../lib/matchmedia-ng/matchmedia-ng',
-      'semantic': '../lib/semantic-ui/semantic',
+      'semantic': './semantic/semantic',
       'jsRoutes': '/jsroutes',
       'semantic-daterangepicker': './semantic-ui-daterangepicker/daterangepicker',
       'moment': './semantic-ui-daterangepicker/moment'
