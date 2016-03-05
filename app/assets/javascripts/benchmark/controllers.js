@@ -28,8 +28,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     // check the media to handel the ng-if media statements
     // it turns out that form elements do not respect "display: none" 
     // and need to be removed from the dom
-    var setMedia = function (){ 
-        if (matchmedia.isPhone()) {
+    var setMedia = function (){
+        if (matchmedia.isPrint()) {
+            $scope.media = "print";
+            $scope.mainColumnWidth = "eight wide column";
+        } else if (matchmedia.isPhone()) {
             $scope.media = "phone";
             $scope.mainColumnWidth = "eight wide column";
         } else if (matchmedia.isTablet()) {
@@ -37,8 +40,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.mainColumnWidth = "eight wide column";
         } else if (matchmedia.isDesktop()) {
             $scope.media = "desktop";
-            $scope.mainColumnWidth = "eight wide column";
-        } else if (matchmedia.isPrint()) {
             $scope.mainColumnWidth = "eight wide column";
         } else {
             $scope.mainColumnWidth = "eight wide column";

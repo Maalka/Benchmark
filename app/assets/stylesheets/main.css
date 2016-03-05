@@ -25,3 +25,6 @@ div.desktop-padding-right {
 	padding-right: 13% !important;
 	padding-left: 1em !important;
 }
+div.print-header {
+	padding-left: 1em !important;
+}

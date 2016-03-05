@@ -9,7 +9,7 @@
                <h1 class="ui inverted huge header">ENERGY<br>
                <b>TARGET & RATING TOOL</b>
         </div>
-        <div class="black seven wide column computer only tablet only" style="padding-top:0;padding-bottom:0">
+        <div class="black seven wide column computer only tablet only" ng-class="{'print-header': media === 'print'}" style="padding-top:0;padding-bottom:0">
             <h1 class="ui inverted huge header" style="position:absolute;bottom:-6px">
                ENERGY <b>TARGET & RATING TOOL</b>
             </h1>
@@ -26,7 +26,7 @@
 <div style="background:white">
     <div class="ui stackable grid container" style="padding-top:14px">
         <div class="two wide column computer only tablet only"></div>
-        <div class="fourteen wide column">
+        <div class="fourteen wide column" ng-class="{'print-header': media === 'print'}">
             Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
             existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
             see the User Guide above.
