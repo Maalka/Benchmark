@@ -1,4 +1,4 @@
-<form class="ui form" ng-class="{'error': !forms.baselineForm.$valid}" name="forms.baselineForm" ng-cloak>
+<form class="ui form" novalidate ng-class="{'error': !forms.baselineForm.$valid}" name="forms.baselineForm" ng-cloak>
     <h3 class="ui header"><i class="globe icon"></i>ABOUT YOUR DESIGN PROJECT</h4>
     <div class="ui segment">
         <div class="ui grid">
@@ -274,7 +274,7 @@
                     <div class="field">
                          <select class="ui dropdown"
                             ng-model="energyEntry.energyUnits"
-                            ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: auxModel.energies.energyType}">
+                            ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: energyEntry.energyType}">
                         </select>
                     </div>
                 </div>
@@ -284,8 +284,9 @@
                     </div>
                 </div>
                 <div ng-repeat-end class="one wide column">
-                    <div class="ui large labeled button" ng-click="removeRow(energyEntry.energyType,
-                         energyEntry.energyUnits,energyEntry.energyUse)" style="margin-top:.4em;">
+                    <div class="ui large labeled button" 
+                        ng-click="removeRow(energyEntry.energyType, energyEntry.energyUnits,energyEntry.energyUse)" 
+                        style="margin-top:.4em;">
                         <i class="minus red circle icon"></i>
                     </div>
                 </div>

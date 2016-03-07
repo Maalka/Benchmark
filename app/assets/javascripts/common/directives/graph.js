@@ -79,7 +79,6 @@ define(['angular','highcharts', './main'], function(angular) {
             // flags don't seem to work on series where the axis is reversed
             var maxX = 120;
             var minX = -20;
-            /*
             var getBRByKey = function (key) {
               var r = $scope.benchmarkResult.filter(function (v) { 
                 return v[key];
@@ -90,7 +89,7 @@ define(['angular','highcharts', './main'], function(angular) {
                 return undefined;
               }
             };
-            */
+
             var baselineEUI;
             var labels = {};
             var fixX = function(x) {
@@ -106,7 +105,7 @@ define(['angular','highcharts', './main'], function(angular) {
               return  parseInt(zepi / 100 * baselineEUI);
             };
             var plot = function () {
-              baselineEUI = 100; //getBRByKey("medianSiteEUI");
+              baselineEUI = getBRByKey("medianSiteEUI");
               var options = {
                   chart: {
                       margin: [75, 0, 75, 0],
@@ -114,11 +113,11 @@ define(['angular','highcharts', './main'], function(angular) {
                       events: {
                         'load': function () {
                           loadMarkers('bottom', this, this.series[6], 55, 45);
-                          loadMarkers('top', this, this.series[3], 55, 0);                          
+                          loadMarkers('top', this, this.series[3], 55, 0);
                         },
                         'redraw': function () {
                           loadMarkers('bottom', this, this.series[6], 55, 45);
-                          loadMarkers('top', this, this.series[3], 55, 0);                          
+                          loadMarkers('top', this, this.series[3], 55, 0);
                         }
                       }
                   },
@@ -211,8 +210,8 @@ define(['angular','highcharts', './main'], function(angular) {
                     data: bars
                   }]
                     .concat(createMarker("boxTop.png", "boxBottom.png", "Baseline", [-70, -41, -100], 100, "black", "zepi"))
-                    .concat(createMarker("ratingTop.png", "ratingBottom.png", "Rating", [-30, -2, 22], 7, "white")) //getBRByKey("actualZEPI"), "white"))
-                    .concat(createMarker("targetTop.png", "targetBottom.png", "Target", [-70, -41, -100], 80, "white", "zepi")) // getBRByKey("percentBetterZEPI"), "white", "zepi"))
+                    .concat(createMarker("ratingTop.png", "ratingBottom.png", "Rating", [-30, -2, 22], getBRByKey("actualZEPI"), "white"))
+                    .concat(createMarker("targetTop.png", "targetBottom.png", "Target", [-70, -41, -100], getBRByKey("percentBetterZEPI"), "white", "zepi"))
                     .concat(createMarker("boxTop.png", "boxBottom.png", "Net Zero", [-70, -41, -100], 0, "black", "zepi"))
               };
               var loadMarkers = function(tag, obj, series, xOff, yOff) { 
