@@ -2,7 +2,7 @@
 package models
 
 
-
+import models.CountryBuildingType
 import squants.energy.{TBtus, Gigajoules, KBtus, Energy}
 import squants.space._
 import scala.concurrent.Future
@@ -41,7 +41,7 @@ case class EUIMetrics(parameters: JsValue) {
   val sourceSiteRatio: Future[Double] = siteToSourceRatio
 
 
-  val expectedSourceEUI:Future[Double] = {
+  val expectedSourceEnergy:Future[Energy] = {
     for {
       expectedEUI <- computeExpectedEUI(targetBuilding)
     } yield expectedEUI
@@ -218,12 +218,17 @@ case class EUIMetrics(parameters: JsValue) {
                                parkingEnergy:Energy):Future[Energy] = Future(sourceTotalEnergy - poolEnergy - parkingEnergy)
 
 
-  def computeExpectedEUI[T](targetBuilding: T): Future[Double] = Future{
-    targetBuilding match {
-      case a: ResidenceHall => exp(a.expectedEnergy) / a.buildingSize
-      case a: MedicalOffice => exp(a.expectedEnergy) / a.buildingSize
-      case a: GenericBuilding => throw new Exception("Cannot compute Expected EUI - Generic Building: No Algorithm!")
-      case a: BaseLine => a.expectedEnergy
+  def computeExpectedEUI[T](targetBuilding: T): Future[Energy] = Future{
+    val unitlessEnergy = targetBuilding match {
+      case a: ResidenceHall => exp(a.expectedEnergy)
+      case a: MedicalOffice => exp(a.expectedEnergy)
+      case a: GenericBuilding => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
+      case a: BaseLine => a.expectedEnergy * a.buildingSize
+    }
+    parameters.asOpt[CountryBuildingType] match {
+      case Some(CountryBuildingType("USA", _)) => KBtus(unitlessEnergy)
+      case Some(CountryBuildingType("Canada", _)) => Gigajoules(unitlessEnergy)
+      case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
     }
   }
 
@@ -1128,7 +1133,6 @@ object SeniorCare {
  * @param numCashRegisters
  * @param numWorkersMainShift
  * @param numComputers
- * @param numRefrUnits
  * @param numWalkinRefrUnits
  * @param percentHeated
  * @param percentCooled

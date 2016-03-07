@@ -100,6 +100,9 @@
       "buildingClass": "class models.Office"
     },
     {
+      "predictedSourceEnergy": 58373164.6189
+    },
+    {
       "directSiteEmissions": [
         {
           "grid": 0
