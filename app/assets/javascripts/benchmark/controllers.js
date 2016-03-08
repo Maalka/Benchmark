@@ -759,10 +759,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         }
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 071b56d24d984130901d1711cdd13415fffc31ba
         if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){
                 if($scope.propTypes[i].valid === true){
@@ -778,15 +775,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
-<<<<<<< HEAD
+
                     if($scope.energies.length===0){
                         $scope.propTypes[i].propertyModel.energies=null;
                     } else {
                         $scope.propTypes[i].propertyModel.energies=$scope.energies;
                     }
-=======
-                    if($scope.energies.length===0){$scope.propTypes[i].propertyModel.energies=null;} else {$scope.propTypes[i].propertyModel.energies=$scope.energies;}
->>>>>>> 071b56d24d984130901d1711cdd13415fffc31ba
+
                 }
                 else {$log.info('Error in ' + $scope.propTypes[i].type);}
             }
