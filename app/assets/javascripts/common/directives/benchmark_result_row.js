@@ -69,7 +69,8 @@ define(['angular','./main'], function(angular) {
           }
           scope.resultColumns = columns;
 
-          scope.title = scope.field + " (" + scope.units + ")";
+          scope.title = scope.field;
+          scope.subTitle =  scope.units;
         });
       }
     };

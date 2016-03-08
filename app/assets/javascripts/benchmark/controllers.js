@@ -91,9 +91,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     //display errors when present
     $scope.addEnergiesRow = function(){
 
-        if(!$scope.auxModel.energies) {$scope.auxModel.energies = {};}
+        if(!$scope.auxModel.energies) {
+            $scope.auxModel.energies = {};
+        }
 
-        if($scope.energies===null){$scope.energies=[];}
+        if($scope.energies===null){
+            $scope.energies=[];
+        }
 
         if ($scope.forms.baselineForm.energyType.$valid && $scope.auxModel.energies.energyType &&
             $scope.forms.baselineForm.energyUnits.$valid && $scope.auxModel.energies.energyUnits &&
@@ -105,8 +109,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                                     'energyUse':$scope.auxModel.energies.energyUse,
                                     'energyRate':$scope.auxModel.energies.energyRate || null});
 
+            $scope.auxModel.energies = {};
             $scope.showEnergyTable = true;
-
         }
     };
 

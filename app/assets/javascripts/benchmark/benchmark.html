@@ -33,14 +33,17 @@
         </div>
         <!-- setup the response grids -->
         <!--<div class="two wide column" ng-if="media === 'desktop'"></div>-->
-        <div class="{{ mainColumnWidth }}" 
+        <div class="eight wide column" 
             ng-class="{'desktop-padding-left': media === 'desktop'}"
             id="data-input">
             <div class="ui hidden divider"></div>
             <div ng-include src="'assets/javascripts/benchmark/form.html'">Not Defined</div>
+            <div class="ui basic segment right aligned">
+                <h3 class="ui header"><a href ng-click="submit()">Compute Target <i class="arrow right icon"></i> </a></h3>
+            </div>
         </div>
 
-        <div class="{{ mainColumnWidth }}" 
+        <div class="eight wide column" 
             ng-class="{'desktop-padding-right': media === 'desktop'}"
             element="'#data-input'">
             <div class="ui hidden divider"></div>

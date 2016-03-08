@@ -28,3 +28,7 @@ div.desktop-padding-right {
 div.print-header {
 	padding-left: 2em !important;
 }
+div.entry {
+	height: 700px;
+	overflow-y: scroll;
+}
