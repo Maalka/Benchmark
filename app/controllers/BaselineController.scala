@@ -74,7 +74,9 @@ trait BaselineActions {
 
       "sourceEnergy", "siteEnergy", "poolEnergy", "parkingEnergy", "totalSourceEnergyNoPoolNoParking",
 
-      "buildingSize", "sourceSiteRatio", "buildingClass", "directSiteEmissions", "indirectSiteEmissions", "totalSiteEmissions")
+      "buildingSize", "sourceSiteRatio", "buildingClass", "predictedSourceEnergy",
+
+      "directSiteEmissions", "indirectSiteEmissions", "totalSiteEmissions")
 
     val EUIConversionConstant:Double = {
       (energyCalcs.country, energyCalcs.reportingUnits) match {
@@ -143,6 +145,7 @@ trait BaselineActions {
       getBaseline.buildingGFA.map(api(_,GFAConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
       getBaseline.sourceSiteRatio.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       getBaseline.getBuildingClass.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.expectedSourceEnergy.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       emissionCalcs.getDirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       emissionCalcs.getIndirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},

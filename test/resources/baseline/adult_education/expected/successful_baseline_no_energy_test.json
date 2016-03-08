@@ -40,6 +40,9 @@
       "totalSourceEnergyNoPoolNoParking": "Could not read provided energy list"
     },
     {
+      "predictedSourceEnergy": "Cannot compute Expected Energy - Generic Building: No Algorithm!"
+    },
+    {
       "directSiteEmissions": "Could not read provided energy list"
     },
     {

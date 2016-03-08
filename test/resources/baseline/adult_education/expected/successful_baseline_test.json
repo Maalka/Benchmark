@@ -17,6 +17,9 @@
     },
     {
       "percentBetterES": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
+    },
+    {
+      "predictedSourceEnergy": "Cannot compute Expected Energy - Generic Building: No Algorithm!"
     }
   ],
   "values": [

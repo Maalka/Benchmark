@@ -44,10 +44,7 @@ define(['angular','./main'], function(angular) {
                         if( $scope.propertyModel.GFA && $scope.propertyModel.areaUnits) {
                             $scope.setDefaults();
                         } else {
-                            if( $scope.propertyModel.GFA ){
-                                $scope.GFARequired = true;
-                            }
-                            $scope.propertyModel.defaultValues = false;
+                        $scope.propertyModel.defaultValues = false;
                         }
                     } else {
                         $scope.clearParams();
@@ -83,13 +80,11 @@ define(['angular','./main'], function(angular) {
                 $scope.$watch("propertyModel.GFA", function () {
 
                     if($scope.propertyModel.GFA && $scope.propertyModel.areaUnits){
-                        $scope.GFARequired = false;
                         if($scope.propertyModel.defaultValues){$scope.setDefaults();}
                     }
                 });
                 $scope.$watch("propertyModel.areaUnits", function () {
                     if($scope.propertyModel.GFA && $scope.propertyModel.areaUnits){
-                        $scope.GFARequired = false;
                         if($scope.propertyModel.defaultValues===true){$scope.setDefaults();}
                     }
                 });
@@ -863,10 +858,11 @@ define(['angular','./main'], function(angular) {
                         GFA = $scope.propertyModel.GFA;
                         var areaUnits = $scope.propertyModel.areaUnits;
 
-                        setPropertyModelFields(GFA);
+
                         if( areaUnits === "mSQ" ) {
                             GFA = GFA*10.7639;
                         }
+                        setPropertyModelFields(GFA);
 
                         // set the defaults
                         $scope.propertyModelFields[prop].forEach(function (v){
