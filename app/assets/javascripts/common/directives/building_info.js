@@ -654,10 +654,10 @@ define(['angular','./main'], function(angular) {
                             required: "Canada"
                         },
                         {
-                            name: "numRefrUnits",
+                            name: "numWalkinRefrUnits",
                             default: $scope.round(0.25*GFA/1000,2),
                             type: "number",
-                            title: "Number of Refrigerator Units",
+                            title: "Number of Walk-in Refrigerator Units",
                             required: "USA"
                         },
                         {
@@ -829,6 +829,7 @@ define(['angular','./main'], function(angular) {
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[10].id,
+                            fields: $scope.buildingProperties.areaHVAC,
                             type: "select",
                             title: "Percent Heated",
                             required: "USA"
@@ -836,6 +837,7 @@ define(['angular','./main'], function(angular) {
                         {
                             name: "percentCooled",
                             default: $scope.buildingProperties.areaHVAC[10].id,
+                            fields: $scope.buildingProperties.areaHVAC,
                             type: "select",
                             title: "Percent Cooled",
                             required: "USA"
