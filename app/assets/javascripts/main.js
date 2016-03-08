@@ -33,13 +33,17 @@
         deps: ['highcharts-more'],
         exports: 'highcharts'
       },
-      'semantic': ['angular'],
-      'semantic-daterangepicker': ['moment']
-      
+      'semantic': {
+        deps: ['jquery', 'angular']
+      },
+      'semantic-daterangepicker': { 
+        deps: ['semantic', 'moment'],
+        exports: "semantic-daterangepicker"
+      }
     },
     paths: {
       'requirejs': '../lib/requirejs/require',
-      'jquery': '../lib/jquery/jquery',
+      'jquery': ['../lib/jquery/jquery'],
       'angular': '../lib/angularjs/angular',
       'angular-route': '../lib/angularjs/angular-route',
       'angular-cookies': '../lib/angularjs/angular-cookies',
@@ -47,7 +51,7 @@
       'highcharts-more': '../lib/highcharts/highcharts-more',
       'highcharts': './highcharts-theme',
       'matchmedia-ng': '../lib/matchmedia-ng/matchmedia-ng',
-      'semantic': './semantic/semantic',
+      'semantic': './semantic/semantic.min',
       'jsRoutes': '/jsroutes',
       'semantic-daterangepicker': './semantic-ui-daterangepicker/daterangepicker',
       'moment': './semantic-ui-daterangepicker/moment'

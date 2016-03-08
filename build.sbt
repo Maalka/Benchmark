@@ -11,6 +11,11 @@ version := "0.0.1"
 
 scalaVersion in ThisBuild := "2.11.6"
 
+maintainer in Linux := "Clay Teeter <clay.teeter@maalka.com>"
+maintainer in Docker := "Clay Teeter <clay.teeter@maalka.com>"
+
+packageSummary in Linux := "Benchmark tool"
+packageDescription := "Benchmark tool"
 
 lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
 lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, SbtNativePackager).dependsOn(squants)
@@ -24,14 +29,12 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
   "org.scalatestplus" %% "play" % "1.4.0-M3" % "test",
   "org.mockito" % "mockito-all" % "1.10.19",
-  "org.webjars" % "Semantic-UI" % "2.0.8",
-  "org.webjars" % "requirejs" % "2.1.14-1",
-  "org.webjars" % "underscorejs" % "1.6.0-3",
-  "org.webjars" % "jquery" % "1.11.1",
+  "org.webjars" % "requirejs" % "2.1.22",
+  "org.webjars" % "jquery" % "2.1.3",
   "org.webjars" %% "webjars-play" % "2.4.0-1",
   "org.webjars" % "angularjs" % "1.4.7" exclude("org.webjars", "jquery"),
-  "org.webjars" % "highcharts" % "4.1.10",
-  "org.webjars" % "highstock" % "2.1.10",
+  "org.webjars" % "highcharts" % "4.2.3",
+  "org.webjars" % "highstock" % "4.2.3",
   "org.webjars" % "matchmedia-ng" % "1.0.5"
 )
 
@@ -68,6 +71,8 @@ pipelineStages := Seq(rjs, digest, gzip)
 RjsKeys.paths += ("jsRoutes" -> ("/jsroutes" -> "empty:"))
 
 //RjsKeys.mainModule := "main"
+
+JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
 // Asset hashing with sbt-digest (https://github.com/sbt/sbt-digest)
 // ~~~
