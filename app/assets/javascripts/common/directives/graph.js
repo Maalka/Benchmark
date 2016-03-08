@@ -14,7 +14,7 @@ define(['angular','highcharts', './main'], function(angular) {
           scope: {
             benchmarkResult: '=benchmarkResult',
           },
-          controller: ["$scope", "$element", function ($scope, $element) {
+          controller: ["$scope", "$element","$timeout", function ($scope, $element, $timeout) {
             var bars = [];
             var k = 20;
             for (k; k < 120; k += 20) {
@@ -114,7 +114,7 @@ define(['angular','highcharts', './main'], function(angular) {
                         'load': function () {
                           if (getBRByKey("actualZEPI") !== undefined) {
                             loadMarkers('bottom', this, this.series[6], 55, 45);
-                          }
+                         }
                           loadMarkers('top', this, this.series[3], 55, 0);
                         },
                         'redraw': function () {
@@ -245,10 +245,13 @@ define(['angular','highcharts', './main'], function(angular) {
                   labels[tag + "2"].ySetter(series.data[0].plotY + yOff + 30);
                 }
               };
-
-              angular.element($element).highcharts(options);
+              $timeout(function () {
+                angular.element($element).highcharts(options);
+              }, 0);
             };
-            plot();
+            if ($scope.benchmarkResult !== undefined) {
+              plot();
+            }
             $scope.$watch("benchmarkResult", function (br) { 
               labels = {};
               if (br !== undefined) {
