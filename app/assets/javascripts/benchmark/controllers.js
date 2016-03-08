@@ -109,7 +109,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                                     'energyUse':$scope.auxModel.energies.energyUse,
                                     'energyRate':$scope.auxModel.energies.energyRate || null});
 
-            $scope.auxModel.energies = {};
             $scope.showEnergyTable = true;
         }
     };
@@ -628,16 +627,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 tempProp.propType = $scope.propList[i].buildingType;
                 tempProp.propSize = propSizes[i];
                 tempProp.propPercent = $scope.round(propSizes[i]/sumPropSize*100,2);
-                if($scope.auxModel.country === "USA"){
+
+                if($scope.auxModel.reportingUnits === "us"){
                     tempProp.areaUnits = "sq.ft";
                 }else{
                     tempProp.areaUnits = "sq.m";
                 }
-                if(i === 0){
-                    tempProp.label = "USES";
-                }else{
-                    tempProp.label = null;
-                }
+
                 $scope.propOutputList.push(tempProp);
             }
 
@@ -763,7 +759,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         }
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 071b56d24d984130901d1711cdd13415fffc31ba
         if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){
                 if($scope.propTypes[i].valid === true){
@@ -779,11 +778,15 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
+<<<<<<< HEAD
                     if($scope.energies.length===0){
                         $scope.propTypes[i].propertyModel.energies=null;
                     } else {
                         $scope.propTypes[i].propertyModel.energies=$scope.energies;
                     }
+=======
+                    if($scope.energies.length===0){$scope.propTypes[i].propertyModel.energies=null;} else {$scope.propTypes[i].propertyModel.energies=$scope.energies;}
+>>>>>>> 071b56d24d984130901d1711cdd13415fffc31ba
                 }
                 else {$log.info('Error in ' + $scope.propTypes[i].type);}
             }
