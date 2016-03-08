@@ -48,7 +48,7 @@
       'angular-route': '../lib/angularjs/angular-route',
       'angular-cookies': '../lib/angularjs/angular-cookies',
       'highcharts-core': '../lib/highstock/highstock',
-      'highcharts-more': '../lib/highcharts/highcharts-more',
+      'highcharts-more': '../lib/highstock/highcharts-more',
       'highcharts': './highcharts-theme',
       'matchmedia-ng': '../lib/matchmedia-ng/matchmedia-ng',
       'semantic': './semantic/semantic.min',
