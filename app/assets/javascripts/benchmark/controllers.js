@@ -763,8 +763,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         }
 
 
-        if($scope.energies.length===0){$scope.auxModel.energies=null;}
-                    else {$scope.auxModel.energies = $scope.energies;}
 
         if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){
@@ -776,12 +774,16 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.state = $scope.auxModel.state;
                     $scope.propTypes[i].propertyModel.HDD = $scope.auxModel.HDD;
                     $scope.propTypes[i].propertyModel.CDD = $scope.auxModel.CDD;
-                    $scope.propTypes[i].propertyModel.energies = $scope.auxModel.energies;
                     $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
                     $scope.propTypes[i].propertyModel.targetScore = null;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
+                    if($scope.energies.length===0){
+                        $scope.propTypes[i].propertyModel.energies=null;
+                    } else {
+                        $scope.propTypes[i].propertyModel.energies=$scope.energies;
+                    }
                 }
                 else {$log.info('Error in ' + $scope.propTypes[i].type);}
             }
