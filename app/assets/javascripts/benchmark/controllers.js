@@ -624,16 +624,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 tempProp.propType = $scope.propList[i].buildingType;
                 tempProp.propSize = propSizes[i];
                 tempProp.propPercent = $scope.round(propSizes[i]/sumPropSize*100,2);
-                if($scope.auxModel.country === "USA"){
+
+                if($scope.auxModel.reportingUnits === "us"){
                     tempProp.areaUnits = "sq.ft";
                 }else{
                     tempProp.areaUnits = "sq.m";
                 }
-                if(i === 0){
-                    tempProp.label = "USES";
-                }else{
-                    tempProp.label = null;
-                }
+
                 $scope.propOutputList.push(tempProp);
             }
 
@@ -759,9 +756,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         }
 
 
-        if($scope.energies.length===0){$scope.auxModel.energies=null;}
-                    else {$scope.auxModel.energies = $scope.energies;}
-
         if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){
                 if($scope.propTypes[i].valid === true){
@@ -772,12 +766,12 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.state = $scope.auxModel.state;
                     $scope.propTypes[i].propertyModel.HDD = $scope.auxModel.HDD;
                     $scope.propTypes[i].propertyModel.CDD = $scope.auxModel.CDD;
-                    $scope.propTypes[i].propertyModel.energies = $scope.auxModel.energies;
                     $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
                     $scope.propTypes[i].propertyModel.targetScore = null;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
+                    if($scope.energies.length===0){$scope.propTypes[i].propertyModel.energies=null;} else {$scope.propTypes[i].propertyModel.energies=$scope.energies;}
                 }
                 else {console.log('Error in ' + $scope.propTypes[i].type);}
             }

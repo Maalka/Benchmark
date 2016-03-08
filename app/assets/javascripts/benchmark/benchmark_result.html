@@ -3,7 +3,7 @@
 	<div class="ui padded one column grid">
 	    <div class="teal inverted column" ng-if="percentBetterSiteEUI" style="padding: 0.7em;">
 	         Target EUI is 
-	         <font style="font-size:2em; position: relative; top:3px">10{{percentBetterSiteEUI | number : 1}}</font>  
+	         <font style="font-size:2em; position: relative; top:3px">{{percentBetterSiteEUI | number : 1}}</font>
     	     based on on a {{auxModel.percentBetterThanMedian}}% reduction
 	    </div>
 	    <div class="column" style="padding:0px">
