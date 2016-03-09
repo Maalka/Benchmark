@@ -4,8 +4,8 @@
     <tbody>
         <tr>
             <td class="five wide">LOCATION</td>
-            <td class="five wide">{{auxModel.city || "City"}}, {{auxModel.state || "ST"}}</td>
-            <td class="six wide">{{auxModel.postalCode || "000000"}}</td>
+            <td class="five wide">{{benchmarkResult.city || "City"}}, {{benchmarkResult.state || "ST"}}</td>
+            <td class="six wide">{{benchmarkResult.postalCode || "000000"}}</td>
         </tr>
         <tr ng-repeat="prop in propOutputList">
             <td ng-if="$first" rowspan="{{propOutputList.length}}">USES</td>

@@ -119,13 +119,13 @@ define(['angular','highcharts', './main'], function(angular) {
                           if (getBRByKey("actualZEPI") !== undefined) {
                             loadMarkers('bottom', this, this.series[6], 55, 45);
                          }
-                          loadMarkers('top', this, this.series[3], 55, 0);
+                          loadMarkers('top', this, this.series[3], 55, 4);
                         },
                         'redraw': function () {
                           if (getBRByKey("actualZEPI") !== undefined) {
                             loadMarkers('bottom', this, this.series[6], 55, 45);
                           }
-                          loadMarkers('top', this, this.series[3], 55, 0);
+                          loadMarkers('top', this, this.series[3], 55, 4);
                         }
                       }
                   },

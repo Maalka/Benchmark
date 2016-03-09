@@ -5,7 +5,7 @@
 @headerFont    : "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
 @pageFont      : "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
 
-@bodyBackground      	: #FCFCFC;
+@pageBackground      	: #F5F5F5;
 @textColor 				: #595959;
 
 @grey 					: #D9D9D9;

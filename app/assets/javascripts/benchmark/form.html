@@ -119,7 +119,7 @@
 
             </div>
             <h3 class="ui header"><i class="bullseye icon"></i>Energy Reduction Target</h3>
-            <div class="ui segment reduction">
+            <div class="ui segment reduction page-break-after">
                 <p>
                     Choose the reduction target for your building relative to
                     its baseline energy consumption (EUI for a comparable
@@ -141,7 +141,7 @@
                 </div>
             </div>
             <h3 class="ui header"><i class="building icon"></i>PROPERTY USE DETAILS</h3>
-            <div ng-repeat="prop in propTypes">
+            <div ng-repeat="prop in propTypes" ng-class="{'page-break-after': ($index + 1) % 3 == 0}">
                 <div class="ui segment building">
                     <div ng-if="prop.type=='DataCenter' && prop.country=='USA'" building-Info forms='forms' type='DataCenter' model="prop"></div>
                     <div ng-if="prop.type=='Hospital' && prop.country=='USA'" building-Info forms='forms' type='Hospital' model="prop"></div>
@@ -176,7 +176,7 @@
                 </div>
 
             </div>
-            <div class="ui segment" ng-class="{'disabled': !forms.baselineForm.country.$valid}">
+            <div class="ui segment page-break-after" ng-class="{'disabled': !forms.baselineForm.country.$valid}">
                 <p>
                     In order to provide you with an appropriate comparison
                     for your building, we need to know how spaces in this

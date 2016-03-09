@@ -45,6 +45,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.mainColumnWidth = "eight wide column";
         }
     };
+    matchmedia.onPrint(setMedia, $scope);
+
     setMedia();
     angular.element($window).bind("resize", function () {
         setMedia();
@@ -486,6 +488,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $q.all($scope.futures).then(function (results) {
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
+            /// add location stuff. 
+            $scope.benchmarkResult.city = $scope.auxModel.city;
+            $scope.benchmarkResult.state = $scope.auxModel.state;
+            $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
             console.log(results);
         });
     };
