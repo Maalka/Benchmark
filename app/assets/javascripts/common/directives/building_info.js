@@ -21,7 +21,11 @@ define(['angular','./main'], function(angular) {
             },
 
             controller: ["$scope", function ($scope) {
-
+                $scope.buildingType =  $scope.$parent.buildingProperties.buildingType.filter(function (bt){ 
+                    return (bt.id === $scope.model.type);
+                })[0].name;
+                
+                $scope.benchmark = $scope.$parent;
                 $scope.propFieldsRequired = false;
                 $scope.propertyModel = {};
                 $scope.model.propertyModel = $scope.propertyModel ;
@@ -39,18 +43,18 @@ define(['angular','./main'], function(angular) {
 
                 //auto-populate default parameters by building type and country
                 $scope.$watch("propertyModel.defaultValues", function () {
-
                     if($scope.propertyModel.defaultValues){
                         if( $scope.propertyModel.GFA && $scope.propertyModel.areaUnits) {
                             $scope.setDefaults();
-                        } else {
-                        $scope.propertyModel.defaultValues = false;
-                        }
+                        } 
                     } else {
                         $scope.clearParams();
                     }
 
                 });
+                $scope.removeProp = function() { 
+                    $scope.$parent.removeProp(this);
+                };
                 $scope.isRequired = function(field) {
                     if (field.required === undefined) {
                         return false;

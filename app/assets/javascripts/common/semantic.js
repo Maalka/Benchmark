@@ -114,9 +114,9 @@ define(['angular', 'semantic-daterangepicker'], function(angular) {
         restrict: "C",
         link: function (scope, elm, attr) {
           var setup = false;
-          /// i really don't understand why this is a parent scope...  
           scope.$watch("ngModel", function(selected) {
-            if (selected === undefined) {
+            if (selected === undefined || selected === null) {
+              angular.element(elm).dropdown("restore defaults");
               return;
             }
             var s;

@@ -13,7 +13,7 @@ define(['angular','./main'], function(angular) {
       var returnValue;
       for (var i =0; i < root.length; i ++) {
         if (root[i][key] !== undefined) {
-          returnValue = root[i][key];
+          returnValue = root[i][key].toFixed(1);
           break;
         }
       }

@@ -1,6 +1,31 @@
 <div>
 
     <div class="inline fields">
+        <div class="six wide field" ng-if="propertyModelFields[model.type].length > 0">
+            <h3 class="ui header">{{ buildingType }}<h3>
+        </div>
+        <div class="thirteen wide field" ng-if="!propertyModelFields[model.type].length > 0">
+            <h3 class="ui header">{{ buildingType }}<h3>
+        </div>
+        <div class="seven wide field" ng-if="propertyModelFields[model.type].length > 0"
+            ng-class="{'disabled': !propertyModel.GFA || !propertyModel.areaUnits}">
+            <div checkbox class="ui checkbox checked" ng-if="propertyModelFields[model.type].length > 0" >
+                <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=true"
+                   ng-true-value=true ng-false-value=false>
+                <label for="cb-default">Use Default Values?</label>
+            </div>
+        </div>
+        <div class="two wide field">
+            delete
+        </div>
+        <div class="one wide field">
+            <div class="ui large labeled button" ng-click="removeProp()" style="margin-top:.1em;">
+                <i class="minus red circle icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="inline fields">
         <div class="sixteen wide field">
             <label style="width: 200px">Gross Floor Area</label>
             <div class="ten wide field required" ng-class="{error: !propertyModel.GFA && forms.hasValidated}">
@@ -20,20 +45,12 @@
             </div>
           </div>
     </div>
-
-    <div class="field" ng-if="propertyModelFields[model.type].length > 0" ng-class="{'disabled': !propertyModel.GFA || !propertyModel.areaUnits}">
-        <div checkbox class="ui checkbox checked">
-            <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=false"
-                   ng-true-value=true ng-false-value=false>
-            <label for="cb-default">Use Default Values?</label>
-        </div>
-    </div>
     <div class="inline fields" ng-repeat="field in propertyModelFields[model.type] | orderBy: 'type'">
         <div class="ui positive checkbox field" 
             ng-if="field.type === 'checkbox' && isShown(field)">
 
             <input type         = "checkbox"
-                ng-model        = "propertyModel[field]" id="field-{{ field.name }}" 
+                ng-model        = "propertyModel[field.name]" id="field-{{ field.name }}" 
                 ng-init         = "propertyModel[field.name] = field.default"
                 ng-true-value   = true
                 ng-false-value  = false

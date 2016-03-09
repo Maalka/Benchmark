@@ -105,10 +105,14 @@ define(['angular','highcharts', './main'], function(angular) {
               return  parseInt(zepi / 100 * baselineEUI);
             };
             var plot = function () {
+              var margin = [75, 0, 0, 0];
               baselineEUI = getBRByKey("medianSiteEUI");
+              if (getBRByKey("actualZEPI") !== undefined) {
+                margin[2] = 75; 
+              }
               var options = {
                   chart: {
-                      margin: [75, 0, 75, 0],
+                      margin: margin,
                       height: 300,
                       events: {
                         'load': function () {

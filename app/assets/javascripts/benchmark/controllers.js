@@ -4,13 +4,13 @@
 //define(["./test/sample_response_test_data"], function(sampleTestData) {
 define(['angular', 'matchmedia-ng'], function(angular) {
   'use strict';
-  var DashboardCtrl = function($rootScope, $scope, $window, $q, $log, matchmedia, benchmarkServices) {
+  var DashboardCtrl = function($rootScope, $scope, $window, $timeout, $q, $log, matchmedia, benchmarkServices) {
 
     $rootScope.pageTitle = "2030 Baseline";
     //The model that will be submitted for analysis
     $scope.auxModel = {};
     //The table of energy information input by user, default to empty
-    $scope.energies = [];
+    $scope.energies = [{}, {}];
     //For displaying user-input energy entries after having been saved
     $scope.showEnergyTable = false;
     $scope.propList = [];
@@ -53,16 +53,18 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
     $scope.propText = "Primary Function of Building";
 
-
     $scope.$watch("auxModel.buildingType", function (v) {
-
+        if (v === undefined || v === null) {
+            return;
+        }
         if(($scope.auxModel.country) && (v)){
+            console.log(v);
             $scope.propTypes.push({
                 type: v,
                 country:$scope.auxModel.country
             });
             $scope.propText="Add Another Use";
-            $scope.auxModel.buildingType = null;
+            $scope.auxModel.buildingType = undefined;
         }
     });
 
@@ -73,8 +75,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
     $scope.$watch("auxModel.newConstruction", function (v) {
         if(v === true){
-        $scope.auxModel.percentBetterThanMedian = 70;}else{
-        $scope.auxModel.percentBetterThanMedian = 20;}
+            $scope.auxModel.percentBetterThanMedian = 70;
+        }else{
+            $scope.auxModel.percentBetterThanMedian = 20;
+        }
     });
 
 
@@ -82,7 +86,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.auxModel.city = "";
         $scope.auxModel.state = null;
         $scope.auxModel.postalCode = "";
-        $scope.auxModel.buildingType = null;
+        $scope.auxModel.buildingType = undefined;
         $scope.propTypes = [];
     };
 
@@ -90,27 +94,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     //populate user-input energy information table to calculate site/source EUI and Energy Star metrics
     //display errors when present
     $scope.addEnergiesRow = function(){
-
-        if(!$scope.auxModel.energies) {
-            $scope.auxModel.energies = {};
-        }
-
-        if($scope.energies===null){
-            $scope.energies=[];
-        }
-
-        if ($scope.forms.baselineForm.energyType.$valid && $scope.auxModel.energies.energyType &&
-            $scope.forms.baselineForm.energyUnits.$valid && $scope.auxModel.energies.energyUnits &&
-            $scope.forms.baselineForm.energyUse.$valid && $scope.auxModel.energies.energyUse){
-            // && $scope.forms.baselineForm.energyRate.$valid) {
-
-            $scope.energies.push({'energyType':$scope.auxModel.energies.energyType,
-                                    'energyUnits': $scope.auxModel.energies.energyUnits,
-                                    'energyUse':$scope.auxModel.energies.energyUse,
-                                    'energyRate':$scope.auxModel.energies.energyRate || null});
-
-            $scope.showEnergyTable = true;
-        }
+        $scope.energies.push({});
     };
 
     $scope.print = function () {
@@ -118,20 +102,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     };
 
 
-    $scope.removeRow = function(energyType, energyUnits, energyUse){
-        var index = -1;
-        var energyArr = $scope.energies;
-        for(var i = 0; i < energyArr.length; i++ ) {
-            if(energyArr[i].energyType === energyType && energyArr[i].energyUnits === energyUnits && energyArr[i].energyUse === energyUse) {
-                index = i;
-                break;
-            }
-        }
-        if( index === -1 ) {
-            window.alert( "Error" );
-        }
+    $scope.removeRow = function(index){
         $scope.energies.splice(index, 1);
-        if ($scope.energies.length === 0){$scope.showEnergyTable = false;}
+        if ($scope.energies.length ===    1) {
+            $scope.addEnergiesRow();
+        }
     };
 
 
@@ -147,7 +122,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             window.alert( "Error" );
         }
         $scope.propTypes.splice(index, 1);
-        $scope.auxModel.buildingType = null;
+        $scope.auxModel.buildingType = undefined;
 
 
         if($scope.propTypes.length === 0){
@@ -757,7 +732,19 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.tableEnergyUnits="GJ";
             $scope.tableEUIUnits="GJ/m²";
         }
-
+        var validEnergy = function(e) {
+            return (e.energyType !== undefined &&
+                    e.energyUnits !== undefined &&
+                    e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
+        };
+        var mapEnergy = function (e) { 
+            return {
+                'energyType': e.energyType,
+                'energyUnits': e.energyUnits,
+                'energyUse': Number(e.energyUse),
+                'energyRate': null
+            };
+        };
 
         if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){
@@ -774,9 +761,14 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
-                    if($scope.energies.length===0){$scope.propTypes[i].propertyModel.energies=null;} else {$scope.propTypes[i].propertyModel.energies=$scope.energies;}
+                    if($scope.energies.length===0){
+                        $scope.propTypes[i].propertyModel.energies=null;
+                    } else {
+                        $scope.propTypes[i].propertyModel.energies = $scope.energies.map(mapEnergy).filter(validEnergy);
+                    }
+                } else {
+                    $log.info('Error in ' + $scope.propTypes[i].type);
                 }
-                else {$log.info('Error in ' + $scope.propTypes[i].type);}
             }
         }else {
             $scope.submitErrors();
@@ -790,7 +782,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     };
 
   };
-  DashboardCtrl.$inject = ['$rootScope', '$scope', '$window', '$q', '$log', 'matchmedia', 'benchmarkServices'];
+  DashboardCtrl.$inject = ['$rootScope', '$scope', '$window', '$timeout', '$q', '$log', 'matchmedia', 'benchmarkServices'];
   return {
     DashboardCtrl: DashboardCtrl
   };
