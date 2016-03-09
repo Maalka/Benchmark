@@ -746,6 +746,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             };
         };
 
+
         if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){
                 if($scope.propTypes[i].valid === true){
