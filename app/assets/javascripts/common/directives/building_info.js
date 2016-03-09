@@ -21,8 +21,9 @@ define(['angular','./main'], function(angular) {
             },
 
             controller: ["$scope", function ($scope) {
-                $scope.buildingType =  $scope.$parent.buildingProperties.buildingType.filter(function (bt){ 
-                    return (bt.id === $scope.model.type);
+
+                $scope.buildingName =  $scope.$parent.buildingProperties.buildingType.filter(function (bt){
+                    return (bt.name === $scope.model.name);
                 })[0].name;
                 
                 $scope.benchmark = $scope.$parent;
@@ -402,13 +403,6 @@ define(['angular','./main'], function(angular) {
                     ],
                     Office: [
 
-                        {
-                            name: "isSmallBank",
-                            type: "checkbox",
-                            default: false,
-                            title: "Property is a Small Bank",
-                            required: "USA"
-                        },
                         {
                             name: "weeklyOperatingHours",
                             default: 65,

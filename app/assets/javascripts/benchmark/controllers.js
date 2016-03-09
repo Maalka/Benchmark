@@ -60,9 +60,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             return;
         }
         if(($scope.auxModel.country) && (v)){
-            console.log(v);
+            console.log(v.id);
             $scope.propTypes.push({
-                type: v,
+                type: v.id,
+                name: v.name,
                 country:$scope.auxModel.country
             });
             $scope.propText="Add Another Use";
@@ -605,7 +606,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.propOutputList = [];
             for (var i =0; i < results.length; i ++) {
                 var tempProp = {};
-                tempProp.propType = $scope.propList[i].buildingType;
+                tempProp.propType = $scope.propTypes[i].name;
                 tempProp.propSize = propSizes[i];
                 tempProp.propPercent = $scope.round(propSizes[i]/sumPropSize*100,2);
 
@@ -767,12 +768,14 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.targetScore = null;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
-                    $scope.propList.push($scope.propTypes[i].propertyModel);
                     if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
                         $scope.propTypes[i].propertyModel.energies=null;
                     } else {
                         $scope.propTypes[i].propertyModel.energies = $scope.energies.map(mapEnergy).filter(validEnergy);
                     }
+
+                    $scope.propList.push($scope.propTypes[i].propertyModel);
+
                 } else {
                     $log.info('Error in ' + $scope.propTypes[i].type);
                 }
