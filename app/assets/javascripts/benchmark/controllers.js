@@ -486,7 +486,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $q.all($scope.futures).then(function (results) {
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
-            //console.log(results);
+            console.log(results);
         });
     };
 
