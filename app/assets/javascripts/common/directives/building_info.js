@@ -21,9 +21,6 @@ define(['angular','./main'], function(angular) {
             },
 
             controller: ["$scope", function ($scope) {
-                $scope.buildingType =  $scope.$parent.buildingProperties.buildingType.filter(function (bt){ 
-                    return (bt.id === $scope.model.type);
-                })[0].name;
 
                 $scope.buildingName =  $scope.$parent.buildingProperties.buildingType.filter(function (bt){
                     return (bt.name === $scope.model.name);
