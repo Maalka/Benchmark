@@ -58,9 +58,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             return;
         }
         if(($scope.auxModel.country) && (v)){
-            console.log(v);
+            console.log(v.id);
             $scope.propTypes.push({
-                type: v,
+                type: v.id,
+                name: v.name,
                 country:$scope.auxModel.country
             });
             $scope.propText="Add Another Use";
