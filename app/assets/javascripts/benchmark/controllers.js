@@ -486,7 +486,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $q.all($scope.futures).then(function (results) {
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
-            //console.log(results);
+            console.log(results);
         });
     };
 
@@ -762,7 +762,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
-                    if($scope.energies.length===0){
+
+                    if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
                         $scope.propTypes[i].propertyModel.energies=null;
                     } else {
                         $scope.propTypes[i].propertyModel.energies = $scope.energies.map(mapEnergy).filter(validEnergy);
