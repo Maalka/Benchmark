@@ -67,6 +67,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 country:$scope.auxModel.country
             });
             $scope.propText="Add Another Use";
+            // there seems to be a $digest issue where undefine isn't 
+            // carried through to the dropdown directive
+            $scope.auxModel.resetBuildingType = true;
+
             $scope.auxModel.buildingType = undefined;
         }
     });

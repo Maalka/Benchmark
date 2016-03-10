@@ -108,12 +108,18 @@ define(['angular', 'semantic-daterangepicker'], function(angular) {
       return {
         scope: {
           ngModel: "=",
-          model: "="
-
+          model: "=",
+          reset: "="
         },
         restrict: "C",
         link: function (scope, elm, attr) {
           var setup = false;
+          scope.$watch("reset", function(value) { 
+            if (value === true) {
+              angular.element(elm).dropdown("restore defaults");
+              scope.reset = false;
+            }
+          });
           scope.$watch("ngModel", function(selected) {
             if (selected === undefined || selected === null) {
               angular.element(elm).dropdown("restore defaults");
