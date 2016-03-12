@@ -20,7 +20,7 @@ define(['angular','highcharts', './main'], function(angular) {
             for (k; k < 120; k += 20) {
               bars.push([k, 120]);
             }
-            var createMarker = function(topPNG, bottomPNG, title, yOff, x, color, series) {
+            var createMarker = function(topPNG, bottomPNG, title, yOff, x, color, series, bold) {
               if (x !== undefined && !isNaN(x)) {
                 return [{
                         type: 'flags',
@@ -59,7 +59,7 @@ define(['angular','highcharts', './main'], function(angular) {
                         color: 'transparent',
                         style: {
                           color: "black",
-                          fontWeight: 'bold',
+                          fontWeight: bold ? 'bold': '',
                           fontSize: "13",
                         },
                         shape: "squarepin",
@@ -79,6 +79,7 @@ define(['angular','highcharts', './main'], function(angular) {
             // flags don't seem to work on series where the axis is reversed
             var maxX = 120;
             var minX = -20;
+            var chart;
             var getBRByKey = function (key) {
               var r = $scope.benchmarkResult.filter(function (v) { 
                 return v[key];
@@ -116,6 +117,7 @@ define(['angular','highcharts', './main'], function(angular) {
                       height: 300,
                       events: {
                         'load': function () {
+                          chart = this;
                           if (getBRByKey("actualZEPI") !== undefined) {
                             loadMarkers('bottom', this, this.series[6], 55, 45);
                          }
@@ -217,10 +219,10 @@ define(['angular','highcharts', './main'], function(angular) {
                     animation: false,
                     data: bars
                   }]
-                    .concat(createMarker("boxTop.png", "boxBottom.png", "Baseline", [-70, -41, -100], 100, "black", "zepi"))
-                    .concat(createMarker("ratingTop.png", "ratingBottom.png", "Rating", [-30, -2, 22], getBRByKey("actualZEPI"), "white"))
-                    .concat(createMarker("targetTop.png", "targetBottom.png", "Target", [-70, -41, -100], getBRByKey("percentBetterZEPI"), "white", "zepi"))
-                    .concat(createMarker("boxTop.png", "boxBottom.png", "Net Zero", [-70, -41, -100], 0, "black", "zepi"))
+                    .concat(createMarker("boxTop.png", "boxBottom.png", "Baseline", [-70, -41, -100], 100, "black", "zepi", false))
+                    .concat(createMarker("ratingTop.png", "ratingBottom.png", "Rating", [-30, -2, 22], getBRByKey("actualZEPI"), "white", undefined, true))
+                    .concat(createMarker("targetTop.png", "targetBottom.png", "Target", [-70, -41, -100], getBRByKey("percentBetterZEPI"), "white", "zepi", true))
+                    .concat(createMarker("boxTop.png", "boxBottom.png", "Net Zero", [-70, -41, -100], 0, "black", "zepi", false))
               };
               var loadMarkers = function(tag, obj, series, xOff, yOff) { 
                 if (labels[tag+ "1"] === undefined) {
@@ -257,7 +259,7 @@ define(['angular','highcharts', './main'], function(angular) {
               plot();
             }
             $scope.$watch("benchmarkResult", function (br) { 
-              labels = {};
+               angular.element($element).empty();
               if (br !== undefined) {
                 plot();
               }
