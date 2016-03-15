@@ -120,17 +120,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.removeProp = function(prop){
         var index;
         for(var i = 0; i < $scope.propTypes.length; i++ ) {
-            if($scope.propTypes[i].type === prop.type && $scope.propTypes[i].country === prop.country) {
+            if($scope.propTypes[i].name === prop.model.name && $scope.propTypes[i].country === prop.model.country) {
                 index = i;
                 break;
             }
         }
-        if( index === -1 ) {
-            window.alert( "Error" );
-        }
-        $scope.propTypes.splice(index, 1);
-        $scope.auxModel.buildingType = undefined;
 
+        $scope.propTypes.splice(index, 1);
 
         if($scope.propTypes.length === 0){
             $scope.propText="Primary Function of Building";
