@@ -29,6 +29,9 @@ The JavaScript modules are organized as follows:
 
 ## Trying It Out
 
+### Install SBT
+ [http://www.scala-sbt.org/release/docs/Setup.html](http://www.scala-sbt.org/release/docs/Setup.html)
+ 
 ### Dev Mode
 
 * Load dependencies via `sbt update`
