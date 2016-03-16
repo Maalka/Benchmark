@@ -46,8 +46,8 @@ Running:
 Deployment:
 
 * Produce executable via `sbt clean dist`
-* Extract `unzip target/universal/play-angular-require-seed-2.x.x.zip`
-* Run `play-angular-require-seed-2.x.x/bin/play-angular-require-seed -Dhttp.port=9000 -Dconfig.resource=prod.conf`
+* Extract `unzip target/universal/maalka-benchmark--2.x.x.zip`
+* Run `maalka-benchmark--2.x.x/bin/maalka-benchmark- -Dhttp.port=9000 -Dconfig.resource=prod.conf`
 
 
 This uses the uglified JavaScript files, versioned and compressed assets, and loads WebJars resources from the jsDelivr CDN.
