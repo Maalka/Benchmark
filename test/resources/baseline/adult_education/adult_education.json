@@ -13,7 +13,7 @@
   "energies": [
     {
       "energyType": "grid",
-      "energyUnits": "KWh",
+      "energyUnits": "kWh",
       "energyUse": 3500000.0,
       "energyRate": null
     },
@@ -26,13 +26,13 @@
   ],
   "targetScore": 75,
   "percentBetterThanMedian": 65,
-  "buildingType": "AdultEdudcation",
+  "buildingType": "AdultEducation",
   "HDD": 6750,
   "HDDbase40": "NA",
   "CDD": 705,
   "percentHeated": 100,
   "percentCooled": 100,
-  "annualITEnergyKwh": null,
+  "annualITEnergykWh": null,
   "GFA": 200000,
   "seatingCapacity": null,
   "isOpenAllWeekdays": null,

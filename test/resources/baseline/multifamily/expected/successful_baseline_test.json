@@ -5,72 +5,80 @@
       "ES": 59
     },
     {
-      "sourceEUI": 188.2
+      "sourceEUI": 188.1972
     },
     {
-      "siteEUI": 60.38
+      "siteEUI": 60.3792
     },
     {
-      "totalSourceEnergy": 22583665.4
+      "totalSourceEnergy": 22583665.4157
     },
     {
-      "totalSiteEnergy": 7245500.8
+      "totalSiteEnergy": 7245500.7504
     },
     {
       "targetES": 75
     },
     {
-      "targetSourceEUI": 168.27
+      "targetSourceEUI": 168.2668
     },
     {
-      "targetSiteEUI": 53.98
+      "targetSiteEUI": 53.9849
     },
     {
-      "targetSourceEnergy": 20192018.89
+      "targetSourceEnergy": 20192018.8857
     },
     {
-      "targetSiteEnergy": 6478190.55
+      "targetSiteEnergy": 6478190.5548
     },
     {
       "percentBetterES": 95
     },
     {
-      "percentBetterSourceEUI": 130
+      "percentBetterSourceEUI": 130.0049
     },
     {
-      "percentBetterSiteEUI": 41.71
+      "percentBetterSiteEUI": 41.7094
     },
     {
-      "percentBetterSourceEnergy": 15600589.2
+      "percentBetterSourceEnergy": 15600589.2049
     },
     {
-      "percentBetterSiteEnergy": 5005125.55
+      "percentBetterSiteEnergy": 5005125.5503
     },
     {
       "medianES": 50
     },
     {
-      "medianSourceEUI": 200.01
+      "medianSourceEUI": 200.0076
     },
     {
-      "medianSiteEUI": 64.17
+      "medianSiteEUI": 64.1683
     },
     {
-      "medianSourceEnergy": 24000906.47
+      "medianSourceEnergy": 24000906.4691
     },
     {
-      "medianSiteEnergy": 7700193.15
+      "medianSiteEnergy": 7700193.1542
     },
     {
       "sourceEnergy": [
-        22499661.9,
-        84003.5
+        {
+          "grid": 22499661.9288
+        },
+        {
+          "naturalGas": 84003.4869
+        }
       ]
     },
     {
       "siteEnergy": [
-        2100000,
-        800
+        {
+          "grid": 2100000
+        },
+        {
+          "naturalGas": 800
+        }
       ]
     },
     {
@@ -80,7 +88,42 @@
       "parkingEnergy": 0
     },
     {
-      "totalSourceEnergyNoPoolNoParking": 22583665.4
+      "totalSourceEnergyNoPoolNoParking": 22583665.4157
+    },
+    {
+      "buildingSize": 120000
+    },
+    {
+      "sourceSiteRatio": 0.3208
+    },
+    {
+      "buildingClass": "class models.MultiFamily"
+    },
+    {
+      "predictedSourceEnergy": 24573468.28
+    },
+    {
+      "directSiteEmissions": [
+        {
+          "grid": 0
+        },
+        {
+          "naturalGas": 4.248976368958778
+        }
+      ]
+    },
+    {
+      "indirectSiteEmissions": [
+        {
+          "grid": 594.2347018341305
+        },
+        {
+          "naturalGas": 0
+        }
+      ]
+    },
+    {
+      "totalSiteEmissions": 598.4837
     }
   ]
 }

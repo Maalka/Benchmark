@@ -5,6 +5,7 @@
   // -- RequireJS config --
   requirejs.config({
     // Packages = top-level folders; loads a contained file named 'main.js"
+    wrapShim: true,
     packages: ['common', 'benchmark'],
     shim: {
       'jsRoutes': {
@@ -19,18 +20,39 @@
       },
       'angular-route': ['angular'],
       'angular-cookies': ['angular'],
-      'semantic': ['angular'],
-      'semantic-daterangepicker': ['moment']
-      
+      'matchmedia-ng': ['angular'],
+      'highcharts-core': {
+        deps: ['jquery'],
+        exports: 'highcharts-core'
+      },
+      'highcharts-more': {
+        deps: ['highcharts-core'],
+        exports: 'highcharts-more'
+      },
+      'highcharts': {
+        deps: ['highcharts-more'],
+        exports: 'highcharts'
+      },
+      'semantic': {
+        deps: ['jquery', 'angular']
+      },
+      'semantic-daterangepicker': { 
+        deps: ['semantic', 'moment'],
+        exports: "semantic-daterangepicker"
+      }
     },
     paths: {
-      'requirejs': ['../lib/requirejs/require'],
+      'requirejs': '../lib/requirejs/require',
       'jquery': ['../lib/jquery/jquery'],
-      'angular': ['../lib/angularjs/angular'],
-      'angular-route': ['../lib/angularjs/angular-route'],
-      'angular-cookies': ['../lib/angularjs/angular-cookies'],
-      'semantic': ['../lib/semantic-ui/semantic'],
-      'jsRoutes': ['/jsroutes'],
+      'angular': '../lib/angularjs/angular',
+      'angular-route': '../lib/angularjs/angular-route',
+      'angular-cookies': '../lib/angularjs/angular-cookies',
+      'highcharts-core': '../lib/highstock/highstock',
+      'highcharts-more': '../lib/highstock/highcharts-more',
+      'highcharts': './highcharts-theme',
+      'matchmedia-ng': '../lib/matchmedia-ng/matchmedia-ng',
+      'semantic': './semantic/semantic.min',
+      'jsRoutes': '/jsroutes',
       'semantic-daterangepicker': './semantic-ui-daterangepicker/daterangepicker',
       'moment': './semantic-ui-daterangepicker/moment'
     }
@@ -43,7 +65,7 @@
   // Load the app. This is kept minimal so it doesn't need much updating.
   require(['angular', 'angular-cookies', 'angular-route', 'jquery', 'semantic', './app'],
     function (angular) {
-      angular.bootstrap(document, ['app']);
+      angular.bootstrap(document, ['app', 'matchmedia-ng']);
     }
   );
 })(requirejs);

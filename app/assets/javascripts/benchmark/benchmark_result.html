@@ -1,0 +1,26 @@
+<div>
+	<h3 class="ui header"><i class="bar chart icon"></i>RESULTS</h3>
+	<div class="ui padded sixteen column grid">
+	    <div class="teal inverted sixteen wide column" ng-if="percentBetterSiteEUI" style="font-size: larger; padding: 0.7em;">
+		    <center>
+		         Target EUI is 
+	    	     <font style="font-size:1.5em; position: relative; top:2px">{{percentBetterSiteEUI | number : 1}}</font>  
+    	    	 based on on a {{benchmarkResult.percentBetterThanMedian}}% reduction
+    	   	</center>
+	    </div>
+	    <div class=" sixteen wide column page-break-after" style="padding:0px" ng-if="benchmarkResult"  >
+	       <div graph benchmark-result="benchmarkResult" style="width: 100%; height:400px'"></div>
+	    </div>
+	    <div class=" teal sixteen wide column" ng-if="benchmarkResult">
+	        <div ng-include src="'assets/javascripts/benchmark/proplist_result.html'">Not Defined</div>
+	    </div>
+	    <div class="one wide column" ng-if="!benchmarkResult">
+	    	<i class="arrow left icon" style="padding-top: 1px;"></i>
+	    </div>
+	    <div class="fifteen wide column" ng-if="!benchmarkResult">
+    		<h3 class="ui header">Enter building information to the left to receive your target</h3>
+	    </div>
+	</div>
+	<div ng-include ng-show="benchmarkResult"
+		src="'assets/javascripts/common/partials/reportingUnitsSubmit.html'">Not Defined</div>
+</div>

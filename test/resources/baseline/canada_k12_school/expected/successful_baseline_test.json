@@ -5,72 +5,80 @@
       "ES": 79
     },
     {
-      "sourceEUI": 1.03
+      "sourceEUI": 1.0287
     },
     {
-      "siteEUI": 0.7
+      "siteEUI": 0.7001
     },
     {
-      "totalSourceEnergy": 8486.9
+      "totalSourceEnergy": 8486.8946
     },
     {
-      "totalSiteEnergy": 5775.8
+      "totalSiteEnergy": 5775.779
     },
     {
       "targetES": 75
     },
     {
-      "targetSourceEUI": 1.07
+      "targetSourceEUI": 1.0694
     },
     {
-      "targetSiteEUI": 0.73
+      "targetSiteEUI": 0.7278
     },
     {
-      "targetSourceEnergy": 8822.27
+      "targetSourceEnergy": 8822.2658
     },
     {
-      "targetSiteEnergy": 6004.02
+      "targetSiteEnergy": 6004.0168
     },
     {
       "percentBetterES": 95
     },
     {
-      "percentBetterSourceEUI": 0.82
+      "percentBetterSourceEUI": 0.822
     },
     {
-      "percentBetterSiteEUI": 0.56
+      "percentBetterSiteEUI": 0.5594
     },
     {
-      "percentBetterSourceEnergy": 6781.13
+      "percentBetterSourceEnergy": 6781.1317
     },
     {
-      "percentBetterSiteEnergy": 4614.92
+      "percentBetterSiteEnergy": 4614.9175
     },
     {
       "medianES": 50
     },
     {
-      "medianSourceEUI": 1.26
+      "medianSourceEUI": 1.2645
     },
     {
-      "medianSiteEUI": 0.86
+      "medianSiteEUI": 0.8606
     },
     {
-      "medianSourceEnergy": 10432.51
+      "medianSourceEnergy": 10432.5103
     },
     {
-      "medianSiteEnergy": 7099.87
+      "medianSiteEnergy": 7099.8731
     },
     {
       "sourceEnergy": [
-        5166,
-        3320.9
+        {
+          "grid": 5166
+        },
+        {
+          "naturalGas": 3320.8946
+        }
       ]
     },
     {
       "siteEnergy": [
-        700000,
-        85000
+        {
+          "grid": 700000
+        },
+        {
+          "naturalGas": 85000
+        }
       ]
     },
     {
@@ -80,7 +88,42 @@
       "parkingEnergy": 0
     },
     {
-      "totalSourceEnergyNoPoolNoParking": 8486.9
+      "totalSourceEnergyNoPoolNoParking": 8486.8946
+    },
+    {
+      "buildingSize": 8250
+    },
+    {
+      "sourceSiteRatio": 0.6806
+    },
+    {
+      "buildingClass": "class models.CanadaK12School"
+    },
+    {
+      "predictedSourceEnergy": 10649.7656
+    },
+    {
+      "directSiteEmissions": [
+        {
+          "grid": 0
+        },
+        {
+          "naturalGas": 163.30493314850173
+        }
+      ]
+    },
+    {
+      "indirectSiteEmissions": [
+        {
+          "grid": 23.789451466168014
+        },
+        {
+          "naturalGas": 0
+        }
+      ]
+    },
+    {
+      "totalSiteEmissions": 187.0944
     }
   ]
 }

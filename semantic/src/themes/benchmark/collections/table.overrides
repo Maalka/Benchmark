@@ -1,0 +1,5 @@
+td.ui.yellow, th.ui.yellow {
+	color: @yellow !important;
+}
+@gutterWidth: .5rem;
+@rowSpacing: .5rem;

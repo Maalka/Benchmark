@@ -1,0 +1,39 @@
+.design-label {
+	line-height:1.7em !important;
+}
+.building .static, .reduction .static {
+	width: 100% !important;
+}
+input.small {
+	width: 8rem !important;
+}
+
+div.only.print {
+	display: none !important;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+div.desktop-padding-left {
+	padding-left: 13% !important;
+	padding-right: 0em !important;
+	margin-right: 0em !important;
+}
+div.desktop-padding-right {
+	padding-right: 13% !important;
+//	padding-left: 1em !important;
+}
+div.print-header {
+	padding-left: 2em !important;
+}
+div.entry {
+//	height: 750px;
+//	overflow-y: scroll;
+/	padding-right:1em;
+}
+
+@media all {
+	.page-break	{ display: none; }
+}

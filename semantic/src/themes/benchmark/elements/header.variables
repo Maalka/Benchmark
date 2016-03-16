@@ -1,0 +1,3 @@
+@textTransform: uppercase;
+@fontFamily: "Oswald";
+@fontWeight: 300;

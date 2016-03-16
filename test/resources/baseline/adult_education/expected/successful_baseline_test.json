@@ -17,61 +17,72 @@
     },
     {
       "percentBetterES": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
+    },
+    {
+      "predictedSourceEnergy": "Cannot compute Expected Energy - Generic Building: No Algorithm!"
     }
   ],
   "values": [
     {
-      "sourceEUI": 189.6
+      "sourceEUI": 189.5973
     },
     {
-      "siteEUI": 61.71
+      "siteEUI": 61.7126
     },
     {
-      "totalSourceEnergy": 37919454
+      "totalSourceEnergy": 37919453.9824
     },
     {
-      "totalSiteEnergy": 12342512.3
+      "totalSiteEnergy": 12342512.3201
     },
     {
       "targetES": 75
     },
     {
-      "percentBetterSourceEUI": 43.08
+      "percentBetterSourceEUI": 49.49
     },
     {
-      "percentBetterSiteEUI": 14.02
+      "percentBetterSiteEUI": 16.1086
     },
     {
-      "percentBetterSourceEnergy": 8617000
+      "percentBetterSourceEnergy": 9898000
     },
     {
-      "percentBetterSiteEnergy": 2804772.15
+      "percentBetterSiteEnergy": 3221728.5355
     },
     {
       "medianES": 50
     },
     {
-      "medianSourceEUI": 123.1
+      "medianSourceEUI": 141.4
     },
     {
-      "medianSiteEUI": 40.07
+      "medianSiteEUI": 46.0247
     },
     {
-      "medianSourceEnergy": 24620000
+      "medianSourceEnergy": 28280000
     },
     {
-      "medianSiteEnergy": 8013634.73
+      "medianSiteEnergy": 9204938.6727
     },
     {
       "sourceEnergy": [
-        37499436.5,
-        420017.4
+        {
+          "grid": 37499436.5481
+        },
+        {
+          "naturalGas": 420017.4343
+        }
       ]
     },
     {
       "siteEnergy": [
-        3500000,
-        4000
+        {
+          "grid": 3500000
+        },
+        {
+          "naturalGas": 4000
+        }
       ]
     },
     {
@@ -81,7 +92,39 @@
       "parkingEnergy": 0
     },
     {
-      "totalSourceEnergyNoPoolNoParking": 37919454
+      "totalSourceEnergyNoPoolNoParking": 37919453.9824
+    },
+    {
+      "buildingSize": 200000
+    },
+    {
+      "sourceSiteRatio": 0.3255
+    },
+    {
+      "buildingClass": "class models.GenericBuilding"
+    },
+    {
+      "directSiteEmissions": [
+        {
+          "grid": 0
+        },
+        {
+          "naturalGas": 21.24488184479389
+        }
+      ]
+    },
+    {
+      "indirectSiteEmissions": [
+        {
+          "grid": 990.3911697235508
+        },
+        {
+          "naturalGas": 0
+        }
+      ]
+    },
+    {
+      "totalSiteEmissions": 1011.6361
     }
   ]
 }

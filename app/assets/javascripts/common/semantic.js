@@ -3,20 +3,8 @@
 define(['angular', 'semantic-daterangepicker'], function(angular) {
   'use strict';
 
-  var mod = angular.module('common.semantic', []);
-  /*
-    mod.directive('checkbox', function ($timeout) {
-      return {
-        restrict: "C",
-        link: function (scope, elm) {
-            console.log(scope);
-            $timeout(function () {
-                angular.element(elm).checkbox();
-            }, 0);
-        }
-      };
-    });  
-*/
+    var mod = angular.module('common.semantic', []);  
+
     mod.directive('modal', ["$timeout", function ($timeout) {
       return {
           restrict: "E",
@@ -118,41 +106,36 @@ define(['angular', 'semantic-daterangepicker'], function(angular) {
 
     mod.directive('dropdown', ["$timeout", function ($timeout) {
       return {
-//        scope: {
-//          selectedModel: "=",
-//          model: "="
-
-//        },
+        scope: {
+          ngModel: "=",
+          model: "=",
+          reset: "="
+        },
         restrict: "C",
         link: function (scope, elm, attr) {
           var setup = false;
-          /// i really don't understand why this is a parent scope...  
-          /*
-          scope.$watch("selectedModel", function(selectedModel) {
-            if (selectedModel === undefined) {
-              return;
-            }
-            if (selectedModel !== undefined && selectedModel !== currentModel && setup) {
-                var remove = currentModel.filter(function (v, i) { 
-                  return selectedModel.indexOf(v) === -1;
-                });
-                remove.forEach(function(v) {
-                  angular.element(elm).dropdown().dropdown('remove selected', v);
-                  var i = currentModel.indexOf(v);                  
-                  if (i > -1) currentModel.splice(i, 1);
-                });
-
-                selectedModel.forEach(function (v) { 
-                  if (currentModel.indexOf(v) === -1) {
-                    angular.element(elm).dropdown('set selected', v);
-
-                    currentModel.push(v);
-                  }
-                });
-
+          scope.$watch("reset", function(value) { 
+            if (value === true) {
+              angular.element(elm).dropdown("restore defaults");
+              scope.reset = false;
             }
           });
-          */
+          scope.$watch("ngModel", function(selected) {
+            if (selected === undefined || selected === null) {
+              angular.element(elm).dropdown("restore defaults");
+              return;
+            }
+            var s;
+            if (typeof selected === 'string' || selected instanceof String) {
+              s = "string:" + selected;
+            } else if(!isNaN(parseFloat(selected)) && isFinite(selected)) {
+              s = "number:" + selected;
+            }
+            $timeout( function () {
+              angular.element(elm).dropdown('set selected', s);
+            });
+
+          });
           $timeout(function () {
               angular.element(elm).dropdown().dropdown({
                  'preserveHTML': true,
@@ -161,7 +144,7 @@ define(['angular', 'semantic-daterangepicker'], function(angular) {
                       scope.$apply(); 
 
                       scope.$parent[attr.ngModel] = value;
-                      scope.$parent.$apply();             
+                      scope.$parent.$apply();
                   }
 
                     /*
@@ -203,16 +186,17 @@ define(['angular', 'semantic-daterangepicker'], function(angular) {
                 $timeout(function () {
                     angular.element(elm).sticky({
                       context: scope.element,
-                      offset: 100,
-                      bottomOffset: 50,
-                    }).accordion({ "content": scope.element});
-                }, 0);
+                      pushing: true,
+                      debug: true
+                    });
+                }, 1000);
                 var height = 0;
                 var intervalP = $interval(function () { 
                     var h = angular.element(scope.element).height();
                     if (h !== height) {
                       angular.element(elm).parent().css({"max-height": h});
                       angular.element(elm).css({"max-height": h, "overflow": "scroll"}).sticky('refresh');
+                      height = h;
                     } 
                 }, 1000);
                 elm.on('$destroy', function () {

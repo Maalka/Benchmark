@@ -38,6 +38,18 @@
     },
     {
       "totalSourceEnergyNoPoolNoParking": "Could not read provided energy list"
+    },
+    {
+      "predictedSourceEnergy": "Cannot compute Expected Energy - Generic Building: No Algorithm!"
+    },
+    {
+      "directSiteEmissions": "Could not read provided energy list"
+    },
+    {
+      "indirectSiteEmissions": "Could not read provided energy list"
+    },
+    {
+      "totalSiteEmissions": "Could not read provided energy list"
     }
   ],
   "values": [
@@ -48,13 +60,13 @@
       "percentBetterSourceEUI": 49.49
     },
     {
-      "percentBetterSiteEUI": 31.1
+      "percentBetterSiteEUI": 31.1002
     },
     {
       "percentBetterSourceEnergy": 9898000
     },
     {
-      "percentBetterSiteEnergy": 6220032.55
+      "percentBetterSiteEnergy": 6220032.5518
     },
     {
       "medianES": 50
@@ -63,19 +75,28 @@
       "medianSourceEUI": 141.4
     },
     {
-      "medianSiteEUI": 88.86
+      "medianSiteEUI": 88.8576
     },
     {
       "medianSourceEnergy": 28280000
     },
     {
-      "medianSiteEnergy": 17771521.58
+      "medianSiteEnergy": 17771521.5766
     },
     {
       "poolEnergy": 0
     },
     {
       "parkingEnergy": 0
+    },
+    {
+      "buildingSize": 200000
+    },
+    {
+      "sourceSiteRatio": 0.6284
+    },
+    {
+      "buildingClass": "class models.GenericBuilding"
     }
   ]
 }

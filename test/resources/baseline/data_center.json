@@ -13,7 +13,7 @@
   "energies": [
       {
         "energyType": "grid",
-        "energyUnits": "KWh",
+        "energyUnits": "kWh",
         "energyUse": 15000000.0,
         "energyRate": 0.25
       },
@@ -26,14 +26,14 @@
   ],
   "targetScore": 75,
   "percentBetterThanMedian": 35,
-  "buildingType": "Hotel",
+  "buildingType": "DataCenter",
   "HDD": 4532,
   "HDDbase40": "NA",
   "CDD": 1388,
   "percentHeated": 100,
   "percentCooled": 100,
-  "annualITEnergyKwh": 8500000,
-  "GFA": 300000,
+  "annualITEnergy": 8500000,
+  "GFA": 50000,
   "seatingCapacity": null,
   "isOpenAllWeekdays": null,
   "weeklyOperatingHours": 70,

@@ -1,0 +1,51 @@
+
+<div class="ui hidden divider"></div>
+<b style="padding-left: 0.5em;">BUILDING SUMMARY</b>
+<table class="ui basic inverted white table">
+    <tbody>
+        <tr>
+            <td class="five wide">LOCATION</td>
+            <td class="five wide">{{benchmarkResult.city || "City"}}, {{benchmarkResult.state || "ST"}}</td>
+            <td class="six wide">{{benchmarkResult.postalCode || "000000"}}</td>
+        </tr>
+        <tr ng-repeat="prop in propOutputList">
+            <td ng-if="$first" rowspan="{{propOutputList.length}}">USES</td>
+            <td>{{prop.propType}}</td>
+            <td>{{prop.propSize}} {{prop.areaUnits}} ({{prop.propPercent}})%</td>
+        </tr>
+    </tbody>
+</table>
+
+<hr></hr>
+
+<table class="ui basic inverted white table">
+    <thead>
+        <tr>
+            <th>RESULTS</th>
+            <th>BASELINE</th>
+            <th>TARGET</th>
+            <th class="ui yellow">RATING</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'zEPI Score'" units="'1-100'" 
+            columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']"></tr>
+
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Site EUI'" units="tableEUIUnits"
+            columns="['medianSiteEUI', 'percentBetterSiteEUI', 'siteEUI']"></tr>
+
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
+            columns="['medianSourceEUI', 'percentBetterSourceEUI', 'sourceEUI']"></tr>
+
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Site Energy Use'" units="tableEnergyUnits"
+            columns="['medianSiteEnergy', 'percentBetterSiteEnergy', 'totalSiteEnergy']"></tr>
+
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Source Energy Use'" units="tableEnergyUnits"
+            columns="['medianSourceEnergy', 'percentBetterSourceEnergy', 'totalSourceEnergy']"></tr>
+
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Total GHG Emissions'" units="'Metric Tons CO2e'"
+            columns="['medianSiteEmissions', 'percentBetterSiteEmissions', 'totalSiteEmissions']"></tr>
+    </tbody>
+</table>
+
+

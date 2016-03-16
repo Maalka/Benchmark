@@ -1,0 +1,27 @@
+<div>
+    <div class="field">
+        <div class="ui checkbox">
+            <input type="checkbox" id='cb-outdoor' ng-model="propertyModel.indoorOutdoor"
+                   ng-true-value=true ng-false-value=false name="indoorOutdoor" ng-init="propertyModel.indoorOutdoor=false">
+            <label for="cb-outdoor">Is an Indoor/Outdoor Pool</label>
+        </div>
+    </div>
+
+
+    <div class="field">
+        <div class="ui checkbox">
+            <input type="checkbox" id="cb-outdoor" ng-model="propertyModel.isOutdoorPool"
+                   ng-true-value=true ng-false-value=false name="isOutdoorPool" ng-init="propertyModel.isOutdoorPool=false">
+            <label for="cb-outdoor">Is Outdoor Pool</label>
+
+        </div>
+    </div>
+
+    <div class="inline fields required">
+        <label class="static">Pool Type</label>
+        <div class="five wide field">
+            <input type="text" ng-model="propertyModel.poolType" required
+                   name="poolType" maxlength="8" placeholder="Select">
+        </div>
+    </div>
+</div>

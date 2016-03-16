@@ -1,0 +1,12 @@
+/*******************************
+            Divider
+*******************************/
+
+/*-------------------
+       Element
+--------------------*/
+
+@margin: 1rem 0rem;
+
+@borderColor: @black;
+@shadowColor: @borderColor;

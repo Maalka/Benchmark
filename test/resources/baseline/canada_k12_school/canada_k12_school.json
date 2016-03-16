@@ -4,7 +4,7 @@
   "address1": "111 8th Ave",
   "address2": "STE 302",
   "city": "New York",
-  "state": "NY",
+  "state": "BC",
   "postalCode": "10011",
   "reportingUnits": "metric",
   "areaUnits": "mSQ",
@@ -13,7 +13,7 @@
   "energies": [
     {
       "energyType": "grid",
-      "energyUnits": "KWh",
+      "energyUnits": "kWh",
       "energyUse": 700000,
       "energyRate": 0.25
     },
@@ -32,7 +32,7 @@
   "CDD": 285,
   "percentHeated": 100,
   "percentCooled": 20,
-  "annualITEnergyKwh": null,
+  "annualITEnergykWh": null,
   "GFA": 8250,
   "seatingCapacity": null,
   "isOpenAllWeekdays": null,

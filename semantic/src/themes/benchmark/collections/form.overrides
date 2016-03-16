@@ -1,0 +1,21 @@
+/* Inline */
+.ui.form .inline.fields .field > .selection.dropdown,
+.ui.form .inline.field > .selection.dropdown {
+  width: 100%;
+}
+
+.ui.form .required.fields:not(.grouped) > .field > label:after,
+.ui.form .required.fields.grouped > label:after,
+.ui.form .required.field > label:after,
+.ui.form .required.fields:not(.grouped) > .field > .checkbox:after,
+.ui.form .required.field > .checkbox:after {}
+
+.ui.form .required.field:after, .ui.form .inline.fields.required > .field:after {
+  margin: @requiredMargin;
+  content: @requiredContent;
+  color: @requiredColor;	
+}
+
+.ui.form select {
+  -webkit-appearance: none;
+}
