@@ -493,6 +493,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.benchmarkResult.city = $scope.auxModel.city;
             $scope.benchmarkResult.state = $scope.auxModel.state;
             $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
+            $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
             console.log(results);
         });
     };
