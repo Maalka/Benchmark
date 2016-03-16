@@ -17,12 +17,14 @@ define(['angular','highcharts', './main'], function(angular) {
           controller: ["$scope", "$element","$timeout", function ($scope, $element, $timeout) {
             var bars = [];
             var k = 20;
+            var chart;
             for (k; k < 120; k += 20) {
               bars.push([k, 120]);
             }
-            var createMarker = function(topPNG, bottomPNG, title, yOff, x, color, series) {
+            var createMarker = function(topPNG, bottomPNG, title, yOff, x, color, series, bold) {
               if (x !== undefined && !isNaN(x)) {
                 return [{
+                        id: title+"0",
                         type: 'flags',
                         color: '#333333',
                         fillColor: 'rgba(255,255,255,0.8)',
@@ -39,11 +41,12 @@ define(['angular','highcharts', './main'], function(angular) {
                         showInLegend: false
                     },
                     {
+                        id: title+"1",
                         type: 'flags',
                         color: '#333333',
                         style: {
                           color: color
-                        },                      
+                        },
                         shape: "url(/assets/images/" + bottomPNG + ")",
                         fillColor: 'rgba(255,255,255,0.8)',
                         y: yOff[1],
@@ -51,15 +54,16 @@ define(['angular','highcharts', './main'], function(angular) {
                             { x: fixX(x), 
                               title: ""+zepiToEUI(x)}
                         ],
-                        onSeries: series,                      
+                        onSeries: series,
                         showInLegend: false
                     },
                     {
+                        id: title+"2",
                         type: 'flags',
                         color: 'transparent',
                         style: {
                           color: "black",
-                          fontWeight: 'bold',
+                          fontWeight: bold ? 'bold': '',
                           fontSize: "13",
                         },
                         shape: "squarepin",
@@ -104,28 +108,71 @@ define(['angular','highcharts', './main'], function(angular) {
             var zepiToEUI = function(zepi) { 
               return  parseInt(zepi / 100 * baselineEUI);
             };
-            var plot = function () {
+
+            var updateOrAddSeries = function(chart, options, refresh) {
+              var s = chart.get(options.id);
+              if (s === undefined || s === null) {
+                chart.addSeries(options);
+              } else {
+                s.update(options, refresh);
+              }
+            };
+           var loadSeries = function(chart) {
+              updateOrAddSeries(chart, {
+                  name: 'zepi',
+                  id: 'zepi',
+                  type: 'area',
+                  data: [[minX + 20, maxX], [maxX + 20, minX]],
+                  tooltip: {
+                      xDateFormat: '%B %Y',
+                      valueSuffix: ' % of best month'
+                  }
+
+                }, false);
+              updateOrAddSeries(chart, { type: 'column',
+                  id: 'lines',
+                  name: 'lines',
+                  color: "white",
+                  pointWidth: 1,
+                  borderWidth: 0,
+                  animation: false,
+                  data: bars
+                }, false);
+              var s = createMarker("boxTop.png", "boxBottom.png", "Baseline", [-75, -46, -105], 100, "black", "zepi", false)
+                        .concat(createMarker("ratingTop.png", "ratingBottom.png", "Rating", [-30, -2, 22], getBRByKey("actualZEPI"), "white", undefined, true))
+                        .concat(createMarker("targetTop.png", "targetBottom.png", "Target", [-75, -46, -105], getBRByKey("percentBetterZEPI"), "white", "zepi", true))
+                        .concat(createMarker("boxTop.png", "boxBottom.png", "Net Zero", [-75, -46, -105], 0, "black", "zepi", false));
+
+              for (var i = 0; i < s.length; i ++) {
+                updateOrAddSeries(chart, s[i], i === s.length - 1, false);
+              }
+              chart.margin = getMargin();
+              chart.isDirtyBox = true;
+              chart.redraw();
+            };
+            var getMargin = function() {
               var margin = [75, 0, 0, 0];
               baselineEUI = getBRByKey("medianSiteEUI");
               if (getBRByKey("actualZEPI") !== undefined) {
-                margin[2] = 75; 
+                margin[2] = 85; 
               }
+              return margin;
+            };
+            var plot = function () {
+
               var options = {
                   chart: {
-                      margin: margin,
-                      height: 300,
+                      margin: getMargin(),
+                      height: 350,
                       events: {
                         'load': function () {
-                          if (getBRByKey("actualZEPI") !== undefined) {
-                            loadMarkers('bottom', this, this.series[6], 55, 45);
-                         }
-                          loadMarkers('top', this, this.series[3], 55, 0);
+                          loadSeries(chart);
                         },
                         'redraw': function () {
                           if (getBRByKey("actualZEPI") !== undefined) {
-                            loadMarkers('bottom', this, this.series[6], 55, 45);
+                            loadMarkers('bottom', this, this.get("Rating" + 0), 55, 45);
                           }
-                          loadMarkers('top', this, this.series[3], 55, 0);
+                          loadMarkers('top', this, this.get("Baseline" + 0), 55, -1);
                         }
                       }
                   },
@@ -198,31 +245,12 @@ define(['angular','highcharts', './main'], function(angular) {
                           }
                       }
                   },
-                  series: [{
-                    name: 'zepi',
-                    id: 'zepi',
-                    type: 'area',
-                    data: [[minX + 20, maxX], [maxX + 20, minX]],
-                    tooltip: {
-                        xDateFormat: '%B %Y',
-                        valueSuffix: ' % of best month'
-                    }
-
-                  },
-                  { type: 'column', 
-                    name: 'lines',
-                    color: "white",
-                    pointWidth: 1,
-                    borderWidth: 0,
-                    animation: false,
-                    data: bars
-                  }]
-                    .concat(createMarker("boxTop.png", "boxBottom.png", "Baseline", [-70, -41, -100], 100, "black", "zepi"))
-                    .concat(createMarker("ratingTop.png", "ratingBottom.png", "Rating", [-30, -2, 22], getBRByKey("actualZEPI"), "white"))
-                    .concat(createMarker("targetTop.png", "targetBottom.png", "Target", [-70, -41, -100], getBRByKey("percentBetterZEPI"), "white", "zepi"))
-                    .concat(createMarker("boxTop.png", "boxBottom.png", "Net Zero", [-70, -41, -100], 0, "black", "zepi"))
+                  series: []
               };
               var loadMarkers = function(tag, obj, series, xOff, yOff) { 
+                if (series === null || series === undefined) {
+                  return;
+                }
                 if (labels[tag+ "1"] === undefined) {
                   labels[tag + "1"] = obj.renderer.label('zEPI', 
                       series.data[0].plotX - xOff,
@@ -238,28 +266,31 @@ define(['angular','highcharts', './main'], function(angular) {
                 }
                 if (labels[tag+ "2"] === undefined) {
                   labels[tag + "2"] = obj.renderer.label('EUI', 
-                      series.data[0].plotX - xOff,
-                      series.data[0].plotY + yOff + 30)
+                      series.data[0].plotX - xOff + 5,
+                      series.data[0].plotY + yOff + 29)
                                   .css({
                                       fontWeight: 'bold'
                                   })
                                   .add();
                 } else {  
-                  labels[tag + "2"].xSetter(series.data[0].plotX - xOff);
-                  labels[tag + "2"].ySetter(series.data[0].plotY + yOff + 30);
+                  labels[tag + "2"].xSetter(series.data[0].plotX - xOff + 5);
+                  labels[tag + "2"].ySetter(series.data[0].plotY + yOff + 29);
                 }
               };
               $timeout(function () {
-                angular.element($element).highcharts(options);
+                angular.element($element).highcharts(options, function () { 
+                  chart = this;
+                });
               }, 0);
             };
             if ($scope.benchmarkResult !== undefined) {
               plot();
             }
             $scope.$watch("benchmarkResult", function (br) { 
-              labels = {};
-              if (br !== undefined) {
-                plot();
+              if (chart !== undefined) {
+                if (br !== undefined) {
+                  loadSeries(chart);
+                }
               }
             });
           }]

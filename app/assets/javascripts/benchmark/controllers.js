@@ -45,6 +45,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.mainColumnWidth = "eight wide column";
         }
     };
+    matchmedia.onPrint(setMedia, $scope);
+
     setMedia();
     angular.element($window).bind("resize", function () {
         setMedia();
@@ -58,12 +60,17 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             return;
         }
         if(($scope.auxModel.country) && (v)){
-            console.log(v);
+            console.log(v.id);
             $scope.propTypes.push({
-                type: v,
+                type: v.id,
+                name: v.name,
                 country:$scope.auxModel.country
             });
             $scope.propText="Add Another Use";
+            // there seems to be a $digest issue where undefine isn't 
+            // carried through to the dropdown directive
+            $scope.auxModel.resetBuildingType = true;
+
             $scope.auxModel.buildingType = undefined;
         }
     });
@@ -113,17 +120,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.removeProp = function(prop){
         var index;
         for(var i = 0; i < $scope.propTypes.length; i++ ) {
-            if($scope.propTypes[i].type === prop.type && $scope.propTypes[i].country === prop.country) {
+            if($scope.propTypes[i].name === prop.model.name && $scope.propTypes[i].country === prop.model.country) {
                 index = i;
                 break;
             }
         }
-        if( index === -1 ) {
-            window.alert( "Error" );
-        }
-        $scope.propTypes.splice(index, 1);
-        $scope.auxModel.buildingType = undefined;
 
+        $scope.propTypes.splice(index, 1);
 
         if($scope.propTypes.length === 0){
             $scope.propText="Primary Function of Building";
@@ -486,6 +489,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $q.all($scope.futures).then(function (results) {
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
+            /// add location stuff. 
+            $scope.benchmarkResult.city = $scope.auxModel.city;
+            $scope.benchmarkResult.state = $scope.auxModel.state;
+            $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
+            $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
             console.log(results);
         });
     };
@@ -599,7 +607,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.propOutputList = [];
             for (var i =0; i < results.length; i ++) {
                 var tempProp = {};
-                tempProp.propType = $scope.propList[i].buildingType;
+                tempProp.propType = $scope.propTypes[i].name;
                 tempProp.propSize = propSizes[i];
                 tempProp.propPercent = $scope.round(propSizes[i]/sumPropSize*100,2);
 
@@ -761,13 +769,14 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.targetScore = null;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
-                    $scope.propList.push($scope.propTypes[i].propertyModel);
-
                     if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
                         $scope.propTypes[i].propertyModel.energies=null;
                     } else {
                         $scope.propTypes[i].propertyModel.energies = $scope.energies.map(mapEnergy).filter(validEnergy);
                     }
+
+                    $scope.propList.push($scope.propTypes[i].propertyModel);
+
                 } else {
                     $log.info('Error in ' + $scope.propTypes[i].type);
                 }

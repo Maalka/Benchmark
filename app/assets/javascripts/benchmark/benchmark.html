@@ -1,32 +1,15 @@
 
-<div style="background:black;padding-top:14px;margin-bottom:14px">
-    <div class="ui stackable grid container">
-        <div class="two wide column computer only tablet only"> 
-            <img src="/assets/images/2030logo.png" style="position:absolute;left: -10px;z-index:9999">
-        </div>
-        <div class="two wide column mobile only non printable">
-            <img src="/assets/images/2030logo.png" class="ui image floated left">
-               <h1 class="ui inverted huge header">ENERGY</h1><br>
-               <b>TARGET & RATING TOOL</b>
-        </div>
-        <div class="black seven wide column computer only tablet only" ng-class="{'print-header': media === 'print'}" style="padding-top:0;padding-bottom:0">
-            <h1 class="ui inverted huge header" style="position:absolute;bottom:-6px">
-               ENERGY <b>TARGET & RATING TOOL</b>
-            </h1>
-        </div>
-         <div class="black seven wide column" style="padding-top:0;padding-bottom:0">
-            <div class="ui text inverted fluid three item menu">
-                <a class="item">about</a>
-                <a class="item">user guide</a>
-                <a class="item">home</a>
-            </div>
-        </div>
-    </div>
-</div>
-<div style="background:white">
+<div>
     <div class="ui stackable grid container" style="padding-top:14px">
-        <div class="two wide column computer only tablet only"></div>
-        <div class="fourteen wide column" ng-class="{'print-header': media === 'print'}">
+        <div class="three wide column computer only tablet only" ng-if="media === 'print'"></div>
+        <div class="thirteen wide column" ng-if="media === 'print'">
+            Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
+            existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
+            see the User Guide above.
+        </div>
+
+        <div class="two wide column computer only tablet only" ng-if="media !== 'print'"></div>
+        <div class="fourteen wide column" ng-if="media !== 'print'">
             Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
             existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
             see the User Guide above.
@@ -38,11 +21,21 @@
             id="data-input">
             <div class="ui hidden divider"></div>
             <div ng-include src="'assets/javascripts/benchmark/form.html'">Not Defined</div>
-            <div class="ui basic segment right aligned">
-                <h3 class="ui header"><a href ng-click="submit()">Compute Target <i class="arrow right icon"></i> </a></h3>
+            <div class="ui basic segment">
+                <div class="ui sixteen wide grid">
+                        <div class="fifteen wide column right aligned">
+                            <h3 class="ui header" style="padding-top: 1px;">
+                                <a href ng-click="submit()">Compute Target</a>
+                            </h3>
+                        </div>
+                        <div class="one wide column">
+                            <h3 class="ui header">
+                                <a href ng-click="submit()"><i class="arrow right icon"></i></a>
+                            </h3>
+                        </div>
+                </div>
             </div>
         </div>
-
         <div class="eight wide column" 
             ng-class="{'desktop-padding-right': media === 'desktop'}"
             element="'#data-input'">
@@ -51,3 +44,4 @@
         </div>
     </div>
 </div>
+<div class="ui hidden divider"></div>

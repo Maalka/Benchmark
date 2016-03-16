@@ -1,0 +1,28 @@
+/*-------------------
+         View
+--------------------*/
+
+/* List */
+@listStyleType: none;
+@listStylePosition: outside;
+@margin: 1em 0em;
+@verticalPadding: 0em;
+@horizontalPadding: 0em;
+
+/* List Item */
+@itemVerticalPadding: @relative3px;
+@itemHorizontalPadding: 0em;
+@itemPadding: @itemVerticalPadding @itemHorizontalPadding;
+@itemLineHeight: @relativeLarge;
+
+/* Sub List */
+@childListPadding: 0.75em 0em 0.25em 0.5em;
+@childListIndent: 1em;
+
+/* Sub List Item */
+@childItemVerticalPadding: @relative2px;
+@childItemHorizontalPadding: 2em;
+@childItemPadding: @childItemVerticalPadding @childItemHorizontalPadding;
+@childItemLineHeight: inherit;
+
+@orderedCountDistance: 3em;

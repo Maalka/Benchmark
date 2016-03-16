@@ -38,7 +38,7 @@ define(['angular','./main'], function(angular) {
               if(isNaN(value)) {
                 returnValue = {
                 'ok': false,
-                'value': "Not Available"
+                'value': "N/A"
                 };
               }else{
                 returnValue = {
@@ -51,7 +51,7 @@ define(['angular','./main'], function(angular) {
             $log.debug("Failed to fetch value (" + key + "): " + value);
             returnValue = {
               'ok': false,
-              'value': "Not Available"
+              'value': "N/A"
             };
           }
           return returnValue;
