@@ -2,7 +2,6 @@
 package models
 
 
-import models.CountryBuildingType
 import squants.energy.{TBtus, Gigajoules, KBtus, Energy}
 import squants.space._
 import scala.concurrent.Future
@@ -20,9 +19,11 @@ import scala.util.control.NonFatal
 case class EUIMetrics(parameters: JsValue) {
 
   val energyCalcs:EUICalculator = EUICalculator(parameters)
-  val targetBuilding:BaseLine = getBuilding(parameters)
+  val countryBuilding = parameters.asOpt[CountryBuildingType]
+  val targetBuilding:BaseLine = getBuilding
 
   val getBuildingClass: Future[String] = Future{targetBuilding.getClass.toString}
+
 
   val sourceEUI: Future[Double] =
     for {
@@ -55,7 +56,7 @@ case class EUIMetrics(parameters: JsValue) {
       parkingEnergy <- energyCalcs.getParkingEnergy
       sourceTotalEnergy <-  energyCalcs.getTotalSourceEnergy
       euiRatio <- getEUIratio(targetBuilding, lookupEUI, (sourceTotalEnergy - poolEnergy - parkingEnergy).value)
-      lookUp <- getLookupTable(parameters)
+      lookUp <- getLookupTable
       futureRatio <- loadLookupTable(lookUp).map {
         _.dropWhile(_.Ratio < euiRatio).headOption
       }
@@ -105,7 +106,7 @@ case class EUIMetrics(parameters: JsValue) {
     for {
       medianEUI <- {
         targetBuilding match {
-          case a:GenericBuilding =>  Future(sourceMedianEUI(parameters).value)
+          case a:GenericBuilding =>  Future(sourceMedianEUI.value)
           case b:BaseLine => for {
             lookupEUI <- computeLookupEUI(targetBuilding)
             targetRatio <- getMedianRatio(parameters)
@@ -174,7 +175,7 @@ case class EUIMetrics(parameters: JsValue) {
       lookupEUI <- computeLookupEUI(targetBuilding)
       sourceTotalEnergy <-  percentBetterSourceEUI
       euiRatio <- getTargetEUIratio(targetBuilding, lookupEUI, sourceTotalEnergy)
-      lookUp <- getLookupTable(parameters)
+      lookUp <- getLookupTable
       futureRatio <- loadLookupTable(lookUp).map {
         _.dropWhile(_.Ratio < euiRatio).headOption
       }
@@ -206,11 +207,13 @@ case class EUIMetrics(parameters: JsValue) {
   }
 
   def defaultSiteToSourceRatio:Future[Double] = {
-    for {
+    val local = for {
       stateBuildingType <- getStateBuildingType(parameters)
       statePropEnergyMix <- EnergyMix.getMix(stateBuildingType.state,stateBuildingType.buildingType)
       defaultRatio <- EnergyMix.getDefaultRatio(statePropEnergyMix)
     } yield defaultRatio
+
+    local.recoverWith{case NonFatal(th) => residentialSitetoSourceRatio}
   }
 
 
@@ -225,7 +228,7 @@ case class EUIMetrics(parameters: JsValue) {
       case a: GenericBuilding => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
       case a: BaseLine => a.expectedEnergy * a.buildingSize
     }
-    parameters.asOpt[CountryBuildingType] match {
+    countryBuilding match {
       case Some(CountryBuildingType("USA", _)) => KBtus(unitlessEnergy)
       case Some(CountryBuildingType("Canada", _)) => Gigajoules(unitlessEnergy)
       case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
@@ -264,7 +267,7 @@ case class EUIMetrics(parameters: JsValue) {
   def getTargetRatio(parameters:JsValue):Future[Double] = {
     for {
       targetES <- getTargetES
-      lookUp <- getLookupTable(parameters)
+      lookUp <- getLookupTable
       targetRatioEntry <- loadLookupTable(lookUp).map {
         _.filter(_.ES == targetES).last.Ratio
       }
@@ -274,7 +277,7 @@ case class EUIMetrics(parameters: JsValue) {
 
   def getMedianRatio(parameters:JsValue):Future[Double] = {
     for {
-      lookUp <- getLookupTable(parameters)
+      lookUp <- getLookupTable
       targetRatioEntry <- loadLookupTable(lookUp).map {
         _.filter(_.ES == 50).last.Ratio
       }
@@ -319,9 +322,9 @@ case class EUIMetrics(parameters: JsValue) {
     }
   }
 
-  def getLookupTable(parameters: JsValue): Future[String] = {
+  def getLookupTable(): Future[String] = {
 
-    val r = parameters.asOpt[CountryBuildingType] match {
+    val r = countryBuilding match {
       case Some(CountryBuildingType("USA", "Office")) => Play.current.configuration.getString("baseline.office")
       case Some(CountryBuildingType("USA", "WorshipCenter")) => Play.current.configuration.getString("baseline.worshipCenter")
       case Some(CountryBuildingType("USA", "WastewaterCenter")) => Play.current.configuration.getString("baseline.wastewaterCenter")
@@ -347,8 +350,8 @@ case class EUIMetrics(parameters: JsValue) {
     Future(r.getOrElse("Lookup Table Not Found"))
   }
 
-  def getBuilding(parameters: JsValue): BaseLine = {
-    val building:JsResult[BaseLine] = parameters.asOpt[CountryBuildingType] match {
+  def getBuilding(): BaseLine = {
+    val building:JsResult[BaseLine] = countryBuilding match {
       case Some(CountryBuildingType("USA", "Office")) => parameters.validate[Office]
       case Some(CountryBuildingType("USA", "WorshipCenter")) => parameters.validate[WorshipCenter]
       case Some(CountryBuildingType("USA", "WastewaterCenter")) => parameters.validate[WastewaterCenter]
@@ -378,10 +381,9 @@ case class EUIMetrics(parameters: JsValue) {
   }
 
 
-  def sourceMedianEUI(parameters:JsValue):Energy = {
+  def sourceMedianEUI():Energy = {
 
-    val countryBuilding = parameters.asOpt[CountryBuildingType]
-
+    val region:String = getRegion(parameters)
 
     val sourceMedian:Double = {
       countryBuilding match {
@@ -447,7 +449,49 @@ case class EUIMetrics(parameters: JsValue) {
         case Some(CountryBuildingType("USA","PowerStation")) => 123.1
         case Some(CountryBuildingType("USA","OtherUtility")) => 123.1
         case Some(CountryBuildingType("USA","SelfStorageFacility")) => 47.6
+
+        case Some(CountryBuildingType("USA","SingleFamilyDetached")) => {
+          region match {
+            case "West" => 67.2
+            case "Midwest" => 76.2
+            case "South" => 86
+            case "Northeast" => 67.5
+          }
+        }
+        case Some(CountryBuildingType("USA","SingleFamilyAttached")) => {
+            region match {
+              case "West" => 63.2
+              case "Midwest" => 66.6
+              case "South" => 82.5
+              case "Northeast" => 68.6
+            }
+          }
+        case Some(CountryBuildingType("USA","MultiFamilyLessThan5")) => {
+              region match {
+                case "West" => 87.3
+                case "Midwest" => 104.8
+                case "South" => 113.6
+                case "Northeast" => 78.8
+              }
+            }
+        case Some(CountryBuildingType("USA","MultiFamilyMoreThan4")) => {
+              region match {
+                case "West" => 81.7
+                case "Midwest" => 93.3
+                case "South" => 122.4
+                case "Northeast" => 98.2
+              }
+            }
+        case Some(CountryBuildingType("USA","MobileHome")) => {
+          region match {
+            case "West" => 128.2
+            case "Midwest" => 168.9
+            case "South" => 162.0
+            case "Northeast" => 145.5
+          }
+        }
         case Some(CountryBuildingType("USA",_)) => 123.1
+
         //Canadian Building Medians
         case Some(CountryBuildingType("Canada","AdultEducation")) => 1.44
         case Some(CountryBuildingType("Canada","College")) => 1.56
@@ -531,9 +575,9 @@ case class EUIMetrics(parameters: JsValue) {
     }
   }
 
-  def siteMedianEUI(parameters:JsValue):Energy = {
+  def siteMedianEUI():Energy = {
 
-    val countryBuilding = parameters.asOpt[CountryBuildingType]
+    val region:String = getRegion(parameters)
 
     val siteMedian: Double = {
       countryBuilding match {
@@ -599,7 +643,49 @@ case class EUIMetrics(parameters: JsValue) {
         case Some(CountryBuildingType("USA", "PowerStation")) => 78.8
         case Some(CountryBuildingType("USA", "OtherUtility")) => 78.8
         case Some(CountryBuildingType("USA", "SelfStorageFacility")) => 19.8
+        case Some(CountryBuildingType("USA","SingleFamilyDetached")) => {
+          region match {
+            case "West" => 38.4
+            case "Midwest" => 49.5
+            case "South" => 41.5
+            case "Northeast" => 45.7
+          }
+        }
+        case Some(CountryBuildingType("USA","SingleFamilyAttached")) => {
+          region match {
+            case "West" => 38.8
+            case "Midwest" => 44.8
+            case "South" => 38.8
+            case "Northeast" => 50.3
+          }
+        }
+        case Some(CountryBuildingType("USA","MultiFamilyLessThan5")) => {
+          region match {
+            case "West" => 47.6
+            case "Midwest" => 74.0
+            case "South" => 46.9
+            case "Northeast" => 57.8
+          }
+        }
+        case Some(CountryBuildingType("USA","MultiFamilyMoreThan4")) => {
+          region match {
+            case "West" => 40.0
+            case "Midwest" => 50.9
+            case "South" => 47.9
+            case "Northeast" => 60.7
+          }
+        }
+        case Some(CountryBuildingType("USA","MobileHome")) => {
+          region match {
+            case "West" => 65.8
+            case "Midwest" => 103.3
+            case "South" => 40.0
+            case "Northeast" => 89.3
+          }
+        }
         case Some(CountryBuildingType("USA", _)) => 78.8
+
+
           //Canadian Building Medians
         case Some(CountryBuildingType("Canada", "AdultEducation")) => 1.18
         case Some(CountryBuildingType("Canada", "College")) => 0.76
@@ -670,8 +756,10 @@ case class EUIMetrics(parameters: JsValue) {
         case Some(CountryBuildingType("Canada","Retail")) => 0.85
         case Some(CountryBuildingType("Canada","ResidenceHall")) => 1.45
         case Some(CountryBuildingType("Canada","DataCenter")) => 1.82
-
         case Some(CountryBuildingType("Canada", _)) => 78.8
+
+        case Some(_) => 78.8
+        case None => throw new Exception("Could not find Country and Building Type for Median EUI")
       }
     }
 
@@ -680,6 +768,126 @@ case class EUIMetrics(parameters: JsValue) {
       case Some(CountryBuildingType("Canada", _)) => Gigajoules(siteMedian)
       case Some(CountryBuildingType(_, _)) => throw new Exception("Could not find Country and Building Type for Median EUI")
       case None => throw new Exception("Could not find Country and Building Type for Median EUI")
+    }
+  }
+
+  def residentialSitetoSourceRatio():Future[Double] = Future {
+
+    val region: String = getRegion(parameters)
+
+    countryBuilding match {
+
+      case Some(CountryBuildingType("USA", "SingleFamilyDetached")) =>
+      {
+        region match {
+          case "West" => 38.4 / 67.2
+          case "Midwest" => 49.5 / 76.2
+          case "South" => 41.5 / 86
+          case "Northeast" => 45.7 / 67.5
+        }
+      }
+      case Some(CountryBuildingType("USA", "SingleFamilyAttached")) =>
+      {
+        region match {
+          case "West" => 38.8 / 63.2
+          case "Midwest" => 44.8 / 66.6
+          case "South" => 38.8 / 82.5
+          case "Northeast" => 50.3 / 68.6
+        }
+      }
+      case Some(CountryBuildingType("USA", "MultiFamilyLessThan5")) =>
+      {
+        region match {
+          case "West" => 47.6 / 87.3
+          case "Midwest" => 74.0 / 104.8
+          case "South" => 46.9 / 113.6
+          case "Northeast" => 57.8 / 78.8
+        }
+      }
+      case Some(CountryBuildingType("USA", "MultiFamilyMoreThan4")) =>
+      {
+        region match {
+          case "West" => 40.0 / 81.7
+          case "Midwest" => 50.9 / 93.3
+          case "South" => 47.9 / 122.4
+          case "Northeast" => 60.7 / 98.2
+        }
+      }
+      case Some(CountryBuildingType("USA", "MobileHome")) =>
+      {
+        region match {
+          case "West" => 65.8 / 128.2
+          case "Midwest" => 103.3 / 168.9
+          case "South" => 40.0 / 162.0
+          case "Northeast" => 89.3 / 145.5
+        }
+      }
+      case _ => throw new Exception("Could not find Default Site to Source Ratio")
+    }
+  }
+
+
+  def getRegion(parameters:JsValue):String = {
+
+    parameters.asOpt[StateBuildingType] match {
+      case Some(StateBuildingType("WA", _)) => "West"
+      case Some(StateBuildingType("OR", _)) => "West"
+      case Some(StateBuildingType("CA", _)) => "West"
+      case Some(StateBuildingType("MT", _)) => "West"
+      case Some(StateBuildingType("ID", _)) => "West"
+      case Some(StateBuildingType("NV", _)) => "West"
+      case Some(StateBuildingType("WY", _)) => "West"
+      case Some(StateBuildingType("UT", _)) => "West"
+      case Some(StateBuildingType("CO", _)) => "West"
+      case Some(StateBuildingType("AZ", _)) => "West"
+      case Some(StateBuildingType("NM", _)) => "West"
+      case Some(StateBuildingType("AK", _)) => "West"
+      case Some(StateBuildingType("HI", _)) => "West"
+
+      case Some(StateBuildingType("ND", _)) => "Midwest"
+      case Some(StateBuildingType("SD", _)) => "Midwest"
+      case Some(StateBuildingType("NE", _)) => "Midwest"
+      case Some(StateBuildingType("KS", _)) => "Midwest"
+      case Some(StateBuildingType("MN", _)) => "Midwest"
+      case Some(StateBuildingType("IA", _)) => "Midwest"
+      case Some(StateBuildingType("MO", _)) => "Midwest"
+      case Some(StateBuildingType("WI", _)) => "Midwest"
+      case Some(StateBuildingType("IL", _)) => "Midwest"
+      case Some(StateBuildingType("MI", _)) => "Midwest"
+      case Some(StateBuildingType("IN", _)) => "Midwest"
+      case Some(StateBuildingType("OH", _)) => "Midwest"
+
+      case Some(StateBuildingType("OK", _)) => "South"
+      case Some(StateBuildingType("TX", _)) => "South"
+      case Some(StateBuildingType("AR", _)) => "South"
+      case Some(StateBuildingType("LA", _)) => "South"
+      case Some(StateBuildingType("KY", _)) => "South"
+      case Some(StateBuildingType("TN", _)) => "South"
+      case Some(StateBuildingType("MS", _)) => "South"
+      case Some(StateBuildingType("AL", _)) => "South"
+      case Some(StateBuildingType("WV", _)) => "South"
+      case Some(StateBuildingType("DE", _)) => "South"
+      case Some(StateBuildingType("MD", _)) => "South"
+      case Some(StateBuildingType("DC", _)) => "South"
+      case Some(StateBuildingType("VA", _)) => "South"
+      case Some(StateBuildingType("NC", _)) => "South"
+      case Some(StateBuildingType("SC", _)) => "South"
+      case Some(StateBuildingType("GA", _)) => "South"
+      case Some(StateBuildingType("FL", _)) => "South"
+
+      case Some(StateBuildingType("PA", _)) => "Northeast"
+      case Some(StateBuildingType("NY", _)) => "Northeast"
+      case Some(StateBuildingType("NJ", _)) => "Northeast"
+      case Some(StateBuildingType("CT", _)) => "Northeast"
+      case Some(StateBuildingType("RI", _)) => "Northeast"
+      case Some(StateBuildingType("MA", _)) => "Northeast"
+      case Some(StateBuildingType("VT", _)) => "Northeast"
+      case Some(StateBuildingType("NH", _)) => "Northeast"
+      case Some(StateBuildingType("ME", _)) => "Northeast"
+
+      case Some(StateBuildingType(_, _)) => "Canada"
+      case _ => throw new Exception("Could not find Country and Building Type for Median EUI")
+
     }
   }
 
