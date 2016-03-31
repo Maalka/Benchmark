@@ -63,7 +63,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         }
         if(($scope.auxModel.country) && (v)){
 
-            console.log(v.id);
             $scope.isResidential = false;
 
             for(var i = 0; i < $scope.buildingProperties.residentialPropTypes.length; i++ ) {
@@ -528,12 +527,14 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
 
     $scope.computeBenchmarkResult = function(){
+        $scope.benchmarkResult = null;
 
         $scope.futures = $scope.propList.map(function (r) {
             return benchmarkServices.submit(r);
         });
 
         $q.all($scope.futures).then(function (results) {
+
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
             /// add location stuff. 
             $scope.benchmarkResult.city = $scope.auxModel.city;
