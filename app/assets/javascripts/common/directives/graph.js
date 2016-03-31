@@ -13,6 +13,8 @@ define(['angular','highcharts', './main'], function(angular) {
           restrict: 'A',
           scope: {
             benchmarkResult: '=benchmarkResult',
+            baselineConstant: '=baselineConstant',
+            scoreGraph: '=scoreGraph',
           },
           controller: ["$scope", "$element","$timeout", function ($scope, $element, $timeout) {
             var bars = [];
@@ -81,7 +83,7 @@ define(['angular','highcharts', './main'], function(angular) {
                   }
             };
             // flags don't seem to work on series where the axis is reversed
-            var maxX = 120;
+            var maxX = $scope.baselineConstant + 20;
             var minX = -20;
             var getBRByKey = function (key) {
               var r = $scope.benchmarkResult.filter(function (v) { 
@@ -97,8 +99,8 @@ define(['angular','highcharts', './main'], function(angular) {
             var baselineEUI;
             var labels = {};
             var fixX = function(x) {
-              if (x > 100) {
-                x = 110;
+              if (x > 130) {
+                x = 140;
               }
               if (x < 0) {
                 x = -10;
@@ -138,7 +140,7 @@ define(['angular','highcharts', './main'], function(angular) {
                   animation: false,
                   data: bars
                 }, false);
-              var s = createMarker("boxTop.png", "boxBottom.png", "Baseline", [-75, -46, -105], 100, "black", "zepi", false)
+              var s = createMarker("boxTop.png", "boxBottom.png", "Baseline", [-75, -46, -105], $scope.baselineConstant, "black", 'zepi', false)
                         .concat(createMarker("ratingTop.png", "ratingBottom.png", "Rating", [-30, -2, 22], getBRByKey("actualZEPI"), "white", undefined, true))
                         .concat(createMarker("targetTop.png", "targetBottom.png", "Target", [-75, -46, -105], getBRByKey("percentBetterZEPI"), "white", "zepi", true))
                         .concat(createMarker("boxTop.png", "boxBottom.png", "Net Zero", [-75, -46, -105], 0, "black", "zepi", false));
@@ -252,7 +254,7 @@ define(['angular','highcharts', './main'], function(angular) {
                   return;
                 }
                 if (labels[tag+ "1"] === undefined) {
-                  labels[tag + "1"] = obj.renderer.label('zEPI', 
+                  labels[tag + "1"] = obj.renderer.label($scope.scoreGraph,
                       series.data[0].plotX - xOff,
                       series.data[0].plotY + yOff)
                                   .css({
@@ -286,13 +288,14 @@ define(['angular','highcharts', './main'], function(angular) {
             if ($scope.benchmarkResult !== undefined) {
               plot();
             }
-            $scope.$watch("benchmarkResult", function (br) { 
+            $scope.$watch("benchmarkResult", function (br) {
               if (chart !== undefined) {
                 if (br !== undefined) {
                   loadSeries(chart);
                 }
               }
             });
+
           }]
         };
   }]);

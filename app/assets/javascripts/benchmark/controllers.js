@@ -721,15 +721,16 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
             $scope.percentBetterSiteEUI = mixPercentBetterSiteEUI;
 
-            var baselineConstant = $scope.isResidential ? 130 : 100;
+            $scope.baselineConstant = $scope.isResidential ? 130 : 100;
             $scope.scoreText = $scope.isResidential ? "HERS Score" : "zEPI Score";
+            $scope.scoreGraph = $scope.isResidential ? "HERS" : "zEPI";
 
             mixTable = [
 
-                  {"actualZEPI":baselineConstant-baselineConstant*$scope.round(1-mixSiteEUI/mixMedianSiteEUI,2)},
-                  {"targetZEPI":baselineConstant-baselineConstant*$scope.round(1-mixTargetSiteEUI/mixMedianSiteEUI,2)},
-                  {"percentBetterZEPI":baselineConstant-baselineConstant*($scope.auxModel.percentBetterThanMedian/100)},
-                  {"medianZEPI":baselineConstant},
+                  {"actualZEPI":$scope.baselineConstant-$scope.baselineConstant*$scope.round(1-mixSiteEUI/mixMedianSiteEUI,2)},
+                  {"targetZEPI":$scope.baselineConstant-$scope.baselineConstant*$scope.round(1-mixTargetSiteEUI/mixMedianSiteEUI,2)},
+                  {"percentBetterZEPI":$scope.baselineConstant-$scope.baselineConstant*($scope.auxModel.percentBetterThanMedian/100)},
+                  {"medianZEPI":$scope.baselineConstant},
 
                   {"siteEUI":$scope.round(mixSiteEUI,2)},
                   {"targetSiteEUI":$scope.round(mixTargetSiteEUI,2)},
