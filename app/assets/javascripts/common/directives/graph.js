@@ -176,9 +176,9 @@ define(['angular','highcharts', './main'], function(angular) {
                         },
                         'redraw': function () {
                           if (getBRByKey("actualZEPI") !== undefined) {
-                            loadMarkers('bottom', this, this.get("Rating" + 0), 55, 45);
+                            loadMarkers('bottom', this, this.get("Rating" + 0), 61, 45);
                           }
-                          loadMarkers('top', this, this.get("Baseline" + 0), 55, -1);
+                           loadMarkers('top', this, this.get("Baseline" + 0), 61, -1);
                         }
                       }
                   },
