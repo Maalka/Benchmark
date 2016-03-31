@@ -83,7 +83,7 @@ define(['angular','highcharts', './main'], function(angular) {
                   }
             };
             // flags don't seem to work on series where the axis is reversed
-            var maxX = $scope.baselineConstant + 20;
+            var maxX = 120;
             var minX = -20;
             var getBRByKey = function (key) {
               var r = $scope.benchmarkResult.filter(function (v) { 
@@ -99,16 +99,20 @@ define(['angular','highcharts', './main'], function(angular) {
             var baselineEUI;
             var labels = {};
             var fixX = function(x) {
-              if (x > 130) {
-                x = 140;
+            if($scope.baselineConstant === 130){
+                x = 100 * x / 130;
+            }else {
+            }
+              if (x > 100) {
+                x = 110;
               }
               if (x < 0) {
                 x = -10;
               }
               return maxX - x;
             };
-            var zepiToEUI = function(zepi) { 
-              return  parseInt(zepi / 100 * baselineEUI);
+            var zepiToEUI = function(zepi) {
+              return  parseInt(zepi / $scope.baselineConstant * baselineEUI);
             };
 
             var updateOrAddSeries = function(chart, options, refresh) {
