@@ -527,7 +527,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
 
     $scope.computeBenchmarkResult = function(){
-        $scope.benchmarkResult = null;
+        //$scope.benchmarkResult = null;
 
         $scope.futures = $scope.propList.map(function (r) {
             return benchmarkServices.submit(r);
