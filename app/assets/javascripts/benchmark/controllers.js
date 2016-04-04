@@ -527,7 +527,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
 
     $scope.computeBenchmarkResult = function(){
-        $scope.benchmarkResult = null;
+        //$scope.benchmarkResult = null;
 
         $scope.futures = $scope.propList.map(function (r) {
             return benchmarkServices.submit(r);
@@ -541,7 +541,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.benchmarkResult.state = $scope.auxModel.state;
             $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
             $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
-            console.log(results);
         });
     };
 
