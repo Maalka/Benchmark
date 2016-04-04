@@ -1037,7 +1037,11 @@ sealed trait BaseLine {
     }
 
   }
-  def getLog(x:Double):Double = {if(x == 0){x}else(log(x))}
+  
+  def getLog(x:Double):Double = {
+    case (0) => 0
+    case x => log(x)
+  }
 
 }
 /**
