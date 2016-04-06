@@ -563,7 +563,10 @@ case class EUIMetrics(parameters: JsValue) {
         case Some(CountryBuildingType("Canada","ResidenceHall")) => 2.05
         case Some(CountryBuildingType("Canada","DataCenter")) => 1.82 //this = Total Energy / IT Energy
 
-        case _ => 123.1
+        case Some(CountryBuildingType("Canada",_)) => 1.23
+
+        case Some(_) => throw new Exception("Could not find Country and Building Type for Median EUI")
+        case None => throw new Exception("Could not find Country and Building Type for Median EUI")
       }
     }
 
@@ -756,9 +759,10 @@ case class EUIMetrics(parameters: JsValue) {
         case Some(CountryBuildingType("Canada","Retail")) => 0.85
         case Some(CountryBuildingType("Canada","ResidenceHall")) => 1.45
         case Some(CountryBuildingType("Canada","DataCenter")) => 1.82
-        case Some(CountryBuildingType("Canada", _)) => 78.8
 
-        case Some(_) => 78.8
+        case Some(CountryBuildingType("Canada", _)) => 0.90
+
+        case Some(_) => throw new Exception("Could not find Country and Building Type for Median EUI")
         case None => throw new Exception("Could not find Country and Building Type for Median EUI")
       }
     }
@@ -822,6 +826,79 @@ case class EUIMetrics(parameters: JsValue) {
           case "Northeast" => 89.3 / 145.5
         }
       }
+      //Canadian Building Medians
+      case Some(CountryBuildingType("Canada", "AdultEducation")) => 1.18 / 1.44
+      case Some(CountryBuildingType("Canada", "College")) => 0.76 / 1.56
+      case Some(CountryBuildingType("Canada", "PreSchool")) => 0.92 / 1.27
+      case Some(CountryBuildingType("Canada", "VocationalSchool")) => 1.18 / 1.44
+      case Some(CountryBuildingType("Canada", "OtherEducation")) => 0.92 / 1.27
+      case Some(CountryBuildingType("Canada", "ConventionCenter")) => 1.74 /2.47
+      case Some(CountryBuildingType("Canada", "MovieTheater")) => 0.93 / 1.63
+      case Some(CountryBuildingType("Canada", "Museum")) => 1.74 / 2.47
+      case Some(CountryBuildingType("Canada", "PerformingArts")) => 1.74 / 2.47
+      case Some(CountryBuildingType("Canada", "BowlingAlley")) => 1.51 / 1.93
+      case Some(CountryBuildingType("Canada", "FitnessCenter")) => 1.51 / 1.93
+      case Some(CountryBuildingType("Canada", "IceRink")) => 1.51 / 1.93
+      case Some(CountryBuildingType("Canada", "RollerRink")) => 1.51 / 1.93
+      case Some(CountryBuildingType("Canada", "SwimmingPool")) => 1.51 / 1.93
+      case Some(CountryBuildingType("Canada", "OtherRecreation")) => 1.11 / 1.91
+      case Some(CountryBuildingType("Canada", "MeetingHall")) => 1.74 / 2.47
+      case Some(CountryBuildingType("Canada", "IndoorArena")) => 1.51 / 1.93
+      case Some(CountryBuildingType("Canada", "RaceTrack")) => 1.11 / 1.91
+      case Some(CountryBuildingType("Canada", "Stadium")) => 1.51 / 1.93
+      case Some(CountryBuildingType("Canada", "Aquarium")) => 1.74 / 2.47
+      case Some(CountryBuildingType("Canada", "Bar")) => 0.93 / 1.63
+      case Some(CountryBuildingType("Canada", "NightClub")) => 0.93 / 1.63
+      case Some(CountryBuildingType("Canada", "Casino")) => 0.93 / 1.63
+      case Some(CountryBuildingType("Canada", "Zoo")) => 1.74 / 2.47
+      case Some(CountryBuildingType("Canada", "OtherEntertainment")) => 1.74 / 2.47
+      case Some(CountryBuildingType("Canada", "ConvenienceStore")) => 3.14 / 5.16
+      case Some(CountryBuildingType("Canada", "GasStation")) => 3.14 / 5.16
+      case Some(CountryBuildingType("Canada", "FastFoodRestaurant")) => 3.05 / 4.21
+      case Some(CountryBuildingType("Canada", "Restaurant")) => 3.05 / 4.21
+      case Some(CountryBuildingType("Canada", "OtherDining")) => 3.05 / 4.21
+      case Some(CountryBuildingType("Canada", "FoodSales")) => 3.14 / 5.16
+      case Some(CountryBuildingType("Canada", "FoodService")) => 3.05 / 4.21
+      case Some(CountryBuildingType("Canada", "AmbulatorySurgicalCenter")) => 1.02 / 1.5
+      case Some(CountryBuildingType("Canada", "DrinkingWaterTreatment")) => 0.63 / 1.84
+      case Some(CountryBuildingType("Canada", "SpecialtyHospital")) => 2.35 / 3.12
+      case Some(CountryBuildingType("Canada", "OutpatientCenter")) => 1.02 / 1.5
+      case Some(CountryBuildingType("Canada", "PhysicalTherapyCenter")) => 1.02 / 1.5
+      case Some(CountryBuildingType("Canada", "UrgentCareCenter")) => 1.02 / 1.5
+      case Some(CountryBuildingType("Canada", "Barracks")) => 1.45 / 2.05
+      case Some(CountryBuildingType("Canada", "Prison")) => 1.28 / 1.74
+      case Some(CountryBuildingType("Canada", "ResidentialLodging")) => 1.12 / 1.75
+      case Some(CountryBuildingType("Canada", "MixedUse")) => 0.90 / 1.23
+      case Some(CountryBuildingType("Canada", "VeterinaryOffice")) => 1.02 / 1.5
+      case Some(CountryBuildingType("Canada", "Courthouse")) => 1.28 / 1.74
+      case Some(CountryBuildingType("Canada", "FireStation")) => 1.23 / 1.63
+      case Some(CountryBuildingType("Canada", "Library")) => 1.74 / 2.47
+      case Some(CountryBuildingType("Canada", "MailingCenter")) => 1.37 / 1.67
+      case Some(CountryBuildingType("Canada", "PostOffice")) => 1.37 / 1.67
+      case Some(CountryBuildingType("Canada", "PoliceStation")) => 1.28 / 1.74
+      case Some(CountryBuildingType("Canada", "TransportationTerminal")) => 1.06 / 1.42
+      case Some(CountryBuildingType("Canada", "OtherPublicServices")) => 0.90 / 1.23
+      case Some(CountryBuildingType("Canada", "AutoDealership")) => 0.85 / 1.52
+      case Some(CountryBuildingType("Canada", "EnclosedMall")) => 2.10 / 3.47
+      case Some(CountryBuildingType("Canada", "StripMall")) => 1.38 / 2.25
+      case Some(CountryBuildingType("Canada", "Laboratory")) => 0.90 / 1.23
+      case Some(CountryBuildingType("Canada", "PersonalServices")) => 1.00 / 1.37
+      case Some(CountryBuildingType("Canada", "RepairServices")) => 1.00 / 1.37
+      case Some(CountryBuildingType("Canada", "OtherServices")) => 1.37 / 2.2
+      case Some(CountryBuildingType("Canada", "PowerStation")) => 0.90 / 1.23
+      case Some(CountryBuildingType("Canada", "OtherUtility")) => 0.90 / 1.23
+      case Some(CountryBuildingType("Canada", "SelfStorageFacility")) => 0.75 / 0.93
+      // Canadian Building Medians for Buildings with US Algorithms
+      case Some(CountryBuildingType("Canada","Hotel")) => 1.12 / 1.75
+      case Some(CountryBuildingType("Canada","WorshipCenter")) => 0.86 / 1.06
+      case Some(CountryBuildingType("Canada","Warehouse")) => 0.75 / 0.93
+      case Some(CountryBuildingType("Canada","SeniorCare")) => 1.12 / 1.88
+      case Some(CountryBuildingType("Canada","Retail")) => 0.85 / 1.52
+      case Some(CountryBuildingType("Canada","ResidenceHall")) => 1.45 / 2.05
+      case Some(CountryBuildingType("Canada","DataCenter")) => 1.82 / 1.82
+
+      case Some(CountryBuildingType("Canada", _)) => 0.90 / 1.23
+
       case _ => throw new Exception("Could not find Default Site to Source Ratio")
     }
   }
@@ -903,6 +980,7 @@ case class EUIMetrics(parameters: JsValue) {
 
 
 
+
 case class BuildingArea(GFA:PosDouble)
 object BuildingArea {
   implicit val buildingAreaReads: Reads[BuildingArea] = Json.reads[BuildingArea]
@@ -959,6 +1037,14 @@ sealed trait BaseLine {
     }
 
   }
+
+  def getLog(x:Double):Double = {
+    x match {
+      case (0) => 0.0
+      case x => log(x)
+    }
+  }
+
 }
 /**
  *
@@ -1229,9 +1315,9 @@ case class Supermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDo
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(581.1, 0, 1), // regression constant
-    RegressionSegment(84.97, 9.679, log(buildingSize)),
-    RegressionSegment(115.6, -0.1084, log(numWorkersMainShift.value * 1000 / buildingSize)),
-    RegressionSegment(125.8, 4.657, log(weeklyOperatingHours.value)),
+    RegressionSegment(84.97, 9.679, getLog(buildingSize)),
+    RegressionSegment(115.6, -0.1084, getLog(numWorkersMainShift.value * 1000 / buildingSize)),
+    RegressionSegment(125.8, 4.657, getLog(weeklyOperatingHours.value)),
     RegressionSegment(794.4, 0.2345, numWalkinRefrUnits.value * 1000 / buildingSize ),
     RegressionSegment(902.8, .0254, hasCooking * 1000 / buildingSize ),
     RegressionSegment(.0947, 1219, CDD.value * percentCooled.value / 100),
@@ -1360,7 +1446,7 @@ case class Retail(weeklyOperatingHours:PosDouble, numOpenClosedRefrCases:PosDoub
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(153.1, 0, 1), // regression constant
-    RegressionSegment(20.19, 9.371, log(buildingSize)),
+    RegressionSegment(20.19, 9.371, getLog(buildingSize)),
     RegressionSegment(1.373, 63.74, weeklyOperatingHours.value),
     RegressionSegment(61.76, 0.6279, numWorkersMainShift.value * 1000 / buildingSize),
     RegressionSegment(70.6, 0.3149, numComputers.value * 1000 / buildingSize),
@@ -1398,8 +1484,8 @@ case class ResidenceHall(numBedrooms:PosDouble, percentHeated:PosDouble, percent
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(4.99455, 0, 1), // regression constant
-    RegressionSegment(0.91309, 0, log(buildingSize)),
-    RegressionSegment(0.09455, 0, log(numBedrooms.value)),
+    RegressionSegment(0.91309, 0, getLog(buildingSize)),
+    RegressionSegment(0.09455, 0, getLog(numBedrooms.value)),
     RegressionSegment(0.00009744, 0, HDD.value * percentHeated.value/100),
     RegressionSegment(0.00016279, 0, CDD.value * percentCooled.value/100)
 
@@ -1508,9 +1594,9 @@ case class MedicalOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:Pos
 
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(2.78889, 0, 1), // regression constant
-    RegressionSegment(0.91433, 0, log(buildingSize)),
-    RegressionSegment(0.46768, 0, log(weeklyOperatingHours.value)),
-    RegressionSegment(0.21568, 0, log(numWorkersMainShift.value)),
+    RegressionSegment(0.91433, 0, getLog(buildingSize)),
+    RegressionSegment(0.46768, 0, getLog(weeklyOperatingHours.value)),
+    RegressionSegment(0.21568, 0, getLog(numWorkersMainShift.value)),
     RegressionSegment(0.00020111, 0, CDD.value * percentCooled.value/100),
     RegressionSegment(0.00005321, 0, HDD.value * percentHeated.value/100)
 
@@ -1526,7 +1612,7 @@ object MedicalOffice {
 
 /**
  *
- * @param weeklyOperatingHours
+
  * @param numWorkersMainShift
  * @param gymFloorArea
  * @param studentSeatingCapacity
@@ -1539,21 +1625,19 @@ object MedicalOffice {
  * @param areaUnits
  */
 
-case class CanadaK12School(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble,
+case class CanadaK12School(numWorkersMainShift:PosDouble,
                            gymFloorArea:PosDouble, studentSeatingCapacity:PosDouble, isSecondarySchool:Option[Boolean],
                            percentHeated:PosDouble, percentCooled:PosDouble,HDD:PosDouble, CDD:PosDouble,
                            GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
 
 
-
-
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(1.021, 0, 1), // regression constant
     RegressionSegment(0.2308 * isSecondarySchool, 0, 1),
-    RegressionSegment(0.0304, 4.983, log(gymFloorArea.value)),
+    RegressionSegment(0.0304, 4.983, getLog(gymFloorArea.value)),
     RegressionSegment(0.0004402, 418.3, studentSeatingCapacity.value),
-    RegressionSegment(0.1218, 3.175, log(numWorkersMainShift.value)),
-    RegressionSegment(-0.3942, 8.118, log(buildingSize)),
+    RegressionSegment(0.1218, 3.175, getLog(numWorkersMainShift.value)),
+    RegressionSegment(-0.3942, 8.118, getLog(buildingSize)),
     RegressionSegment(0.0005647, 47.88, CDD.value * percentCooled.value/100),
     RegressionSegment(0.0001635, 4584, HDD.value * percentHeated.value/100)
   )
@@ -1589,9 +1673,9 @@ case class K12School(isOpenWeekends:Option[Boolean],
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(131.9, 0, 1), // regression constant
     RegressionSegment(4.377 * isHighSchool, 0, 1),
-    RegressionSegment(8.974, 7.716, log(HDD.value) * percentHeated.value / 100),
-    RegressionSegment(6.389, 5.045, log(CDD.value) * percentCooled.value / 100),
-    RegressionSegment(-19.26, 10.2, log(buildingSize)),
+    RegressionSegment(8.974, 7.716, getLog(HDD.value) * percentHeated.value / 100),
+    RegressionSegment(6.389, 5.045, getLog(CDD.value) * percentCooled.value / 100),
+    RegressionSegment(-19.26, 10.2, getLog(buildingSize)),
     RegressionSegment(18.43 * isOpenWeekends, 0, 1),
     RegressionSegment(574.7, 0.0109, numWalkinRefrUnits.value / buildingSize * 1000),
     RegressionSegment(24.2 * hasCooking, 0, 1),
@@ -1601,7 +1685,7 @@ case class K12School(isOpenWeekends:Option[Boolean],
     //if High School also include the following
     RegressionSegment(0.00021 * isHighSchool, 47310, buildingSize),
     RegressionSegment(0.0285 * isHighSchool, 1316, CDD.value * percentCooled.value / 100),
-    RegressionSegment(-11.75 * isHighSchool, 5.045, log(CDD.value) * percentCooled.value / 100)
+    RegressionSegment(-11.75 * isHighSchool, 5.045, getLog(CDD.value) * percentCooled.value / 100)
 
   )
 }
@@ -1638,7 +1722,7 @@ case class Hotel(numBedrooms:PosDouble, hasFoodPreparation:Option[Boolean], numW
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(169.1, 0, 1), // regression constant
     RegressionSegment(33.22, 1.951, numBedrooms.value * 1000 / buildingSize),
-    RegressionSegment(20.81, -1.395, log(numWorkersMainShift.value * 1000 / buildingSize)),
+    RegressionSegment(20.81, -1.395, getLog(numWorkersMainShift.value * 1000 / buildingSize)),
     RegressionSegment(65.14 * hasFoodPreparation, 0, 1),
     RegressionSegment(249.8, 0.0227, numRefrUnits.value * 1000 / buildingSize),
     RegressionSegment(0.0169, 1224, CDD.value * percentCooled.value/100),
@@ -1712,7 +1796,7 @@ case class CanadaHospital(weeklyOperatingHours:PosDouble, numWorkersMainShift:Po
     RegressionSegment(-0.0984, 2.726, numWorkersMainShift.value/licensedBedCapacity.value),
     RegressionSegment(0.4596 * hasLaundryFacility, 0, 1),
     RegressionSegment(9.3598e-06, 19004, min(100000,buildingSize)),
-    RegressionSegment(0.2775, 4.03, log(CDD.value+50) * percentCooled.value/100),
+    RegressionSegment(0.2775, 4.03, getLog(CDD.value+50) * percentCooled.value/100),
     RegressionSegment(0.00047986, 4787, HDD.value * percentHeated.value/100)
 
   )

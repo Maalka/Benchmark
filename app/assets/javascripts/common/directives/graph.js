@@ -24,7 +24,7 @@ define(['angular','highcharts', './main'], function(angular) {
               bars.push([k, 120]);
             }
             var createMarker = function(topPNG, bottomPNG, title, yOff, x, color, series, bold) {
-              if (x !== undefined && !isNaN(x)) {
+                if (x !== undefined && !isNaN(x)) {
                 return [{
                         id: title+"0",
                         type: 'flags',
@@ -79,7 +79,11 @@ define(['angular','highcharts', './main'], function(angular) {
                         showInLegend: false
                     }];
                   } else {
-                    return [];
+                    return [
+                      {id: title + "0", remove: true},
+                      {id: title + "1", remove: true},
+                      {id: title + "2", remove: true}
+                    ];
                   }
             };
             // flags don't seem to work on series where the axis is reversed
@@ -117,7 +121,9 @@ define(['angular','highcharts', './main'], function(angular) {
 
             var updateOrAddSeries = function(chart, options, refresh) {
               var s = chart.get(options.id);
-              if (s === undefined || s === null) {
+              if (s !== undefined && s !== null && options.remove === true) {
+                s.remove();
+              } else if (s === undefined || s === null) {
                 chart.addSeries(options);
               } else {
                 s.update(options, refresh);
@@ -176,9 +182,14 @@ define(['angular','highcharts', './main'], function(angular) {
                         },
                         'redraw': function () {
                           if (getBRByKey("actualZEPI") !== undefined) {
+                            removeMarker('bottom');
                             loadMarkers('bottom', this, this.get("Rating" + 0), 61, 45);
+                          } else {
+                            removeMarker('bottom');
                           }
-                           loadMarkers('top', this, this.get("Baseline" + 0), 61, -1);
+                          removeMarker('top');
+                          loadMarkers('top', this, this.get("Baseline" + 0), 61, -1);
+
                         }
                       }
                   },
@@ -253,6 +264,17 @@ define(['angular','highcharts', './main'], function(angular) {
                   },
                   series: []
               };
+              var removeMarker = function(tag) {
+                if (labels[tag + "1"] !== undefined) {
+                  labels[tag + "1"].destroy();
+                  delete labels[tag + "1"];
+                }
+                if (labels[tag + "2"] !== undefined) { 
+                  labels[tag + "2"].destroy();
+                  delete labels[tag + "2"];
+                }
+
+              };
               var loadMarkers = function(tag, obj, series, xOff, yOff) { 
                 if (series === null || series === undefined) {
                   return;
@@ -295,6 +317,7 @@ define(['angular','highcharts', './main'], function(angular) {
             $scope.$watch("benchmarkResult", function (br) {
               if (chart !== undefined) {
                 if (br !== undefined) {
+                  getMargin();
                   loadSeries(chart);
                 }
               }
