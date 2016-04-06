@@ -1,7 +1,7 @@
 import WebKeys._
 
 // TODO Replace with your project's/module's name
-name := "Maalka Benchmark"
+name := "maalka-benchmark"
 
 // TODO Set your organization here; ThisBuild means it will apply to all sub-modules
 organization in ThisBuild := "com.maalka"
@@ -17,8 +17,10 @@ maintainer in Docker := "Clay Teeter <clay.teeter@maalka.com>"
 packageSummary in Linux := "Benchmark tool"
 packageDescription := "Benchmark tool"
 
+linuxPackageMappings += packageTemplateMapping(s"/var/run/${name.value}/")() withUser name.value withGroup name.value
+
 lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
-lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, SbtNativePackager).dependsOn(squants)
+lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
 
 
 // Dependencies
