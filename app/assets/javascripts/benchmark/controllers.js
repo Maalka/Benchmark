@@ -24,7 +24,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.propTypes = [];
     $scope.matchmedia = matchmedia;
     $scope.mainColumnWidth = "";
-
+    $scope.buildingZone = "commercial";
     $scope.isResidential = false;
 
     // check the media to handel the ng-if media statements
@@ -62,11 +62,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             return;
         }
         if(($scope.auxModel.country) && (v)){
-
             $scope.isResidential = false;
 
-            for(var i = 0; i < $scope.buildingProperties.residentialPropTypes.length; i++ ) {
-                if( $scope.buildingProperties.residentialPropTypes[i] === v.id){
+            for(var i = 0; i < $scope.buildingProperties.buildingType.residential.length; i++ ) {
+                if( $scope.buildingProperties.buildingType.residential[i].id === v.id){
                     $scope.isResidential = true;
                     $scope.propTypes = [];
                     break;
@@ -74,8 +73,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             }
 
             for(var j = 0; j < $scope.propTypes.length; j++ ) {
-                for(var k = 0; k < $scope.buildingProperties.residentialPropTypes.length; k++ ) {
-                    if( $scope.propTypes[j].type === $scope.buildingProperties.residentialPropTypes[k]){
+                for(var k = 0; k < $scope.buildingProperties.buildingType.residential.length; k++ ) {
+                    if( $scope.propTypes[j].type === $scope.buildingProperties.buildingType.residential[k].id){
                         $scope.clearProp($scope.propTypes[j]);
                         break;
                     }
@@ -243,90 +242,90 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.buildingProperties = {
 
 
-        buildingType:[
-            {id:"Office",name:"Bank Branch"},
-            {id:"Office",name:"Financial Office"},
-            {id:"AdultEducation",name:"Adult Education"},
-            {id:"College",name:"College / University"},
-            {id:"K12School",name:"K-12 School"},
-            {id:"PreSchool",name:"Pre-school / DayCare"},
-            {id:"VocationalSchool",name:"Vocational School"},
-            {id:"OtherEducation",name:"Other Education"},
-            {id:"ConventionCenter",name:"Convention Center"},
-            {id:"MovieTheater",name:"Movie Theater"},
-            {id:"Museum",name:"Museum"},
-            {id:"PerformingArts",name:"Performing Arts"},
-            {id:"BowlingAlley",name:"Bowling Alley"},
-            {id:"FitnessCenter",name:"Fitness Center"},
-            {id:"IceRink",name:"Ice / Curling Rink"},
-            {id:"RollerRink",name:"Roller Rink"},
-            {id:"SwimmingPool",name:"Swimming Pool"},
-            {id:"OtherRecreation",name:"Other Recreation"},
-            {id:"Stadium",name:"Stadium"},
-            {id:"IndoorArena",name:"Indoor Arena"},
-            {id:"RaceTrack",name:"Race Track"},
-            {id:"Aquarium",name:"Aquarium"},
-            {id:"Bar",name:"Bar"},
-            {id:"Bar",name:"Nightclub"},
-            {id:"Casino",name:"Casino"},
-            {id:"Zoo",name:"Zoo"},
-            {id:"OtherEntertainment",name:"Other Entertainment"},
-            {id:"GasStation",name:"Convenience Store with Gas Station"},
-            {id:"ConvenienceStore",name:"Convenience Store without Gas Station"},
-            {id:"FastFoodRestaurant",name:"Fast Food Restaurant"},
-            {id:"Restaurant",name:"Restaurant"},
-            {id:"Supermarket",name:"Supermarket"},
-            {id:"Retail",name:"Wholesale Club"},
-            {id:"FoodSales",name:"Food Sales"},
-            {id:"FoodService",name:"Food Service"},
-            {id:"AmbulatorySurgicalCenter",name:"Ambulatory Surgical Center"},
-            {id:"Hospital",name:"Hospital"},
-            {id:"SpecialtyHospital",name:"Specialty Hospital"},
-            {id:"MedicalOffice",name:"Medical Office"},
-            {id:"OutpatientCenter",name:"Outpatient Rehabilitation Center"},
-            {id:"PhysicalTherapyCenter",name:"Physical Therapy Center"},
-            {id:"SeniorCare",name:"Senior Care Community"},
-            {id:"UrgentCareCenter",name:"Urgent Care Center"},
-            {id:"Barracks",name:"Barracks"},
-            {id:"Hotel",name:"Hotel"},
-            {id:"MultiFamily",name:"Multifamily Housing"},
-            {id:"Prison",name:"Prison / Incarceration"},
-            {id:"ResidenceHall",name:"Residence Hall"},
-            {id:"ResidentialLodging",name:"Other Residential Lodging"},
-            {id:"MixedUse",name:"Mixed Use Property"},
-            {id:"Office",name:"Office"},
-            {id:"VeterinaryOffice",name:"Veterinary Office"},
-            {id:"Courthouse",name:"Courthouse"},
-            {id:"DrinkingWaterTreatment",name:"Drinking Water Treatment Center"},
-            {id:"FireStation",name:"Fire Station"},
-            {id:"Library",name:"Library"},
-            {id:"PostOffice",name:"Post Office"},
-            {id:"PoliceStation",name:"Police Station"},
-            {id:"MeetingHall",name:"Meeting Hall"},
-            {id:"TransportationTerminal",name:"Transportation Terminal"},
-            {id:"WastewaterCenter",name:"Wastewater Treatment Center"},
-            {id:"OtherPublicServices",name:"Other Public Services"},
-            {id:"WorshipCenter",name:"Worship Facility"},
-            {id:"AutoDealership",name:"Automobile Dealership"},
-            {id:"EnclosedMall",name:"Enclosed Mall"},
-            {id:"StripMall",name:"Strip Mall"},
-            {id:"Retail",name:"Retail Store"},
-            {id:"DataCenter",name:"Data Center"}, //Data Centers behave very different and require custom script
-            {id:"PersonalServices",name:"Personal Services (Health/Beauty, Dry Cleaning, etc.)"},
-            {id:"RepairServices",name:"Repair Services (Vehicle, Shoe Locksmith, etc.)"},
-            {id:"OtherServices",name:"Other Services"},
-            {id:"PowerStation",name:"Energy / Power Station"},
-            {id:"OtherUtility",name:"Other Utility Station"},
-            {id:"SelfStorageFacility",name:"Self Storage Facility"},
-            {id:"Warehouse",name:"Warehouse / Distribution Center"},
-            {id:"SingleFamilyDetached",name:"Singe Family - Detached"},
-            {id:"SingleFamilyAttached",name:"Singe Family - Attached"},
-            {id:"MobileHome",name:"Mobile Home"}
+        buildingType: {
+            commercial: [
+                {id:"Office",name:"Bank Branch"},
+                {id:"Office",name:"Financial Office"},
+                {id:"AdultEducation",name:"Adult Education"},
+                {id:"College",name:"College / University"},
+                {id:"K12School",name:"K-12 School"},
+                {id:"PreSchool",name:"Pre-school / DayCare"},
+                {id:"VocationalSchool",name:"Vocational School"},
+                {id:"OtherEducation",name:"Other Education"},
+                {id:"ConventionCenter",name:"Convention Center"},
+                {id:"MovieTheater",name:"Movie Theater"},
+                {id:"Museum",name:"Museum"},
+                {id:"PerformingArts",name:"Performing Arts"},
+                {id:"BowlingAlley",name:"Bowling Alley"},
+                {id:"FitnessCenter",name:"Fitness Center"},
+                {id:"IceRink",name:"Ice / Curling Rink"},
+                {id:"RollerRink",name:"Roller Rink"},
+                {id:"SwimmingPool",name:"Swimming Pool"},
+                {id:"OtherRecreation",name:"Other Recreation"},
+                {id:"Stadium",name:"Stadium"},
+                {id:"IndoorArena",name:"Indoor Arena"},
+                {id:"RaceTrack",name:"Race Track"},
+                {id:"Aquarium",name:"Aquarium"},
+                {id:"Bar",name:"Bar"},
+                {id:"Bar",name:"Nightclub"},
+                {id:"Casino",name:"Casino"},
+                {id:"Zoo",name:"Zoo"},
+                {id:"OtherEntertainment",name:"Other Entertainment"},
+                {id:"GasStation",name:"Convenience Store with Gas Station"},
+                {id:"ConvenienceStore",name:"Convenience Store without Gas Station"},
+                {id:"FastFoodRestaurant",name:"Fast Food Restaurant"},
+                {id:"Restaurant",name:"Restaurant"},
+                {id:"Supermarket",name:"Supermarket"},
+                {id:"Retail",name:"Wholesale Club"},
+                {id:"FoodSales",name:"Food Sales"},
+                {id:"FoodService",name:"Food Service"},
+                {id:"AmbulatorySurgicalCenter",name:"Ambulatory Surgical Center"},
+                {id:"Hospital",name:"Hospital"},
+                {id:"SpecialtyHospital",name:"Specialty Hospital"},
+                {id:"MedicalOffice",name:"Medical Office"},
+                {id:"OutpatientCenter",name:"Outpatient Rehabilitation Center"},
+                {id:"PhysicalTherapyCenter",name:"Physical Therapy Center"},
+                {id:"SeniorCare",name:"Senior Care Community"},
+                {id:"UrgentCareCenter",name:"Urgent Care Center"},
+                {id:"Barracks",name:"Barracks"},
+                {id:"Hotel",name:"Hotel"},
+                {id:"MultiFamily",name:"Multifamily Housing"},
+                {id:"Prison",name:"Prison / Incarceration"},
+                {id:"ResidenceHall",name:"Residence Hall"},
+                {id:"ResidentialLodging",name:"Other Residential Lodging"},
+                {id:"MixedUse",name:"Mixed Use Property"},
+                {id:"Office",name:"Office"},
+                {id:"VeterinaryOffice",name:"Veterinary Office"},
+                {id:"Courthouse",name:"Courthouse"},
+                {id:"DrinkingWaterTreatment",name:"Drinking Water Treatment Center"},
+                {id:"FireStation",name:"Fire Station"},
+                {id:"Library",name:"Library"},
+                {id:"PostOffice",name:"Post Office"},
+                {id:"PoliceStation",name:"Police Station"},
+                {id:"MeetingHall",name:"Meeting Hall"},
+                {id:"TransportationTerminal",name:"Transportation Terminal"},
+                {id:"WastewaterCenter",name:"Wastewater Treatment Center"},
+                {id:"OtherPublicServices",name:"Other Public Services"},
+                {id:"WorshipCenter",name:"Worship Facility"},
+                {id:"AutoDealership",name:"Automobile Dealership"},
+                {id:"EnclosedMall",name:"Enclosed Mall"},
+                {id:"StripMall",name:"Strip Mall"},
+                {id:"Retail",name:"Retail Store"},
+                {id:"DataCenter",name:"Data Center"}, //Data Centers behave very different and require custom script
+                {id:"PersonalServices",name:"Personal Services (Health/Beauty, Dry Cleaning, etc.)"},
+                {id:"RepairServices",name:"Repair Services (Vehicle, Shoe Locksmith, etc.)"},
+                {id:"OtherServices",name:"Other Services"},
+                {id:"PowerStation",name:"Energy / Power Station"},
+                {id:"OtherUtility",name:"Other Utility Station"},
+                {id:"SelfStorageFacility",name:"Self Storage Facility"},
+                {id:"Warehouse",name:"Warehouse / Distribution Center"},
             ],
-            residentialPropTypes: [
-            "SingleFamilyDetached",
-            "SingleFamilyAttached",
-            "MobileHome" ]
+            residential: [
+                {id:"SingleFamilyDetached",name:"Single Family - Detached"},
+                {id:"SingleFamilyAttached",name:"Single Family - Attached"},
+                {id:"MobileHome",name:"Mobile Home"}
+            ]
+        }
     };
 
 
@@ -722,7 +721,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.percentBetterSiteEUI = mixPercentBetterSiteEUI;
 
             $scope.baselineConstant = $scope.isResidential ? 130 : 100;
-            $scope.scoreText = $scope.isResidential ? "HERS Score" : "zEPI Score";
+            $scope.scoreText = $scope.isResidential ? "HERS Index Score" : "zEPI Score";
             $scope.scoreGraph = $scope.isResidential ? "HERS" : "zEPI";
             $scope.scoreUnits = $scope.isResidential ? "0-130" : "0-100";
 

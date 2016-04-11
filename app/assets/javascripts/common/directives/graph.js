@@ -158,15 +158,25 @@ define(['angular','highcharts', './main'], function(angular) {
               for (var i = 0; i < s.length; i ++) {
                 updateOrAddSeries(chart, s[i], i === s.length - 1, false);
               }
+              $element.css({height: getHeight() + "px"});
               chart.margin = getMargin();
               chart.isDirtyBox = true;
               chart.redraw();
+              chart.reflow();
+            };
+            var getHeight = function() {
+              var height = 350 - 85;
+              baselineEUI = getBRByKey("medianSiteEUI");
+              if (getBRByKey("actualZEPI") !== undefined) {
+                height = height + 85;
+              }
+              return height;
             };
             var getMargin = function() {
               var margin = [75, 0, 0, 0];
               baselineEUI = getBRByKey("medianSiteEUI");
               if (getBRByKey("actualZEPI") !== undefined) {
-                margin[2] = 85; 
+                margin[2] = 85;
               }
               return margin;
             };
@@ -174,8 +184,6 @@ define(['angular','highcharts', './main'], function(angular) {
 
               var options = {
                   chart: {
-                      margin: getMargin(),
-                      height: 350,
                       events: {
                         'load': function () {
                           loadSeries(chart);
@@ -253,11 +261,15 @@ define(['angular','highcharts', './main'], function(angular) {
                                   }
                               }
                           },
+                          fillOpacity: 1,
                           color: {
                             linearGradient: { x1: 0, x2: 1, y1: 0, y2: 0 },
                             stops: [
-                              [0, '#ff0000'],
-                              [1, '#00ff00']
+                              [0, '#ff3300'],
+                              [0.2, '#ff9966'],
+                              [0.5, '#ffcc99'],
+                              [0.8, '#33cc66'],
+                              [1, '#009966']
                             ]
                           }
                       }
@@ -317,7 +329,7 @@ define(['angular','highcharts', './main'], function(angular) {
             $scope.$watch("benchmarkResult", function (br) {
               if (chart !== undefined) {
                 if (br !== undefined) {
-                  getMargin();
+                  getHeight();
                   loadSeries(chart);
                 }
               }
