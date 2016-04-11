@@ -319,7 +319,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 {id:"OtherUtility",name:"Other Utility Station"},
                 {id:"SelfStorageFacility",name:"Self Storage Facility"},
                 {id:"Warehouse",name:"Warehouse / Distribution Center"},
-
             ],
             residential: [
                 {id:"SingleFamilyDetached",name:"Singe Family - Detached"},
@@ -722,7 +721,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.percentBetterSiteEUI = mixPercentBetterSiteEUI;
 
             $scope.baselineConstant = $scope.isResidential ? 130 : 100;
-            $scope.scoreText = $scope.isResidential ? "HERS Score" : "zEPI Score";
+            $scope.scoreText = $scope.isResidential ? "HERS Index Score" : "zEPI Score";
             $scope.scoreGraph = $scope.isResidential ? "HERS" : "zEPI";
             $scope.scoreUnits = $scope.isResidential ? "0-130" : "0-100";
 
