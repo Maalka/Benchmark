@@ -321,8 +321,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 {id:"Warehouse",name:"Warehouse / Distribution Center"},
             ],
             residential: [
-                {id:"SingleFamilyDetached",name:"Singe Family - Detached"},
-                {id:"SingleFamilyAttached",name:"Singe Family - Attached"},
+                {id:"SingleFamilyDetached",name:"Single Family - Detached"},
+                {id:"SingleFamilyAttached",name:"Single Family - Attached"},
                 {id:"MobileHome",name:"Mobile Home"}
             ]
         }
