@@ -183,7 +183,24 @@
                     building will be used. If your building has multiple uses,
                     add them below.
                 </p>
+                 <div class="inline fields">
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" id="project-commercial" ng-model="auxModel.buildingZone" ng-init="auxModel.buildingZone='commercial'"
+                               ng-value="'commercial'">
+                            <label for='project-commercial'>Commercial</label>
 
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" id="project-residential" ng-model="auxModel.buildingZone" ng-init="auxModel.buildingZone='commercial'"
+                               ng-value="'residential'">
+                            <label for="project-residential">Residential</label>
+
+                        </div>
+                    </div>
+                </div>
                 <div class="inline fields">
                     <div class="sixteen wide field">
                         <label>{{propText}}</label>
@@ -191,7 +208,7 @@
                             dropdown
                             reset = "auxModel.resetBuildingType"
                             ng-model="auxModel.buildingType"
-                            ng-options="item as item.name for item in buildingProperties.buildingType"
+                            ng-options="item as item.name for item in buildingProperties.buildingType[auxModel.buildingZone] | orderBy : 'name'"
                             name="buildingType">
                             <option value="">Select</option>
                         </select>
