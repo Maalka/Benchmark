@@ -141,6 +141,45 @@
                 </div>
             </div>
             <h3 class="ui header"><i class="building icon"></i>PROPERTY USE DETAILS</h3>
+            <div class="ui segment page-break-after" ng-class="{'disabled': !forms.baselineForm.country.$valid}">
+                <p>
+                    In order to provide you with an appropriate comparison
+                    for your building, we need to know how spaces in this
+                    building will be used. If your building has multiple uses,
+                    add them below.
+                </p>
+                 <div class="inline fields">
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" id="project-commercial" ng-model="auxModel.buildingZone" ng-init="auxModel.buildingZone='commercial'"
+                               ng-value="'commercial'">
+                            <label for='project-commercial'>Commercial</label>
+
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" id="project-residential" ng-model="auxModel.buildingZone" ng-init="auxModel.buildingZone='commercial'"
+                               ng-value="'residential'">
+                            <label for="project-residential">Residential</label>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="inline fields" ng-if="!(propTypes.length > 0 && propTypes[0].buildingZone === 'residential' && auxModel.buildingZone == 'residential')">
+                    <div class="sixteen wide field">
+                        <label>{{propText}}</label>
+                        <select class="ui dropdown search"
+                            dropdown`
+                            reset = "auxModel.resetBuildingType"
+                            ng-model="auxModel.buildingType"
+                            ng-options="item as item.name for item in buildingProperties.buildingType[auxModel.buildingZone] | orderBy : 'name'"
+                            name="buildingType">
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             <div ng-repeat="prop in propTypes" ng-class="{'page-break-after': ($index + 1) % 3 == 0}">
                 <div class="ui segment building">
                     <div ng-if="prop.type=='DataCenter' && prop.country=='USA'" building-Info forms='forms' type='DataCenter' model="prop"></div>
@@ -175,45 +214,6 @@
 
                 </div>
 
-            </div>
-            <div class="ui segment page-break-after" ng-class="{'disabled': !forms.baselineForm.country.$valid}">
-                <p>
-                    In order to provide you with an appropriate comparison
-                    for your building, we need to know how spaces in this
-                    building will be used. If your building has multiple uses,
-                    add them below.
-                </p>
-                 <div class="inline fields">
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" id="project-commercial" ng-model="auxModel.buildingZone" ng-init="auxModel.buildingZone='commercial'"
-                               ng-value="'commercial'">
-                            <label for='project-commercial'>Commercial</label>
-
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" id="project-residential" ng-model="auxModel.buildingZone" ng-init="auxModel.buildingZone='commercial'"
-                               ng-value="'residential'">
-                            <label for="project-residential">Residential</label>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="inline fields">
-                    <div class="sixteen wide field">
-                        <label>{{propText}}</label>
-                        <select class="ui dropdown search"
-                            dropdown
-                            reset = "auxModel.resetBuildingType"
-                            ng-model="auxModel.buildingType"
-                            ng-options="item as item.name for item in buildingProperties.buildingType[auxModel.buildingZone] | orderBy : 'name'"
-                            name="buildingType">
-                            <option value="">Select</option>
-                        </select>
-                    </div>
-                </div>
             </div>
             <h3 class="ui header" ng-if="auxModel.newConstruction === false"><i class="lightning icon"></i>Actual Annual Energy Use</h3>
             <div class="ui segment energy-entry" ng-if="auxModel.newConstruction === false">

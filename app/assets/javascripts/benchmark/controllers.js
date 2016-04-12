@@ -84,7 +84,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.propTypes.push({
                 type: v.id,
                 name: v.name,
-                country:$scope.auxModel.country
+                country:$scope.auxModel.country,
+                buildingZone: $scope.auxModel.buildingZone
             });
 
             $scope.propText="Add Another Use";
