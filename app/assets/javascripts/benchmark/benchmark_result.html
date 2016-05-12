@@ -12,7 +12,7 @@
 	       <div graph benchmark-result="benchmarkResult" baseline-constant="baselineConstant" score-Graph="scoreGraph" style="width: 100%; height:400px'"></div>
 	    </div>
 	    <div class=" teal sixteen wide column" ng-if="benchmarkResult">
-	        <div ng-include src="'assets/javascripts/benchmark/proplist_result.html'">Not Defined</div>
+	        <div ng-include src="'javascripts/benchmark/proplist_result.html'">Not Defined</div>
 	    </div>
 	    <div class="one wide column" ng-if="!benchmarkResult">
 	    	<i class="arrow left icon" style="padding-top: 1px;"></i>
@@ -22,5 +22,5 @@
 	    </div>
 	</div>
 	<div ng-include ng-show="benchmarkResult"
-		src="'assets/javascripts/common/partials/reportingUnitsSubmit.html'">Not Defined</div>
+		src="'javascripts/common/partials/reportingUnitsSubmit.html'">Not Defined</div>
 </div>

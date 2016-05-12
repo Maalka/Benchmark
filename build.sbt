@@ -62,6 +62,9 @@ routesGenerator := InjectedRoutesGenerator
 // https://github.com/sbt/sbt-web
 //
 
+AngularTemplatesKeys.module := "angular.module('maalka-templates', [])"
+AngularTemplatesKeys.naming := {value : String => value.replace("\\", "/")}
+
 // Configure the steps of the asset pipeline (used in stage and dist tasks)
 // rjs = RequireJS, uglifies, shrinks to one file, replaces WebJars with CDN
 // digest = Adds hash to filename
