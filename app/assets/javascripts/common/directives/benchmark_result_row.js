@@ -27,7 +27,7 @@ define(['angular','./main'], function(angular) {
         'units': "=",
         'columns': "="
       },
-      templateUrl: '/assets/javascripts/common/partials/benchmark_result_row.html',
+      templateUrl: 'javascripts/common/partials/benchmark_result_row.html',
       link: function(scope) {
 
         var getResultValue = function (key) {

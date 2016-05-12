@@ -20,6 +20,9 @@
       },
       'angular-route': ['angular'],
       'angular-cookies': ['angular'],
+      'maalka-templates': {
+        deps: ['angular']
+      },
       'matchmedia-ng': ['angular'],
       'highcharts-core': {
         deps: ['jquery'],
@@ -54,7 +57,8 @@
       'semantic': './semantic/semantic.min',
       'jsRoutes': '/jsroutes',
       'semantic-daterangepicker': './semantic-ui-daterangepicker/daterangepicker',
-      'moment': './semantic-ui-daterangepicker/moment'
+      'moment': './semantic-ui-daterangepicker/moment',
+      'maalka-templates': '../templates'
     }
   });
 

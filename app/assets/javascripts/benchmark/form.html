@@ -240,7 +240,7 @@
                             <div class="field">
                                  <select class="ui dropdown"
                                     ng-model="energyEntry.energyType"
-                                    ng-options="item.id as item.name for item in energyProperties.energyType">
+                                    ng-options="item.id as item.name for item in energyProperties.energyType track by item.name">
                                     <option value="">Select</option>
                                 </select>
                             </div>

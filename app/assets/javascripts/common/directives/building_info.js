@@ -17,7 +17,7 @@ define(['angular','./main'], function(angular) {
             },
 
             templateUrl: function(){
-                   return '/assets/javascripts/common/partials/property_fields.html';
+                   return 'javascripts/common/partials/property_fields.html';
             },
 
             controller: ["$scope", function ($scope) {

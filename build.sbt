@@ -7,7 +7,7 @@ name := "maalka-benchmark"
 organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
-version := "1.0.3.2"
+version := "1.0.4.0"
 
 scalaVersion in ThisBuild := "2.11.6"
 
@@ -61,6 +61,9 @@ routesGenerator := InjectedRoutesGenerator
 // sbt-web configuration
 // https://github.com/sbt/sbt-web
 //
+
+AngularTemplatesKeys.module := "angular.module('maalka-templates', [])"
+AngularTemplatesKeys.naming := {value : String => value.replace("\\", "/")}
 
 // Configure the steps of the asset pipeline (used in stage and dist tasks)
 // rjs = RequireJS, uglifies, shrinks to one file, replaces WebJars with CDN
