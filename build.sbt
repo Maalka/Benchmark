@@ -7,7 +7,7 @@ name := "maalka-benchmark"
 organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
-version := "1.0.3.2"
+version := "1.0.4.0"
 
 scalaVersion in ThisBuild := "2.11.6"
 
