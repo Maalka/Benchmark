@@ -968,8 +968,6 @@ case class EUIMetrics(parameters: JsValue) {
     }
   }
 
-
-
   def getTargetES:Future[Int] = Future{
     parameters.asOpt[TargetES] match {
       case Some(a) => a.target
@@ -979,13 +977,10 @@ case class EUIMetrics(parameters: JsValue) {
 }
 
 
-
-
 case class BuildingArea(GFA:PosDouble)
 object BuildingArea {
   implicit val buildingAreaReads: Reads[BuildingArea] = Json.reads[BuildingArea]
 }
-
 
 case class TargetES(target:Int)
 object TargetES {
@@ -1066,7 +1061,8 @@ object StateBuildingType {
 
 /**
  * Class to manage the decomposing of Country and Building from the input JSON
- * @param country country that the building resides in
+  *
+  * @param country country that the building resides in
  * @param buildingType type of building
  */
 case class CountryBuildingType(country: String, buildingType: String)
@@ -1087,7 +1083,8 @@ object GenericBuilding {
 
 /**
  *   Building Type parameters
- * @param weeklyOperatingHours
+  *
+  * @param weeklyOperatingHours
  * @param numWorkersMainShift
  * @param numComputers
  * @param percentHeated
@@ -1129,7 +1126,8 @@ object Office {
 
 /**
  * Canada Office
- * @param weeklyOperatingHours
+  *
+  * @param weeklyOperatingHours
  * @param numWorkersMainShift
  * @param numComputers
  * @param percentCooled
@@ -1810,7 +1808,6 @@ object CanadaHospital {
 }
 
 
-
 // Data Centers don't follow the same rules as other buildings, to include them need to expand code with PUE based analysis
 case class DataCenter(annualITEnergy:PosDouble, reportingUnits:String,
                       GFA:PosDouble, areaUnits:String, country:String) extends BaseLine {
@@ -1835,8 +1832,4 @@ case class DataCenter(annualITEnergy:PosDouble, reportingUnits:String,
 object DataCenter {
   implicit val dataCenterReads: Reads[DataCenter] = Json.reads[DataCenter]
 }
-
-
-
-
 

@@ -50,7 +50,11 @@ trait BaselineActions {
           case a:Energy => energyToJSValue(a*conversionFactor)
           case a:EmissionsTuple => JsObject(Seq(a.eType -> Json.toJson(a.eValue)))
           case a:EnergyTuple => JsObject(Seq(a.energyType -> energyToJSValue(a.energyValue*conversionFactor)))
-
+          case a:TableEntry => JsObject(Seq(
+            "ES" -> JsNumber(a.ES),
+            "CmPercent" -> JsNumber(a.CmPercent),
+            "Ratio" -> JsNumber(a.Ratio)
+            ))
         })
       }
       case v: String => Right(Json.toJson(v))
@@ -58,7 +62,36 @@ trait BaselineActions {
     }
   }
 
-  def makeBaseline() = Action.async(parse.json) { implicit request =>
+  def EUIConversionConstant(energyCalcs: EUICalculator):Double = {
+    (energyCalcs.country, energyCalcs.reportingUnits) match {
+      case ("USA", "us") => 1.0
+      case ("USA", "metric") => (KBtus(1) to Gigajoules)/(SquareFeet(1) to SquareMeters)
+      case (_, "metric") => 1.0
+      case (_, "us") => (Gigajoules(1) to KBtus) / (SquareMeters(1) to SquareFeet)
+      case _ => 1.0
+    }
+  }
+  def energyConversionConstant(energyCalcs: EUICalculator):Double = {
+    (energyCalcs.country, energyCalcs.reportingUnits) match {
+      case ("USA", "us") => 1.0
+      case ("USA", "metric") => KBtus(1) to Gigajoules
+      case (_, "metric") => 1.0
+      case (_, "us") => Gigajoules(1) to KBtus
+      case _ => 1.0
+    }
+  }
+
+  def GFAConversionConstant(energyCalcs: EUICalculator):Double = {
+    (energyCalcs.country, energyCalcs.reportingUnits) match {
+      case ("USA", "us") => 1.0
+      case ("USA", "metric") => SquareFeet(1) to SquareMeters
+      case (_, "metric") => 1.0
+      case (_, "us") => SquareMeters(1) to SquareFeet
+      case _ => 1.0
+    }
+  }
+
+  def doEverything() = Action.async(parse.json) { implicit request =>
     val getBaseline: EUIMetrics = EUIMetrics(request.body)
     val energyCalcs: EUICalculator = EUICalculator(request.body)
     val emissionCalcs: Emissions = Emissions(request.body)
@@ -74,78 +107,44 @@ trait BaselineActions {
 
       "sourceEnergy", "siteEnergy", "poolEnergy", "parkingEnergy", "totalSourceEnergyNoPoolNoParking",
 
-      "buildingSize", "sourceSiteRatio", "buildingClass", "predictedSourceEnergy",
-
       "directSiteEmissions", "indirectSiteEmissions", "totalSiteEmissions")
 
-    val EUIConversionConstant:Double = {
-      (energyCalcs.country, energyCalcs.reportingUnits) match {
-        case ("USA", "us") => 1.0
-        case ("USA", "metric") => (KBtus(1) to Gigajoules)/(SquareFeet(1) to SquareMeters)
-        case (_, "metric") => 1.0
-        case (_, "us") => (Gigajoules(1) to KBtus) / (SquareMeters(1) to SquareFeet)
-        case _ => 1.0
-      }
-    }
-    val energyConversionConstant:Double = {
-      (energyCalcs.country, energyCalcs.reportingUnits) match {
-        case ("USA", "us") => 1.0
-        case ("USA", "metric") => KBtus(1) to Gigajoules
-        case (_, "metric") => 1.0
-        case (_, "us") => Gigajoules(1) to KBtus
-        case _ => 1.0
-      }
-    }
 
-    val GFAConversionConstant:Double = {
-      (energyCalcs.country, energyCalcs.reportingUnits) match {
-        case ("USA", "us") => 1.0
-        case ("USA", "metric") => SquareFeet(1) to SquareMeters
-        case (_, "metric") => 1.0
-        case (_, "us") => SquareMeters(1) to SquareFeet
-        case _ => 1.0
-      }
-    }
 
     val futures = Future.sequence(Seq(
       // first column table output
       getBaseline.ES.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.sourceEUI.map(api(_,EUIConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.siteEUI.map(api(_,EUIConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      energyCalcs.getTotalSourceEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      energyCalcs.getTotalSiteEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.sourceEUI.map(api(_,EUIConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.siteEUI.map(api(_,EUIConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      energyCalcs.getTotalSourceEnergy.map(api(_,energyConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      energyCalcs.getTotalSiteEnergy.map(api(_,energyConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
 
       // second column table output -- Either user supplied ES Target, or %Better Score
       getBaseline.getTargetES.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.targetSourceEUI.map(api(_,EUIConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.targetSiteEUI.map(api(_,EUIConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.targetSourceEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.targetSiteEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.targetSourceEUI.map(api(_,EUIConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.targetSiteEUI.map(api(_,EUIConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.targetSourceEnergy.map(api(_,energyConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.targetSiteEnergy.map(api(_,energyConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
 
       getBaseline.percentBetterES.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.percentBetterSourceEUI.map(api(_,EUIConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.percentBetterSiteEUI.map(api(_,EUIConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.percentBetterSourceEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.percentBetterSiteEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.percentBetterSourceEUI.map(api(_,EUIConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.percentBetterSiteEUI.map(api(_,EUIConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.percentBetterSourceEnergy.map(api(_,energyConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.percentBetterSiteEnergy.map(api(_,energyConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
 
       // third column table output
       Future{api(50)},
-      getBaseline.medianSourceEUI.map(api(_,EUIConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.medianSiteEUI.map(api(_,EUIConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.medianSourceEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.medianSiteEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.medianSourceEUI.map(api(_,EUIConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.medianSiteEUI.map(api(_,EUIConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.medianSourceEnergy.map(api(_,energyConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      getBaseline.medianSiteEnergy.map(api(_,energyConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
 
       // extra information, e.g. site/source conversion breakdowns
-      energyCalcs.getSourceEnergy.map(api(_,EUIConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      energyCalcs.getSiteEnergy.map(api(_,EUIConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      energyCalcs.getPoolEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      energyCalcs.getParkingEnergy.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      energyCalcs.getTotalSourceEnergyNoPoolNoParking.map(api(_,energyConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-
-      getBaseline.buildingGFA.map(api(_,GFAConversionConstant)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.sourceSiteRatio.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.getBuildingClass.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      getBaseline.expectedSourceEnergy.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      energyCalcs.getSourceEnergy.map(api(_,EUIConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      energyCalcs.getSiteEnergy.map(api(_,EUIConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      energyCalcs.getPoolEnergy.map(api(_,energyConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      energyCalcs.getParkingEnergy.map(api(_,energyConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
+      energyCalcs.getTotalSourceEnergyNoPoolNoParking.map(api(_,energyConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)},
 
       emissionCalcs.getDirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       emissionCalcs.getIndirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -166,5 +165,62 @@ trait BaselineActions {
       ))
     }
   }
+
+
+  def getPredictedEnergy() = Action.async(parse.json) { implicit request =>
+
+    val getTables: TablePredictedEnergy = TablePredictedEnergy(request.body)
+
+    val futures = Future.sequence(Seq(
+      getTables.getTotalPredictedEnergy.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      getTables.getWeightedTable.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+    ))
+
+    val fieldNames = Seq(
+      "predictedEnergy", "mixTable")
+
+    futures.map(fieldNames.zip(_)).map { r =>
+      val errors = r.collect {
+        case (n, Left(s)) => Json.obj(n -> s)
+      }
+      val results = r.collect {
+        case (n, Right(s)) => Json.obj(n -> s)
+      }
+      Ok(Json.obj(
+        "values" -> results,
+        "errors" -> errors
+      ))
+    }
+
+  }
+
+  def getActualEnergy() = Action.async(parse.json) { implicit request =>
+    val energyCalcs: EUICalculator = EUICalculator(request.body)
+
+    val fieldNames = Seq(
+      "sourceEnergy"
+    )
+
+    val futures = Future.sequence(Seq(
+      // extra information, e.g. site/source conversion breakdowns
+      energyCalcs.getSourceEnergy.map(api(_,EUIConversionConstant(energyCalcs))).recover{ case NonFatal(th) => apiRecover(th)}
+    ))
+
+    futures.map(fieldNames.zip(_)).map { r =>
+      val errors = r.collect {
+        case (n, Left(s)) => Json.obj(n -> s)
+      }
+      val results = r.collect {
+        case (n, Right(s)) => Json.obj(n -> s)
+      }
+      Ok(Json.obj(
+        "values" -> results,
+        "errors" -> errors
+      ))
+    }
+  }
+
+
+
 }
 class BaselineController @Inject() (val cache: CacheApi) extends Controller with Security with Logging with BaselineActions
