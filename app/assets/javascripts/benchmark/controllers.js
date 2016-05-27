@@ -527,240 +527,89 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
 
     $scope.computeBenchmarkResult = function(){
-        //$scope.benchmarkResult = null;
 
-        $scope.futures = $scope.propList.map(function (r) {
-            return benchmarkServices.submit(r);
-        });
+        $scope.futures = benchmarkServices.getPredictedEnergy($scope.propList);
 
-        $q.all($scope.futures).then(function (results) {
+        $q.resolve($scope.futures).then(function (results) {
 
-            $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
-            /// add location stuff. 
-            $scope.benchmarkResult.city = $scope.auxModel.city;
-            $scope.benchmarkResult.state = $scope.auxModel.state;
-            $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
-            $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
-        });
-    };
+            console.log($scope.round($scope.getPropResponseField(results,"actualES"),3));
 
-        $scope.round = function(value, decimals) {
-            return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-        };
-
-        $scope.dotProduct = function(a,b) {
-            var n = 0, lim = Math.min(a.length,b.length);
-            for (var i = 0; i < lim; i++){
-                n += a[i] * b[i];
-            }
-            return n;
-         };
-
-        $scope.getPropResponseField = function(propResponse,key){
-            var returnValue;
-
-            for (var i =0; i < propResponse.values.length; i ++) {
-                if (propResponse.values[i][key] !== undefined) {
-                  returnValue = propResponse.values[i][key];
-                  break;
-                }
-            }
-            return returnValue;
-        };
-
-        $scope.getPrimarySourceSiteRatio = function(sourceSiteRatios,propSizes,sourceEnergies,siteEnergies){
-
-            var returnValue;
-
-            if(sourceEnergies.indexOf(undefined) === -1 && siteEnergies.indexOf(undefined) === -1) {
-                $log.info("Ratio from energy input");
-                returnValue = siteEnergies[0] / sourceEnergies[0];
-            } else {
-                $log.info("Ratio from largest prop size");
-                returnValue = sourceSiteRatios[propSizes.indexOf(Math.max.apply(Math, propSizes))];
-            }
-            return returnValue;
-        };
-
-        $scope.getMixedSourceEUI = function(sumPropSize,sourceEnergies,siteEnergies){
-            var returnValue;
-
-            if(sourceEnergies.indexOf(undefined) === -1 && siteEnergies.indexOf(undefined) === -1) {
-                $log.info("Mixed EUI from Energy Input");
-                returnValue = sourceEnergies[0] / sumPropSize;
-            }
-            return returnValue;
-        };
-
-        $scope.computeBenchmarkMix = function(results){
-
-            var mixTable;
-
-            //grouped by row in output table
-            var mixES;
-            var mixTargetES;
-            var mixPercentBetterES;
-            var mixMedianES;
-
-            var mixSourceEUI;
-            var mixTargetSourceEUI;
-            var mixPercentBetterSourceEUI;
-            var mixMedianSourceEUI;
-
-            var mixSiteEUI;
-            var mixTargetSiteEUI;
-            var mixPercentBetterSiteEUI;
-            var mixMedianSiteEUI;
-
-            var mixTotalSourceEnergy;
-            var mixTargetSourceEnergy;
-            var mixPercentBetterSourceEnergy;
-            var mixMedianSourceEnergy;
-
-            var mixTotalSiteEnergy;
-            var mixTargetSiteEnergy;
-            var mixPercentBetterSiteEnergy;
-            var mixMedianSiteEnergy;
-
-            var mixTotalSiteEmissions;
-            var mixTotalTargetEmissions;
-            var mixTotalPercentBetterEmissions;
-            var mixTotalMedianEmissions;
-
-            var propSizes = results.map(function(o){return $scope.getPropResponseField(o,'buildingSize');});
-            var sumPropSize = propSizes.reduce(function(a, b) {return a + b;});
-            var propWeightsBySize = propSizes.map(function(o){return o / sumPropSize;});
-            var indexLargestProp = propSizes.indexOf(Math.max.apply(Math, propSizes));
-
-            var ESs = results.map(function(o){return $scope.getPropResponseField(o,'ES');});
-            var targetESs = results.map(function(o){return $scope.getPropResponseField(o,'targetES');});
-            var percentBetterESs = results.map(function(o){return $scope.getPropResponseField(o,'percentBetterES');});
-
-            var sourceEnergies = results.map(function(o){return $scope.getPropResponseField(o,'totalSourceEnergy');});
-            var siteEnergies = results.map(function(o){return $scope.getPropResponseField(o,'totalSiteEnergy');});
-            var siteTotalEmissions = results.map(function(o){return $scope.getPropResponseField(o,'totalSiteEmissions');});
-            var medianEUIs = results.map(function(o){return $scope.getPropResponseField(o,'medianSourceEUI');});
-            var percentBetterSourceEUIs = results.map(function(o){return $scope.getPropResponseField(o,'percentBetterSourceEUI');});
-            var targetSourceEUIs = results.map(function(o){return $scope.getPropResponseField(o,'targetSourceEUI');});
-
-            var propClasses = results.map(function(o){return $scope.getPropResponseField(o,'buildingClass');});
-
-            var sourceSiteRatios = results.map(function(o){return $scope.getPropResponseField(o,'sourceSiteRatio');});
-            var primarySourceSiteRatio = $scope.getPrimarySourceSiteRatio(sourceSiteRatios,propSizes,sourceEnergies,siteEnergies);
-
-            mixSourceEUI = $scope.getMixedSourceEUI(sumPropSize,sourceEnergies,siteEnergies);
-
-            $scope.propOutputList = [];
-            for (var i =0; i < results.length; i ++) {
-                var tempProp = {};
-                tempProp.propType = $scope.propTypes[i].name;
-                tempProp.propSize = propSizes[i];
-                tempProp.propPercent = $scope.round(propSizes[i]/sumPropSize*100,2);
-
-                if($scope.auxModel.reportingUnits === "us"){
-                    tempProp.areaUnits = "sq.ft";
-                }else{
-                    tempProp.areaUnits = "sq.m";
-                }
-
-                $scope.propOutputList.push(tempProp);
-            }
-
-
-            if(results.length > 2){
-
-                if($scope.auxModel.reportingUnits==="us"){
-                    mixMedianSourceEUI = 123.1;
-                }else{
-                    mixMedianSourceEUI = 1.23;
-                }
-                mixPercentBetterSourceEUI = mixMedianSourceEUI*(1-$scope.auxModel.percentBetterThanMedian / 100);
-
-            } else {
-
-                if(propClasses.indexOf("class models.GenericBuilding") === -1) {
-                    mixTargetSourceEUI = $scope.dotProduct(targetSourceEUIs,propWeightsBySize);
-                    mixPercentBetterSourceEUI = $scope.dotProduct(percentBetterSourceEUIs,propWeightsBySize);
-                    mixMedianSourceEUI = $scope.dotProduct(medianEUIs,propWeightsBySize);
-
-                    mixES = ESs[indexLargestProp];
-                    mixTargetES = targetESs[indexLargestProp];
-                    mixPercentBetterES = percentBetterESs[indexLargestProp];
-                } else {
-                    mixTargetSourceEUI = targetSourceEUIs[indexLargestProp];
-                    mixPercentBetterSourceEUI = percentBetterSourceEUIs[indexLargestProp];
-                    mixMedianSourceEUI = medianEUIs[indexLargestProp];
-                }
-            }
-
-            mixMedianES = 50;
-
-            mixSiteEUI = mixSourceEUI*primarySourceSiteRatio;
-            mixTargetSiteEUI = mixTargetSourceEUI*primarySourceSiteRatio;
-            mixPercentBetterSiteEUI = mixPercentBetterSourceEUI*primarySourceSiteRatio;
-            mixMedianSiteEUI = mixMedianSourceEUI*primarySourceSiteRatio;
-
-            mixTotalSourceEnergy = mixSourceEUI*sumPropSize;
-            mixTargetSourceEnergy = mixTargetSourceEUI*sumPropSize;
-            mixPercentBetterSourceEnergy = mixPercentBetterSourceEUI*sumPropSize;
-            mixMedianSourceEnergy = mixMedianSourceEUI*sumPropSize;
-
-            mixTotalSiteEnergy = mixSiteEUI*sumPropSize;
-            mixTargetSiteEnergy = mixTargetSiteEUI*sumPropSize;
-            mixPercentBetterSiteEnergy = mixPercentBetterSiteEUI*sumPropSize;
-            mixMedianSiteEnergy = mixMedianSiteEUI*sumPropSize;
-
-            var mixSiteTargetRatio=mixTotalSiteEnergy/mixTargetSiteEnergy;
-            var mixSitePercentBetterRatio=mixTotalSiteEnergy/mixPercentBetterSiteEnergy;
-            var mixSiteMedianRatio=mixTotalSiteEnergy/mixMedianSiteEnergy;
-
-            mixTotalSiteEmissions = siteTotalEmissions[0];
-            mixTotalTargetEmissions = mixTotalSiteEmissions/mixSiteTargetRatio;
-            mixTotalPercentBetterEmissions = mixTotalSiteEmissions/mixSitePercentBetterRatio;
-            mixTotalMedianEmissions = mixTotalSiteEmissions/mixSiteMedianRatio;
-
-            $scope.percentBetterSiteEUI = mixPercentBetterSiteEUI;
-
-            $scope.baselineConstant = $scope.isResidential ? 130 : 100;
             $scope.scoreText = $scope.isResidential ? "HERS Index Score" : "zEPI Score";
             $scope.scoreGraph = $scope.isResidential ? "HERS" : "zEPI";
             $scope.scoreUnits = $scope.isResidential ? "0-130" : "0-100";
 
-            mixTable = [
 
-                  {"actualZEPI":$scope.baselineConstant-$scope.baselineConstant*$scope.round(1-mixSiteEUI/mixMedianSiteEUI,2)},
-                  {"targetZEPI":$scope.baselineConstant-$scope.baselineConstant*$scope.round(1-mixTargetSiteEUI/mixMedianSiteEUI,2)},
-                  {"percentBetterZEPI":$scope.baselineConstant-$scope.baselineConstant*($scope.auxModel.percentBetterThanMedian/100)},
-                  {"medianZEPI":$scope.baselineConstant},
+            $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
 
-                  {"siteEUI":$scope.round(mixSiteEUI,2)},
-                  {"targetSiteEUI":$scope.round(mixTargetSiteEUI,2)},
-                  {"percentBetterSiteEUI":$scope.round(mixPercentBetterSiteEUI,2)},
-                  {"medianSiteEUI":$scope.round(mixMedianSiteEUI,2)},
 
-                  {"sourceEUI":$scope.round(mixSourceEUI,2)},
-                  {"targetSourceEUI":$scope.round(mixTargetSourceEUI,2)},
-                  {"percentBetterSourceEUI":$scope.round(mixPercentBetterSourceEUI,2)},
-                  {"medianSourceEUI":$scope.round(mixMedianSourceEUI,2)},
+            /// add location stuff. 
+            $scope.benchmarkResult.city = $scope.auxModel.city;
+            $scope.benchmarkResult.state = $scope.auxModel.state;
+            $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
+            //$scope.benchmarkResult.country = $scope.auxModel.country;
+            //$scope.benchmarkResult.reportingUnits = $scope.auxModel.reportingUnits;
+            $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
+        });
+    };
 
-                  {"totalSiteEnergy":$scope.round(mixTotalSiteEnergy,2)},
-                  {"targetSiteEnergy":$scope.round(mixTargetSiteEnergy,2)},
-                  {"percentBetterSiteEnergy":$scope.round(mixPercentBetterSiteEnergy,2)},
-                  {"medianSiteEnergy":$scope.round(mixMedianSiteEnergy,2)},
+    $scope.getPropResponseField = function(propResponse,key){
+        var returnValue;
 
-                  {"totalSourceEnergy":$scope.round(mixTotalSourceEnergy,2)},
-                  {"targetSourceEnergy":$scope.round(mixTargetSourceEnergy,2)},
-                  {"percentBetterSourceEnergy":$scope.round(mixPercentBetterSourceEnergy,2)},
-                  {"medianSourceEnergy":$scope.round(mixMedianSourceEnergy,2)},
+        for (var i =0; i < propResponse.values.length; i ++) {
+            if (propResponse.values[i][key] !== undefined) {
+              returnValue = propResponse.values[i][key];
+              break;
+            }
+        }
+        return returnValue;
+    };
 
-                  {"totalSiteEmissions":$scope.round(mixTotalSiteEmissions,2)},
-                  {"targetSiteEmissions":$scope.round(mixTotalTargetEmissions,2)},
-                  {"percentBetterSiteEmissions":$scope.round(mixTotalPercentBetterEmissions,2)},
-                  {"medianSiteEmissions":$scope.round(mixTotalMedianEmissions,2)}
-                  ];
+    $scope.round = function(value, decimals) {
+        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    };
 
-            return mixTable;
-        };
+
+    $scope.computeBenchmarkMix = function(results){
+
+        $scope.baselineConstant = $scope.isResidential ? 130 : 100;
+        $scope.scoreText = $scope.isResidential ? "HERS Index Score" : "zEPI Score";
+        $scope.scoreGraph = $scope.isResidential ? "HERS" : "zEPI";
+        $scope.scoreUnits = $scope.isResidential ? "0-130" : "0-100";
+
+        $scope.propOutputList = $scope.getPropResponseField(results,"propOutputList");
+
+        console.log(results);
+
+        var metricsTable = [
+
+              {"actualES": $scope.round($scope.getPropResponseField(results,"actualES"),3)},
+
+              {"medianZEPI": $scope.round($scope.getPropResponseField(results,"medianZEPI"),3)},
+              {"percentBetterZEPI": $scope.round($scope.getPropResponseField(results,"percentBetterZEPI"),3)},
+              {"actualZEPI": $scope.round($scope.getPropResponseField(results,"actualZEPI"),3)},
+
+              {"siteEUI": $scope.round($scope.getPropResponseField(results,"siteEUI"),4)},
+              {"sourceEUI": $scope.round($scope.getPropResponseField(results,"sourceEUI"),4)},
+              {"totalSiteEnergy": $scope.round($scope.getPropResponseField(results,"totalSiteEnergy"),3)},
+              {"totalSourceEnergy": $scope.round($scope.getPropResponseField(results,"totalSourceEnergy"),3)},
+
+              {"medianSiteEUI": $scope.round($scope.getPropResponseField(results,"medianSiteEUI"),4)},
+              {"medianSourceEUI": $scope.round($scope.getPropResponseField(results,"medianSourceEUI"),4)},
+              {"medianSiteEnergy": $scope.round($scope.getPropResponseField(results,"medianSiteEnergy"),3)},
+              {"medianSourceEnergy": $scope.round($scope.getPropResponseField(results,"medianSourceEnergy"),3)},
+
+              {"percentBetterSiteEUI": $scope.round($scope.getPropResponseField(results,"percentBetterSiteEUI"),4)},
+              {"percentBetterSourceEUI": $scope.round($scope.getPropResponseField(results,"percentBetterSourceEUI"),4)},
+              {"percentBetterSiteEnergy": $scope.round($scope.getPropResponseField(results,"percentBetterSiteEnergy"),3)},
+              {"percentBetterSourceEnergy": $scope.round($scope.getPropResponseField(results,"percentBetterSourceEnergy"),3)},
+
+              {"totalEmissions": $scope.round($scope.getPropResponseField(results,"totalEmissions"),3)},
+              {"percentBetterEmissions": $scope.round($scope.getPropResponseField(results,"percentBetterEmissions"),3)},
+              {"medianEmissions": $scope.round($scope.getPropResponseField(results,"medianEmissions"),3)}
+
+        ];
+        return metricsTable;
+    };
 
     $scope.submitErrors = function () {
         for (var i = 0; i < $scope.forms.baselineForm.$error.required.length; i++){
@@ -805,6 +654,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             };
         };
 
+        if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
+            $scope.energyList=null;
+        } else {
+            $scope.energyList = $scope.energies.map(mapEnergy).filter(validEnergy);
+        }
 
         if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){

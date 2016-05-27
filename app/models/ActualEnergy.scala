@@ -35,21 +35,21 @@ case class EUICalculator(parameters: JsValue) {
     }
   }
 
-  def getSiteEnergy: Future[List[EnergyTuple]] = {
+  def sourceEnergynoPoolnoParking:Future[Energy] = {
     for {
-      entries <- getEnergyList
-      siteEnergyList <- computeSiteEnergy(entries)
-    } yield {
-      siteEnergyList
-    }
+      poolEnergy <- getPoolEnergy
+      parkingEnergy <- getParkingEnergy
+      sourceTotalEnergy <- getTotalSourceEnergy
+      sourceEnergy <- Future(sourceTotalEnergy - poolEnergy - parkingEnergy)
+    } yield sourceEnergy
   }
+
 
   def getTotalSiteEnergy: Future[Energy] = {
     for {
       entries <- getEnergyList
       siteEnergyList <- computeSiteEnergy(entries)
       siteEnergySum <- getSiteEnergySum(siteEnergyList)
-
     } yield siteEnergySum
   }
 
@@ -93,7 +93,6 @@ case class EUICalculator(parameters: JsValue) {
       sourceEnergyListConverted <- convertOutputSum(sourceEnergyList)
 
     } yield sourceEnergyListConverted
-
   }
 
   def getTotalSourceEnergyNoPoolNoParking: Future[Energy] = {
@@ -114,8 +113,6 @@ case class EUICalculator(parameters: JsValue) {
     }
   }
 
-
-
   def getEnergyList: Future[EnergyList] = {
     for {
       entries <- Future {
@@ -130,7 +127,6 @@ case class EUICalculator(parameters: JsValue) {
     } yield siteEnergyList
   }
 
-
   def convertOutput(energies: List[EnergyTuple]): Future[List[EnergyTuple]] = Future {
     country match {
       case "USA" => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyValue in KBtus)}
@@ -138,14 +134,12 @@ case class EUICalculator(parameters: JsValue) {
     }
   }
 
-
   def convertOutputSum(energies: List[EnergyTuple]): Future[Energy] = Future {
     country match {
       case "USA" => energies.map {case a:EnergyTuple => a.energyValue in KBtus}.sum in KBtus
       case _ => energies.map {case a:EnergyTuple => a.energyValue in Gigajoules}.sum in Gigajoules
     }
   }
-
 
   def sourceConvert(energyType: String, siteEnergy: Try[Energy]): EnergyTuple = {
     val sourceEnergyValue = siteEnergy match {
