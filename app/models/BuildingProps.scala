@@ -37,7 +37,12 @@ case class BuildingProperties(parameters: JsValue) {
       case _ => throw new Exception("Could not retrieve State")
     }
   }
-
+  def getBaselineConstant: Future[Int] = Future{
+    parameters.asOpt[BaselineConstant] match {
+      case Some(a) => a.baselineConstant
+      case _ => throw new Exception("Could not get Baseline Constant for CBECS / HERS Conversion")
+    }
+  }
 
   def getPercentBetterThanMedia:Future[Double] = Future{
     parameters.validate[PercentBetterThanMedian] match {
@@ -157,6 +162,10 @@ object BuildingArea {
 case class JsonEntry(ES: Int, CmPercent: Double, Ratio: Double)
 object JsonEntry {
   implicit val formatFileName:Reads[JsonEntry] = Json.format[JsonEntry]
+}
+case class BaselineConstant(baselineConstant:Int)
+object BaselineConstant {
+  implicit val baselineConstantReads:Reads[BaselineConstant] = Json.format[BaselineConstant]
 }
 
 case class PercentBetterThanMedian(target:Double)

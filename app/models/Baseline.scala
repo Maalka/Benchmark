@@ -44,23 +44,25 @@ case class EUIMetrics(parameters: JsValue) {
     } yield outputList
   }
 
-  def esScore:Future[Int] = es.getESScore
+  def getESScore:Future[Int] = es.getESScore
+  def getMedianESScore:Future[Int] = Future(50)
 
-  def zepiMedian:Future[Int] = Future(100)
+  def zepiMedian:Future[Int] = buildingProps.getBaselineConstant
 
   def zepiActual:Future[Double] = {
     for {
-      baselineConstant <- Future(100.0)
+      baselineConstant <- buildingProps.getBaselineConstant
       zepiMedianSiteEUI <- medianSiteEUI
       actualSiteEUI <- siteEUI
-    } yield baselineConstant - baselineConstant*(1-actualSiteEUI/zepiMedianSiteEUI.value)
+    } yield baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value
   }
   def zepiPercentBetter:Future[Double] = {
     for {
-      baselineConstant <- Future(100.0)
+      baselineConstant <- buildingProps.getBaselineConstant
       percentBetter <- buildingProps.getPercentBetterThanMedia
-    } yield baselineConstant - percentBetter
+    } yield baselineConstant*(1-percentBetter/100)
   }
+
 
   def sourceEnergy: Future[Double] =
     for {
@@ -218,7 +220,13 @@ case class EUIMetrics(parameters: JsValue) {
 
   def defaultSiteToSourceRatio:Future[Double] = {
     val local = for {
-      stateBuildingType <- getStateBuildingType(result.head)
+      propFilter <- combinedPropMetrics.majorProp
+      stateBuildingType <- {
+        propFilter.contains(true) match {
+          case a if a==true => getMajorStateBuildingType(propFilter)
+          case a if a==false => Future(StateBuildingType(buildingProps.state,"Other"))
+        }
+      }
       statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
       defaultRatio <- getDefaultRatio(statePropEnergyMix)
     } yield defaultRatio
@@ -226,6 +234,12 @@ case class EUIMetrics(parameters: JsValue) {
     local.recoverWith{case NonFatal(th) => residentialSitetoSourceRatio(result.head)}
   }
 
+  def getMajorStateBuildingType(propFilter:List[Boolean]):Future[StateBuildingType] = {
+    for {
+      majorProp <- combinedPropMetrics.getMajorProp(propFilter)
+      stateBuildingType <- getStateBuildingType(majorProp)
+    } yield stateBuildingType
+  }
 
   def computeExpectedEUI[T](targetBuilding: T): Future[Energy] = Future{
     val unitlessEnergy = targetBuilding match {

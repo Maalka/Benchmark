@@ -12,8 +12,7 @@ GET           /jsroutes.js         controllers.Application.jsRoutes()
 # ~~~~
 
 # Baselining
-POST          /baseline               controllers.BaselineController.getActualEnergy()
-POST          /baseline2               controllers.BaselineController.getPredictedEnergy()
+POST          /baseline               controllers.BaselineController.getZEPIMetrics()
 
 
 # Authentication

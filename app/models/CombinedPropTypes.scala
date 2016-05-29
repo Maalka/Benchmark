@@ -17,10 +17,6 @@ case class CombinedPropTypes(params: JsValue) {
   val result = params.as[List[JsValue]]
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
 
-
-
-
-
   def getWholeBuildingSourceMedianEnergy:Future[Energy] = {
     for {
       wholeBuildingSourceMedianEUI <- getWholeBuildingSourceMedianEUI
@@ -68,12 +64,19 @@ case class CombinedPropTypes(params: JsValue) {
       propFilter <- majorProp
       mediumPropFilter <- mediumSizeProps
       majorProp <- getMajorProp(propFilter)
+      majorPropType <- BuildingProperties(majorProp).getBuilding
       sourceEUI <- {
         mediumPropFilter.contains(true) match {
-          case a if a==true => Future{
-            buildingProps.country match {
-              case "USA" => KBtus(148.1)
-              case "Canada" => Gigajoules(1.68)
+          case a if a==true => {
+            println(majorPropType)
+            majorPropType match {
+              case c: GenericBuilding => singlePropMedianSourceEUI(majorProp)
+              case d: BaseLine => Future {
+                buildingProps.country match {
+                  case "USA" => KBtus(148.1)
+                  case "Canada" => Gigajoules(1.68)
+                }
+              }
             }
           }
           case a if a==false => singlePropMedianSourceEUI(majorProp)
