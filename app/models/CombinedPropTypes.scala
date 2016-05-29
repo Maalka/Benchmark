@@ -287,6 +287,7 @@ case class CombinedPropTypes(params: JsValue) {
 
     val r = countryBuilding match {
       case Some(CountryBuildingType("USA", "Office")) => Play.current.configuration.getString("baseline.office")
+      case Some(CountryBuildingType("USA", "FinancialOffice")) => Play.current.configuration.getString("baseline.office")
       case Some(CountryBuildingType("USA", "WorshipCenter")) => Play.current.configuration.getString("baseline.worshipCenter")
       case Some(CountryBuildingType("USA", "WastewaterCenter")) => Play.current.configuration.getString("baseline.wastewaterCenter")
       case Some(CountryBuildingType("USA", "Warehouse")) => Play.current.configuration.getString("baseline.warehouse")

@@ -405,7 +405,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             buildingType: {
                 commercial: [
                     {id:"Office",name:"Bank Branch"},
-                    {id:"Office",name:"Financial Office"},
+                    {id:"FinancialOffice",name:"Financial Office"},
                     {id:"AdultEducation",name:"Adult Education"},
                     {id:"College",name:"College / University"},
                     {id:"K12School",name:"K-12 School"},

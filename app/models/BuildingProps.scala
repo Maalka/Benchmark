@@ -68,6 +68,7 @@ case class BuildingProperties(parameters: JsValue) {
       case Some(CountryBuildingType("USA", "Hotel")) => parameters.validate[Hotel]
       case Some(CountryBuildingType("USA", "Hospital")) => parameters.validate[Hospital]
       case Some(CountryBuildingType("USA", "DataCenter")) => parameters.validate[DataCenter]
+      case Some(CountryBuildingType("USA", "FinancialOffice")) => parameters.validate[FinancialOffice]
       case Some(CountryBuildingType("Canada", "Office")) => parameters.validate[CanadaOffice]
       case Some(CountryBuildingType("Canada", "Supermarket")) => parameters.validate[CanadaSupermarket]
       case Some(CountryBuildingType("Canada", "MedicalOffice")) => parameters.validate[CanadaMedicalOffice]
@@ -278,17 +279,41 @@ case class Office(GFA:PosDouble, numComputers:PosDouble, weeklyOperatingHours: P
     RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.value / buildingSize * 1000)),
     RegressionSegment(0.0077, 4411, HDD.value * percentHeated.value / 100),
     RegressionSegment(0.0144, 1157, CDD.value * percentCooled.value / 100),
-    RegressionSegment(-64.83 * isSmallBank, 9.535, log(buildingSize)),
-    RegressionSegment(34.2 * isSmallBank, .5616, log(numWorkersMainShift.value / buildingSize * 1000)),
-    RegressionSegment(56.3 * isSmallBank, 0, 1)
+    RegressionSegment(0, 9.535, log(buildingSize)),
+    RegressionSegment(0, .5616, log(numWorkersMainShift.value / buildingSize * 1000)),
+    RegressionSegment(0, 0, 1)
   )
 }
-
 /**
   * Office companion object.  Contains built in JSON validation.
   */
 object Office {
   implicit val officeReads: Reads[Office] = Json.reads[Office]
+}
+
+case class FinancialOffice(GFA:PosDouble, numComputers:PosDouble, weeklyOperatingHours: PosDouble, percentHeated:PosDouble,
+                  percentCooled:PosDouble, HDD:PosDouble, CDD:PosDouble, isSmallBank:Option[Boolean], numWorkersMainShift:PosDouble,
+                  areaUnits:String, country:String, buildingType:String) extends BaseLine {
+
+
+  val regressionSegments = Seq[RegressionSegment] (
+    RegressionSegment(186.6, 0, 1), // regression constant
+    RegressionSegment(34.17, 9.535, math.min(log(buildingSize),200000)),
+    RegressionSegment(17.28, 2.231, math.min(numComputers.value / buildingSize * 1000, 11.1)),
+    RegressionSegment(55.96, 3.972, log(weeklyOperatingHours.value)),
+    RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.value / buildingSize * 1000)),
+    RegressionSegment(0.0077, 4411, HDD.value * percentHeated.value / 100),
+    RegressionSegment(0.0144, 1157, CDD.value * percentCooled.value / 100),
+    RegressionSegment(-64.83, 9.535, log(buildingSize)),
+    RegressionSegment(34.2, .5616, log(numWorkersMainShift.value / buildingSize * 1000)),
+    RegressionSegment(56.3, 0, 1)
+  )
+}
+/**
+  * Office companion object.  Contains built in JSON validation.
+  */
+object FinancialOffice {
+  implicit val officeReads: Reads[FinancialOffice] = Json.reads[FinancialOffice]
 }
 
 /**
