@@ -26,24 +26,6 @@ case class EUIMetrics(parameters: JsValue) {
   val buildingEmissions:Emissions = Emissions(result.head)
 
 
-  def getPropOutputList:Future[List[PropParams]] = {
-    for {
-      propTypes <- Future.sequence(result.map(BuildingProperties(_).getBuilding))
-      propGFASum <- Future(propTypes.map(_.GFA.value).sum)
-      conversionConstant <- GFAConversionConstant
-      outputList <- Future{
-        energyCalcs.reportingUnits match {
-            case "us" => propTypes.map{
-              a => PropParams(a.buildingType, a.buildingSize * conversionConstant, a.buildingSize / propGFASum, "ftSQ")
-            }
-            case "metric" => propTypes.map{
-              a => PropParams(a.buildingType, a.buildingSize * conversionConstant, a.buildingSize / propGFASum, "mSQ")
-            }
-          }
-        }
-    } yield outputList
-  }
-
   def getESScore:Future[Int] = es.getESScore
   def getMedianESScore:Future[Int] = Future(50)
 
@@ -54,7 +36,8 @@ case class EUIMetrics(parameters: JsValue) {
       baselineConstant <- buildingProps.getBaselineConstant
       zepiMedianSiteEUI <- medianSiteEUI
       actualSiteEUI <- siteEUI
-    } yield baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value
+      zepiActual <- Future(baselineConstant*actualSiteEUI.value/zepiMedianSiteEUI.value)
+    } yield zepiActual
   }
   def zepiPercentBetter:Future[Double] = {
     for {
@@ -63,56 +46,56 @@ case class EUIMetrics(parameters: JsValue) {
     } yield baselineConstant*(1-percentBetter/100)
   }
 
-
-  def sourceEnergy: Future[Double] =
+  //last pass conversions to the controller
+  def sourceEnergyConverted: Future[Double] =
     for {
       sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
       convertedEnergy <- energyConversion(sourceEnergy)
     } yield convertedEnergy.value
 
 
-  def siteEnergy: Future[Double] =
+  def siteEnergyConverted: Future[Double] =
     for {
       siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
       convertedEnergy <- energyConversion(siteTotalEnergy)
     } yield convertedEnergy.value
 
-  def sourceEUI: Future[Double] =
+  def sourceEUIConverted: Future[Double] =
     for {
       sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
       buildingSize <- combinedPropMetrics.getTotalArea
       convertedEUI <- EUIConversionConstant(sourceEnergy,buildingSize)
     } yield convertedEUI.value
 
-  def siteEUI: Future[Double] =
+  def siteEUIConverted: Future[Double] =
     for {
       siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
       buildingSize <- combinedPropMetrics.getTotalArea
       convertedEUI <- EUIConversionConstant(siteTotalEnergy,buildingSize)
     } yield convertedEUI.value
 
-  def medianSiteEnergy:Future[Energy] = {
+  def medianSiteEnergyConverted:Future[Energy] = {
     for {
       siteRatio <- siteToSourceRatio
       sourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
       convertedEnergy <- energyConversion(sourceEnergy)
     } yield convertedEnergy * siteRatio
   }
-  def medianSourceEnergy:Future[Energy] = {
+  def medianSourceEnergyConverted:Future[Energy] = {
     for {
       sourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
       convertedEnergy <- energyConversion(sourceEnergy)
     } yield convertedEnergy
   }
 
-  def medianSourceEUI:Future[Energy] = {
+  def medianSourceEUIConverted:Future[Energy] = {
     for {
       sourceEUI <- combinedPropMetrics.getWholeBuildingSourceMedianEUI
       conversionConstant <- EUIConversionNoUnitsConstant
     } yield sourceEUI*conversionConstant
   }
 
-  def medianSiteEUI:Future[Energy] = {
+  def medianSiteEUIConverted:Future[Energy] = {
     for {
       siteEnergy <- medianSiteEnergy
       buildingSize <- combinedPropMetrics.getTotalArea
@@ -120,16 +103,16 @@ case class EUIMetrics(parameters: JsValue) {
     } yield convertedEUI
   }
 
-  def percentBetterSourceEUI:Future[Energy] = {
+  def percentBetterSourceEUIConverted:Future[Energy] = {
     for {
       betterTarget <- buildingProps.getPercentBetterThanMedia
       medianEUI <- combinedPropMetrics.getWholeBuildingSourceMedianEUI
       targetEUI <- Future(medianEUI * (1 - betterTarget / 100.0))
       conversionConstant <- EUIConversionNoUnitsConstant
-      } yield targetEUI*conversionConstant
+    } yield targetEUI*conversionConstant
   }
 
-  def percentBetterSiteEUI:Future[Energy] = {
+  def percentBetterSiteEUIConverted:Future[Energy] = {
     for {
       siteEnergy <- percentBetterSiteEnergy
       buildingSize <- combinedPropMetrics.getTotalArea
@@ -137,7 +120,7 @@ case class EUIMetrics(parameters: JsValue) {
     } yield convertedEUI
   }
 
-  def percentBetterSourceEnergy:Future[Energy] = {
+  def percentBetterSourceEnergyConverted:Future[Energy] = {
     for {
       sourceEnergy <- percentBetterSourceEUI
       buildingSize <- combinedPropMetrics.getTotalArea
@@ -145,20 +128,122 @@ case class EUIMetrics(parameters: JsValue) {
     } yield convertedEnergy * buildingSize
   }
 
+  def percentBetterSiteEnergyConverted:Future[Energy] = {
+    for {
+      siteRatio <- siteToSourceRatio
+      sourceEnergy <- percentBetterSourceEnergy
+      convertedEnergy <- energyConversion(sourceEnergy)
+    } yield convertedEnergy * siteRatio
+  }
+
+
+
+
+
+
+
+  def getPropOutputList:Future[List[PropParams]] = {
+    for {
+      propTypes <- Future.sequence(result.map(BuildingProperties(_).getBuilding))
+      propGFASum <- Future(propTypes.map(_.GFA.value).sum)
+      conversionConstant <- GFAConversionConstant
+      outputList <- Future{
+        energyCalcs.reportingUnits match {
+            case "us" => propTypes.map{
+              a => PropParams(a.printed, a.buildingSize * conversionConstant, a.buildingSize / propGFASum, "ftSQ")
+            }
+            case "metric" => propTypes.map{
+              a => PropParams(a.printed, a.buildingSize * conversionConstant, a.buildingSize / propGFASum, "mSQ")
+            }
+          }
+        }
+    } yield outputList
+  }
+
+
+
+  def sourceEnergy: Future[Energy] =
+    for {
+      sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
+    } yield sourceEnergy
+
+  def siteEnergy: Future[Energy] =
+    for {
+      siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
+    } yield siteTotalEnergy
+
+  def sourceEUI: Future[Energy] =
+    for {
+      sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
+      buildingSize <- combinedPropMetrics.getTotalArea
+    } yield sourceEnergy / buildingSize
+
+  def siteEUI: Future[Energy] =
+    for {
+      siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
+      buildingSize <- combinedPropMetrics.getTotalArea
+    } yield siteTotalEnergy / buildingSize
+
+  def medianSiteEnergy:Future[Energy] = {
+    for {
+      siteRatio <- siteToSourceRatio
+      sourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
+    } yield sourceEnergy * siteRatio
+  }
+  def medianSourceEnergy:Future[Energy] = {
+    for {
+      sourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
+    } yield sourceEnergy
+  }
+
+  def medianSourceEUI:Future[Energy] = {
+    for {
+      sourceEUI <- combinedPropMetrics.getWholeBuildingSourceMedianEUI
+    } yield sourceEUI
+  }
+
+  def medianSiteEUI:Future[Energy] = {
+    for {
+      siteEnergy <- medianSiteEnergy
+      buildingSize <- combinedPropMetrics.getTotalArea
+    } yield siteEnergy / buildingSize
+  }
+
+  def percentBetterSourceEUI:Future[Energy] = {
+    for {
+      betterTarget <- buildingProps.getPercentBetterThanMedia
+      medianEUI <- combinedPropMetrics.getWholeBuildingSourceMedianEUI
+      targetEUI <- Future(medianEUI * (1 - betterTarget / 100.0))
+      } yield targetEUI
+  }
+
+  def percentBetterSiteEUI:Future[Energy] = {
+    for {
+      siteEnergy <- percentBetterSiteEnergy
+      buildingSize <- combinedPropMetrics.getTotalArea
+    } yield siteEnergy / buildingSize
+  }
+
+  def percentBetterSourceEnergy:Future[Energy] = {
+    for {
+      sourceEUI <- percentBetterSourceEUI
+      buildingSize <- combinedPropMetrics.getTotalArea
+    } yield sourceEUI * buildingSize
+  }
+
   def percentBetterSiteEnergy:Future[Energy] = {
     for {
       siteRatio <- siteToSourceRatio
-      siteEnergy <- percentBetterSourceEnergy
-      convertedEnergy <- energyConversion(siteEnergy)
-    } yield convertedEnergy * siteRatio
+      sourceEnergy <- percentBetterSourceEnergy
+    } yield sourceEnergy * siteRatio
   }
 
 
   def medianTotalEmissions:Future[Double] = {
     for {
-      sourceEnergy <- sourceEnergy
+      tempsourceEnergy <- sourceEnergy
       medianSourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
-      actualMedianRatio <- Future(sourceEnergy / medianSourceEnergy.value)
+      actualMedianRatio <- Future(tempsourceEnergy.value / medianSourceEnergy.value)
       actualEmissions <- buildingEmissions.getTotalEmissions()
       medianEmissions <- Future(actualEmissions / actualMedianRatio)
     } yield medianEmissions
@@ -168,7 +253,7 @@ case class EUIMetrics(parameters: JsValue) {
     for {
       sourceEnergy <- sourceEnergy
       percentBetterSourceEnergy <- percentBetterSourceEnergy
-      actualPercentBetterRatio <- Future(sourceEnergy / percentBetterSourceEnergy.value)
+      actualPercentBetterRatio <- Future(sourceEnergy.value / percentBetterSourceEnergy.value)
       actualEmissions <- buildingEmissions.getTotalEmissions()
       percentBetterEmissions <- Future(actualEmissions / actualPercentBetterRatio)
     } yield percentBetterEmissions

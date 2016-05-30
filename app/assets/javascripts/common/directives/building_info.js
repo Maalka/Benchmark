@@ -341,7 +341,7 @@ define(['angular','./main'], function(angular) {
                         },
                         {
                             name: "numWorkersMainShift",
-                            default: $scope.round(0.77*GFA/1000,2),
+                            default: $scope.round(2.2*GFA/1000,2),
                             type: "number",
                             title: "Number of Workers on Main Shift",
                             required: "all"

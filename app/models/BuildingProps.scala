@@ -82,6 +82,7 @@ case class BuildingProperties(parameters: JsValue) {
       case JsError(err) => throw new Exception("Building Type parameters fail validation!")
     }
   }
+
   def getRegion:String = {
 
     parameters.asOpt[StateBuildingType] match {
@@ -185,6 +186,7 @@ sealed trait BaseLine {
   val buildingType:String
   val GFA:PosDouble
   val areaUnits:String
+  val printed:String
   val regressionSegments: Seq[RegressionSegment]
 
   def energyReduce:Double = regressionSegments.map(_.reduce).sum
@@ -240,7 +242,90 @@ object CountryBuildingType {
 }
 
 case class GenericBuilding (GFA:PosDouble,areaUnits:String, country:String, buildingType:String) extends BaseLine {
+
   val regressionSegments = Seq[RegressionSegment]()
+
+  val printed:String = {
+    buildingType match {
+    case "AdultEducation" => "Adult Education"
+    case "College" => "College / University"
+    case "PreSchool" => "Pre-school / DayCare"
+    case "VocationalSchool" => "Vocational School"
+    case "OtherEducation" => "Other Education"
+    case "ConventionCenter" => "Convention Center"
+    case "MovieTheater" => "Movie Theater"
+    case "Museum" => "Museum"
+    case "PerformingArts" => "Performing Arts"
+    case "BowlingAlley" => "Bowling Alley"
+    case "FitnessCenter" => "Fitness Center"
+    case "IceRink" => "Ice / Curling Rink"
+    case "RollerRink" => "Roller Rink"
+    case "SwimmingPool" => "Swimming Pool"
+    case "OtherRecreation" => "Other Recreation"
+    case "Stadium" => "Stadium"
+    case "IndoorArena" => "Indoor Arena"
+    case "RaceTrack" => "Race Track"
+    case "Aquarium" => "Aquarium"
+    case "Bar" => "Bar"
+    case "Nightclub" => "Nightclub"
+    case "Casino" => "Casino"
+    case "Zoo" => "Zoo"
+    case "OtherEntertainment" => "Other Entertainment"
+    case "GasStation" => "Convenience Store with Gas Station"
+    case "ConvenienceStore" => "Convenience Store without Gas Station"
+    case "FastFoodRestaurant" => "Fast Food Restaurant"
+    case "Restaurant" => "Restaurant"
+    case "Supermarket" => "Supermarket"
+    case "WholesaleClub" => "Wholesale Club"
+    case "FoodSales" => "Food Sales"
+    case "FoodService" => "Food Service"
+    case "AmbulatorySurgicalCenter" => "Ambulatory Surgical Center"
+    case "Hospital" => "Hospital"
+    case "SpecialtyHospital" => "Specialty Hospital"
+    case "MedicalOffice" => "Medical Office"
+    case "OutpatientCenter" => "Outpatient Rehabilitation Center"
+    case "PhysicalTherapyCenter" => "Physical Therapy Center"
+    case "SeniorCare" => "Senior Care Community"
+    case "UrgentCareCenter" => "Urgent Care Center"
+    case "Barracks" => "Barracks"
+    case "Hotel" => "Hotel"
+    case "MultiFamily" => "Multifamily Housing"
+    case "Prison" => "Prison / Incarceration"
+    case "ResidenceHall" => "Residence Hall"
+    case "ResidentialLodging" => "Other Residential Lodging"
+    case "MixedUse" => "Mixed Use Property"
+    case "Office" => "Office"
+    case "VeterinaryOffice" => "Veterinary Office"
+    case "Courthouse" => "Courthouse"
+    case "DrinkingWaterTreatment" => "Drinking Water Treatment Center"
+    case "FireStation" => "Fire Station"
+    case "Library" => "Library"
+    case "PostOffice" => "Post Office"
+    case "PoliceStation" => "Police Station"
+    case "MeetingHall" => "Meeting Hall"
+    case "TransportationTerminal" => "Transportation Terminal"
+    case "WastewaterCenter" => "Wastewater Treatment Center"
+    case "OtherPublicServices" => "Other Public Services"
+    case "WorshipCenter" => "Worship Facility"
+    case "AutoDealership" => "Automobile Dealership"
+    case "EnclosedMall" => "Enclosed Mall"
+    case "StripMall" => "Strip Mall"
+    case "Retail" => "Retail Store"
+    case "DataCenter" => "Data Center" //Data Centers behave very different and require custom script
+    case "PersonalServices" => "Personal Services (Health/Beauty, Dry Cleaning, etc.)"
+    case "RepairServices" => "Repair Services (Vehicle, Shoe Locksmith, etc.)"
+    case "OtherServices" => "Other Services"
+    case "PowerStation" => "Energy / Power Station"
+    case "OtherUtility" => "Other Utility Station"
+    case "SelfStorageFacility" => "Self Storage Facility"
+    case "Warehouse" => "Warehouse / Distribution Center"
+    case "SingleFamilyDetached" => "Single Family - Detached"
+    case "SingleFamilyAttached" => "Single Family - Attached"
+    case "MobileHome" => "Mobile Home"
+    }
+  }
+
+
 
 }
 object GenericBuilding {
@@ -270,7 +355,7 @@ case class Office(GFA:PosDouble, numComputers:PosDouble, weeklyOperatingHours: P
 
 
 
-
+  val printed:String = "Office"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(186.6, 0, 1), // regression constant
     RegressionSegment(34.17, 9.535, math.min(log(buildingSize),200000)),
@@ -295,7 +380,7 @@ case class FinancialOffice(GFA:PosDouble, numComputers:PosDouble, weeklyOperatin
                   percentCooled:PosDouble, HDD:PosDouble, CDD:PosDouble, isSmallBank:Option[Boolean], numWorkersMainShift:PosDouble,
                   areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
-
+  val printed:String = "Financial Office"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(186.6, 0, 1), // regression constant
     RegressionSegment(34.17, 9.535, math.min(log(buildingSize),200000)),
@@ -336,7 +421,7 @@ case class CanadaOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosD
 
 
 
-
+  val printed:String = "Office"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(1.788, 0, 1), // regression constant
     RegressionSegment(.006325, 57.95, weeklyOperatingHours.value),
@@ -376,7 +461,7 @@ case class WorshipCenter(weeklyOperatingHours:PosDouble, seatingCapacity:PosDoub
 
 
 
-
+  val printed:String = "Worship Center"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(73.91, 0, 1), // regression constant
     RegressionSegment(0.6532, 38.81, seatingCapacity.value / buildingSize * 1000),
@@ -420,7 +505,7 @@ case class WastewaterCenter(wastewaterAvgInfluentInflow:PosDouble, wastewaterInf
 
   // for predicted EUI you do not divide by GFA, you divide by average influent flow in Gallons per Day
 
-
+  val printed:String = "Wastewater Center"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(10.13, 0, 1), // regression constant
     RegressionSegment(-0.9421, 1.863, log(wastewaterAvgInfluentInflow.value)),
@@ -461,7 +546,7 @@ case class Warehouse(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDoub
 
 
 
-
+  val printed:String = "Warehouse"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(82.18, 0, 1), // regression constant
     RegressionSegment(168.6 * isWarehouseRefrigerated, 0, 1),
@@ -502,7 +587,7 @@ case class Supermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDo
 
 
 
-
+  val printed:String = "Supermarket"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(581.1, 0, 1), // regression constant
     RegressionSegment(84.97, 9.679, getLog(buildingSize)),
@@ -540,7 +625,7 @@ case class CanadaSupermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift
 
 
 
-
+  val printed:String = "Supermarket"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(4.828, 0, 1), // regression constant
     RegressionSegment(0.001342, 1038, math.min(buildingSize,2500)),
@@ -586,7 +671,7 @@ case class SeniorCare(avgNumResidents:PosDouble, maxNumResidents:PosDouble,
 
 
 
-
+  val printed:String = "Senior Care Center"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(253, 0, 1), // regression constant
     RegressionSegment(24.1, 1.582, numRezUnits.value * 1000 / buildingSize),
@@ -633,7 +718,7 @@ case class Retail(weeklyOperatingHours:PosDouble, numOpenClosedRefrCases:PosDoub
 
 
 
-
+  val printed:String = "Retail Space"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(153.1, 0, 1), // regression constant
     RegressionSegment(20.19, 9.371, getLog(buildingSize)),
@@ -671,7 +756,7 @@ case class ResidenceHall(numBedrooms:PosDouble, percentHeated:PosDouble, percent
 
 
 
-
+  val printed:String = "Residence Hall"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(4.99455, 0, 1), // regression constant
     RegressionSegment(0.91309, 0, getLog(buildingSize)),
@@ -709,7 +794,7 @@ case class MultiFamily(numRezUnits:PosDouble, numBedrooms:PosDouble,
 
 
 
-
+  val printed:String = "MultiFamily Building"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(140.8, 0, 1), // regression constant
     RegressionSegment(52.57, 1.215, numRezUnits.value * 1000 / buildingSize),
@@ -742,7 +827,7 @@ case class CanadaMedicalOffice(weeklyOperatingHours:PosDouble, numWorkersMainShi
                                HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
-
+  val printed:String = "Medical Office"
   val workerDensity:Double = numWorkersMainShift.value * 100 / buildingSize
 
   val regressionSegments = Seq[RegressionSegment] (
@@ -781,7 +866,7 @@ case class MedicalOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:Pos
 
 
 
-
+  val printed:String = "Medical Office"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(2.78889, 0, 1), // regression constant
     RegressionSegment(0.91433, 0, getLog(buildingSize)),
@@ -820,7 +905,7 @@ case class CanadaK12School(numWorkersMainShift:PosDouble,
                            percentHeated:PosDouble, percentCooled:PosDouble,HDD:PosDouble, CDD:PosDouble,
                            GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
-
+  val printed:String = "K-12 School"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(1.021, 0, 1), // regression constant
     RegressionSegment(0.2308 * isSecondarySchool, 0, 1),
@@ -859,7 +944,7 @@ case class K12School(isOpenWeekends:Option[Boolean],
 
 
 
-
+  val printed:String = "K-12 School"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(131.9, 0, 1), // regression constant
     RegressionSegment(4.377 * isHighSchool, 0, 1),
@@ -908,7 +993,7 @@ case class Hotel(numBedrooms:PosDouble, hasFoodPreparation:Option[Boolean], numW
 
 
 
-
+  val printed:String = "Hotel"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(169.1, 0, 1), // regression constant
     RegressionSegment(33.22, 1.951, numBedrooms.value * 1000 / buildingSize),
@@ -943,7 +1028,7 @@ case class Hospital(numFTEWorkers:PosDouble, numStaffedBeds:PosDouble, numMRIMac
 
 
 
-
+  val printed:String = "Hospital"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(484.8, 0, 1), // regression constant
     RegressionSegment(26.64, 2.6, numFTEWorkers.value * 1000 / buildingSize),
@@ -980,6 +1065,7 @@ case class CanadaHospital(weeklyOperatingHours:PosDouble, numWorkersMainShift:Po
                           percentHeated:PosDouble, percentCooled:PosDouble,
                           HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
+  val printed:String = "Hospital"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(2.984, 0, 1), // regression constant
     RegressionSegment(0.6092, 1.417, numWorkersMainShift.value * 100 / buildingSize),
@@ -1004,6 +1090,7 @@ object CanadaHospital {
 case class DataCenter(annualITEnergy:PosDouble, reportingUnits:String,
                       GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
+  val printed:String = "Data Center"
   val siteToSourceITConvert: Double = country match {
     case "USA" => 3.14
     case _ => 2.05
@@ -1012,6 +1099,7 @@ case class DataCenter(annualITEnergy:PosDouble, reportingUnits:String,
   val annualITEnergyTBtu: Double = (Energy((annualITEnergy.value, "kWh")).get to TBtus) * siteToSourceITConvert
   val annualITEnergyKBtu: Double = (Energy((annualITEnergy.value, "kWh")).get to KBtus) * siteToSourceITConvert
 
+  //this results in expected energy, not EUI
   val regressionSegments = Seq[RegressionSegment](
     RegressionSegment(1.924, 0, 1), // regression constant
     RegressionSegment(-0.9506, 0.2091, annualITEnergyTBtu)

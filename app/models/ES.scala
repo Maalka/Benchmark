@@ -99,8 +99,8 @@ case class ES(parameters: JsValue) {
       predictedEnergy <- combinedPropMetrics.expectedSourceEnergy(params)
       actualSourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
       buildingSize <- combinedPropMetrics.getTotalArea
-      table <- combinedPropMetrics.lookupTableGet(params)
       targetBuilding <- BuildingProperties(params).getBuilding
+      table <- combinedPropMetrics.lookupTableGet(targetBuilding)
       propTypeSize <- Future(targetBuilding.GFA)
       euiRatio <- Future{
         targetBuilding match {

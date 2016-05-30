@@ -436,7 +436,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"FastFoodRestaurant",name:"Fast Food Restaurant"},
                     {id:"Restaurant",name:"Restaurant"},
                     {id:"Supermarket",name:"Supermarket"},
-                    {id:"Retail",name:"Wholesale Club"},
+                    {id:"WholesaleClub",name:"Wholesale Club"},
                     {id:"FoodSales",name:"Food Sales"},
                     {id:"FoodService",name:"Food Service"},
                     {id:"AmbulatorySurgicalCenter",name:"Ambulatory Surgical Center"},
