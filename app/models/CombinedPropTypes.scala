@@ -20,7 +20,7 @@ case class CombinedPropTypes(params: JsValue) {
   def getWholeBuildingSourceMedianEnergy:Future[Energy] = {
     for {
       wholeBuildingSourceMedianEUI <- getWholeBuildingSourceMedianEUI
-      totalArea <- getTotalArea
+      totalArea <- getTotalArea(result)
     } yield wholeBuildingSourceMedianEUI*totalArea
   }
 
@@ -33,7 +33,7 @@ case class CombinedPropTypes(params: JsValue) {
           case true => {
             hasGenericBuilding match {
               case true => getGenericSourceEUI
-              case false => getMedianSourceEUI
+              case false => getMedianSourceEUI(result)
             }
           }
           case false => {
@@ -44,31 +44,30 @@ case class CombinedPropTypes(params: JsValue) {
       } yield lookUpSourceMedianEUI
     }
 
-  def getMedianSourceEUI:Future[Energy] = {
+  def getMedianSourceEUI(buildingList:List[JsValue]):Future[Energy] = {
     for {
-      totalArea <- getTotalArea
-      baselineSourceEnergy <- getMedianSourceEnergy
+      totalArea <- getTotalArea(buildingList)
+      baselineSourceEnergy <- getMedianSourceEnergy(buildingList)
     }yield baselineSourceEnergy/totalArea
+
   }
 
-  def getMedianSourceEnergy:Future[Energy] = {
+  def getMedianSourceEnergy(buildingList:List[JsValue]):Future[Energy] = {
     for {
-      buildingList <- getBuildingList
       computeSourceEnergy <- {
         buildingList.length match {
           case a if a == 1 => singlePropMedianSourceEnergy(buildingList.head)
-          case _ => getWeightedMedianSourceEnergy
+          case _ => getWeightedMedianSourceEnergy(buildingList)
         }
       }
     }yield computeSourceEnergy
   }
 
-
-  def getWeightedMedianSourceEnergy:Future[Energy] = {
+  def getWeightedMedianSourceEnergy(buildingList:List[JsValue]):Future[Energy] = {
     for {
-      weightedTable <- getWeightedTable
+      weightedTable <- getWeightedTable(buildingList)
       medianRatio <- getMedianRatio(weightedTable)
-      predictedEnergy <- getTotalPredictedEnergy
+      predictedEnergy <- getTotalPredictedEnergy(buildingList)
     }yield predictedEnergy*medianRatio
   }
 
@@ -95,33 +94,105 @@ case class CombinedPropTypes(params: JsValue) {
 
   def getGenericSourceEUI:Future[Energy] = {
     for {
-      propFilter <- majorProp
-      mediumPropFilter <- mediumSizeProps
-      majorProp <- getMajorProp(propFilter)
+      buildingList <- getBuildingList
+      majorPropFilter <- majorProp
+      mediumPropFilter <- mediumSizeProps(buildingList)
+      majorProp <- getMajorProp(majorPropFilter)
       majorPropType <- BuildingProperties(majorProp).getBuilding
       sourceEUI <- {
-        mediumPropFilter.contains(true) match {
-          case a if a==true => {
             majorPropType match {
               case c: GenericBuilding => singlePropMedianSourceEUI(majorPropType)
-              case d: BaseLine => Future {
-                buildingProps.country match {
-                  case "USA" => KBtus(148.1)
-                  case "Canada" => Gigajoules(1.68)
-                }
-              }
+              case d: BaseLine => getMedianNoGeneric(majorPropType)
             }
           }
-          case a if a==false => singlePropMedianSourceEUI(majorPropType)
-        }
+    } yield sourceEUI
+  }
 
+  def getMedianNoGeneric(majorPropType:BaseLine):Future[Energy] =  {
+    for {
+      buildingList <- getBuildingList
+      mediumPropFilter <- mediumSizeProps(buildingList)
+      mediumPropTypesJsValues <- filterPropTypes(mediumPropFilter)
+      mediumPropTypesList <- Future.sequence(mediumPropTypesJsValues.map(BuildingProperties(_).getBuilding))
+      mediumGenericTypes <- getMediumGenericPropTypes(mediumPropTypesList)
+      nonGenericPropFilter <- Future{buildingList.map{
+        case a if a.isInstanceOf[GenericBuilding] == true => false
+        case a if a.isInstanceOf[GenericBuilding] == false => true
+        }
+      }
+      nonGenericPropTypes <- filterPropTypes(nonGenericPropFilter)
+      sourceEUI <- {
+        mediumGenericTypes.isEmpty match {
+          case true => getMedianSourceEUI(nonGenericPropTypes)
+          case false => Future {
+            (buildingProps.country,majorPropType.buildingType) match {
+              case ("USA", "Office") => KBtus(148.1)
+              case ("USA", "FinancialOffice") => KBtus(148.1)
+              case ("USA", "WorshipCenter") => KBtus(70.7)
+              case ("USA", "WastewaterCenter") => KBtus(148.1)
+              case ("USA", "Warehouse") => KBtus(60.0)
+              case ("USA", "Supermarket") => KBtus(480.0)
+              case ("USA", "SeniorCare") => KBtus(243.2)
+              case ("USA", "Retail") => KBtus(114.4)
+              case ("USA", "MultiFamily") => KBtus(127.9)
+              case ("USA", "ResidenceHall") => KBtus(114.9)
+              case ("USA", "MedicalOffice") => KBtus(116.7)
+              case ("USA", "K12School") => KBtus(141.1)
+              case ("USA", "Hotel") => KBtus(162.1)
+              case ("USA", "DataCenter") => KBtus(148.1)
+              case ("USA", "Hospital") => KBtus(389.8)
+              case ("USA",_) => KBtus(148.1)
+
+              case ("Canada", "Office") => Gigajoules(1.68)
+              case ("Canada", "Supermarket") => Gigajoules(1.68)
+              case ("Canada", "MedicalOffice") => Gigajoules(1.68)
+              case ("Canada", "K12School") => Gigajoules(1.68)
+              case ("Canada", "Hospital") => Gigajoules(1.68)
+              case ("Canada",_) => Gigajoules(1.68)
+
+              case (_,_) => throw new Exception("Lookup Table Not Found")
+            }
+          }
+        }
       }
     } yield sourceEUI
   }
 
+
+  def mediumSizeProps(buildingList:List[BaseLine]):Future[List[Boolean]] = {
+    for {
+      buildingSizeList <- Future{buildingList.map(a=>a.buildingSize)}
+      buildingSizeSum:Double <- Future(buildingSizeList.sum)
+      buildingSizeRatios <- Future(buildingSizeList.map{_/buildingSizeSum})
+      mediumSizePropTypes <-  Future(buildingSizeRatios.map{ case a => 0.25 < a && a < 0.5 })
+    } yield mediumSizePropTypes
+  }
+
+
   def getMajorProp(propFilter:List[Boolean]):Future[JsValue] = Future{
     (propFilter,result).zipped.collect{case (a,b) if a == true => b }.head
   }
+
+  def filterPropTypes(propFilter:List[Boolean]):Future[List[JsValue]] = {
+    for {
+      buildingList <- Future{result}
+      mediumPropList <- Future {
+        (propFilter, buildingList).zipped.flatMap {
+          case (a, b) if a == true => Some(b)
+          case (_, _) => None
+        }
+      }
+    } yield mediumPropList
+  }
+
+
+  def getMediumGenericPropTypes(propList:List[BaseLine]):Future[List[BaseLine ]] = Future{
+    propList.flatMap{
+      case a if a.isInstanceOf[GenericBuilding] => Some(a)
+      case _ => None
+    }
+  }
+
 
   def singlePropMedianSourceEUI(targetBuilding:BaseLine):Future[Energy] = {
     for {
@@ -141,10 +212,10 @@ case class CombinedPropTypes(params: JsValue) {
     } yield medianEUI
   }
 
-
-  def singlePropMedianSourceEnergy(targetBuilding:BaseLine):Future[Energy] = {
+  def singlePropMedianSourceEnergy(targetBuilding:JsValue):Future[Energy] = {
     for {
-      totalArea <- getTotalArea
+      targetBuilding <- BuildingProperties(targetBuilding).getBuilding
+      totalArea <- getTotalArea(result)
       medianEUI <- singlePropMedianSourceEUI(targetBuilding)
       } yield medianEUI * totalArea
   }
@@ -194,48 +265,37 @@ case class CombinedPropTypes(params: JsValue) {
   }
 
 
-  def mediumSizeProps:Future[List[Boolean]] = {
-    for {
-      buildingSizeList <- Future.sequence(result.map(BuildingProperties(_).getBuilding).map(_.map{
-        case a:BaseLine => a.buildingSize}
-      ))
-      buildingSizeSum:Double <- Future(buildingSizeList.sum)
-      buildingSizeRatios <- Future(buildingSizeList.map{_/buildingSizeSum})
-      mediumSizePropTypes <-  Future(buildingSizeRatios.map{ case a => 0.25 < a && a < 0.5 })
-    } yield mediumSizePropTypes
-  }
 
-  def getEnergyWeights: Future[List[Double]] = {
+  def getEnergyWeights(buildingList:List[JsValue]): Future[List[Double]] = {
     for {
-      propEnergies <- Future.sequence(result.map(expectedSourceEnergy))
-      propEnergiesSum <- getTotalPredictedEnergy
+      propEnergies <- Future.sequence(buildingList.map(expectedSourceEnergy))
+      propEnergiesSum <- getTotalPredictedEnergy(buildingList)
       energyWeights <- Future(propEnergies.map(_.value/propEnergiesSum.value))
     } yield energyWeights
   }
 
-  def getTotalPredictedEnergy: Future[Energy] = {
+  def getTotalPredictedEnergy(buildingList:List[JsValue]): Future[Energy] = {
     for {
-      propEnergies <- Future.sequence(result.map(expectedSourceEnergy))
+      propEnergies <- Future.sequence(buildingList.map(expectedSourceEnergy))
       propEnergiesSum <- sumEnergy(propEnergies)
     } yield propEnergiesSum
   }
 
-  def getTotalArea: Future[Double] = {
+  def getTotalArea(buildingList:List[JsValue]): Future[Double] = {
     for {
-      propTypes <- Future.sequence(result.map(BuildingProperties(_).getBuilding))
+      propTypes <- Future.sequence(buildingList.map(BuildingProperties(_).getBuilding))
       propGFASum <- Future(propTypes.map(_.GFA.value).sum)
     } yield propGFASum
   }
 
-  def getWeightedTable: Future[Seq[TableEntry]] = {
+  def getWeightedTable(propList:List[JsValue]): Future[Seq[TableEntry]] = {
     val ESList:List[Int] = List.range(1,101,1).sorted(Ordering[Int].reverse)
     val cmPercentList:List[Double] = List.range(0,100,1).map(_/100.0)
-
     for {
-      buildingList <- getBuildingList
+      buildingList <- Future.sequence(propList.map(BuildingProperties(_).getBuilding))
       tableList <- Future.sequence(buildingList.map(lookupTableGet(_)))
       ratioList <-  Future{tableList.map(_.map(_.Ratio))}
-      energyWeights <- getEnergyWeights
+      energyWeights <- getEnergyWeights(propList)
       weightedTable <- makeWeightedTable(ratioList,energyWeights)
       zippedTable <- Future((ESList,cmPercentList,weightedTable).zipped.toList)
       formattedTable <- convertTabletoEntries(zippedTable)

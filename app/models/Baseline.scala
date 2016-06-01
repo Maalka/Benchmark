@@ -63,14 +63,14 @@ case class EUIMetrics(parameters: JsValue) {
   def sourceEUIConverted: Future[Double] =
     for {
       sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
-      buildingSize <- combinedPropMetrics.getTotalArea
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedEUI <- EUIConversionConstant(sourceEnergy,buildingSize)
     } yield convertedEUI.value
 
   def siteEUIConverted: Future[Double] =
     for {
       siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
-      buildingSize <- combinedPropMetrics.getTotalArea
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedEUI <- EUIConversionConstant(siteTotalEnergy,buildingSize)
     } yield convertedEUI.value
 
@@ -98,7 +98,7 @@ case class EUIMetrics(parameters: JsValue) {
   def medianSiteEUIConverted:Future[Energy] = {
     for {
       siteEnergy <- medianSiteEnergy
-      buildingSize <- combinedPropMetrics.getTotalArea
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedEUI <- EUIConversionConstant(siteEnergy,buildingSize)
     } yield convertedEUI
   }
@@ -115,7 +115,7 @@ case class EUIMetrics(parameters: JsValue) {
   def percentBetterSiteEUIConverted:Future[Energy] = {
     for {
       siteEnergy <- percentBetterSiteEnergy
-      buildingSize <- combinedPropMetrics.getTotalArea
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedEUI <- EUIConversionConstant(siteEnergy,buildingSize)
     } yield convertedEUI
   }
@@ -123,7 +123,7 @@ case class EUIMetrics(parameters: JsValue) {
   def percentBetterSourceEnergyConverted:Future[Energy] = {
     for {
       sourceEnergy <- percentBetterSourceEUI
-      buildingSize <- combinedPropMetrics.getTotalArea
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedEnergy <- energyConversion(sourceEnergy)
     } yield convertedEnergy * buildingSize
   }
@@ -138,7 +138,7 @@ case class EUIMetrics(parameters: JsValue) {
 
 
 
-
+//--------------------------- ABOVE IS THE EXIT POINT WITH FINAL CONVERSIONS ------------------------------------- //
 
 
 
@@ -160,8 +160,6 @@ case class EUIMetrics(parameters: JsValue) {
     } yield outputList
   }
 
-
-
   def sourceEnergy: Future[Energy] =
     for {
       sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
@@ -175,13 +173,13 @@ case class EUIMetrics(parameters: JsValue) {
   def sourceEUI: Future[Energy] =
     for {
       sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
-      buildingSize <- combinedPropMetrics.getTotalArea
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
     } yield sourceEnergy / buildingSize
 
   def siteEUI: Future[Energy] =
     for {
       siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
-      buildingSize <- combinedPropMetrics.getTotalArea
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
     } yield siteTotalEnergy / buildingSize
 
   def medianSiteEnergy:Future[Energy] = {
@@ -205,7 +203,7 @@ case class EUIMetrics(parameters: JsValue) {
   def medianSiteEUI:Future[Energy] = {
     for {
       siteEnergy <- medianSiteEnergy
-      buildingSize <- combinedPropMetrics.getTotalArea
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
     } yield siteEnergy / buildingSize
   }
 
@@ -220,14 +218,14 @@ case class EUIMetrics(parameters: JsValue) {
   def percentBetterSiteEUI:Future[Energy] = {
     for {
       siteEnergy <- percentBetterSiteEnergy
-      buildingSize <- combinedPropMetrics.getTotalArea
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
     } yield siteEnergy / buildingSize
   }
 
   def percentBetterSourceEnergy:Future[Energy] = {
     for {
       sourceEUI <- percentBetterSourceEUI
-      buildingSize <- combinedPropMetrics.getTotalArea
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
     } yield sourceEUI * buildingSize
   }
 

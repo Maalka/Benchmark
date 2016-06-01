@@ -70,17 +70,11 @@ case class ES(parameters: JsValue) {
 
   def getPropES:Future[Int] = {
     for {
-      table <- combinedPropMetrics.getWeightedTable
-      predictedEnergy <- combinedPropMetrics.getTotalPredictedEnergy
+      table <- combinedPropMetrics.getWeightedTable(result)
+      predictedEnergy <- combinedPropMetrics.getTotalPredictedEnergy(result)
       actualSourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
       euiRatio <- Future(actualSourceEnergy/predictedEnergy)
-      futureEntry <- {
-        //println("predicted",predictedEnergy)
-        //println("actual",actualSourceEnergy)
-        //println("ratio",euiRatio)
-        //println(table)
-        Future(table.dropWhile(_.Ratio < euiRatio).headOption)
-      }
+      futureEntry <- Future(table.dropWhile(_.Ratio < euiRatio).headOption)
       checkEntry <- Future(table.lastOption)
     } yield
       {
@@ -98,7 +92,7 @@ case class ES(parameters: JsValue) {
     for {
       predictedEnergy <- combinedPropMetrics.expectedSourceEnergy(params)
       actualSourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
-      buildingSize <- combinedPropMetrics.getTotalArea
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
       targetBuilding <- BuildingProperties(params).getBuilding
       table <- combinedPropMetrics.lookupTableGet(targetBuilding)
       propTypeSize <- Future(targetBuilding.GFA)
