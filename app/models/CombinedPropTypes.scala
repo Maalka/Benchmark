@@ -25,6 +25,7 @@ case class CombinedPropTypes(params: JsValue) {
   }
 
   def getWholeBuildingSourceMedianEUI:Future[Energy] = {
+
     for {
       majorPropType <- majorProp
       hasGenericBuilding <- checkGenericBuilding
@@ -143,11 +144,11 @@ case class CombinedPropTypes(params: JsValue) {
               case ("USA", "Hospital") => KBtus(389.8)
               case ("USA",_) => KBtus(148.1)
 
-              case ("Canada", "Office") => Gigajoules(1.68)
-              case ("Canada", "Supermarket") => Gigajoules(1.68)
-              case ("Canada", "MedicalOffice") => Gigajoules(1.68)
-              case ("Canada", "K12School") => Gigajoules(1.68)
-              case ("Canada", "Hospital") => Gigajoules(1.68)
+              case ("Canada", "Office") => Gigajoules(1.31)
+              case ("Canada", "Supermarket") => Gigajoules(1.44)
+              case ("Canada", "MedicalOffice") => Gigajoules(1.46)
+              case ("Canada", "K12School") => Gigajoules(1.03)
+              case ("Canada", "Hospital") => Gigajoules(3.12)
               case ("Canada",_) => Gigajoules(1.68)
 
               case (_,_) => throw new Exception("Lookup Table Not Found")
@@ -215,7 +216,7 @@ case class CombinedPropTypes(params: JsValue) {
   def singlePropMedianSourceEnergy(targetBuilding:JsValue):Future[Energy] = {
     for {
       targetBuilding <- BuildingProperties(targetBuilding).getBuilding
-      totalArea <- getTotalArea(result)
+      totalArea <- Future(targetBuilding.buildingSize)
       medianEUI <- singlePropMedianSourceEUI(targetBuilding)
       } yield medianEUI * totalArea
   }
@@ -284,7 +285,7 @@ case class CombinedPropTypes(params: JsValue) {
   def getTotalArea(buildingList:List[JsValue]): Future[Double] = {
     for {
       propTypes <- Future.sequence(buildingList.map(BuildingProperties(_).getBuilding))
-      propGFASum <- Future(propTypes.map(_.GFA.value).sum)
+      propGFASum <- Future(propTypes.map(_.buildingSize).sum)
     } yield propGFASum
   }
 
@@ -414,8 +415,6 @@ case class CombinedPropTypes(params: JsValue) {
   }
 
   def sourceMedianEUI(building:BaseLine):Future[Energy] = Future{
-    
-    val region:String = getRegion(buildingProps.state)
 
     val sourceMedian:Double = {
       (building.country,building.buildingType) match {
@@ -483,7 +482,7 @@ case class CombinedPropTypes(params: JsValue) {
         case ("USA","SelfStorageFacility") => 47.6
 
         case ("USA","SingleFamilyDetached") => {
-          region match {
+          getRegion(buildingProps.state) match {
             case "West" => 67.2
             case "Midwest" => 76.2
             case "South" => 86
@@ -491,7 +490,7 @@ case class CombinedPropTypes(params: JsValue) {
           }
         }
         case ("USA","SingleFamilyAttached") => {
-          region match {
+          getRegion(buildingProps.state) match {
             case "West" => 63.2
             case "Midwest" => 66.6
             case "South" => 82.5
@@ -499,7 +498,7 @@ case class CombinedPropTypes(params: JsValue) {
           }
         }
         case ("USA","MultiFamilyLessThan5") => {
-          region match {
+          getRegion(buildingProps.state) match {
             case "West" => 87.3
             case "Midwest" => 104.8
             case "South" => 113.6
@@ -507,7 +506,7 @@ case class CombinedPropTypes(params: JsValue) {
           }
         }
         case ("USA","MultiFamilyMoreThan4") => {
-          region match {
+          getRegion(buildingProps.state) match {
             case "West" => 81.7
             case "Midwest" => 93.3
             case "South" => 122.4
@@ -515,7 +514,7 @@ case class CombinedPropTypes(params: JsValue) {
           }
         }
         case ("USA","MobileHome") => {
-          region match {
+          getRegion(buildingProps.state) match {
             case "West" => 128.2
             case "Midwest" => 168.9
             case "South" => 162.0

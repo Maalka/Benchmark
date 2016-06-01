@@ -145,7 +145,7 @@ case class EUIMetrics(parameters: JsValue) {
   def getPropOutputList:Future[List[PropParams]] = {
     for {
       propTypes <- Future.sequence(result.map(BuildingProperties(_).getBuilding))
-      propGFASum <- Future(propTypes.map(_.GFA.value).sum)
+      propGFASum <- Future(propTypes.map(_.buildingSize).sum)
       conversionConstant <- GFAConversionConstant
       outputList <- Future{
         energyCalcs.reportingUnits match {
