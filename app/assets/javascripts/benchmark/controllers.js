@@ -204,12 +204,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $scope.propOutputList = $scope.getPropResponseField(results,"propOutputList");
 
-        console.log(results);
+        console.log(JSON.stringify(results));
+        console.log(JSON.stringify($scope.propList));
 
         var metricsTable = [
 
-              {"actualES": $scope.getPropResponseField(results,"actualES")},
-              {"medianES": $scope.getPropResponseField(results,"actualES")},
+              //{"actualES": $scope.getPropResponseField(results,"actualES")},
+              //{"medianES": $scope.getPropResponseField(results,"actualES")},
 
               {"medianZEPI": $scope.getPropResponseField(results,"medianZEPI")},
               {"percentBetterZEPI": $scope.getPropResponseField(results,"percentBetterZEPI")},
@@ -217,7 +218,9 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
               {"siteEUI": $scope.getPropResponseField(results,"siteEUI")},
               {"sourceEUI": $scope.getPropResponseField(results,"sourceEUI")},
+              {"siteEnergyList": $scope.getPropResponseField(results,"siteEnergyList")},
               {"totalSiteEnergy": $scope.getPropResponseField(results,"totalSiteEnergy")},
+              {"sourceEnergyList": $scope.getPropResponseField(results,"sourceEnergyList")},
               {"totalSourceEnergy": $scope.getPropResponseField(results,"totalSourceEnergy")},
 
               {"medianSiteEUI": $scope.getPropResponseField(results,"medianSiteEUI")},

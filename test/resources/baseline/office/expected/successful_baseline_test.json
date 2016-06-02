@@ -1,106 +1,85 @@
 {
-  "errors": [],
   "values": [
     {
-      "ES": 75
+      "propOutputList": [
+        {
+          "propType": "Office",
+          "propSize": 150000,
+          "propPercent": 100,
+          "areaUnits": "sq.ft"
+        }
+      ]
     },
     {
-      "sourceEUI": 189.5973
-    },
-    {
-      "siteEUI": 61.7126
-    },
-    {
-      "totalSourceEnergy": 37919453.9824
-    },
-    {
-      "totalSiteEnergy": 12342512.3201
-    },
-    {
-      "targetES": 75
-    },
-    {
-      "targetSourceEUI": 190.4424
-    },
-    {
-      "targetSiteEUI": 61.9877
-    },
-    {
-      "targetSourceEnergy": 38088489.9139
-    },
-    {
-      "targetSiteEnergy": 12397532.3124
-    },
-    {
-      "percentBetterES": 82
-    },
-    {
-      "percentBetterSourceEUI": 167.3646
-    },
-    {
-      "percentBetterSiteEUI": 54.476
-    },
-    {
-      "percentBetterSourceEnergy": 33472923.7874
-    },
-    {
-      "percentBetterSiteEnergy": 10895198.3968
+      "actualES": 94
     },
     {
       "medianES": 50
     },
     {
-      "medianSourceEUI": 257.484
+      "actualZEPI": 47.10180561047095
     },
     {
-      "medianSiteEUI": 83.8092
+      "medianZEPI": 100
     },
     {
-      "medianSourceEnergy": 51496805.8268
+      "percentBetterZEPI": 80
     },
     {
-      "medianSiteEnergy": 16761843.6873
+      "siteEUI": 47.4553031352673
     },
     {
-      "sourceEnergy": [
+      "sourceEUI": 121.14182842440464
+    },
+    {
+      "totalSiteEnergy": 7118295.470290095
+    },
+    {
+      "siteEnergyList": [
         {
-          "grid": 37499436.5481
+          "grid": 1500000
         },
         {
-          "naturalGas": 420017.4343
+          "naturalGas": 20000
         }
       ]
     },
     {
-      "siteEnergy": [
+      "totalSourceEnergy": 18171274.263660695
+    },
+    {
+      "sourceEnergyList": [
         {
-          "grid": 3500000
+          "grid": 16071187.092032606
         },
         {
-          "naturalGas": 4000
+          "naturalGas": 2100087.171628091
         }
       ]
     },
     {
-      "poolEnergy": 0
+      "medianSiteEUI": 100.75049675955049
     },
     {
-      "parkingEnergy": 0
+      "medianSourceEUI": 257.19147462464633
     },
     {
-      "totalSourceEnergyNoPoolNoParking": 37919453.9824
+      "medianSiteEnergy": 15112574.513932573
     },
     {
-      "buildingSize": 200000
+      "medianSourceEnergy": 38578721.19369695
     },
     {
-      "sourceSiteRatio": 0.3255
+      "percentBetterSiteEUI": 80.60039740764039
     },
     {
-      "buildingClass": "class models.Office"
+      "percentBetterSourceEUI": 205.75317969971707
     },
     {
-      "predictedSourceEnergy": 58373164.6189
+      "percentBetterSiteEnergy": 12090059.611146057
+    },
+    {
+      "percentBetterSourceEnergy": 30862976.95495756
     },
     {
       "directSiteEmissions": [
@@ -108,14 +87,14 @@
           "grid": 0
         },
         {
-          "naturalGas": 21.24488184479389
+          "naturalGas": 106.22440922396945
         }
       ]
     },
     {
       "indirectSiteEmissions": [
         {
-          "grid": 990.3911697235508
+          "grid": 1028.3000632676024
         },
         {
           "naturalGas": 0
@@ -123,7 +102,14 @@
       ]
     },
     {
-      "totalSiteEmissions": 1011.6361
+      "totalEmissions": 1134.5244724915717
+    },
+    {
+      "medianEmissions": 2408.664504019272
+    },
+    {
+      "percentBetterEmissions": 1926.9316032154175
     }
-  ]
+  ],
+  "errors": []
 }

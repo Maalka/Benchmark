@@ -60,6 +60,18 @@ case class EUIMetrics(parameters: JsValue) {
       convertedEnergy <- energyConversion(siteTotalEnergy)
     } yield convertedEnergy.value
 
+  def siteEnergyListConverted: Future[List[EnergyTuple]] =
+    for {
+      siteEnergyList <- energyCalcs.getSiteEnergyList
+      convertedEnergy <- convertEnergyTuple(siteEnergyList)
+    } yield convertedEnergy
+
+  def sourceEnergyListConverted: Future[List[EnergyTuple]] =
+    for {
+      sourceEnergyList <- energyCalcs.getSourceEnergy
+      convertedEnergy <- convertEnergyTuple(sourceEnergyList)
+    } yield convertedEnergy
+
   def sourceEUIConverted: Future[Double] =
     for {
       sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
@@ -520,6 +532,18 @@ case class EUIMetrics(parameters: JsValue) {
       case Some(CountryBuildingType("Canada", _)) => 0.90 / 1.23
 
       case _ => throw new Exception("Could not find Default Site to Source Ratio")
+    }
+  }
+
+
+  def convertEnergyTuple(energies: List[EnergyTuple]): Future[List[EnergyTuple]] = Future {
+    (energyCalcs.country, energyCalcs.reportingUnits) match {
+      case ("USA", "us") => energies
+      case ("USA", "metric") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyValue in Gigajoules)}
+      case (_, "metric") => energies
+      case (_, "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType, a.energyValue in KBtus)}
+      case _ => energies
+
     }
   }
 

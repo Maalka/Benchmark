@@ -93,7 +93,9 @@ trait BaselineActions {
       Baseline.siteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.sourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.siteEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.siteEnergyListConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.sourceEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.sourceEnergyListConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       Baseline.medianSiteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.medianSourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -127,7 +129,9 @@ trait BaselineActions {
       "siteEUI",
       "sourceEUI",
       "totalSiteEnergy",
+      "siteEnergyList",
       "totalSourceEnergy",
+      "sourceEnergyList",
 
       "medianSiteEUI",
       "medianSourceEUI",

@@ -1,106 +1,85 @@
 {
-  "errors": [],
   "values": [
     {
-      "ES": 59
+      "propOutputList": [
+        {
+          "propType": "MultiFamily Building",
+          "propSize": 200000,
+          "propPercent": 100,
+          "areaUnits": "sq.ft"
+        }
+      ]
     },
     {
-      "sourceEUI": 188.1972
-    },
-    {
-      "siteEUI": 60.3792
-    },
-    {
-      "totalSourceEnergy": 22583665.4157
-    },
-    {
-      "totalSiteEnergy": 7245500.7504
-    },
-    {
-      "targetES": 75
-    },
-    {
-      "targetSourceEUI": 168.2668
-    },
-    {
-      "targetSiteEUI": 53.9849
-    },
-    {
-      "targetSourceEnergy": 20192018.8857
-    },
-    {
-      "targetSiteEnergy": 6478190.5548
-    },
-    {
-      "percentBetterES": 95
-    },
-    {
-      "percentBetterSourceEUI": 130.0049
-    },
-    {
-      "percentBetterSiteEUI": 41.7094
-    },
-    {
-      "percentBetterSourceEnergy": 15600589.2049
-    },
-    {
-      "percentBetterSiteEnergy": 5005125.5503
+      "actualES": 92
     },
     {
       "medianES": 50
     },
     {
-      "medianSourceEUI": 200.0076
+      "actualZEPI": 68.71276355568138
     },
     {
-      "medianSiteEUI": 64.1683
+      "medianZEPI": 100
     },
     {
-      "medianSourceEnergy": 24000906.4691
+      "percentBetterZEPI": 80
     },
     {
-      "medianSiteEnergy": 7700193.1542
+      "siteEUI": 35.59147735145047
     },
     {
-      "sourceEnergy": [
+      "sourceEUI": 90.85637131830347
+    },
+    {
+      "totalSiteEnergy": 7118295.470290095
+    },
+    {
+      "siteEnergyList": [
         {
-          "grid": 22499661.9288
+          "grid": 1500000
         },
         {
-          "naturalGas": 84003.4869
+          "naturalGas": 20000
         }
       ]
     },
     {
-      "siteEnergy": [
+      "totalSourceEnergy": 18171274.263660695
+    },
+    {
+      "sourceEnergyList": [
         {
-          "grid": 2100000
+          "grid": 16071187.092032606
         },
         {
-          "naturalGas": 800
+          "naturalGas": 2100087.171628091
         }
       ]
     },
     {
-      "poolEnergy": 0
+      "medianSiteEUI": 51.79747620339695
     },
     {
-      "parkingEnergy": 0
+      "medianSourceEUI": 132.22633848029997
     },
     {
-      "totalSourceEnergyNoPoolNoParking": 22583665.4157
+      "medianSiteEnergy": 10359495.240679389
     },
     {
-      "buildingSize": 120000
+      "medianSourceEnergy": 26445267.696059994
     },
     {
-      "sourceSiteRatio": 0.3208
+      "percentBetterSiteEUI": 41.43798096271756
     },
     {
-      "buildingClass": "class models.MultiFamily"
+      "percentBetterSourceEUI": 105.78107078423999
     },
     {
-      "predictedSourceEnergy": 24573468.28
+      "percentBetterSiteEnergy": 8287596.192543512
+    },
+    {
+      "percentBetterSourceEnergy": 21156214.156848
     },
     {
       "directSiteEmissions": [
@@ -108,14 +87,14 @@
           "grid": 0
         },
         {
-          "naturalGas": 4.248976368958778
+          "naturalGas": 106.22440922396945
         }
       ]
     },
     {
       "indirectSiteEmissions": [
         {
-          "grid": 594.2347018341305
+          "grid": 1028.3000632676024
         },
         {
           "naturalGas": 0
@@ -123,7 +102,14 @@
       ]
     },
     {
-      "totalSiteEmissions": 598.4837
+      "totalEmissions": 1134.5244724915717
+    },
+    {
+      "medianEmissions": 1651.1116913122114
+    },
+    {
+      "percentBetterEmissions": 1320.8893530497692
     }
-  ]
+  ],
+  "errors": []
 }

@@ -23,14 +23,14 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
 
   def makeFakeRequest(buildingType: String, resource: String): FakeRequest[JsValue] = {
     val js = scala.io.Source.fromInputStream(getClass.getResourceAsStream(resource)).mkString
-    FakeRequest(Helpers.POST, controllers.routes.BaselineController.makeBaseline().url,
+    FakeRequest(Helpers.POST, controllers.routes.BaselineController.getZEPIMetrics().url,
       FakeHeaders(), Json.parse(js))
   }
 
   def getBaselineBody(testJson: String):JsValue = {
     val controller = new TestController()
     val fakeRequest = makeFakeRequest("", testJson)
-    val result: Future[Result] = controller.makeBaseline().apply(fakeRequest)
+    val result: Future[Result] = controller.getZEPIMetrics().apply(fakeRequest)
     contentAsJson(result)
   }
 
@@ -72,27 +72,27 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
   //check response for generic building type that is missing algorithm
   "makeBaseline - adult_education post body" should {
     "be valid" in successfulBaselineTest("/baseline/adult_education/adult_education.json", "/baseline/adult_education/expected/successful_baseline_test.json")
-    "ES response be invalid" in errorFieldBaselineTest("/baseline/adult_education/adult_education.json", "ES")
+    "actualES response be invalid" in errorFieldBaselineTest("/baseline/adult_education/adult_education.json", "actualES")
     "totalSiteEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/adult_education/adult_education.json", "totalSiteEnergy").as[Double] mustBe 12342512.3201
+      successFieldBaselineTest("/baseline/adult_education/adult_education.json", "totalSiteEnergy").as[Double] mustBe 5611.019929660801
     }
   }
 
   //check response for generic building type that is missing site energy inputs
   "makeBaseline - adult_education_no_energy post body" should {
     "be valid" in successfulBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "/baseline/adult_education/expected/successful_baseline_no_energy_test.json")
-    "ES be invalid" in errorFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "ES")
+    "siteEUI be invalid" in errorFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "siteEUI")
     "percentBetterSourceEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "percentBetterSourceEnergy").as[Double] mustBe 9898000
+      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "percentBetterSourceEnergy").as[Double] mustBe 11312000
     }
     "medianSourceEUI response be valid" in {
       successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "medianSourceEUI").as[Double] mustBe 141.4
     }
     "medianSiteEUI response be valid" in {
-      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "medianSiteEUI").as[Double] mustBe 88.8576
+      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "medianSiteEUI").as[Double] mustBe 83.07482609513066
     }
-    "ES response not be valid" in {
-      errorValueBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "ES")
+    "siteEUI response not be valid" in {
+      errorValueBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "siteEUI")
     }
   }
 
@@ -100,7 +100,7 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
   "makeBaseline - office post body" should {
     "be valid" in successfulBaselineTest("/baseline/office/office.json", "/baseline/office/expected/successful_baseline_test.json")
     "totalSiteEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/office/office.json", "totalSiteEnergy").as[Double] mustBe 12342512.3201
+      successFieldBaselineTest("/baseline/office/office.json", "totalSiteEnergy").as[Double] mustBe 7118295.470290095
     }
   }
 
@@ -110,13 +110,13 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
     "ES errors be invalid" in noErrorFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "ES")
     "targetES errors be invalid" in noErrorFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "targetES")
     "totalSiteEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "totalSiteEnergy").as[Double] mustBe 5775.779
+      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "totalSiteEnergy").as[Double] mustBe 7510.199296608001
     }
     "percentBetterSourceEUI response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "percentBetterSourceEUI").as[Double] mustBe 0.822
+      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "percentBetterSourceEUI").as[Double] mustBe 0.8771376088057311
     }
     "medianSourceEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "medianSourceEnergy").as[Double] mustBe 10432.5103
+      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "medianSourceEnergy").as[Double] mustBe 30558.281383643694
     }
   }
 
@@ -124,10 +124,10 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
   "makeBaseline - multifamily post body" should {
     "be valid" in successfulBaselineTest("/baseline/multifamily/multifamily.json", "/baseline/multifamily/expected/successful_baseline_test.json")
     "totalSourceEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/multifamily/multifamily.json", "totalSourceEnergy").as[Double] mustBe 22583665.4157
+      successFieldBaselineTest("/baseline/multifamily/multifamily.json", "totalSourceEnergy").as[Double] mustBe 18171274.263660695
     }
     "percentBetterSourceEUI response be valid" in {
-      successFieldBaselineTest("/baseline/multifamily/multifamily.json", "percentBetterSourceEUI").as[Double] mustBe 130.0049
+      successFieldBaselineTest("/baseline/multifamily/multifamily.json", "percentBetterSourceEUI").as[Double] mustBe 105.78107078423999
     }
   }
 
@@ -135,10 +135,11 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
   "makeBaseline - empty post body" should  {
     "throw[JsonException]" in {
       val controller = new TestController()
-      val fakeRequest = FakeRequest(Helpers.POST, controllers.routes.BaselineController.makeBaseline().url,
+      val fakeRequest = FakeRequest(Helpers.POST, controllers.routes.BaselineController.getZEPIMetrics().url,
         FakeHeaders(), Json.parse("null"))
 
-      val result: Future[Result] = controller.makeBaseline().apply(fakeRequest)
+      val result: Future[Result] = controller.getZEPIMetrics().apply(fakeRequest)
+      
       result must not be  "ok"
       //Console.println(bodyTest)
       //bodyTest mustBe "ok" // need to check the return values

@@ -44,14 +44,20 @@ case class EUICalculator(parameters: JsValue) {
     } yield sourceEnergy
   }
 
-
-  def getTotalSiteEnergy: Future[Energy] = {
+  def getSiteEnergyList: Future[List[EnergyTuple]] = {
     for {
       entries <- getEnergyList
       siteEnergyList <- computeSiteEnergy(entries)
+    } yield siteEnergyList
+  }
+
+  def getTotalSiteEnergy: Future[Energy] = {
+    for {
+      siteEnergyList <- getSiteEnergyList
       siteEnergySum <- getSiteEnergySum(siteEnergyList)
     } yield siteEnergySum
   }
+
 
   def getSiteEnergySum(energies: List[EnergyTuple]): Future[Energy] = {
 
