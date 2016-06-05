@@ -27,6 +27,7 @@ case class EUIMetrics(parameters: JsValue) {
 
 
   def getESScore:Future[Int] = es.getESScore
+  def getTargetESScore:Future[Int] = es.getTargetESScore
   def getMedianESScore:Future[Int] = Future(50)
 
   def zepiMedian:Future[Int] = buildingProps.getBaselineConstant

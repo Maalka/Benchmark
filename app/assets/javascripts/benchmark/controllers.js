@@ -174,7 +174,9 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.scoreGraph = $scope.isResidential ? "HERS" : "zEPI";
             $scope.scoreUnits = $scope.isResidential ? "0-130" : "0-100";
 
-            console.log($scope.getPropResponseField(results,"actualES"));
+            console.log("medianES:",$scope.getPropResponseField(results,"medianES"));
+            console.log("targetES:",$scope.getPropResponseField(results,"targetES"));
+            console.log("actualES:",$scope.getPropResponseField(results,"actualES"));
 
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
             $scope.benchmarkResult.city = $scope.auxModel.city;
@@ -196,18 +198,15 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         return returnValue;
     };
 
-/*    $scope.round = function(value, decimals) {
-        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-    };*/
-
     $scope.computeBenchmarkMix = function(results){
 
         $scope.propOutputList = $scope.getPropResponseField(results,"propOutputList");
 
         var metricsTable = [
 
-              //{"actualES": $scope.getPropResponseField(results,"actualES")},
-              //{"medianES": $scope.getPropResponseField(results,"actualES")},
+              {"actualES": $scope.getPropResponseField(results,"actualES")},
+              {"medianES": $scope.getPropResponseField(results,"actualES")},
+              {"targetES": $scope.getPropResponseField(results,"targetES")},
 
               {"medianZEPI": $scope.getPropResponseField(results,"medianZEPI")},
               {"percentBetterZEPI": $scope.getPropResponseField(results,"percentBetterZEPI")},

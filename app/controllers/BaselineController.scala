@@ -84,6 +84,7 @@ trait BaselineActions {
       Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       Baseline.getESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.getTargetESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.getMedianESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       Baseline.zepiActual.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -120,6 +121,7 @@ trait BaselineActions {
       "propOutputList",
 
       "actualES",
+      "targetES",
       "medianES",
 
       "actualZEPI",
