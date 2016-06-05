@@ -204,9 +204,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $scope.propOutputList = $scope.getPropResponseField(results,"propOutputList");
 
-        console.log(JSON.stringify(results));
-        console.log(JSON.stringify($scope.propList));
-
         var metricsTable = [
 
               //{"actualES": $scope.getPropResponseField(results,"actualES")},

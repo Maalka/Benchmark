@@ -294,13 +294,17 @@ case class CombinedPropTypes(params: JsValue) {
     val cmPercentList:List[Double] = List.range(0,100,1).map(_/100.0)
     for {
       buildingList <- Future.sequence(propList.map(BuildingProperties(_).getBuilding))
-      tableList <- Future.sequence(buildingList.map(lookupTableGet(_)))
-      ratioList <-  Future{tableList.map(_.map(_.Ratio))}
+      ratioList <- Future.sequence{
+        buildingList.map {
+          case a: MedicalOffice => lookupTableGet(a).map(_.map(_.Ratio / 14.919))
+          case a: ResidenceHall => lookupTableGet(a).map(_.map(_.Ratio / 15.717))
+          case a: BaseLine => lookupTableGet(a).map(_.map(_.Ratio))
+        }
+      }
       energyWeights <- getEnergyWeights(propList)
       weightedTable <- makeWeightedTable(ratioList,energyWeights)
       zippedTable <- Future((ESList,cmPercentList,weightedTable).zipped.toList)
       formattedTable <- convertTabletoEntries(zippedTable)
-      //jsonTable <- Future(convertEntriesToJson(formattedTable))
     } yield formattedTable
   }
 

@@ -170,7 +170,7 @@
                     <div class="sixteen wide field">
                         <label>{{propText}}</label>
                         <select class="ui dropdown search"
-                            dropdown`
+                            dropdown
                             reset = "auxModel.resetBuildingType"
                             ng-model="auxModel.buildingType"
                             ng-options="item as item.name for item in buildingProperties.buildingType[auxModel.buildingZone] | orderBy : 'name'"

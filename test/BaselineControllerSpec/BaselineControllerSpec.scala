@@ -139,7 +139,7 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
         FakeHeaders(), Json.parse("null"))
 
       val result: Future[Result] = controller.getZEPIMetrics().apply(fakeRequest)
-      
+
       result must not be  "ok"
       //Console.println(bodyTest)
       //bodyTest mustBe "ok" // need to check the return values
