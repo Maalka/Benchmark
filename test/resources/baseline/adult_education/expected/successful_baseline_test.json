@@ -111,6 +111,9 @@
   "errors": [
     {
       "actualES": "Could not compute EnergyStar Score - Generic Building: No Algorithm!"
+    },
+    {
+      "targetES": "Could not compute EnergyStar Score - Generic Building: No Algorithm!"
     }
   ]
 }

@@ -1,0 +1,118 @@
+{
+  "values": [
+    {
+      "propOutputList": [
+        {
+          "propType": "Office",
+          "propSize": 150000,
+          "propPercent": 50,
+          "areaUnits": "sq.ft"
+        },
+        {
+          "propType": "Hospital",
+          "propSize": 100000,
+          "propPercent": 33.33,
+          "areaUnits": "sq.ft"
+        },
+        {
+          "propType": "Adult Education",
+          "propSize": 50000,
+          "propPercent": 16.67,
+          "areaUnits": "sq.ft"
+        }
+      ]
+    },
+    {
+      "actualES": 98
+    },
+    {
+      "targetES": 100
+    },
+    {
+      "medianES": 50
+    },
+    {
+      "actualZEPI": 145.05990695940616
+    },
+    {
+      "medianZEPI": 100
+    },
+    {
+      "percentBetterZEPI": 80
+    },
+    {
+      "siteEUI": 56.86902721879903
+    },
+    {
+      "sourceEUI": 178.56874546702898
+    },
+    {
+      "totalSiteEnergy": 17060708.16563971
+    },
+    {
+      "siteEnergyList": [
+        {
+          "grid": 5000000
+        }
+      ]
+    },
+    {
+      "totalSourceEnergy": 53570623.64010869
+    },
+    {
+      "sourceEnergyList": [
+        {
+          "grid": 53570623.64010869
+        }
+      ]
+    },
+    {
+      "medianSiteEUI": 39.203821656050955
+    },
+    {
+      "medianSourceEUI": 123.1
+    },
+    {
+      "medianSiteEnergy": 11761146.496815287
+    },
+    {
+      "medianSourceEnergy": 36930000
+    },
+    {
+      "percentBetterSiteEUI": 31.36305732484076
+    },
+    {
+      "percentBetterSourceEUI": 98.48
+    },
+    {
+      "percentBetterSiteEnergy": 9408917.197452229
+    },
+    {
+      "percentBetterSourceEnergy": 29544000
+    },
+    {
+      "directSiteEmissions": [
+        {
+          "grid": 0
+        }
+      ]
+    },
+    {
+      "indirectSiteEmissions": [
+        {
+          "grid": 3427.666877558674
+        }
+      ]
+    },
+    {
+      "totalEmissions": 3427.666877558674
+    },
+    {
+      "medianEmissions": 2362.9319426751595
+    },
+    {
+      "percentBetterEmissions": 1890.3455541401274
+    }
+  ],
+  "errors": []
+}

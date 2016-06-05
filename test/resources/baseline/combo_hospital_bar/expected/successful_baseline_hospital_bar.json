@@ -3,9 +3,15 @@
     {
       "propOutputList": [
         {
-          "propType": "Adult Education",
+          "propType": "Hospital",
           "propSize": 100000,
-          "propPercent": 100,
+          "propPercent": 66.67,
+          "areaUnits": "sq.ft"
+        },
+        {
+          "propType": "Bar",
+          "propSize": 50000,
+          "propPercent": 33.33,
           "areaUnits": "sq.ft"
         }
       ]
@@ -20,28 +26,28 @@
       "percentBetterZEPI": 80
     },
     {
-      "medianSiteEUI": 83.07482609513066
+      "medianSiteEUI": 220.3554630969609
     },
     {
-      "medianSourceEUI": 141.4
+      "medianSourceEUI": 389.8
     },
     {
-      "medianSiteEnergy": 8307482.609513066
+      "medianSiteEnergy": 33053319.464544136
     },
     {
-      "medianSourceEnergy": 14140000
+      "medianSourceEnergy": 58470000
     },
     {
-      "percentBetterSiteEUI": 66.45986087610453
+      "percentBetterSiteEUI": 176.28437047756876
     },
     {
-      "percentBetterSourceEUI": 113.12
+      "percentBetterSourceEUI": 311.84000000000003
     },
     {
-      "percentBetterSiteEnergy": 6645986.087610452
+      "percentBetterSiteEnergy": 26442655.571635313
     },
     {
-      "percentBetterSourceEnergy": 11312000
+      "percentBetterSourceEnergy": 46776000.00000001
     }
   ],
   "errors": [

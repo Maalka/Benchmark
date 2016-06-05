@@ -130,6 +130,24 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
       successFieldBaselineTest("/baseline/multifamily/multifamily.json", "percentBetterSourceEUI").as[Double] mustBe 105.78107078423999
     }
   }
+  //check response for specific building type with algorithm
+  "makeBaseline - combo bank hospital adult post body" should {
+    "be valid" in successfulBaselineTest("/baseline/combo_bank_hospital_adult/bank_hospital_adult.json", "/baseline/combo_bank_hospital_adult/expected/successful_baseline_bank_hospital_adult.json")
+  }
+
+  //check response for specific building type with algorithm
+  "makeBaseline - combo hospital bar post body" should {
+    "be valid" in successfulBaselineTest("/baseline/combo_hospital_bar/hospital_bar.json", "/baseline/combo_hospital_bar/expected/successful_baseline_hospital_bar.json")
+  }
+
+  //check response for specific building type with algorithm
+  "makeBaseline - combo hospital bar hotel post body" should {
+    "be valid" in successfulBaselineTest("/baseline/combo_hospital_bar_hotel/hospital_bar_hotel.json", "/baseline/combo_hospital_bar_hotel/expected/successful_baseline_hospital_bar_hotel.json")
+  }
+  //check response for specific building type with algorithm
+  "makeBaseline - combo office k12school post body" should {
+    "be valid" in successfulBaselineTest("/baseline/combo_office_k12/office_k12.json", "/baseline/combo_office_k12/expected/successful_baseline_office_k12.json")
+  }
 
 //check when response comes back empty
   "makeBaseline - empty post body" should  {

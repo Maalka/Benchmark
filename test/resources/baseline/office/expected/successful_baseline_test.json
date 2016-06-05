@@ -11,10 +11,13 @@
       ]
     },
     {
-      "actualES": 94
+      "actualES":94
     },
     {
-      "medianES": 50
+      "targetES":69
+    },
+    {
+      "medianES":50
     },
     {
       "actualZEPI": 47.10180561047095

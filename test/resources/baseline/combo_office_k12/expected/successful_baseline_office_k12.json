@@ -1,0 +1,112 @@
+{
+  "values": [
+    {
+      "propOutputList": [
+        {
+          "propType": "Office",
+          "propSize": 200000,
+          "propPercent": 72.73,
+          "areaUnits": "sq.ft"
+        },
+        {
+          "propType": "K-12 School",
+          "propSize": 75000,
+          "propPercent": 27.27,
+          "areaUnits": "sq.ft"
+        }
+      ]
+    },
+    {
+      "actualES": 65
+    },
+    {
+      "targetES": 69
+    },
+    {
+      "medianES": 50
+    },
+    {
+      "actualZEPI": 83.86212828445063
+    },
+    {
+      "medianZEPI": 100
+    },
+    {
+      "percentBetterZEPI": 80
+    },
+    {
+      "siteEUI": 62.0389387841444
+    },
+    {
+      "sourceEUI": 194.80226778221342
+    },
+    {
+      "totalSiteEnergy": 17060708.16563971
+    },
+    {
+      "siteEnergyList": [
+        {
+          "grid": 5000000
+        }
+      ]
+    },
+    {
+      "totalSourceEnergy": 53570623.64010869
+    },
+    {
+      "sourceEnergyList": [
+        {
+          "grid": 53570623.64010869
+        }
+      ]
+    },
+    {
+      "medianSiteEUI": 73.97730066391291
+    },
+    {
+      "medianSourceEUI": 232.28872408468658
+    },
+    {
+      "medianSiteEnergy": 20343757.682576053
+    },
+    {
+      "medianSourceEnergy": 63879399.12328881
+    },
+    {
+      "percentBetterSiteEUI": 59.18184053113034
+    },
+    {
+      "percentBetterSourceEUI": 185.83097926774929
+    },
+    {
+      "percentBetterSiteEnergy": 16275006.146060843
+    },
+    {
+      "percentBetterSourceEnergy": 51103519.29863105
+    },
+    {
+      "directSiteEmissions": [
+        {
+          "grid": 0
+        }
+      ]
+    },
+    {
+      "indirectSiteEmissions": [
+        {
+          "grid": 3427.666877558674
+        }
+      ]
+    },
+    {
+      "totalEmissions": 3427.666877558674
+    },
+    {
+      "medianEmissions": 4087.2643560063552
+    },
+    {
+      "percentBetterEmissions": 3269.811484805084
+    }
+  ],
+  "errors": []
+}

@@ -11,7 +11,10 @@
       ]
     },
     {
-      "actualES": 100
+      "actualES": 1
+    },
+    {
+      "targetES": 1
     },
     {
       "medianES": 50
