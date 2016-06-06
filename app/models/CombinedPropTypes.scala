@@ -302,7 +302,10 @@ case class CombinedPropTypes(params: JsValue) {
         }
       }
       energyWeights <- getEnergyWeights(propList)
-      weightedTable <- makeWeightedTable(ratioList,energyWeights)
+      weightedTable <- {
+        println(energyWeights)
+        makeWeightedTable(ratioList,energyWeights)
+      }
       zippedTable <- Future((ESList,cmPercentList,weightedTable).zipped.toList)
       formattedTable <- convertTabletoEntries(zippedTable)
     } yield formattedTable
@@ -331,6 +334,7 @@ case class CombinedPropTypes(params: JsValue) {
     val unitlessEnergy = targetBuilding match {
       case a: ResidenceHall => exp(a.expectedEnergy)
       case a: MedicalOffice => exp(a.expectedEnergy)
+      case a: DataCenter => a.expectedEnergy * a.annualITEnergyKBtu
       case a: GenericBuilding => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
       case a: BaseLine => a.expectedEnergy * a.buildingSize
     }

@@ -174,8 +174,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.scoreGraph = $scope.isResidential ? "HERS" : "zEPI";
             $scope.scoreUnits = $scope.isResidential ? "0-130" : "0-100";
 
-            console.log(JSON.stringify(results));
-            console.log(JSON.stringify($scope.propList));
+            //console.log(JSON.stringify(results));
+            //console.log(JSON.stringify($scope.propList));
 
             console.log("medianES:",$scope.getPropResponseField(results,"medianES"));
             console.log("targetES:",$scope.getPropResponseField(results,"targetES"));

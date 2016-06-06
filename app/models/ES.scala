@@ -126,14 +126,17 @@ case class ES(parameters: JsValue) {
       propTypeSize <- Future(targetBuilding.GFA)
       euiRatio <- Future{
         targetBuilding match {
-          case a: ResidenceHall => log(sourceESEnergy.value) * 15.717 / predictedEnergy.value * propTypeSize.value
-          case a: MedicalOffice => log(sourceESEnergy.value) * 14.919 / predictedEnergy.value * propTypeSize.value
-          case a: DataCenter => sourceESEnergy.value / a.annualITEnergyKBtu / predictedEnergy.value * propTypeSize.value
+          case a: ResidenceHall => log(sourceESEnergy.value) * 15.717 / log(predictedEnergy.value)
+          case a: MedicalOffice => log(sourceESEnergy.value) * 14.919 / log(predictedEnergy.value)
+          case a: DataCenter => sourceESEnergy.value / predictedEnergy.value
           case a: GenericBuilding => throw new Exception("Could not calculate EUI Ratio - Generic Building: No Algorithm!")
           case a: BaseLine => sourceESEnergy.value / buildingSize / predictedEnergy.value * propTypeSize.value
         }
       }
-      futureRatio <- Future(table.dropWhile(_.Ratio < euiRatio).headOption)
+      futureRatio <- {
+        println("ratio",euiRatio)
+        Future(table.dropWhile(_.Ratio < euiRatio).headOption)
+      }
       checkRatio <- Future(table.lastOption)
     } yield
     {
