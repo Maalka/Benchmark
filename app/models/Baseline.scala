@@ -337,20 +337,6 @@ case class EUIMetrics(parameters: JsValue) {
     } yield stateBuildingType
   }
 
-  def computeExpectedEUI[T](targetBuilding: T): Future[Energy] = Future{
-    val unitlessEnergy = targetBuilding match {
-      case a: ResidenceHall => exp(a.expectedEnergy)
-      case a: MedicalOffice => exp(a.expectedEnergy)
-      case a: GenericBuilding => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
-      case a: BaseLine => a.expectedEnergy * a.buildingSize
-    }
-    buildingProps.country match {
-      case "USA" => KBtus(unitlessEnergy)
-      case "Canada" => Gigajoules(unitlessEnergy)
-      case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
-    }
-  }
-
 
 
   def computeLookupEUI[T](targetBuilding: T): Future[Double] = Future{

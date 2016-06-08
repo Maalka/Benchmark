@@ -26,7 +26,7 @@
       "medianES": 50
     },
     {
-      "actualZEPI": 83.86212828445063
+      "actualZEPI": 83.86212828445066
     },
     {
       "medianZEPI": 100
@@ -61,28 +61,28 @@
       ]
     },
     {
-      "medianSiteEUI": 73.97730066391291
+      "medianSiteEUI": 73.9773006639129
     },
     {
-      "medianSourceEUI": 232.28872408468658
+      "medianSourceEUI": 232.28872408468655
     },
     {
-      "medianSiteEnergy": 20343757.682576053
+      "medianSiteEnergy": 20343757.68257605
     },
     {
-      "medianSourceEnergy": 63879399.12328881
+      "medianSourceEnergy": 63879399.1232888
     },
     {
-      "percentBetterSiteEUI": 59.18184053113034
+      "percentBetterSiteEUI": 59.181840531130334
     },
     {
-      "percentBetterSourceEUI": 185.83097926774929
+      "percentBetterSourceEUI": 185.83097926774926
     },
     {
-      "percentBetterSiteEnergy": 16275006.146060843
+      "percentBetterSiteEnergy": 16275006.146060841
     },
     {
-      "percentBetterSourceEnergy": 51103519.29863105
+      "percentBetterSourceEnergy": 51103519.29863104
     },
     {
       "directSiteEmissions": [
@@ -102,10 +102,10 @@
       "totalEmissions": 3427.666877558674
     },
     {
-      "medianEmissions": 4087.2643560063552
+      "medianEmissions": 4087.264356006355
     },
     {
-      "percentBetterEmissions": 3269.811484805084
+      "percentBetterEmissions": 3269.811484805083
     }
   ],
   "errors": []

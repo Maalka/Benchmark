@@ -67,10 +67,46 @@ case class CombinedPropTypes(params: JsValue) {
   def getWeightedMedianSourceEnergy(buildingList:List[JsValue]):Future[Energy] = {
     for {
       weightedTable <- getWeightedTable(buildingList)
-      medianRatio <- getMedianRatio(weightedTable)
-      predictedEnergy <- getTotalPredictedEnergy(buildingList)
-    }yield predictedEnergy*medianRatio
+      medianEnergy <- getMedianRatio(weightedTable)
+    }yield {
+      buildingProps.country match {
+        case "USA" => KBtus(medianEnergy)
+        case "Canada" => Gigajoules(medianEnergy)
+        case _ => throw new Exception("Cannot compute Weighted Table Energy")
+      }
+    }
   }
+
+  def getWeightedTable(propList:List[JsValue]): Future[Seq[TableEntry]] = {
+    val ESList:List[Int] = List.range(1,101,1).sorted(Ordering[Int].reverse)
+    val cmPercentList:List[Double] = List.range(0,100,1).map(_/100.0)
+    for {
+      buildingList <- Future.sequence(propList.map(BuildingProperties(_).getBuilding))
+      ratioToEnergyList <- Future.sequence{
+        buildingList.map {
+          case a: BaseLine => lookupTableGet(a).map(_.map(b => tableToEnergy(a,b)))
+        }
+      }
+      weightedTable <- Future(ratioToEnergyList.transpose.map(_.sum))
+      zippedTable <- Future((ESList,cmPercentList,weightedTable).zipped.toList)
+      formattedTable <- convertTabletoEntries(zippedTable)
+    } yield formattedTable
+  }
+
+
+  def tableToEnergy(targetBuilding: BaseLine, tableEntry:TableEntry): Double = {
+    targetBuilding match {
+      case a: ResidenceHall => exp(tableEntry.Ratio * a.expectedEnergy / 15.717)
+      case a: MedicalOffice => exp(tableEntry.Ratio * a.expectedEnergy / 14.919)
+      case a: DataCenter => tableEntry.Ratio * a.expectedEnergy * a.annualITEnergyKBtu
+      case a: BaseLine => tableEntry.Ratio * a.expectedEnergy * a.buildingSize
+    }
+  }
+
+  def convertTabletoEntries(table: List[(Int,Double,Double)]): Future[Seq[TableEntry]] = Future{
+    table.map { case (a,b,c) =>  TableEntry(a,b,c) }
+  }
+
 
   def getTargetEUI[T](targetBuilding: T,lookupEUI:Energy,targetRatio:Double):Future[Energy] = Future {
     targetBuilding match {
@@ -194,7 +230,6 @@ case class CombinedPropTypes(params: JsValue) {
     }
   }
 
-
   def singlePropMedianSourceEUI(targetBuilding:BaseLine):Future[Energy] = {
     for {
       medianEUI <- {
@@ -289,39 +324,6 @@ case class CombinedPropTypes(params: JsValue) {
     } yield propGFASum
   }
 
-  def getWeightedTable(propList:List[JsValue]): Future[Seq[TableEntry]] = {
-    val ESList:List[Int] = List.range(1,101,1).sorted(Ordering[Int].reverse)
-    val cmPercentList:List[Double] = List.range(0,100,1).map(_/100.0)
-    for {
-      buildingList <- Future.sequence(propList.map(BuildingProperties(_).getBuilding))
-      ratioList <- Future.sequence{
-        buildingList.map {
-          case a: MedicalOffice => lookupTableGet(a).map(_.map(_.Ratio / 14.919))
-          case a: ResidenceHall => lookupTableGet(a).map(_.map(_.Ratio / 15.717))
-          case a: BaseLine => lookupTableGet(a).map(_.map(_.Ratio))
-        }
-      }
-      energyWeights <- getEnergyWeights(propList)
-      weightedTable <- {
-        println(energyWeights)
-        makeWeightedTable(ratioList,energyWeights)
-      }
-      zippedTable <- Future((ESList,cmPercentList,weightedTable).zipped.toList)
-      formattedTable <- convertTabletoEntries(zippedTable)
-    } yield formattedTable
-  }
-
-  def makeWeightedTable(tableList:List[Seq[Double]],propWeights:List[Double]):Future[List[Double]] = Future {
-    tableList.transpose.map(_.zip(propWeights).map{ case (a, b) => a * b }.sum)
-  }
-
-  def convertTabletoEntries(table: List[(Int,Double,Double)]): Future[Seq[TableEntry]] = Future{
-    table.map { case (a,b,c) =>  TableEntry(a,b,c) }
-  }
-
-  def convertEntriesToJson(entries: Seq[TableEntry]): Seq[JsValue] = {
-    entries.map(Json.toJson(_))
-  }
 
   def expectedSourceEnergy(parameters:JsValue):Future[Energy] = {
     for {
@@ -344,6 +346,8 @@ case class CombinedPropTypes(params: JsValue) {
       case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
     }
   }
+
+
 
 
   def lookupTableGet(building: BaseLine): Future[Seq[TableEntry]] = {

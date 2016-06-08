@@ -52,9 +52,8 @@ case class ES(parameters: JsValue) {
       buildingSize <- combinedPropMetrics.getTotalArea(result)
       filteredPropSize <- combinedPropMetrics.getTotalArea(buildingList)
       predictedEnergy <- combinedPropMetrics.getTotalPredictedEnergy(buildingList)
-      euiRatio <- Future(ESEnergy * filteredPropSize / buildingSize / predictedEnergy)
       weightedTable <- combinedPropMetrics.getWeightedTable(buildingList)
-      futureRatio <- Future(weightedTable.dropWhile(_.Ratio < euiRatio).headOption)
+      futureRatio <- Future(weightedTable.dropWhile(_.Ratio < ESEnergy.value).headOption)
       checkRatio <- Future(weightedTable.lastOption)
     } yield {
       if (futureRatio.isDefined) {
