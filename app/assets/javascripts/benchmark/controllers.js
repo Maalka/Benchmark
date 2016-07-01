@@ -11,6 +11,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.auxModel = {};
     //The table of energy information input by user, default to empty
     $scope.energies = [{}, {}];
+    $scope.renewableEnergies = [{}, {}];
     //For displaying user-input energy entries after having been saved
     $scope.propList = [];
     $scope.benchmarkResult = null;
@@ -132,6 +133,19 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.addEnergiesRow();
         }
     };
+
+    $scope.addRenewableEnergiesRow = function(){
+        $scope.renewableEnergies.push({});
+    };
+
+    $scope.removeRenewableRow = function(index){
+        $scope.renewableEnergies.splice(index, 1);
+        if ($scope.renewableEnergies.length ===    1) {
+            $scope.addRenewableEnergiesRow();
+        }
+    };
+
+
 
     $scope.removeProp = function(prop){
         var index;
@@ -287,6 +301,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.energyList=null;
         } else {
             $scope.energyList = $scope.energies.map(mapEnergy).filter(validEnergy);
+        }
+
+
+        if($scope.renewableEnergies.map(mapEnergy).filter(validEnergy).length===0){
+            $scope.renewableEnergyList=null;
+        } else {
+            $scope.renewableEnergyList = $scope.renewableEnergies.map(mapEnergy).filter(validEnergy);
         }
 
         if($scope.forms.baselineForm.$valid){
@@ -512,8 +533,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
             energyType:[
                 {id:"grid",name:"Electric (Grid)"},
-                {id:"onSiteElectricity",name:"Electric (Solar)"},
-                {id:"onSiteElectricity",name:"Electric (Wind)"},
+                //{id:"onSiteElectricity",name:"Electric (Solar)"},
+                //{id:"onSiteElectricity",name:"Electric (Wind)"},
                 {id:"naturalGas",name:"Natural Gas"},
                 {id:"fuelOil1",name:"Fuel Oil 1"},
                 {id:"fuelOil2",name:"Fuel Oil 2"},
@@ -534,6 +555,22 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 {id:"diesel",name:"Diesel"},
                 {id:"other",name:"Other"}
             ],
+
+            renewableType:[
+                {id:"onSiteSolar",name:"On-Site Solar"},
+                {id:"onSiteWind",name:"On-Site Wind"},
+                {id:"onSiteOther",name:"On-Site Other"},
+                {id:"offSite",name:"Off-Site Purchased"}
+            ],
+
+            renewableUnits:[
+                {id:"KBtu",name:"kBtu",filter_id:"grid"},
+                {id:"MBtu",name:"MBtu",filter_id:"grid"},
+                {id:"kWh",name:"kWh",filter_id:"grid"},
+                {id:"MWh",name:"MWh",filter_id:"grid"},
+                {id:"GJ",name:"GJ",filter_id:"grid"},
+            ],
+
 
             energyUnits: [
                 //<!--Electricity - Grid -->

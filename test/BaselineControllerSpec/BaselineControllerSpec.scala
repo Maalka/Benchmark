@@ -150,7 +150,7 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
   }
 
 //check when response comes back empty
-  "makeBaseline - empty post body" should  {
+  /*"makeBaseline - empty post body" should  {
     "throw[JsonException]" in {
       val controller = new TestController()
       val fakeRequest = FakeRequest(Helpers.POST, controllers.routes.BaselineController.getZEPIMetrics().url,
@@ -162,5 +162,5 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
       //Console.println(bodyTest)
       //bodyTest mustBe "ok" // need to check the return values
     }
-  }
+  }*/
 }
