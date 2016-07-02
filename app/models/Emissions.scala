@@ -10,6 +10,7 @@ import play.api.Play
 import scala.concurrent.ExecutionContext.Implicits.global
 import java.io.{InputStream}
 
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
 
@@ -47,13 +48,41 @@ case class Emissions(parameters:JsValue) {
     for {
       direct <- getDirectEmissionList
       indirect <- getIndirectEmissionList
-    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum
+      avoided <- getAvoidedEmissionsSum
+    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum - avoided
   }
 
+
+  def getAvoidedEmissionsSum(): Future[Double] = {
+
+    val local = for {
+      netMetered <- energyCalcs.isNetMetered
+      entries <- energyCalcs.getRenewableEnergyList
+      energyTuples <- computeEnergyAndType(entries)
+      eGridCode <- getEGrid()
+      indirectFactors <- emissionsIndirectFactors(energyTuples, eGridCode)
+    } yield {
+        netMetered match {
+          case true => 0
+          case false => indirectFactors.map(_.eValue).sum
+        }
+      }
+    local.recoverWith{
+      case NonFatal(th) =>  Future{0}
+    }
+  }
 
   def computeEnergyAndType[T](entries: T): Future[List[(Energy, String)]] = Future {
     entries match {
       case a: EnergyList => a.energies.map {
+        case b: EnergyMetrics => {
+          Energy((b.energyUse, b.energyUnits)) match {
+            case c: Success[Energy] => (c.get in MBtus, b.energyType)
+            case c: Failure[Energy] => throw new Exception("Could not convert energy to MBtus for Emissions Calc")
+          }
+        }
+      }
+      case a: RenewableEnergyList => a.renewableEnergies.map {
         case b: EnergyMetrics => {
           Energy((b.energyUse, b.energyUnits)) match {
             case c: Success[Energy] => (c.get in MBtus, b.energyType)

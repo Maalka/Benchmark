@@ -16,6 +16,7 @@ import squants.energy._
 import EnergyConversions.EnergyNumeric
 
 import scala.util._
+import scala.util.control.NonFatal
 
 case class EUICalculator(parameters: JsValue) {
 
@@ -32,6 +33,13 @@ case class EUICalculator(parameters: JsValue) {
     parameters.asOpt[ConversionInfo] match {
       case Some(a) => a.reportingUnits
       case _ => throw new Exception("Could not retrieve Reporting Units")
+    }
+  }
+
+  def isNetMetered:Future[Boolean] = Future{
+    parameters.asOpt[NetMetered] match {
+      case Some(a) => a.netMetered
+      case _ => throw new Exception("Could not tell if Net Metered")
     }
   }
 
@@ -55,15 +63,31 @@ case class EUICalculator(parameters: JsValue) {
     for {
       siteEnergyList <- getSiteEnergyList
       siteEnergySum <- getSiteEnergySum(siteEnergyList)
-    } yield siteEnergySum
+      siteRenewableSum <- getTotalSiteRenewableEnergy
+    } yield siteEnergySum - siteRenewableSum
   }
 
+  def getTotalSiteRenewableEnergy: Future[Energy] = {
+    val local = for {
+      netMetered <- isNetMetered
+      entries <- getRenewableEnergyList
+      siteRenewableEnergyList <- computeSiteEnergy(entries)
+      siteRenewableEnergySum <- getSiteEnergySum(siteRenewableEnergyList)
+    } yield {
+        netMetered match {
+          case true => countryZero
+          case false => siteRenewableEnergySum
+        }
+      }
+    local.recoverWith{
+      case NonFatal(th) =>  Future{countryZero}
+    }
+  }
 
   def getSiteEnergySum(energies: List[EnergyTuple]): Future[Energy] = {
-
     val f = country match {
-      case "USA" => energies.map {case a:EnergyTuple => a.energyValue in KBtus}.sum in KBtus
-      case _ => energies.map {case a:EnergyTuple => a.energyValue in Gigajoules}.sum in Gigajoules
+      case "USA" => energies.map { case a: EnergyTuple => a.energyValue in KBtus }.sum in KBtus
+      case _ => energies.map { case a: EnergyTuple => a.energyValue in Gigajoules }.sum in Gigajoules
     }
     Future(f)
   }
@@ -71,6 +95,14 @@ case class EUICalculator(parameters: JsValue) {
   def computeSiteEnergy[T](entries: T): Future[List[EnergyTuple]] = Future {
     entries match {
       case a: EnergyList => a.energies.map {
+        case a: EnergyMetrics => {
+          Energy((a.energyUse, a.energyUnits)) match {
+            case b:Success[Energy] => EnergyTuple(a.energyType,b.get)
+            case b: Failure[Energy] => throw new Exception("Could not determine energy unit for entry")
+          }
+        }
+      }
+      case a: RenewableEnergyList => a.renewableEnergies.map {
         case a: EnergyMetrics => {
           Energy((a.energyUse, a.energyUnits)) match {
             case b:Success[Energy] => EnergyTuple(a.energyType,b.get)
@@ -94,12 +126,32 @@ case class EUICalculator(parameters: JsValue) {
 
   def getTotalSourceEnergy: Future[Energy] = {
     for {
+      netMetered <- isNetMetered
       entries <- getEnergyList
       sourceEnergyList <- computeSourceEnergy(entries)
       sourceEnergyListConverted <- convertOutputSum(sourceEnergyList)
+      totalSourceRenewableEnergy <- getTotalSourceRenewableEnergy
 
-    } yield sourceEnergyListConverted
+    } yield sourceEnergyListConverted - totalSourceRenewableEnergy
   }
+
+  def getTotalSourceRenewableEnergy: Future[Energy] = {
+    val local = for {
+      netMetered <- isNetMetered
+      entries <- getRenewableEnergyList
+      sourceRenewableEnergyList <- computeSourceEnergy(entries)
+      sourceRenewableEnergySum <- convertOutputSum(sourceRenewableEnergyList)
+    } yield {
+        netMetered match {
+          case true => countryZero
+          case false => sourceRenewableEnergySum
+        }
+      }
+    local.recoverWith{
+      case NonFatal(th) =>  Future{countryZero}
+    }
+  }
+
 
   def getTotalSourceEnergyNoPoolNoParking: Future[Energy] = {
     for {
@@ -113,6 +165,9 @@ case class EUICalculator(parameters: JsValue) {
   def computeSourceEnergy[T](entries: T): Future[List[EnergyTuple]] = Future{
     entries match {
       case a: EnergyList => a.energies.map {
+        case a: EnergyMetrics => sourceConvert(a.energyType, Energy((a.energyUse, a.energyUnits)))
+      }
+      case a: RenewableEnergyList => a.renewableEnergies.map {
         case a: EnergyMetrics => sourceConvert(a.energyType, Energy((a.energyUse, a.energyUnits)))
       }
       case _ => throw new Exception("Could not compute Source Energy from Site Energy")
@@ -131,6 +186,20 @@ case class EUICalculator(parameters: JsValue) {
         }
       }
     } yield siteEnergyList
+  }
+
+  def getRenewableEnergyList: Future[RenewableEnergyList] = {
+    for {
+      entries <- Future {
+        parameters.validate[RenewableEnergyList]
+      }
+      siteRenewableEnergyList <- {
+        entries match {
+          case JsSuccess(a, _) => Future(a)
+          case JsError(err) => throw new Exception("Could not read provided energy list")
+        }
+      }
+    } yield siteRenewableEnergyList
   }
 
   def convertOutput(energies: List[EnergyTuple]): Future[List[EnergyTuple]] = Future {
@@ -173,6 +242,10 @@ case class EUICalculator(parameters: JsValue) {
         case ("coalA", _) => a.get * siteToSourceConversions.coal
         case ("coalB", _) => a.get * siteToSourceConversions.coal
         case ("other", _) => a.get * siteToSourceConversions.other
+        case ("onSiteSolar", _) => a.get * siteToSourceConversions.gridUS
+        case ("onSiteWind", _) => a.get * siteToSourceConversions.gridUS
+        case ("onSiteOther", _) => a.get * siteToSourceConversions.gridUS
+        case ("offSite", _) => a.get * siteToSourceConversions.gridUS
         case (_, _) => throw new Exception("Could Not Convert to Source Energy")
       }}
       case a: Failure[Energy] => throw new Exception("Could not read site energy entry")
@@ -205,6 +278,12 @@ case class EUICalculator(parameters: JsValue) {
     }
   }
 
+  def countryZero:Energy = {
+    country match {
+      case "USA" => KBtus(0)
+      case _ => Gigajoules(0)
+    }
+  }
 
   def getPoolEnergy: Future[Energy] = Future {
 
@@ -262,6 +341,11 @@ object EnergyList {
   implicit val listReads:Reads[EnergyList] = Json.reads[EnergyList]
 }
 
+case class RenewableEnergyList(renewableEnergies:List[EnergyMetrics])
+object RenewableEnergyList {
+  implicit val listReads:Reads[RenewableEnergyList] = Json.reads[RenewableEnergyList]
+}
+
 object siteToSourceConversions {
   val gridUS:Double = 3.14
   val gridCanada:Double = 2.05
@@ -295,3 +379,7 @@ object Parking {
 }
 
 case class EnergyTuple(energyType: String, energyValue: Energy)
+case class NetMetered(netMetered: Boolean)
+object NetMetered {
+  implicit val netMeteredRead: Reads[NetMetered] = Json.reads[NetMetered]
+}

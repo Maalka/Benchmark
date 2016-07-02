@@ -270,35 +270,12 @@ case class EUIMetrics(parameters: JsValue) {
     } yield percentBetterEmissions
   }
 
-  def getDirectEmissionList(): Future[List[EmissionsTuple]] = {
+  def getDirectEmissionList(): Future[List[EmissionsTuple]] = buildingEmissions.getDirectEmissionList()
 
-    for {
-      entries <- energyCalcs.getEnergyList
-      energyTuples <- buildingEmissions.computeEnergyAndType(entries)
-      directFactors <- buildingEmissions.emissionsDirectFactors(energyTuples)
-    } yield directFactors
+  def getIndirectEmissionList(): Future[List[EmissionsTuple]] = buildingEmissions.getIndirectEmissionList()
 
-  }
+  def getTotalEmissions(): Future[Double] = buildingEmissions.getTotalEmissions()
 
-  def getIndirectEmissionList(): Future[List[EmissionsTuple]] = {
-
-    for {
-      entries <- energyCalcs.getEnergyList
-      energyTuples <- buildingEmissions.computeEnergyAndType(entries)
-      eGridCode <- buildingEmissions.getEGrid()
-      indirectFactors <- buildingEmissions.emissionsIndirectFactors(energyTuples, eGridCode)
-
-    } yield indirectFactors
-
-  }
-
-  def getTotalEmissions(): Future[Double] = {
-
-    for {
-      direct <- getDirectEmissionList
-      indirect <- getIndirectEmissionList
-    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum
-  }
 
   def siteToSourceRatio:Future[Double] = {
 
@@ -485,7 +462,7 @@ case class EUIMetrics(parameters: JsValue) {
       case Some(CountryBuildingType("Canada", "PhysicalTherapyCenter")) => 1.02 / 1.5
       case Some(CountryBuildingType("Canada", "UrgentCareCenter")) => 1.02 / 1.5
       case Some(CountryBuildingType("Canada", "Barracks")) => 1.45 / 2.05
-      case Some(CountryBuildingType("Canada", "Prison")) => 1.28 / 1.74
+      case Some(CountryBuildingType("Canada", "Pr n")) => 1.28 / 1.74
       case Some(CountryBuildingType("Canada", "ResidentialLodging")) => 1.12 / 1.75
       case Some(CountryBuildingType("Canada", "MixedUse")) => 0.90 / 1.23
       case Some(CountryBuildingType("Canada", "VeterinaryOffice")) => 1.02 / 1.5

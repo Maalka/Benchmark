@@ -288,6 +288,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     e.energyUnits !== undefined &&
                     e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
         };
+
         var mapEnergy = function (e) { 
             return {
                 'energyType': e.energyType,
@@ -296,19 +297,15 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 'energyRate': null
             };
         };
+        var mapRenewableEnergy = function (e) {
+            return {
+                'energyType': e.renewableType,
+                'energyUnits': e.renewableUnits,
+                'energyUse': Number(e.energyUse),
+                'energyRate': null
+            };
+        };
 
-        if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
-            $scope.energyList=null;
-        } else {
-            $scope.energyList = $scope.energies.map(mapEnergy).filter(validEnergy);
-        }
-
-
-        if($scope.renewableEnergies.map(mapEnergy).filter(validEnergy).length===0){
-            $scope.renewableEnergyList=null;
-        } else {
-            $scope.renewableEnergyList = $scope.renewableEnergies.map(mapEnergy).filter(validEnergy);
-        }
 
         if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){
@@ -324,11 +321,18 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
                     $scope.propTypes[i].propertyModel.targetScore = null;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
+                    $scope.propTypes[i].propertyModel.netMetered = $scope.auxModel.netMetered;
 
                     if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
                         $scope.propTypes[i].propertyModel.energies=null;
                     } else {
                         $scope.propTypes[i].propertyModel.energies = $scope.energies.map(mapEnergy).filter(validEnergy);
+                    }
+
+                    if($scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy).length===0){
+                        $scope.propTypes[i].propertyModel.renewableEnergies=null;
+                    } else {
+                        $scope.propTypes[i].propertyModel.renewableEnergies = $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy);
                     }
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
@@ -557,10 +561,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             ],
 
             renewableType:[
-                {id:"onSiteSolar",name:"On-Site Solar"},
-                {id:"onSiteWind",name:"On-Site Wind"},
-                {id:"onSiteOther",name:"On-Site Other"},
-                {id:"offSite",name:"Off-Site Purchased"}
+                {id:"grid",name:"On-Site Solar"},
+                {id:"grid",name:"On-Site Wind"},
+                {id:"grid",name:"On-Site Other"},
+                {id:"grid",name:"Off-Site Purchased"}
             ],
 
             renewableUnits:[
