@@ -2,7 +2,7 @@
 package models
 
 
-import squants.energy.{TBtus, Gigajoules, KBtus, Energy}
+import squants.energy._
 import squants.space._
 import scala.concurrent.Future
 import scala.language._
@@ -513,8 +513,8 @@ case class EUIMetrics(parameters: JsValue) {
   def EUIConversionConstant(energyEntry:Energy,areaEntry:Double):Future[Energy] = Future{
     (energyCalcs.country, energyCalcs.reportingUnits) match {
       case ("USA", "us") => energyEntry / areaEntry
-      case ("USA", "metric") => (energyEntry in Gigajoules)/(areaEntry * (SquareFeet(1) to SquareMeters))
-      case (_, "metric") => energyEntry / areaEntry
+      case ("USA", "metric") => (energyEntry in Megajoules)/(areaEntry * (SquareFeet(1) to SquareMeters))
+      case (_, "metric") => (energyEntry in Megajoules) / areaEntry
       case (_, "us") => (energyEntry in KBtus) / (areaEntry * (SquareMeters(1) to SquareFeet))
       case _ => energyEntry / areaEntry
     }
@@ -522,8 +522,8 @@ case class EUIMetrics(parameters: JsValue) {
   def EUIConversionNoUnitsConstant:Future[Double] = Future{
     (energyCalcs.country, energyCalcs.reportingUnits) match {
       case ("USA", "us") => 1.0
-      case ("USA", "metric") => (KBtus(1) to Gigajoules)/(SquareFeet(1) to SquareMeters)
-      case (_, "metric") => 1.0
+      case ("USA", "metric") => (KBtus(1) to Megajoules)/(SquareFeet(1) to SquareMeters)
+      case (_, "metric") => (Gigajoules(1) to Megajoules)
       case (_, "us") => (Gigajoules(1) to KBtus) / (SquareMeters(1) to SquareFeet)
       case _ => 1.0
     }
@@ -531,8 +531,8 @@ case class EUIMetrics(parameters: JsValue) {
   def energyConversion(energyEntry:Energy):Future[Energy] = Future{
     (energyCalcs.country, energyCalcs.reportingUnits) match {
       case ("USA", "us") => energyEntry
-      case ("USA", "metric") => energyEntry in Gigajoules
-      case (_, "metric") => energyEntry
+      case ("USA", "metric") => energyEntry in Megajoules
+      case (_, "metric") => energyEntry in Megajoules
       case (_, "us") => energyEntry in KBtus
       case _ => energyEntry
     }

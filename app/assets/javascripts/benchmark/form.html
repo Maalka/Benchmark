@@ -65,18 +65,18 @@
                     <div class="eleven wide column">
                         <div class="inline fields">
                             <div class="sixteen wide field required">
-                                <input type="text" ng-model="auxModel.postalCode"
+                                <input type="text" ng-model="auxModel.postalCode" ng-blur="postalCodeCheck()"
                                      required name="postalCode" min="0" placeholder="Postal Code">
                             </div>
                         </div>
                     </div>
-                    <div class="five wide column">
+                    <div class="five wide column" ng-show="lacksDD">
                         <label class="design-label">Degree Days
                             <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" 
                                 target="_blank"><i class="large circle help icon"></i></a>
                         </label>
                     </div>
-                    <div class="eleven wide column">
+                    <div class="eleven wide column" ng-show="lacksDD">
                         <div class="inline fields">
                             <div class="two wide field">
                                 <label>HDD</label>

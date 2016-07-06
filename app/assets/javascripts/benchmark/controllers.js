@@ -15,6 +15,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     //For displaying user-input energy entries after having been saved
     $scope.propList = [];
     $scope.benchmarkResult = null;
+    $scope.lacksDD = false;
 
     $scope.propOutputList = [];
     $scope.tableEUIUnits = null;
@@ -111,7 +112,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.clearGeography = function () {
         $scope.auxModel.city = "";
         $scope.auxModel.state = null;
-        $scope.auxModel.postalCode = "";
+        //$scope.auxModel.postalCode = "";
         $scope.auxModel.buildingType = undefined;
         $scope.propTypes = [];
     };
@@ -178,17 +179,28 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         }
     };
 
-    $scope.computeDegreeDays = function(){
+    $scope.postalCodeCheck = function() {
+        if($scope.auxModel.postalCode){
+            if($scope.auxModel.postalCode.length > 4){
+                $scope.temp = {"postalCode":$scope.auxModel.postalCode};
+                $scope.computeDegreeDays();
+            }else{
+                $scope.auxModel.HDD = null;
+                $scope.auxModel.CDD = null;
+            }
+        }else{
+             $scope.auxModel.HDD = null;
+             $scope.auxModel.CDD = null;
+         }
+    };
 
-        $scope.temp = {"postalCode":$scope.auxModel.postalCode};
+    $scope.computeDegreeDays = function(){
 
         $scope.futures = benchmarkServices.getDDMetrics($scope.temp);
         $q.resolve($scope.futures).then(function (results) {
             $scope.auxModel.CDD = $scope.getPropResponseField(results,"CDD");
             $scope.auxModel.HDD = $scope.getPropResponseField(results,"HDD");
         });
-
-        $scope.submit();
     };
 
     $scope.computeBenchmarkResult = function(){
@@ -298,9 +310,15 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.tableEnergyUnits="kBtu";
             $scope.tableEUIUnits="kBtu/ft²";
         }else {
-            $scope.tableEnergyUnits="GJ";
-            $scope.tableEUIUnits="GJ/m²";
+            $scope.tableEnergyUnits="MJ";
+            $scope.tableEUIUnits="MJ/m²";
         }
+
+        if($scope.auxModel.CDD === undefined || $scope.auxModel.HDD === undefined ||
+        $scope.auxModel.HDD === null || $scope.auxModel.HDD === null){
+            $scope.lacksDD = true;
+        }
+
         var validEnergy = function(e) {
             return (e.energyType !== undefined &&
                     e.energyUnits !== undefined &&
