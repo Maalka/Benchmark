@@ -178,6 +178,19 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         }
     };
 
+    $scope.computeDegreeDays = function(){
+
+        $scope.temp = {"postalCode":$scope.auxModel.postalCode};
+
+        $scope.futures = benchmarkServices.getDDMetrics($scope.temp);
+        $q.resolve($scope.futures).then(function (results) {
+            $scope.auxModel.CDD = $scope.getPropResponseField(results,"CDD");
+            $scope.auxModel.HDD = $scope.getPropResponseField(results,"HDD");
+        });
+
+        $scope.submit();
+    };
+
     $scope.computeBenchmarkResult = function(){
 
         $scope.futures = benchmarkServices.getZEPIMetrics($scope.propList);
@@ -196,6 +209,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             console.log("actualES:",$scope.getPropResponseField(results,"actualES"));
 
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
+
             $scope.benchmarkResult.city = $scope.auxModel.city;
             $scope.benchmarkResult.state = $scope.auxModel.state;
             $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
@@ -249,7 +263,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"totalEmissions": $scope.getPropResponseField(results,"totalEmissions")},
               {"percentBetterEmissions": $scope.getPropResponseField(results,"percentBetterEmissions")},
               {"medianEmissions": $scope.getPropResponseField(results,"medianEmissions")}
-
         ];
         return metricsTable;
     };
@@ -269,6 +282,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.submit();
         }
     });
+
+    $scope.degreeDaysCheck = function () {
+        $scope.computeDegreeDays();
+    };
+
     $scope.submit = function () {
         if($scope.forms.baselineForm === undefined) {
             return;

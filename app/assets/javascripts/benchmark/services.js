@@ -8,6 +8,12 @@ define(['angular', 'common'], function(angular) {
 					/// handle errors (500 etc)
 					return response.data;
 				});
+			},
+			'getDDMetrics': function(model) {
+				return playRoutes.controllers.DegreeDaysController.getDDMetrics().post(model).then(function (response)  {
+					/// handle errors (500 etc)
+					return response.data;
+				});
 			}
 		};
 		return services;
