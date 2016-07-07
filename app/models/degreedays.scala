@@ -32,20 +32,14 @@ case class DegreeDays(parameters:JsValue) {
     for {
       lookUpTable <- lookupCDD
       ddSum <- computeDD("all",lookUpTable)
-    } yield {
-      print("CDD",ddSum)
-      ddSum
-    }
+    } yield ddSum
   }
 
   def getHDD: Future[Int] = {
     for {
       lookUpTable <- lookupHDD
       ddSum <- computeDD("all",lookUpTable)
-    } yield {
-      print("HDD",ddSum)
-      ddSum
-    }
+    } yield ddSum
   }
 
   def lookupCDD: Future[DDmonths] = {
