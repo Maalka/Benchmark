@@ -1,46 +1,76 @@
 {
-  "errors": [
+  "values": [
     {
-      "ES": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
+      "propOutputList": [
+        {
+          "propType": "Adult Education",
+          "propSize": 100000,
+          "propPercent": 100,
+          "areaUnits": "sq.ft"
+        }
+      ]
     },
     {
-      "sourceEUI": "Could not read provided energy list"
+      "medianES": 50
+    },
+    {
+      "medianZEPI": 100
+    },
+    {
+      "percentBetterZEPI": 80
+    },
+    {
+      "medianSiteEUI": 83.07482609513066
+    },
+    {
+      "medianSourceEUI": 141.4
+    },
+    {
+      "medianSiteEnergy": 8307482.609513066
+    },
+    {
+      "medianSourceEnergy": 14140000
+    },
+    {
+      "percentBetterSiteEUI": 66.45986087610453
+    },
+    {
+      "percentBetterSourceEUI": 113.12
+    },
+    {
+      "percentBetterSiteEnergy": 6645986.087610452
+    },
+    {
+      "percentBetterSourceEnergy": 11312000
+    }
+  ],
+  "errors": [
+    {
+      "actualES": "Could not compute EnergyStar Score - Generic Building: No Algorithm!"
+    },
+    {
+      "targetES": "Could not compute EnergyStar Score - Generic Building: No Algorithm!"
+    },
+    {
+      "actualZEPI": "Could not read provided energy list"
     },
     {
       "siteEUI": "Could not read provided energy list"
     },
     {
-      "totalSourceEnergy": "Could not read provided energy list"
+      "sourceEUI": "Could not read provided energy list"
     },
     {
       "totalSiteEnergy": "Could not read provided energy list"
     },
     {
-      "targetSourceEUI": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
+      "siteEnergyList": "Could not read provided energy list"
     },
     {
-      "targetSiteEUI": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
+      "totalSourceEnergy": "Could not read provided energy list"
     },
     {
-      "targetSourceEnergy": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
-    },
-    {
-      "targetSiteEnergy": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
-    },
-    {
-      "percentBetterES": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
-    },
-    {
-      "sourceEnergy": "Could not read provided energy list"
-    },
-    {
-      "siteEnergy": "Could not read provided energy list"
-    },
-    {
-      "totalSourceEnergyNoPoolNoParking": "Could not read provided energy list"
-    },
-    {
-      "predictedSourceEnergy": "Cannot compute Expected Energy - Generic Building: No Algorithm!"
+      "sourceEnergyList": "Could not read provided energy list"
     },
     {
       "directSiteEmissions": "Could not read provided energy list"
@@ -49,54 +79,13 @@
       "indirectSiteEmissions": "Could not read provided energy list"
     },
     {
-      "totalSiteEmissions": "Could not read provided energy list"
-    }
-  ],
-  "values": [
-    {
-      "targetES": 75
+      "totalEmissions": "Could not read provided energy list"
     },
     {
-      "percentBetterSourceEUI": 49.49
+      "medianEmissions": "Could not read provided energy list"
     },
     {
-      "percentBetterSiteEUI": 31.1002
-    },
-    {
-      "percentBetterSourceEnergy": 9898000
-    },
-    {
-      "percentBetterSiteEnergy": 6220032.5518
-    },
-    {
-      "medianES": 50
-    },
-    {
-      "medianSourceEUI": 141.4
-    },
-    {
-      "medianSiteEUI": 88.8576
-    },
-    {
-      "medianSourceEnergy": 28280000
-    },
-    {
-      "medianSiteEnergy": 17771521.5766
-    },
-    {
-      "poolEnergy": 0
-    },
-    {
-      "parkingEnergy": 0
-    },
-    {
-      "buildingSize": 200000
-    },
-    {
-      "sourceSiteRatio": 0.6284
-    },
-    {
-      "buildingClass": "class models.GenericBuilding"
+      "percentBetterEmissions": "Could not read provided energy list"
     }
   ]
 }

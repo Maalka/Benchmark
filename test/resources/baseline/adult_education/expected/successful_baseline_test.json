@@ -1,107 +1,82 @@
 {
-  "errors": [
-    {
-      "ES": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
-    },
-    {
-      "targetSourceEUI": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
-    },
-    {
-      "targetSiteEUI": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
-    },
-    {
-      "targetSourceEnergy": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
-    },
-    {
-      "targetSiteEnergy": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
-    },
-    {
-      "percentBetterES": "Lookup EUI could not be computed - Generic Building: No Algorithm!"
-    },
-    {
-      "predictedSourceEnergy": "Cannot compute Expected Energy - Generic Building: No Algorithm!"
-    }
-  ],
   "values": [
     {
-      "sourceEUI": 189.5973
-    },
-    {
-      "siteEUI": 61.7126
-    },
-    {
-      "totalSourceEnergy": 37919453.9824
-    },
-    {
-      "totalSiteEnergy": 12342512.3201
-    },
-    {
-      "targetES": 75
-    },
-    {
-      "percentBetterSourceEUI": 49.49
-    },
-    {
-      "percentBetterSiteEUI": 16.1086
-    },
-    {
-      "percentBetterSourceEnergy": 9898000
-    },
-    {
-      "percentBetterSiteEnergy": 3221728.5355
+      "propOutputList": [
+        {
+          "propType": "Adult Education",
+          "propSize": 9290.304,
+          "propPercent": 100,
+          "areaUnits": "sq.m"
+        }
+      ]
     },
     {
       "medianES": 50
     },
     {
-      "medianSourceEUI": 141.4
+      "actualZEPI": 115.14282750491805
     },
     {
-      "medianSiteEUI": 46.0247
+      "medianZEPI": 100
     },
     {
-      "medianSourceEnergy": 28280000
+      "percentBetterZEPI": 80
     },
     {
-      "medianSiteEnergy": 9204938.6727
+      "siteEUI": 0.6039651586924174
     },
     {
-      "sourceEnergy": [
+      "sourceEUI": 1.8489783462568978
+    },
+    {
+      "totalSiteEnergy": 5611.019929660801
+    },
+    {
+      "siteEnergyList": [
         {
-          "grid": 37499436.5481
+          "grid": 5400.000000000001
         },
         {
-          "naturalGas": 420017.4343
+          "naturalGas": 211.01992966080002
         }
       ]
     },
     {
-      "siteEnergy": [
+      "totalSourceEnergy": 17177.570926143842
+    },
+    {
+      "sourceEnergyList": [
         {
-          "grid": 3500000
+          "grid": 16956
         },
         {
-          "naturalGas": 4000
+          "naturalGas": 221.57092614384
         }
       ]
     },
     {
-      "poolEnergy": 0
+      "medianSiteEUI": 0.5245356326399232
     },
     {
-      "parkingEnergy": 0
+      "medianSourceEUI": 1.6058128728668943
     },
     {
-      "totalSourceEnergyNoPoolNoParking": 37919453.9824
+      "medianSiteEnergy": 4873.095486057209
     },
     {
-      "buildingSize": 200000
+      "medianSourceEnergy": 14918.489756046802
     },
     {
-      "sourceSiteRatio": 0.3255
+      "percentBetterSiteEUI": 0.41962850611193864
     },
     {
-      "buildingClass": "class models.GenericBuilding"
+      "percentBetterSourceEUI": 1.2846502982935155
+    },
+    {
+      "percentBetterSiteEnergy": 3898.4763888457674
+    },
+    {
+      "percentBetterSourceEnergy": 11934.79180483744
     },
     {
       "directSiteEmissions": [
@@ -109,14 +84,14 @@
           "grid": 0
         },
         {
-          "naturalGas": 21.24488184479389
+          "naturalGas": 10.622440922396946
         }
       ]
     },
     {
       "indirectSiteEmissions": [
         {
-          "grid": 990.3911697235508
+          "grid": 1028.3000632676024
         },
         {
           "naturalGas": 0
@@ -124,7 +99,21 @@
       ]
     },
     {
-      "totalSiteEmissions": 1011.6361
+      "totalEmissions": 1038.9225041899992
+    },
+    {
+      "medianEmissions": 902.2902482967287
+    },
+    {
+      "percentBetterEmissions": 721.8321986373829
+    }
+  ],
+  "errors": [
+    {
+      "actualES": "Could not compute EnergyStar Score - Generic Building: No Algorithm!"
+    },
+    {
+      "targetES": "Could not compute EnergyStar Score - Generic Building: No Algorithm!"
     }
   ]
 }

@@ -341,7 +341,7 @@ define(['angular','./main'], function(angular) {
                         },
                         {
                             name: "numWorkersMainShift",
-                            default: $scope.round(0.77*GFA/1000,2),
+                            default: $scope.round(2.2*GFA/1000,2),
                             type: "number",
                             title: "Number of Workers on Main Shift",
                             required: "all"
@@ -401,6 +401,55 @@ define(['angular','./main'], function(angular) {
                         }
                     ],
                     Office: [
+
+                        {
+                            name: "weeklyOperatingHours",
+                            default: 65,
+                            type: "number",
+                            title: "Number of Weekly Operating Hours",
+                            required: "all"
+                        },
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(2.3*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift",
+                            required: "all"
+                        },
+                                                {
+                            name: "numComputers",
+                            default: $scope.round(2*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Computers",
+                            required: "all"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Heated",
+                            required: "all"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaHVAC,
+                            title: "Percent Cooled",
+                            required: "all"
+
+                        },
+                        {
+                             name: "numServers",
+                             default: null,
+                             type: "number",
+                             title: "Number of Servers",
+                             required: "Canada"
+                        }
+                    ],
+
+                    FinancialOffice: [
 
                         {
                             name: "weeklyOperatingHours",

@@ -1,106 +1,88 @@
 {
-  "errors": [],
   "values": [
     {
-      "ES": 44
+      "propOutputList": [
+        {
+          "propType": "Medical Office",
+          "propSize": 1200,
+          "propPercent": 100,
+          "areaUnits": "sq.m"
+        }
+      ]
     },
     {
-      "sourceEUI": 1.4049
+      "actualES": 99
     },
     {
-      "siteEUI": 0.9478
-    },
-    {
-      "totalSourceEnergy": 7727.2011
-    },
-    {
-      "totalSiteEnergy": 5212.7462
-    },
-    {
-      "targetES": 75
-    },
-    {
-      "targetSourceEUI": 0.976
-    },
-    {
-      "targetSiteEUI": 0.6584
-    },
-    {
-      "targetSourceEnergy": 5368.097
-    },
-    {
-      "targetSiteEnergy": 3621.3018
-    },
-    {
-      "percentBetterES": 82
-    },
-    {
-      "percentBetterSourceEUI": 0.8607
-    },
-    {
-      "percentBetterSiteEUI": 0.5806
-    },
-    {
-      "percentBetterSourceEnergy": 4733.675
-    },
-    {
-      "percentBetterSiteEnergy": 3193.3227
+      "targetES":69
     },
     {
       "medianES": 50
     },
     {
-      "medianSourceEUI": 1.3241
+      "actualZEPI": 32.589792755639635
     },
     {
-      "medianSiteEUI": 0.8932
+      "medianZEPI": 100
     },
     {
-      "medianSourceEnergy": 7282.577
+      "percentBetterZEPI": 80
     },
     {
-      "medianSiteEnergy": 4912.8041
+      "siteEUI": 0.22084994138400002
     },
     {
-      "sourceEnergy": [
+      "sourceEUI": 0.27161694021168
+    },
+    {
+      "totalSiteEnergy": 265.0199296608
+    },
+    {
+      "siteEnergyList": [
         {
-          "grid": 4797
+          "grid": 15000
         },
         {
-          "naturalGas": 2930.2011
+          "naturalGas": 2000
         }
       ]
     },
     {
-      "siteEnergy": [
+      "totalSourceEnergy": 325.940328254016
+    },
+    {
+      "sourceEnergyList": [
         {
-          "grid": 650000
+          "grid": 110.7
         },
         {
-          "naturalGas": 75000
+          "naturalGas": 215.240328254016
         }
       ]
     },
     {
-      "poolEnergy": 0
+      "medianSiteEUI": 0.6776659889798843
     },
     {
-      "parkingEnergy": 0
+      "medianSourceEUI": 0.8334417535216664
     },
     {
-      "totalSourceEnergyNoPoolNoParking": 7727.2011
+      "medianSiteEnergy": 813.1991867758611
     },
     {
-      "buildingSize": 5500
+      "medianSourceEnergy": 1000.1301042259996
     },
     {
-      "sourceSiteRatio": 0.6746
+      "percentBetterSiteEUI": 0.5421327911839074
     },
     {
-      "buildingClass": "class models.CanadaMedicalOffice"
+      "percentBetterSourceEUI": 0.6667534028173332
     },
     {
-      "predictedSourceEnergy": 7707.2462
+      "percentBetterSiteEnergy": 650.5593494206889
+    },
+    {
+      "percentBetterSourceEnergy": 800.1040833807998
     },
     {
       "directSiteEmissions": [
@@ -108,22 +90,23 @@
           "grid": 0
         },
         {
-          "naturalGas": 144.09258807220738
+          "naturalGas": 10.584439345005581
         }
       ]
+    }
+  ],
+  "errors": [
+    {
+      "indirectSiteEmissions": "Could not find PostalCode in eGridDict.json"
     },
     {
-      "indirectSiteEmissions": [
-        {
-          "grid": 22.090204932870297
-        },
-        {
-          "naturalGas": 0
-        }
-      ]
+      "totalEmissions": "Could not find PostalCode in eGridDict.json"
     },
     {
-      "totalSiteEmissions": 166.1828
+      "medianEmissions": "Could not find PostalCode in eGridDict.json"
+    },
+    {
+      "percentBetterEmissions": "Could not find PostalCode in eGridDict.json"
     }
   ]
 }

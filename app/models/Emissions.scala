@@ -10,37 +10,20 @@ import play.api.Play
 import scala.concurrent.ExecutionContext.Implicits.global
 import java.io.{InputStream}
 
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
 
 
 case class Emissions(parameters:JsValue) {
 
-
-  val country: String = {
-    parameters.asOpt[ConversionInfo] match {
-      case Some(a) => a.country
-      case _ => throw new Exception("Could not retrieve Country")
-    }
-  }
-
-  val postalCode: String = {
-    parameters.asOpt[ConversionInfo] match {
-      case Some(a) => a.postalCode
-      case _ => throw new Exception("Could not retrieve PostalCode")
-    }
-  }
-  val state: String = {
-    parameters.asOpt[ConversionInfo] match {
-      case Some(a) => a.state
-      case _ => throw new Exception("Could not retrieve State")
-    }
-  }
+  val energyCalcs:EUICalculator = EUICalculator(parameters)
+  val buildingProps:BuildingProperties = BuildingProperties(parameters)
 
 
   def getDirectEmissionList(): Future[List[EmissionsTuple]] = {
 
     for {
-      entries <- getEnergyList
+      entries <- energyCalcs.getEnergyList
       energyTuples <- computeEnergyAndType(entries)
       directFactors <- emissionsDirectFactors(energyTuples)
     } yield directFactors
@@ -50,7 +33,7 @@ case class Emissions(parameters:JsValue) {
   def getIndirectEmissionList(): Future[List[EmissionsTuple]] = {
 
     for {
-      entries <- getEnergyList
+      entries <- energyCalcs.getEnergyList
       energyTuples <- computeEnergyAndType(entries)
       eGridCode <- getEGrid()
       indirectFactors <- emissionsIndirectFactors(energyTuples, eGridCode)
@@ -65,9 +48,29 @@ case class Emissions(parameters:JsValue) {
     for {
       direct <- getDirectEmissionList
       indirect <- getIndirectEmissionList
-    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum
+      avoided <- getAvoidedEmissionsSum
+    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum - avoided
   }
 
+
+  def getAvoidedEmissionsSum(): Future[Double] = {
+
+    val local = for {
+      netMetered <- energyCalcs.isNetMetered
+      entries <- energyCalcs.getRenewableEnergyList
+      energyTuples <- computeEnergyAndType(entries)
+      eGridCode <- getEGrid()
+      indirectFactors <- emissionsIndirectFactors(energyTuples, eGridCode)
+    } yield {
+        netMetered match {
+          case true => 0
+          case false => indirectFactors.map(_.eValue).sum
+        }
+      }
+    local.recoverWith{
+      case NonFatal(th) =>  Future{0}
+    }
+  }
 
   def computeEnergyAndType[T](entries: T): Future[List[(Energy, String)]] = Future {
     entries match {
@@ -79,30 +82,23 @@ case class Emissions(parameters:JsValue) {
           }
         }
       }
+      case a: RenewableEnergyList => a.renewableEnergies.map {
+        case b: EnergyMetrics => {
+          Energy((b.energyUse, b.energyUnits)) match {
+            case c: Success[Energy] => (c.get in MBtus, b.energyType)
+            case c: Failure[Energy] => throw new Exception("Could not convert energy to MBtus for Emissions Calc")
+          }
+        }
+      }
       case _ => throw new Exception("Could not validate energy entries to calculate EUI")
     }
   }
-
-  def getEnergyList: Future[EnergyList] = {
-    for {
-      entries <- Future {
-        parameters.validate[EnergyList]
-      }
-      siteEnergyList <- {
-        entries match {
-          case JsSuccess(a, _) => Future(a)
-          case JsError(err) => throw new Exception("Could not read provided energy list")
-        }
-      }
-    } yield siteEnergyList
-  }
-
 
   def emissionsDirectFactors(energyEntry: List[(Energy, String)]): Future[List[EmissionsTuple]] = Future {
 
     energyEntry.map {
       case a: (Energy, String) => {
-        val emissionValue:Double = (a._2, country, state) match {
+        val emissionValue:Double = (a._2, buildingProps.country, buildingProps.state) match {
 
           //Direct Emissions USA
           case ("naturalGas", "USA", _) => 53.11
@@ -157,7 +153,7 @@ case class Emissions(parameters:JsValue) {
 
     energyEntry.map {
       case a: (Energy, String) => {
-        val emissionValue:Double = (a._2, country, state, eGrid) match {
+        val emissionValue:Double = (a._2, buildingProps.country, buildingProps.state, eGrid) match {
 
           //Indirect Emissions USA
           case ("steam", "USA", _, _) => 66.40
@@ -248,7 +244,7 @@ case class Emissions(parameters:JsValue) {
 
 
   def getEGrid(): Future[String] = {
-    val eGridCode = eGridLookUp.map { case a => (a \ postalCode).toOption }
+    val eGridCode = eGridLookUp.map { case a => (a \ buildingProps.postalCode).toOption }
     eGridCode.map {
       case Some(a) => a.as[String]
       case _ => throw new Exception("Could not find PostalCode in eGridDict.json")
