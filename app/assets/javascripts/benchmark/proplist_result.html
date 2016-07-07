@@ -31,10 +31,10 @@
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="scoreText" units="scoreUnits"
             columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']"></tr>
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Site EUI'" units="tableEUIUnits"
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
             columns="['medianSiteEUI', 'percentBetterSiteEUI', 'siteEUI']"></tr>
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Source FF-EUI'" units="tableEUIUnits"
             columns="['medianSourceEUI', 'percentBetterSourceEUI', 'sourceEUI']"></tr>
 
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Site Energy Use'" units="tableEnergyUnits"
@@ -45,7 +45,12 @@
 
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Total GHG Emissions'" units="'Metric Tons CO2e'"
             columns="['medianEmissions', 'percentBetterEmissions', 'totalEmissions']"></tr>
+
     </tbody>
+
 </table>
+
+<p>FF-EUI<sup>*</sup> = Fossil Fuel Energy Use Intensity (annual fossil fuel based energy consumption per
+    square foot)</p>
 
 

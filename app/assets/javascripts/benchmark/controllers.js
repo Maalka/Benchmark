@@ -4,7 +4,7 @@
 //define(["./test/sample_response_test_data"], function(sampleTestData) {
 define(['angular', 'matchmedia-ng'], function(angular) {
   'use strict';
-  var DashboardCtrl = function($rootScope, $scope, $window, $timeout, $q, $log, matchmedia, benchmarkServices) {
+  var DashboardCtrl = function($rootScope, $scope, $window, $sce, $timeout, $q, $log, matchmedia, benchmarkServices) {
 
     $rootScope.pageTitle = "2030 Baseline";
     //The model that will be submitted for analysis
@@ -209,8 +209,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $q.resolve($scope.futures).then(function (results) {
             $scope.baselineConstant = $scope.isResidential ? 130 : 100;
-            $scope.scoreText = $scope.isResidential ? "HERS Index Score" : "zEPI Score";
-            $scope.scoreGraph = $scope.isResidential ? "HERS" : "zEPI";
+            $scope.scoreText = "Score";
+            //$scope.scoreText = $scope.isResidential ? "HERS Index Score" : "zEPI Score";
+            $scope.scoreGraph = "Rating";
+            //$scope.scoreGraph = $scope.isResidential ? "HERS" : "zEPI";
+            $scope.FFText = $sce.trustAsHtml('Site FF-EUI*');
             $scope.scoreUnits = $scope.isResidential ? "0-130" : "0-100";
 
             //console.log(JSON.stringify(results));
@@ -763,7 +766,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
 
   };
-  DashboardCtrl.$inject = ['$rootScope', '$scope', '$window', '$timeout', '$q', '$log', 'matchmedia', 'benchmarkServices'];
+  DashboardCtrl.$inject = ['$rootScope', '$scope', '$window','$sce','$timeout', '$q', '$log', 'matchmedia', 'benchmarkServices'];
   return {
     DashboardCtrl: DashboardCtrl
   };
