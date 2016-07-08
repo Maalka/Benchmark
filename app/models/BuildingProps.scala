@@ -350,7 +350,7 @@ object GenericBuilding {
   */
 
 case class Office(GFA:PosDouble, numComputers:PosDouble, weeklyOperatingHours: PosDouble, percentHeated:PosDouble,
-                  percentCooled:PosDouble, HDD:Double, CDD:Double, isSmallBank:Option[Boolean], numWorkersMainShift:PosDouble,
+                  percentCooled:PosDouble, HDD:PosDouble, CDD:PosDouble, isSmallBank:Option[Boolean], numWorkersMainShift:PosDouble,
                   areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
@@ -362,8 +362,8 @@ case class Office(GFA:PosDouble, numComputers:PosDouble, weeklyOperatingHours: P
     RegressionSegment(17.28, 2.231, math.min(numComputers.value / buildingSize * 1000, 11.1)),
     RegressionSegment(55.96, 3.972, log(weeklyOperatingHours.value)),
     RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.value / buildingSize * 1000)),
-    RegressionSegment(0.0077, 4411, HDD * percentHeated.value / 100),
-    RegressionSegment(0.0144, 1157, CDD * percentCooled.value / 100),
+    RegressionSegment(0.0077, 4411, HDD.value * percentHeated.value / 100),
+    RegressionSegment(0.0144, 1157, CDD.value * percentCooled.value / 100),
     RegressionSegment(0, 9.535, log(buildingSize)),
     RegressionSegment(0, .5616, log(numWorkersMainShift.value / buildingSize * 1000)),
     RegressionSegment(0, 0, 1)
@@ -377,7 +377,7 @@ object Office {
 }
 
 case class FinancialOffice(GFA:PosDouble, numComputers:PosDouble, weeklyOperatingHours: PosDouble, percentHeated:PosDouble,
-                  percentCooled:PosDouble, HDD:Double, CDD:Double, isSmallBank:Option[Boolean], numWorkersMainShift:PosDouble,
+                  percentCooled:PosDouble, HDD:PosDouble, CDD:PosDouble, isSmallBank:Option[Boolean], numWorkersMainShift:PosDouble,
                   areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
   val printed:String = "Financial Office"
@@ -387,8 +387,8 @@ case class FinancialOffice(GFA:PosDouble, numComputers:PosDouble, weeklyOperatin
     RegressionSegment(17.28, 2.231, math.min(numComputers.value / buildingSize * 1000, 11.1)),
     RegressionSegment(55.96, 3.972, log(weeklyOperatingHours.value)),
     RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.value / buildingSize * 1000)),
-    RegressionSegment(0.0077, 4411, HDD * percentHeated.value / 100),
-    RegressionSegment(0.0144, 1157, CDD * percentCooled.value / 100),
+    RegressionSegment(0.0077, 4411, HDD.value * percentHeated.value / 100),
+    RegressionSegment(0.0144, 1157, CDD.value * percentCooled.value / 100),
     RegressionSegment(-64.83, 9.535, log(buildingSize)),
     RegressionSegment(34.2, .5616, log(numWorkersMainShift.value / buildingSize * 1000)),
     RegressionSegment(56.3, 0, 1)
@@ -416,7 +416,7 @@ object FinancialOffice {
   */
 
 case class CanadaOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, numComputers:PosDouble,
-                        percentCooled:PosDouble, HDD:Double, CDD:Double, numServers:PosDouble, GFA:PosDouble,
+                        percentCooled:PosDouble, HDD:PosDouble, CDD:PosDouble, numServers:PosDouble, GFA:PosDouble,
                         areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
@@ -429,8 +429,8 @@ case class CanadaOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosD
     RegressionSegment(.07455, 3.335, (numComputers.value + numServers.value) / buildingSize * 100),
     RegressionSegment(.3643, 7.36, log(math.min(buildingSize,5000))), // buildingSize capped @ 5,000 sq meters during analysis
     RegressionSegment(-0.00002596, 2933, math.min(buildingSize,5000)), // buildingSize capped @ 5,000 sq meters during analysis
-    RegressionSegment(.0002034, 4619, HDD),
-    RegressionSegment(.06386, 3.703, log(CDD) * percentCooled.value / 100)
+    RegressionSegment(.0002034, 4619, HDD.value),
+    RegressionSegment(.06386, 3.703, log(CDD.value) * percentCooled.value / 100)
   )
 }
 
@@ -456,7 +456,7 @@ object CanadaOffice {
   */
 
 case class WorshipCenter(weeklyOperatingHours:PosDouble, seatingCapacity:PosDouble, numComputers:PosDouble,
-                         numRefrUnits:PosDouble, HDD:Double, CDD:Double, GFA:PosDouble, hasFoodPreparation:Option[Boolean],
+                         numRefrUnits:PosDouble, HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, hasFoodPreparation:Option[Boolean],
                          isOpenAllWeekdays:Option[Boolean], areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
@@ -470,8 +470,8 @@ case class WorshipCenter(weeklyOperatingHours:PosDouble, seatingCapacity:PosDoub
     RegressionSegment(26.55, 0.2036, numComputers.value / buildingSize * 1000),
     RegressionSegment(15.83 * hasFoodPreparation, 0, 1),
     RegressionSegment(113.1, 0.0183, numRefrUnits.value / buildingSize * 1000),
-    RegressionSegment(0.0081, 4523, HDD),
-    RegressionSegment(.0141, 1313, CDD)
+    RegressionSegment(0.0081, 4523, HDD.value),
+    RegressionSegment(.0141, 1313, CDD.value)
   )
 }
 
@@ -499,7 +499,7 @@ object WorshipCenter {
 case class WastewaterCenter(wastewaterAvgInfluentInflow:PosDouble, wastewaterInfluentBiologicalOxygenDemand:PosDouble,
                             wastewaterEffluentBiologicalOxygenDemand:PosDouble, wastewaterPlantDesignFlowRate:PosDouble,
                             wastewaterHasTrickleFiltration:Option[Boolean], wastewaterHasNutrientRemoval:Option[Boolean],
-                            wastewaterLoadFactor:PosDouble, HDD:Double, CDD:Double, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
+                            wastewaterLoadFactor:PosDouble, HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
 
@@ -514,8 +514,8 @@ case class WastewaterCenter(wastewaterAvgInfluentInflow:PosDouble, wastewaterInf
     RegressionSegment(-4.668, 4.171, log(wastewaterLoadFactor.value)),
     RegressionSegment(-2.577,0.179, 1 * wastewaterHasTrickleFiltration),
     RegressionSegment(1.235, 0.4591, 1 * wastewaterHasNutrientRemoval),
-    RegressionSegment(2.355,8.724,log(HDD)),
-    RegressionSegment(1.243, 6.5, log(CDD))
+    RegressionSegment(2.355,8.724,log(HDD.value)),
+    RegressionSegment(1.243, 6.5, log(CDD.value))
   )
 }
 
@@ -540,7 +540,7 @@ object WastewaterCenter {
   * @param areaUnits
   */
 case class Warehouse(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, numWalkinRefrUnits:PosDouble,
-                     HDD:Double, CDD:Double,isWarehouseRefrigerated:Option[Boolean], percentHeated:PosDouble,
+                     HDD:PosDouble, CDD:PosDouble,isWarehouseRefrigerated:Option[Boolean], percentHeated:PosDouble,
                      percentCooled:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
@@ -553,9 +553,9 @@ case class Warehouse(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDoub
     RegressionSegment(13.63, 9.806, log(buildingSize)),
     RegressionSegment(41.84, 0.5943, numWorkersMainShift.value * 1000 / buildingSize),
     RegressionSegment(0.3111, 60.93, weeklyOperatingHours.value),
-    RegressionSegment(0.0708 * isWarehouseRefrigerated,1570,CDD),
-    RegressionSegment(0.011 * converseBoolean(isWarehouseRefrigerated),2707,HDD * percentHeated.value / 100),
-    RegressionSegment(.0205 * converseBoolean(isWarehouseRefrigerated), 378.7, CDD * percentCooled.value / 100),
+    RegressionSegment(0.0708 * isWarehouseRefrigerated,1570,CDD.value),
+    RegressionSegment(0.011 * converseBoolean(isWarehouseRefrigerated),2707,HDD.value * percentHeated.value / 100),
+    RegressionSegment(.0205 * converseBoolean(isWarehouseRefrigerated), 378.7, CDD.value * percentCooled.value / 100),
     RegressionSegment(262.3 * converseBoolean(isWarehouseRefrigerated), 0.0096, numWalkinRefrUnits.value * 1000 / buildingSize )
   )
 }
@@ -581,7 +581,7 @@ object Warehouse {
   * @param areaUnits
   */
 case class Supermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, numWalkinRefrUnits:PosDouble,
-                       HDD:Double, CDD:Double,hasCooking:Option[Boolean], percentHeated:PosDouble,
+                       HDD:PosDouble, CDD:PosDouble,hasCooking:Option[Boolean], percentHeated:PosDouble,
                        percentCooled:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
@@ -595,8 +595,8 @@ case class Supermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDo
     RegressionSegment(125.8, 4.657, getLog(weeklyOperatingHours.value)),
     RegressionSegment(794.4, 0.2345, numWalkinRefrUnits.value * 1000 / buildingSize ),
     RegressionSegment(902.8, .0254, hasCooking * 1000 / buildingSize ),
-    RegressionSegment(.0947, 1219, CDD * percentCooled.value / 100),
-    RegressionSegment(0.0326, 3510, HDD * percentHeated.value / 100)
+    RegressionSegment(.0947, 1219, CDD.value * percentCooled.value / 100),
+    RegressionSegment(0.0326, 3510, HDD.value * percentHeated.value / 100)
   )
 }
 
@@ -619,7 +619,7 @@ object Supermarket {
   * @param areaUnits
   */
 
-case class CanadaSupermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, HDD:Double,
+case class CanadaSupermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, HDD:PosDouble,
                              lengthRefrFoodDisplayCases:PosDouble, numComputers:PosDouble, numCashRegisters:PosDouble,
                              GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
@@ -633,7 +633,7 @@ case class CanadaSupermarket(weeklyOperatingHours:PosDouble, numWorkersMainShift
     RegressionSegment(1.35, 0.3955, numCashRegisters.value * 100 / buildingSize),
     RegressionSegment(0.698, 0.5244, numComputers.value * 100 / buildingSize),
     RegressionSegment(0.08314, 2.827, lengthRefrFoodDisplayCases.value * 100 / buildingSize),
-    RegressionSegment(0.0004642, 4798, HDD)
+    RegressionSegment(0.0004642, 4798, HDD.value)
   )
 }
 
@@ -667,7 +667,7 @@ case class SeniorCare(avgNumResidents:PosDouble, maxNumResidents:PosDouble,
                       numRezUnits:PosDouble, numElectronicLifts:PosDouble, numWorkersMainShift:PosDouble,
                       numComputers:PosDouble, numRefrUnits:PosDouble, numCommWashingMachines:PosDouble,
                       numRezWashingMachines:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
-                      HDD:Double, CDD:Double, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
+                      HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
 
@@ -682,8 +682,8 @@ case class SeniorCare(avgNumResidents:PosDouble, maxNumResidents:PosDouble,
     RegressionSegment(251.5, 0.0905, numRefrUnits.value * 1000 / buildingSize),
     RegressionSegment(378.2, 0.0432, numCommWashingMachines.value * 1000 / buildingSize),
     RegressionSegment(253, 0.0584, numRezWashingMachines.value * 1000 / buildingSize),
-    RegressionSegment(0.02004, 1184, CDD * percentCooled.value/100),
-    RegressionSegment(0.005879, 4524, HDD * percentHeated.value/100)
+    RegressionSegment(0.02004, 1184, CDD.value * percentCooled.value/100),
+    RegressionSegment(0.005879, 4524, HDD.value * percentHeated.value/100)
 
   )
 }
@@ -714,7 +714,7 @@ object SeniorCare {
 case class Retail(weeklyOperatingHours:PosDouble, numOpenClosedRefrCases:PosDouble, numCashRegisters:PosDouble,
                   numWorkersMainShift:PosDouble, numComputers:PosDouble,
                   numWalkinRefrUnits:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
-                  HDD:Double, CDD:Double, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
+                  HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
 
@@ -728,8 +728,8 @@ case class Retail(weeklyOperatingHours:PosDouble, numOpenClosedRefrCases:PosDoub
     RegressionSegment(249.1, 0.1905, numCashRegisters.value * 1000 / buildingSize),
     RegressionSegment(720.2, 0.0038, numWalkinRefrUnits.value * 1000 / buildingSize),
     RegressionSegment(81.9, 0.045, numOpenClosedRefrCases.value * 1000 / buildingSize),
-    RegressionSegment(0.0125, 972.1, CDD * percentCooled.value/100),
-    RegressionSegment(0.0113, 3811, HDD * percentHeated.value/100)
+    RegressionSegment(0.0125, 972.1, CDD.value * percentCooled.value/100),
+    RegressionSegment(0.0113, 3811, HDD.value * percentHeated.value/100)
 
   )
 }
@@ -752,7 +752,7 @@ object Retail {
   * @param areaUnits
   */
 case class ResidenceHall(numBedrooms:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
-                         HDD:Double, CDD:Double, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
+                         HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
 
@@ -761,8 +761,8 @@ case class ResidenceHall(numBedrooms:PosDouble, percentHeated:PosDouble, percent
     RegressionSegment(4.99455, 0, 1), // regression constant
     RegressionSegment(0.91309, 0, getLog(buildingSize)),
     RegressionSegment(0.09455, 0, getLog(numBedrooms.value)),
-    RegressionSegment(0.00009744, 0, HDD * percentHeated.value/100),
-    RegressionSegment(0.00016279, 0, CDD * percentCooled.value/100)
+    RegressionSegment(0.00009744, 0, HDD.value * percentHeated.value/100),
+    RegressionSegment(0.00016279, 0, CDD.value * percentCooled.value/100)
 
   )
 }
@@ -790,7 +790,7 @@ object ResidenceHall {
 
 case class MultiFamily(numRezUnits:PosDouble, numBedrooms:PosDouble,
                        numUnitsLowRise1to4: PosDouble, numUnitsMidRise5to9:PosDouble, numUnitsHighRise10plus: PosDouble,
-                       HDD:Double, CDD:Double, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
+                       HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
 
@@ -801,8 +801,8 @@ case class MultiFamily(numRezUnits:PosDouble, numBedrooms:PosDouble,
     RegressionSegment(24.45, 1.238, numBedrooms.value/numRezUnits.value),
     RegressionSegment(-18.76, 0, numUnitsLowRise1to4.value/(numUnitsLowRise1to4.value + numUnitsMidRise5to9.value
       + numUnitsHighRise10plus.value)),
-    RegressionSegment(0.009617, 4233, HDD),
-    RegressionSegment(0.01617, 1364, CDD)
+    RegressionSegment(0.009617, 4233, HDD.value),
+    RegressionSegment(0.01617, 1364, CDD.value)
 
   )
 }
@@ -824,7 +824,7 @@ object MultiFamily {
   * @param areaUnits
   */
 case class CanadaMedicalOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, percentCooled:PosDouble,
-                               HDD:Double, CDD:Double, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
+                               HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
   val printed:String = "Medical Office"
@@ -835,8 +835,8 @@ case class CanadaMedicalOffice(weeklyOperatingHours:PosDouble, numWorkersMainShi
     RegressionSegment(0.00004511, 1635, min(buildingSize,20000.0)),
     RegressionSegment(0.007505, 58.94, weeklyOperatingHours.value),
     RegressionSegment(0.2428, 2.466, min(max(workerDensity,0.3),7)),
-    RegressionSegment(0.001297, 100.1, CDD * percentCooled.value/100),
-    RegressionSegment(0.0002015, 4808, HDD)
+    RegressionSegment(0.001297, 100.1, CDD.value * percentCooled.value/100),
+    RegressionSegment(0.0002015, 4808, HDD.value)
 
   )
 }
@@ -861,7 +861,7 @@ object CanadaMedicalOffice {
   */
 
 case class MedicalOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, percentCooled:PosDouble,
-                         percentHeated:PosDouble, HDD:Double, CDD:Double, GFA:PosDouble,
+                         percentHeated:PosDouble, HDD:PosDouble, CDD:PosDouble, GFA:PosDouble,
                          areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
@@ -872,8 +872,8 @@ case class MedicalOffice(weeklyOperatingHours:PosDouble, numWorkersMainShift:Pos
     RegressionSegment(0.91433, 0, getLog(buildingSize)),
     RegressionSegment(0.46768, 0, getLog(weeklyOperatingHours.value)),
     RegressionSegment(0.21568, 0, getLog(numWorkersMainShift.value)),
-    RegressionSegment(0.00020111, 0, CDD * percentCooled.value/100),
-    RegressionSegment(0.00005321, 0, HDD * percentHeated.value/100)
+    RegressionSegment(0.00020111, 0, CDD.value * percentCooled.value/100),
+    RegressionSegment(0.00005321, 0, HDD.value * percentHeated.value/100)
 
   )
 }
@@ -902,7 +902,7 @@ object MedicalOffice {
 
 case class CanadaK12School(numWorkersMainShift:PosDouble,
                            gymFloorArea:PosDouble, studentSeatingCapacity:PosDouble, isSecondarySchool:Option[Boolean],
-                           percentHeated:PosDouble, percentCooled:PosDouble,HDD:Double, CDD:Double,
+                           percentHeated:PosDouble, percentCooled:PosDouble,HDD:PosDouble, CDD:PosDouble,
                            GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
   val printed:String = "K-12 School"
@@ -913,8 +913,8 @@ case class CanadaK12School(numWorkersMainShift:PosDouble,
     RegressionSegment(0.0004402, 418.3, studentSeatingCapacity.value),
     RegressionSegment(0.1218, 3.175, getLog(numWorkersMainShift.value)),
     RegressionSegment(-0.3942, 8.118, getLog(buildingSize)),
-    RegressionSegment(0.0005647, 47.88, CDD * percentCooled.value/100),
-    RegressionSegment(0.0001635, 4584, HDD * percentHeated.value/100)
+    RegressionSegment(0.0005647, 47.88, CDD.value * percentCooled.value/100),
+    RegressionSegment(0.0001635, 4584, HDD.value * percentHeated.value/100)
   )
 }
 /**
@@ -939,8 +939,8 @@ object CanadaK12School {
   */
 case class K12School(isOpenWeekends:Option[Boolean],
                      isHighSchool:Option[Boolean],hasCooking:Option[Boolean],numComputers:PosDouble,
-                     numWalkinRefrUnits:PosDouble,percentHeated:PosDouble, percentCooled:PosDouble,HDD:Double,
-                     CDD:Double, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
+                     numWalkinRefrUnits:PosDouble,percentHeated:PosDouble, percentCooled:PosDouble,HDD:PosDouble,
+                     CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
 
@@ -948,8 +948,8 @@ case class K12School(isOpenWeekends:Option[Boolean],
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(131.9, 0, 1), // regression constant
     RegressionSegment(4.377 * isHighSchool, 0, 1),
-    RegressionSegment(8.974, 7.716, getLog(HDD) * percentHeated.value / 100),
-    RegressionSegment(6.389, 5.045, getLog(CDD) * percentCooled.value / 100),
+    RegressionSegment(8.974, 7.716, getLog(HDD.value) * percentHeated.value / 100),
+    RegressionSegment(6.389, 5.045, getLog(CDD.value) * percentCooled.value / 100),
     RegressionSegment(-19.26, 10.2, getLog(buildingSize)),
     RegressionSegment(18.43 * isOpenWeekends, 0, 1),
     RegressionSegment(574.7, 0.0109, numWalkinRefrUnits.value / buildingSize * 1000),
@@ -959,8 +959,8 @@ case class K12School(isOpenWeekends:Option[Boolean],
 
     //if High School also include the following
     RegressionSegment(0.00021 * isHighSchool, 47310, buildingSize),
-    RegressionSegment(0.0285 * isHighSchool, 1316, CDD * percentCooled.value / 100),
-    RegressionSegment(-11.75 * isHighSchool, 5.045, getLog(CDD) * percentCooled.value / 100)
+    RegressionSegment(0.0285 * isHighSchool, 1316, CDD.value * percentCooled.value / 100),
+    RegressionSegment(-11.75 * isHighSchool, 5.045, getLog(CDD.value) * percentCooled.value / 100)
 
   )
 }
@@ -989,7 +989,7 @@ object K12School {
 
 case class Hotel(numBedrooms:PosDouble, hasFoodPreparation:Option[Boolean], numWorkersMainShift:PosDouble,
                  numRefrUnits:PosDouble, percentHeated:PosDouble, percentCooled:PosDouble,
-                 HDD:Double, CDD:Double, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
+                 HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
 
@@ -1000,8 +1000,8 @@ case class Hotel(numBedrooms:PosDouble, hasFoodPreparation:Option[Boolean], numW
     RegressionSegment(20.81, -1.395, getLog(numWorkersMainShift.value * 1000 / buildingSize)),
     RegressionSegment(65.14 * hasFoodPreparation, 0, 1),
     RegressionSegment(249.8, 0.0227, numRefrUnits.value * 1000 / buildingSize),
-    RegressionSegment(0.0169, 1224, CDD * percentCooled.value/100),
-    RegressionSegment(0.0107, 4120, HDD * percentHeated.value/100)
+    RegressionSegment(0.0169, 1224, CDD.value * percentCooled.value/100),
+    RegressionSegment(0.0107, 4120, HDD.value * percentHeated.value/100)
 
   )
 }
@@ -1024,7 +1024,7 @@ object Hotel {
   */
 
 case class Hospital(numFTEWorkers:PosDouble, numStaffedBeds:PosDouble, numMRIMachines:PosDouble,
-                    CDD:Double, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
+                    CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
 
@@ -1034,7 +1034,7 @@ case class Hospital(numFTEWorkers:PosDouble, numStaffedBeds:PosDouble, numMRIMac
     RegressionSegment(26.64, 2.6, numFTEWorkers.value * 1000 / buildingSize),
     RegressionSegment(120.3, 0.4636, numStaffedBeds.value * 1000 / buildingSize),
     RegressionSegment(8961, 0.0031, numMRIMachines.value * 1000 / buildingSize),
-    RegressionSegment(0.0227, 1392, CDD)
+    RegressionSegment(0.0227, 1392, CDD.value)
 
   )
 }
@@ -1063,7 +1063,7 @@ object Hospital {
 case class CanadaHospital(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble,
                           licensedBedCapacity:PosDouble, hasLaundryFacility:Option[Boolean],
                           percentHeated:PosDouble, percentCooled:PosDouble,
-                          HDD:Double, CDD:Double, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
+                          HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
   val printed:String = "Hospital"
   val regressionSegments = Seq[RegressionSegment] (
@@ -1072,8 +1072,8 @@ case class CanadaHospital(weeklyOperatingHours:PosDouble, numWorkersMainShift:Po
     RegressionSegment(-0.0984, 2.726, numWorkersMainShift.value/licensedBedCapacity.value),
     RegressionSegment(0.4596 * hasLaundryFacility, 0, 1),
     RegressionSegment(9.3598e-06, 19004, min(100000,buildingSize)),
-    RegressionSegment(0.2775, 4.03, getLog(CDD+50) * percentCooled.value/100),
-    RegressionSegment(0.00047986, 4787, HDD * percentHeated.value/100)
+    RegressionSegment(0.2775, 4.03, getLog(CDD.value+50) * percentCooled.value/100),
+    RegressionSegment(0.00047986, 4787, HDD.value * percentHeated.value/100)
 
   )
 }
