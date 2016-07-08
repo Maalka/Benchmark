@@ -11,12 +11,29 @@ import play.api.libs.functional.syntax._
 /**
  * Created by rimukas on 7/5/16.
  */
-case class DegreeDays(parameters:JsValue) {
-
+object DegreeDays {
   lazy val zipStationLookupTable = loadLookupTable("zip_station.json")
   lazy val cddStationLookupTable = loadLookupTable("station_cdd.json")
   lazy val hddStationLookupTable = loadLookupTable("station_hdd.json")
 
+  def loadLookupTable(filename:String): Future[JsValue] = {
+    for {
+      is <- Future(Play.current.resourceAsStream(filename))
+      json <- Future {
+        is match {
+          case Some(is: InputStream) => {
+            Json.parse(is)
+          }
+          case _ => throw new Exception("Could not open file")
+        }
+      }
+    } yield json
+  }
+
+}
+
+case class DegreeDays(parameters:JsValue) {
+  import DegreeDays._
 
   def lookupWeatherStation: Future[String] = {
     for {
@@ -104,20 +121,6 @@ case class DegreeDays(parameters:JsValue) {
 
 
   val monthList:List[String] = List("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC")
-
-  def loadLookupTable(filename:String): Future[JsValue] = {
-    for {
-      is <- Future(Play.current.resourceAsStream(filename))
-      json <- Future {
-        is match {
-          case Some(is: InputStream) => {
-            Json.parse(is)
-          }
-          case _ => throw new Exception("Could not open file")
-        }
-      }
-    } yield json
-  }
 
   def getZipCode:Future[String] = Future{
     parameters.validate[ZipCode] match {
