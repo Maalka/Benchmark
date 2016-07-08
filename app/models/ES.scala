@@ -132,10 +132,7 @@ case class ES(parameters: JsValue) {
           case a: BaseLine => sourceESEnergy.value / buildingSize / predictedEnergy.value * propTypeSize.value
         }
       }
-      futureRatio <- {
-        println("ratio",euiRatio)
-        Future(table.dropWhile(_.Ratio < euiRatio).headOption)
-      }
+      futureRatio <- Future(table.dropWhile(_.Ratio < euiRatio).headOption)
       checkRatio <- Future(table.lastOption)
     } yield
     {

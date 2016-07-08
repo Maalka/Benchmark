@@ -185,13 +185,17 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 $scope.temp = {"postalCode":$scope.auxModel.postalCode};
                 $scope.computeDegreeDays();
             }else{
-                $scope.auxModel.HDD = null;
-                $scope.auxModel.CDD = null;
+                $scope.clearDegreeDays();
             }
         }else{
-             $scope.auxModel.HDD = null;
-             $scope.auxModel.CDD = null;
+            $scope.clearDegreeDays();
          }
+    };
+
+    $scope.clearDegreeDays = function(){
+        $scope.auxModel.HDD = null;
+        $scope.auxModel.CDD = null;
+        $scope.lacksDD = true;
     };
 
     $scope.computeDegreeDays = function(){
@@ -200,6 +204,9 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $q.resolve($scope.futures).then(function (results) {
             $scope.auxModel.CDD = $scope.getPropResponseField(results,"CDD");
             $scope.auxModel.HDD = $scope.getPropResponseField(results,"HDD");
+            if (results.errors.length > 0){
+                $scope.lacksDD = true;
+            }
         });
     };
 
@@ -210,21 +217,15 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $q.resolve($scope.futures).then(function (results) {
             $scope.baselineConstant = $scope.isResidential ? 130 : 100;
             $scope.scoreText = "Score";
-            //$scope.scoreText = $scope.isResidential ? "HERS Index Score" : "zEPI Score";
             $scope.scoreGraph = "Rating";
-            //$scope.scoreGraph = $scope.isResidential ? "HERS" : "zEPI";
             $scope.FFText = $sce.trustAsHtml('Site FF-EUI*');
             $scope.scoreUnits = $scope.isResidential ? "0-130" : "0-100";
-
-            //console.log(JSON.stringify(results));
-            //console.log(JSON.stringify($scope.propList));
 
             console.log("medianES:",$scope.getPropResponseField(results,"medianES"));
             console.log("targetES:",$scope.getPropResponseField(results,"targetES"));
             console.log("actualES:",$scope.getPropResponseField(results,"actualES"));
 
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
-
             $scope.benchmarkResult.city = $scope.auxModel.city;
             $scope.benchmarkResult.state = $scope.auxModel.state;
             $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
