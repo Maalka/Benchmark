@@ -13,11 +13,15 @@ import play.api.libs.functional.syntax._
  */
 case class DegreeDays(parameters:JsValue) {
 
+  lazy val zipStationLookupTable = loadLookupTable("zip_station.json")
+  lazy val cddStationLookupTable = loadLookupTable("station_cdd.json")
+  lazy val hddStationLookupTable = loadLookupTable("station_hdd.json")
+
 
   def lookupWeatherStation: Future[String] = {
     for {
       zipCode <- getZipCode
-      zipTable <- loadLookupTable("zip_station.json")
+      zipTable <- zipStationLookupTable
       zipStation <-
       Future {
         (zipTable \ zipCode \ "station").toOption match {
@@ -45,7 +49,7 @@ case class DegreeDays(parameters:JsValue) {
   def lookupCDD: Future[DDmonths] = {
     for {
       zipStation <- lookupWeatherStation
-      futureTable <- loadLookupTable("station_cdd.json")
+      futureTable <- cddStationLookupTable
       ddMonths <- {
         Future{
           (futureTable \ zipStation \ "months").get.validate[DDmonths] match {
@@ -61,7 +65,7 @@ case class DegreeDays(parameters:JsValue) {
     for {
 
       zipStation <- lookupWeatherStation
-      futureTable <- loadLookupTable("station_hdd.json")
+      futureTable <- hddStationLookupTable
       ddMonths <- {
         Future{
           (futureTable \ zipStation \ "months").get.validate[DDmonths] match {
