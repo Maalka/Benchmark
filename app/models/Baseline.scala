@@ -501,10 +501,10 @@ case class EUIMetrics(parameters: JsValue) {
 
   def convertEnergyTuple(energies: List[EnergyTuple]): Future[List[EnergyTuple]] = Future {
     (energyCalcs.country, energyCalcs.reportingUnits) match {
-      case ("USA", "us") => energies
+      case ("USA", "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyValue in KilowattHours)}
       case ("USA", "metric") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyValue in Gigajoules)}
       case (_, "metric") => energies
-      case (_, "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType, a.energyValue in KBtus)}
+      case (_, "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType, a.energyValue in KilowattHours)}
       case _ => energies
 
     }
@@ -512,16 +512,16 @@ case class EUIMetrics(parameters: JsValue) {
 
   def EUIConversionConstant(energyEntry:Energy,areaEntry:Double):Future[Energy] = Future{
     (energyCalcs.country, energyCalcs.reportingUnits) match {
-      case ("USA", "us") => energyEntry / areaEntry
+      case ("USA", "us") => (energyEntry in KilowattHours) / areaEntry
       case ("USA", "metric") => (energyEntry in Megajoules)/(areaEntry * (SquareFeet(1) to SquareMeters))
       case (_, "metric") => (energyEntry in Megajoules) / areaEntry
-      case (_, "us") => (energyEntry in KBtus) / (areaEntry * (SquareMeters(1) to SquareFeet))
+      case (_, "us") => (energyEntry in KilowattHours) / (areaEntry * (SquareMeters(1) to SquareFeet))
       case _ => energyEntry / areaEntry
     }
   }
   def EUIConversionNoUnitsConstant:Future[Double] = Future{
     (energyCalcs.country, energyCalcs.reportingUnits) match {
-      case ("USA", "us") => 1.0
+      case ("USA", "us") => (KBtus(1) to KilowattHours)
       case ("USA", "metric") => (KBtus(1) to Megajoules)/(SquareFeet(1) to SquareMeters)
       case (_, "metric") => (Gigajoules(1) to Megajoules)
       case (_, "us") => (Gigajoules(1) to KBtus) / (SquareMeters(1) to SquareFeet)
@@ -530,10 +530,10 @@ case class EUIMetrics(parameters: JsValue) {
   }
   def energyConversion(energyEntry:Energy):Future[Energy] = Future{
     (energyCalcs.country, energyCalcs.reportingUnits) match {
-      case ("USA", "us") => energyEntry
+      case ("USA", "us") => energyEntry in KilowattHours
       case ("USA", "metric") => energyEntry in Megajoules
       case (_, "metric") => energyEntry in Megajoules
-      case (_, "us") => energyEntry in KBtus
+      case (_, "us") => energyEntry in KilowattHours
       case _ => energyEntry
     }
   }
