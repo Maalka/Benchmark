@@ -1,106 +1,88 @@
 {
-  "errors": [],
   "values": [
     {
-      "ES": 79
+      "propOutputList": [
+        {
+          "propType": "K-12 School",
+          "propSize": 27870.912,
+          "propPercent": 100,
+          "areaUnits": "sq.m"
+        }
+      ]
     },
     {
-      "sourceEUI": 1.0287
+      "actualES": 1
     },
     {
-      "siteEUI": 0.7001
-    },
-    {
-      "totalSourceEnergy": 8486.8946
-    },
-    {
-      "totalSiteEnergy": 5775.779
-    },
-    {
-      "targetES": 75
-    },
-    {
-      "targetSourceEUI": 1.0694
-    },
-    {
-      "targetSiteEUI": 0.7278
-    },
-    {
-      "targetSourceEnergy": 8822.2658
-    },
-    {
-      "targetSiteEnergy": 6004.0168
-    },
-    {
-      "percentBetterES": 95
-    },
-    {
-      "percentBetterSourceEUI": 0.822
-    },
-    {
-      "percentBetterSiteEUI": 0.5594
-    },
-    {
-      "percentBetterSourceEnergy": 6781.1317
-    },
-    {
-      "percentBetterSiteEnergy": 4614.9175
+      "targetES": 1
     },
     {
       "medianES": 50
     },
     {
-      "medianSourceEUI": 1.2645
+      "actualZEPI": 43.269459812021516
     },
     {
-      "medianSiteEUI": 0.8606
+      "medianZEPI": 100
     },
     {
-      "medianSourceEnergy": 10432.5103
+      "percentBetterZEPI": 80
     },
     {
-      "medianSiteEnergy": 7099.8731
+      "siteEUI": 0.2694637081344163
     },
     {
-      "sourceEnergy": [
+      "sourceEUI": 0.47441588142290286
+    },
+    {
+      "totalSiteEnergy": 7510.199296608001
+    },
+    {
+      "siteEnergyList": [
         {
-          "grid": 5166
+          "grid": 1500000
         },
         {
-          "naturalGas": 3320.8946
+          "naturalGas": 20000
         }
       ]
     },
     {
-      "siteEnergy": [
+      "totalSourceEnergy": 13222.403282540161
+    },
+    {
+      "sourceEnergyList": [
         {
-          "grid": 700000
+          "grid": 11070
         },
         {
-          "naturalGas": 85000
+          "naturalGas": 2152.4032825401605
         }
       ]
     },
     {
-      "poolEnergy": 0
+      "medianSiteEUI": 0.6227572733865085
     },
     {
-      "parkingEnergy": 0
+      "medianSourceEUI": 1.0964220110071639
     },
     {
-      "totalSourceEnergyNoPoolNoParking": 8486.8946
+      "medianSiteEnergy": 17356.81316391532
     },
     {
-      "buildingSize": 8250
+      "medianSourceEnergy": 30558.281383643694
     },
     {
-      "sourceSiteRatio": 0.6806
+      "percentBetterSiteEUI": 0.4982058187092069
     },
     {
-      "buildingClass": "class models.CanadaK12School"
+      "percentBetterSourceEUI": 0.8771376088057311
     },
     {
-      "predictedSourceEnergy": 10649.7656
+      "percentBetterSiteEnergy": 13885.45053113226
+    },
+    {
+      "percentBetterSourceEnergy": 24446.62510691496
     },
     {
       "directSiteEmissions": [
@@ -108,22 +90,23 @@
           "grid": 0
         },
         {
-          "naturalGas": 163.30493314850173
+          "naturalGas": 105.84439345005579
         }
       ]
+    }
+  ],
+  "errors": [
+    {
+      "indirectSiteEmissions": "Could not find PostalCode in eGridDict.json"
     },
     {
-      "indirectSiteEmissions": [
-        {
-          "grid": 23.789451466168014
-        },
-        {
-          "naturalGas": 0
-        }
-      ]
+      "totalEmissions": "Could not find PostalCode in eGridDict.json"
     },
     {
-      "totalSiteEmissions": 187.0944
+      "medianEmissions": "Could not find PostalCode in eGridDict.json"
+    },
+    {
+      "percentBetterEmissions": "Could not find PostalCode in eGridDict.json"
     }
   ]
 }

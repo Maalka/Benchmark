@@ -65,18 +65,18 @@
                     <div class="eleven wide column">
                         <div class="inline fields">
                             <div class="sixteen wide field required">
-                                <input type="text" ng-model="auxModel.postalCode"
-                                     required name="postalCode" min="0" placeholder="Postal Code">
+                                <input type="text" ng-model="auxModel.postalCode" ng-blur="postalCodeCheck()"
+                                     required name="postalCode" placeholder="Postal Code">
                             </div>
                         </div>
                     </div>
-                    <div class="five wide column">
+                    <div class="five wide column" ng-show="lacksDD">
                         <label class="design-label">Degree Days
                             <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" 
                                 target="_blank"><i class="large circle help icon"></i></a>
                         </label>
                     </div>
-                    <div class="eleven wide column">
+                    <div class="eleven wide column" ng-show="lacksDD">
                         <div class="inline fields">
                             <div class="two wide field">
                                 <label>HDD</label>
@@ -170,7 +170,7 @@
                     <div class="sixteen wide field">
                         <label>{{propText}}</label>
                         <select class="ui dropdown search"
-                            dropdown`
+                            dropdown
                             reset = "auxModel.resetBuildingType"
                             ng-model="auxModel.buildingType"
                             ng-options="item as item.name for item in buildingProperties.buildingType[auxModel.buildingZone] | orderBy : 'name'"
@@ -226,6 +226,13 @@
                 </p>
                 <div>
                     <div class="ui grid">
+                        <div class="ui fifteen wide column left aligned">
+                            <div checkbox class="ui checkbox checked" style="margin-top:.2em;margin-bottom:1em;">
+                                <input type="checkbox" id="netMetered" ng-model="auxModel.netMetered" ng-init="auxModel.netMetered=false"
+                                       ng-true-value=true ng-false-value=false>
+                                <label for="netMetered">Net Metered?</label>
+                            </div>
+                        </div>
                         <div class="five wide column">
                             Energy Type
                         </div>
@@ -266,6 +273,7 @@
                                 <i class="minus red circle icon"></i>
                             </div>
                         </div>
+
                         <div class="ui fifteen wide column right aligned">
                            <label class="design-label">add another entry</label>
                         </div>
@@ -277,6 +285,72 @@
                     </div>
                 </div>
             </div>
+
+            <h3 class="ui header" ng-if="auxModel.newConstruction === false"><i class="lightning icon"></i>Annual Renewable Energy Generation</h3>
+            <div class="ui segment energy-entry" ng-if="auxModel.newConstruction === false">
+                <p>
+                    Enter the annual renewable energy generation for your
+                    building below. This will help generate a rating so that
+                    you can compare your building’s performance to your
+                    target. To get the most accurate metrics, provide total
+                    renewable energy generation from all energy types.
+                </p>
+
+                <div>
+                    <div class="ui grid">
+                        <div class="five wide column">
+                            Energy Type
+                        </div>
+                        <div class="five wide column">
+                            Units
+                        </div>
+                        <div class="five wide column">
+                            Total Annual<br />
+                            Energy Use
+                        </div>
+                        <div ng-repeat-start="energyEntry in renewableEnergies" class="five wide column">
+                            <div class="field">
+                                <select class="ui dropdown"
+                                        ng-model="energyEntry.renewableType"
+                                        ng-options="item.id as item.name for item in energyProperties.renewableType track by item.name">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="five wide column">
+                            <div class="field">
+                                <select class="ui dropdown"
+                                        ng-model="energyEntry.renewableUnits"
+                                        ng-options="item.id as item.name for item in energyProperties.renewableUnits | filter: {filter_id: grid}">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="five wide column">
+                            <div class="ui input">
+                                <input ng-model="energyEntry.energyUse" value ="{{energyEntry.energyUse}}">
+                            </div>
+                        </div>
+                        <div ng-repeat-end class="one wide column">
+                            <div class="ui large labeled button"
+                                 ng-click="removeRenewableRow($index)"
+                                 style="margin-top:.4em;">
+                                <i class="minus red circle icon"></i>
+                            </div>
+                        </div>
+                        <div class="ui fifteen wide column right aligned">
+                            <label class="design-label">add another entry</label>
+                        </div>
+                        <div class="one wide column">
+                            <div class="ui large labeled button" ng-click="addRenewableEnergiesRow()" style="margin-top:.4em;">
+                                <i class="add green circle icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
     </form>
 </div>

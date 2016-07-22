@@ -1,0 +1,118 @@
+{
+  "values": [
+    {
+      "propOutputList": [
+        {
+          "propType": "Hospital",
+          "propSize": 100000,
+          "propPercent": 22.22,
+          "areaUnits": "sq.ft"
+        },
+        {
+          "propType": "Bar",
+          "propSize": 50000,
+          "propPercent": 11.11,
+          "areaUnits": "sq.ft"
+        },
+        {
+          "propType": "Hotel",
+          "propSize": 300000,
+          "propPercent": 66.67,
+          "areaUnits": "sq.ft"
+        }
+      ]
+    },
+    {
+      "actualES": 98
+    },
+    {
+      "targetES": 64
+    },
+    {
+      "medianES": 50
+    },
+    {
+      "actualZEPI": 46.697208935942605
+    },
+    {
+      "medianZEPI": 100
+    },
+    {
+      "percentBetterZEPI": 80
+    },
+    {
+      "siteEUI": 37.91268481253269
+    },
+    {
+      "sourceEUI": 119.04583031135265
+    },
+    {
+      "totalSiteEnergy": 17060708.16563971
+    },
+    {
+      "siteEnergyList": [
+        {
+          "grid": 5000000
+        }
+      ]
+    },
+    {
+      "totalSourceEnergy": 53570623.64010869
+    },
+    {
+      "sourceEnergyList": [
+        {
+          "grid": 53570623.64010869
+        }
+      ]
+    },
+    {
+      "medianSiteEUI": 81.1883315436257
+    },
+    {
+      "medianSourceEUI": 254.9313610469847
+    },
+    {
+      "medianSiteEnergy": 36534749.19463156
+    },
+    {
+      "medianSourceEnergy": 114719112.47114311
+    },
+    {
+      "percentBetterSiteEUI": 64.95066523490055
+    },
+    {
+      "percentBetterSourceEUI": 203.94508883758778
+    },
+    {
+      "percentBetterSiteEnergy": 29227799.35570525
+    },
+    {
+      "percentBetterSourceEnergy": 91775289.9769145
+    },
+    {
+      "directSiteEmissions": [
+        {
+          "grid": 0
+        }
+      ]
+    },
+    {
+      "indirectSiteEmissions": [
+        {
+          "grid": 3427.666877558674
+        }
+      ]
+    },
+    {
+      "totalEmissions": 3427.666877558674
+    },
+    {
+      "medianEmissions": 7340.196460693427
+    },
+    {
+      "percentBetterEmissions": 5872.1571685547415
+    }
+  ],
+  "errors": []
+}

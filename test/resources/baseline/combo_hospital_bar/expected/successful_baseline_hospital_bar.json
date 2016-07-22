@@ -1,0 +1,97 @@
+{
+  "values": [
+    {
+      "propOutputList": [
+        {
+          "propType": "Hospital",
+          "propSize": 100000,
+          "propPercent": 66.67,
+          "areaUnits": "sq.ft"
+        },
+        {
+          "propType": "Bar",
+          "propSize": 50000,
+          "propPercent": 33.33,
+          "areaUnits": "sq.ft"
+        }
+      ]
+    },
+    {
+      "medianES": 50
+    },
+    {
+      "medianZEPI": 100
+    },
+    {
+      "percentBetterZEPI": 80
+    },
+    {
+      "medianSiteEUI": 220.3554630969609
+    },
+    {
+      "medianSourceEUI": 389.8
+    },
+    {
+      "medianSiteEnergy": 33053319.464544136
+    },
+    {
+      "medianSourceEnergy": 58470000
+    },
+    {
+      "percentBetterSiteEUI": 176.28437047756876
+    },
+    {
+      "percentBetterSourceEUI": 311.84000000000003
+    },
+    {
+      "percentBetterSiteEnergy": 26442655.571635313
+    },
+    {
+      "percentBetterSourceEnergy": 46776000.00000001
+    }
+  ],
+  "errors": [
+    {
+      "actualES": "Could not compute EnergyStar Score - Generic Building: No Algorithm!"
+    },
+    {
+      "targetES": "Could not compute EnergyStar Score - Generic Building: No Algorithm!"
+    },
+    {
+      "actualZEPI": "Could not read provided energy list"
+    },
+    {
+      "siteEUI": "Could not read provided energy list"
+    },
+    {
+      "sourceEUI": "Could not read provided energy list"
+    },
+    {
+      "totalSiteEnergy": "Could not read provided energy list"
+    },
+    {
+      "siteEnergyList": "Could not read provided energy list"
+    },
+    {
+      "totalSourceEnergy": "Could not read provided energy list"
+    },
+    {
+      "sourceEnergyList": "Could not read provided energy list"
+    },
+    {
+      "directSiteEmissions": "Could not read provided energy list"
+    },
+    {
+      "indirectSiteEmissions": "Could not read provided energy list"
+    },
+    {
+      "totalEmissions": "Could not read provided energy list"
+    },
+    {
+      "medianEmissions": "Could not read provided energy list"
+    },
+    {
+      "percentBetterEmissions": "Could not read provided energy list"
+    }
+  ]
+}
