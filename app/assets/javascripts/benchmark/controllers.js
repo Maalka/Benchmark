@@ -311,8 +311,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.propList = [];
 
         if($scope.auxModel.reportingUnits==="us"){
-            $scope.tableEnergyUnits="kBtu";
-            $scope.tableEUIUnits="kBtu/ft²";
+            $scope.tableEnergyUnits="kWh";
+            $scope.tableEUIUnits="kWh/ft²";
         }else {
             $scope.tableEnergyUnits="MJ";
             $scope.tableEUIUnits="MJ/m²";
