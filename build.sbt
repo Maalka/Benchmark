@@ -1,13 +1,13 @@
 import WebKeys._
 
 // TODO Replace with your project's/module's name
-name := "maalka-benchmark"
+name := "benchmark"
 
 // TODO Set your organization here; ThisBuild means it will apply to all sub-modules
 organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
-version := "1.0.4.0"
+version := "1.0.6.0"
 
 scalaVersion in ThisBuild := "2.11.6"
 
@@ -16,6 +16,10 @@ maintainer in Docker := "Clay Teeter <clay.teeter@maalka.com>"
 
 packageSummary in Linux := "Benchmark tool"
 packageDescription := "Benchmark tool"
+
+dockerRepository := Some("maalka")
+dockerBaseImage := "maalka/oracle8"
+dockerUpdateLatest := true
 
 linuxPackageMappings += packageTemplateMapping(s"/var/run/${name.value}/")() withUser name.value withGroup name.value
 
