@@ -225,11 +225,14 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             console.log("targetES:",$scope.getPropResponseField(results,"targetES"));
             console.log("actualES:",$scope.getPropResponseField(results,"actualES"));
 
+
+            $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
             $scope.benchmarkResult.city = $scope.auxModel.city;
             $scope.benchmarkResult.state = $scope.auxModel.state;
             $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
             $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
+
         });
     };
 
@@ -254,6 +257,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"actualES": $scope.getPropResponseField(results,"actualES")},
               {"medianES": $scope.getPropResponseField(results,"actualES")},
               {"targetES": $scope.getPropResponseField(results,"targetES")},
+
+              {"percentBetterMedian": $scope.getPropResponseField(results,"percentBetterMedian")},
+              {"percentBetterTarget": $scope.getPropResponseField(results,"percentBetterTarget")},
+              {"percentBetterActual": $scope.getPropResponseField(results,"percentBetterActual")},
 
               {"medianZEPI": $scope.getPropResponseField(results,"medianZEPI")},
               {"percentBetterZEPI": $scope.getPropResponseField(results,"percentBetterZEPI")},
