@@ -90,6 +90,7 @@ trait BaselineActions {
       Baseline.percentBetterMedian.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.percentBetterTarget.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.percentBetterActual.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.actualGoalReduction.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       Baseline.zepiActual.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.zepiMedian.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -131,6 +132,7 @@ trait BaselineActions {
       "percentBetterMedian",
       "percentBetterTarget",
       "percentBetterActual",
+      "percentBetterActualtoGoal",
 
       "actualZEPI",
       "medianZEPI",
