@@ -28,6 +28,10 @@
         </tr>
     </thead>
     <tbody>
+
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Percent Reduction from Baseline'" units=""
+            columns="['percentBetterMedian', 'percentBetterTarget', 'percentBetterActual']"></tr>
+
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="scoreText" units="scoreUnits"
             columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']"></tr>
 

@@ -230,6 +230,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.benchmarkResult.state = $scope.auxModel.state;
             $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
             $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
+
         });
     };
 
@@ -248,12 +249,29 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.computeBenchmarkMix = function(results){
 
         $scope.propOutputList = $scope.getPropResponseField(results,"propOutputList");
+        $scope.percentBetterSiteEUI = $scope.getPropResponseField(results,"percentBetterSiteEUI");
+        $scope.siteEUI = $scope.getPropResponseField(results,"siteEUI");
+
+        if($scope.siteEUI > $scope.percentBetterSiteEUI){
+            $scope.showPercentBetterTarget = 'decrease';
+            $scope.percentBetterGoal = 100 - $scope.getPropResponseField(results,"percentBetterActualtoGoal");
+        }else if($scope.siteEUI < $scope.percentBetterSiteEUI){
+            $scope.showPercentBetterTarget = 'better';
+            $scope.percentBetterGoal = $scope.getPropResponseField(results,"percentBetterActualtoGoal");
+        } else {
+            $scope.showPercentBetterTarget = undefined;
+        }
 
         var metricsTable = [
 
               {"actualES": $scope.getPropResponseField(results,"actualES")},
               {"medianES": $scope.getPropResponseField(results,"actualES")},
               {"targetES": $scope.getPropResponseField(results,"targetES")},
+
+              {"percentBetterMedian": $scope.getPropResponseField(results,"percentBetterMedian")},
+              {"percentBetterTarget": $scope.getPropResponseField(results,"percentBetterTarget")},
+              {"percentBetterActual": $scope.getPropResponseField(results,"percentBetterActual")},
+              {"percentBetterActualtoGoal": $scope.getPropResponseField(results,"percentBetterActualtoGoal")},
 
               {"medianZEPI": $scope.getPropResponseField(results,"medianZEPI")},
               {"percentBetterZEPI": $scope.getPropResponseField(results,"percentBetterZEPI")},
