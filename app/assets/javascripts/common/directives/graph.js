@@ -167,7 +167,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     }
                   ]),
                   animation: false,
-                  color: fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI")) ? "green" : "red",
+                  color: fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI")) ? "lightgreen" : "red",
                   arrow: true,
                   dashStyle: "dot",
                   showInLegend: false,
@@ -185,7 +185,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               var percentBetter = Math.abs(getBRByKey("actualZEPI") - getBRByKey("percentBetterZEPI"));
               updateOrAddSeries(chart, createMarker(isNaN(percentBetter) ? undefined : percentBetter, 
                               17, getBRByKey("percentBetterZEPI"), better ? "maalkaFlagLeftBottom": "maalkaFlagBottom", 
-                              better ? "green" : "red", "axisLine", true)[0],
+                              better ? "lightgreen" : "red", "axisLine", true)[0],
                   false
                   );
             };
