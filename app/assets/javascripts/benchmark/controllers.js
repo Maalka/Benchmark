@@ -48,6 +48,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.mainColumnWidth = "eight wide column";
         }
     };
+    matchmedia.on('only screen and (min-width: 1200px) and (max-width: 1919px)', function(match){
+        $scope.largeScreen = match.matches;
+    });
+    matchmedia.on('only screen and (max-width: 1199px)', function(match){
+        $scope.largeScreen = !match.matches;
+    });
+
     matchmedia.onPrint(setMedia, $scope);
 
     setMedia();

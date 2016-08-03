@@ -124,7 +124,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     style: {
                       textShadow: false
                     },
-                    x: -28
+                    x: -28,
+                    y: 3
                   },
                   enableMouseTracking: false,
                   data: bars,
@@ -159,14 +160,16 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       x: 120, 
                       y: 110,
                       dataLabels: {
-                        x: -16
+                        x: -11,
+                        y: 3
                       }
                     },
                     {
                       x: 140, 
                       y: 110,
                       dataLabels: {
-                        x: showExtendedChart() ? -39 : -33
+                        x: showExtendedChart() ? -39 : -33,
+                        y: 3
                       }
                     }],
                   showInLegend: false

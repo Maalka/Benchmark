@@ -2013,6 +2013,30 @@
     display: none !important;
   }
 }
+@media only screen and (max-width: 767px) {
+  .ui[class*="small screen only"].grid.grid.grid:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].row:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].column:not(.mobile),
+  .ui.grid.grid.grid > .row > [class*="small screen only"].column:not(.mobile) {
+    display: none !important;
+  }
+}
+@media only screen and (min-width: 1200px) and (max-width: 1919px) {
+  .ui[class*="small screen only"].grid.grid.grid:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].row:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].column:not(.mobile),
+  .ui.grid.grid.grid > .row > [class*="small screen only"].column:not(.mobile) {
+    display: none !important;
+  }
+}
+@media only screen and (min-width: 1920px) {
+  .ui[class*="small screen only"].grid.grid.grid:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].row:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].column:not(.mobile),
+  .ui.grid.grid.grid > .row > [class*="small screen only"].column:not(.mobile) {
+    display: none !important;
+  }
+}
 
 
 /*******************************
