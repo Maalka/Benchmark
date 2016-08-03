@@ -79,10 +79,26 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             var createBaseChartFeatures = function() {
               var bars = [];
               var k = 20;
-              for (k; k <= 100; k += 20) {
-                if (k !== 120) {
-                  bars.push([k, 110]);
+              var dlOff = function(v) {
+                if (v === 120) {
+                  return -11;
+                } else if (v === 20) {
+                  return -28;
+                } else {
+                  return -20;
                 }
+              };
+              for (k; k <= 140; k += 20) {
+                bars.push(
+                  {
+                    x: k,
+                    y: 110,
+                    color: k === 140 ? 'transparent' : undefined,
+                    dataLabels: {
+                      x: dlOff(k),
+                      y: 3
+                    }
+                  });
               }
 
               updateOrAddSeries(chart, {
@@ -111,11 +127,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     useHTML: true,
                     formatter: function () {
                       var x = fixX(this.x, true);
-                      if (x === 0) { 
-                        return;
-                      }
                       if (x < 20) { 
-                        return "<span style='color: black;'>" + x + "</span>";
+                        return "<span style='color: #a6a8ab;'>" + x + "</span>";
                       } else {
                         return x;
                       }
@@ -123,15 +136,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     verticalAlign: "bottom",
                     style: {
                       textShadow: false
-                    },
-                    x: -28,
-                    y: 3
+                    }
                   },
                   enableMouseTracking: false,
                   data: bars,
                   showInLegend: false
                 }, false);
 
+              /*
                 // the 0 use case... i don't think that i can dynamicly change the "0"
                 updateOrAddSeries(chart, { type: 'column',
                   id: 'linesZero',
@@ -174,6 +186,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     }],
                   showInLegend: false
                 }, false);
+                */
               updateOrAddSeries(chart, {
                 name: "axisLine",
                 id: 'axisLine',
@@ -509,10 +522,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               return height;
             };
             var getMargin = function() {
-              var margin = [60, -30, 0, -30];
+              var margin = [60, -20, 0, -30];
               baselineEUI = getBRByKey("medianSiteEUI");
               if (showExtendedChart()) {
                 margin[0] = 50;
+                margin[1] = -18;
                 margin[2] = 20;
               }
               return margin;
@@ -521,6 +535,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               var options = {
                   chart: {
+                    spacingTop: 0,
+                    spacingRight: 0,
+                    spacingBottom: 10,
+                    spacingLeft: 0,
+                    plotBorderWidth: 0,
                       events: {
                         'load': function () {
                           loadSeries(chart);
