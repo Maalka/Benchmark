@@ -329,11 +329,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.propList = [];
 
         if($scope.auxModel.reportingUnits==="us"){
-            $scope.tableEnergyUnits="kWh";
-            $scope.tableEUIUnits="kWh/ft²";
+            $scope.tableEnergyUnits="KBtu";
+            $scope.tableEUIUnits="KBtu/ft²";
         }else {
-            $scope.tableEnergyUnits="MJ";
-            $scope.tableEUIUnits="MJ/m²";
+            $scope.tableEnergyUnits="kWh";
+            $scope.tableEUIUnits="kWh/m²";
         }
 
         if($scope.auxModel.CDD === undefined || $scope.auxModel.HDD === undefined ||
