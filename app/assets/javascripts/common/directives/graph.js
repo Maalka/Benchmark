@@ -46,7 +46,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
 
             var showGreenEnergyChart = function () {
-              if (showExtendedChart() && showExtendedChartGreen()) {
+              if (showExtendedChart() &&
+                    hasRenewableEnergy() &&
+                        positiveZEPI()) {
                 return $scope.baselineConstant !== undefined;
               }
               return false;
@@ -56,7 +58,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               return getBRByKey("siteEnergyALL") !== undefined;
             };
 
-            var showExtendedChartGreen = function () {
+            var positiveZEPI = function () {
+              return getBRByKey("actualZEPI") ? getBRByKey("actualZEPI") < 100 : false;
+            };
+
+            var hasRenewableEnergy = function () {
               return (getBRByKey("onSiteRenewableTotal") !== undefined ||
                                       getBRByKey("offSitePurchasedTotal") !== undefined);
             };
@@ -441,9 +447,6 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
            var loadSeries = function(chart) {
 
-              console.log(getBRByKey("onSiteRenewableTotal"));
-              console.log(getBRByKey("offSitePurchasedTotal"));
-              console.log(getBRByKey("siteEnergyALL"));
               createBaseChartFeatures();
               createExtendedChartFeatures(!showExtendedChart());
               createGreenChartFeatures(!showGreenEnergyChart());
