@@ -2,3 +2,5 @@
 @rowBorder: 0px solid @internalBorderColor;
 @cellVerticalPadding: .5em;
 @cellHorizontalPadding: .5em;
+@headerBorder: 0px solid @internalBorderColor;
+

@@ -26,7 +26,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             var chart,
                 baselineEUI,
                 maxX = 120,
-                minX = -20;
+                minX = -20,
+                red = "#ee1516",
+                green = "#3dab48";
 
 
             var compareDataElement = function(a, b) {
@@ -77,8 +79,10 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             var createBaseChartFeatures = function() {
               var bars = [];
               var k = 20;
-              for (k; k < 120; k += 20) {
-                bars.push([k, 120 - k]);
+              for (k; k <= 100; k += 20) {
+                if (k !== 120) {
+                  bars.push([k, 110]);
+                }
               }
 
               updateOrAddSeries(chart, {
@@ -104,6 +108,18 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     inside: true,
                     enabled: true,
                     align: "left",
+                    useHTML: true,
+                    formatter: function () {
+                      var x = fixX(this.x, true);
+                      if (x === 0) { 
+                        return;
+                      }
+                      if (x < 20) { 
+                        return "<span style='color: black;'>" + x + "</span>";
+                      } else {
+                        return x;
+                      }
+                    },
                     verticalAlign: "bottom",
                     style: {
                       textShadow: false
@@ -112,6 +128,47 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   },
                   enableMouseTracking: false,
                   data: bars,
+                  showInLegend: false
+                }, false);
+
+                // the 0 use case... i don't think that i can dynamicly change the "0"
+                updateOrAddSeries(chart, { type: 'column',
+                  id: 'linesZero',
+                  name: 'linesZero',
+                  color: "transparent",
+                  pointWidth: 2,
+                  borderWidth: 0,
+                  animation: false,
+                  dataLabels: {
+                    inside: true,
+                    enabled: true,
+                    align: "left",
+                    useHTML: true,
+                    formatter: function () {
+                      var x = fixX(this.x, true);
+                      return "<span style='color: #a6a8ab;'>" + x + "</span>";
+                    },
+                    verticalAlign: "bottom",
+                    style: {
+                      textShadow: false
+                    }
+                  },
+                  enableMouseTracking: false,
+                  data: [
+                    {
+                      x: 120, 
+                      y: 110,
+                      dataLabels: {
+                        x: -16
+                      }
+                    },
+                    {
+                      x: 140, 
+                      y: 110,
+                      dataLabels: {
+                        x: showExtendedChart() ? -39 : -33
+                      }
+                    }],
                   showInLegend: false
                 }, false);
               updateOrAddSeries(chart, {
@@ -167,9 +224,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     }
                   ]),
                   animation: false,
-                  color: fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI")) ? "lightgreen" : "red",
+                  color: fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI")) ? green : red,
                   arrow: true,
-                  dashStyle: "dot",
+                  dashStyle: "ShortDot",
                   showInLegend: false,
                   enableMouseTracking: false
                 });
@@ -184,8 +241,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               var percentBetter = Math.abs(getBRByKey("actualZEPI") - getBRByKey("percentBetterZEPI"));
               updateOrAddSeries(chart, createMarker(isNaN(percentBetter) ? undefined : percentBetter, 
-                              17, getBRByKey("percentBetterZEPI"), better ? "maalkaFlagLeftBottom": "maalkaFlagBottom", 
-                              better ? "lightgreen" : "red", "axisLine", true)[0],
+                              17, getBRByKey("percentBetterZEPI"), better ? "maalkaLongFlagLeftBottom": "maalkaLongFlagBottom", 
+                              better ? green : red, "axisLine", true)[0],
                   false
                   );
             };
@@ -216,7 +273,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     },
                     { 
                       x: fixX($scope.baselineConstant),
-                      y: -80,
+                      y: -110,
                       marker: {
                         enabled: false
                       }
@@ -225,7 +282,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   animation: false,
                   color: "#77aad4",
                   arrow: true,
-                  dashStyle: "dot",
+                  dashStyle: "ShortDot",
                   showInLegend: false,
                   enableMouseTracking: false
                 });
@@ -236,14 +293,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   data: sortData([
                     {
                       x: fixX(getBRByKey("actualZEPI")), 
-                      y: -70,
+                      y: -85,
                       marker: {
                         enabled: false
                       } 
                     },
                     { 
                       x: fixX(getBRByKey("actualZEPI")), 
-                      y: -80,
+                      y: -110,
                       marker: {
                         enabled: false
                       }
@@ -252,7 +309,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   animation: false,
                   color: "#77aad4",
                   arrow: true,
-                  dashStyle: "dot",
+                  dashStyle: "ShortDot",
                   showInLegend: false,
                   enableMouseTracking: false
                 });
@@ -265,14 +322,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   data: sortData([
                     {
                       x: fixX($scope.baselineConstant),
-                      y: -100,
+                      y: -120,
                       marker: {
                         enabled: false
                       } 
                     },
                     { 
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
-                      y: -100,
+                      y: -120,
                       marker: {
                         enabled: false
                       }
@@ -292,7 +349,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   data: sortData([
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
-                      y: -100,
+                      y: -120,
                       marker: {
                         enabled: false
                       } 
@@ -300,7 +357,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     { 
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total)),
-                      y: -100,
+                      y: -120,
                       marker: {
                         enabled: false
                       }
@@ -321,7 +378,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total)),
-                      y: -100,
+                      y: -120,
                       marker: {
                         enabled: false
                       }
@@ -330,7 +387,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total) -
                         gap * (greenPower / total)),
-                      y: -100,
+                      y: -120,
                       marker: {
                         enabled: false
                       }
@@ -361,14 +418,19 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 } else {
                   text = "<b>"+title + "</b><br><b>" + zepiToEUI(round(x)) + "</b> FF-EUI" + "<br><b>" + round(x) + "</b> Rating";
                 }
+                var textColor;
+                if (onlyTitle) { 
+                  textColor = fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI")) ? green : red;
+                }
                 return [
                     {   id: onlyTitle ? series + "marker" : title + "0",
                         dataLabels:{
                           useHTML:true,
                         },
                         style: {
-                          fontSize: '11px',
+                          fontSize: onlyTitle ? '13px' : '11px',
                           fontWeight: 'normal',
+                          color: textColor
                         },
                         type: 'maalkaFlags',
                          data: [
@@ -405,16 +467,16 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
 
             var labels = {};
-            var fixX = function(x) {
+            var fixX = function(x, noClip) {
               if($scope.baselineConstant === 130){
                   x = 100 * x / 130;
               }
 
-              if (x > 100) {
+              if (x > 100 && !noClip) {
                 x = 100;
               }
 
-              if (x < 0) {
+              if (x < 0 && !noClip) {
                 x = -10;
               }
               return maxX - x;
@@ -436,18 +498,19 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               chart.reflow();
             };
             var getHeight = function() {
-              var height = 250;
+              var height = 200;
               baselineEUI = getBRByKey("medianSiteEUI");
               if (showExtendedChart()) {
-                height = height + 100;
+                height = height + 120;
               }
               return height;
             };
             var getMargin = function() {
-              var margin = [40, 0, 0, 0];
+              var margin = [60, -30, 0, -30];
               baselineEUI = getBRByKey("medianSiteEUI");
               if (showExtendedChart()) {
-                margin[0] = 40;
+                margin[0] = 50;
+                margin[2] = 20;
               }
               return margin;
             };
@@ -487,7 +550,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     itemDistance: 10,
                     itemStyle: {
                       fontSize:'10px',
-                    }
+                    },
+                    useHTML: true,
+                    labelFormat: "<span style='color: {color};'>{name}</span>"
                   },
                   xAxis: {
                       gridLineColor: "black",
@@ -498,10 +563,13 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       minorGridLineWidth: 0,
                       tickLength: 0,
                       lineWidth: 0,
-
+                      maxPadding: 0,
+                      minPadding: 0,
+                      lineColor: 'transparent',
                       labels: {
                           enabled: false
                       },
+                      padding: 0
                   },
                   yAxis: {
                       title: {
@@ -510,17 +578,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       labels: {
                           enabled: false
                       },
-                      gridLineColor: "black",
-                      gridLineDash: "solid",
+                      gridLineColor: "transparent",
                       gridLineWidth: 0,
-                      lineWidth: 1,
-                      plotLines: [{
-                        color: "black",
-                        width: 1,
-                        value: 0,
-                        zIndex: 11,
-                      }],
-                      gridZIndex: 5
+                      lineWidth: 0,
+                      offset: -15,
+                      padding: 0,
+                      maxPadding: 0,
+                      minPadding: 0,
+                      lineColor: 'transparent'
                   },
                   tooltip: {
                     enabled: false,
@@ -540,7 +605,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                               }
                           },
                           fillOpacity: 1,
-                          color: {
+                          color: "transparent",
+                          fillColor: {
                             linearGradient: { x1: 0, x2: 1, y1: 0, y2: 0 },
                             stops: [
                               [0, '#be2026'],

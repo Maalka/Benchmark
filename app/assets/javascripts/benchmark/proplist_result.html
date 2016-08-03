@@ -6,33 +6,28 @@
         <tr>
             <td class="five wide">LOCATION</td>
             <td class="five wide">{{benchmarkResult.city || "City"}}, {{benchmarkResult.state || "ST"}}</td>
-            <td class="six wide">{{benchmarkResult.postalCode || "000000"}}</td>
+            <td colspan=2>{{benchmarkResult.postalCode || "000000"}}</td>
         </tr>
         <tr ng-repeat="prop in propOutputList">
             <td ng-if="$first" rowspan="{{propOutputList.length}}">USES</td>
             <td>{{prop.propType}}</td>
-            <td>{{prop.propSize}} {{prop.areaUnits}} ({{prop.propPercent}})%</td>
+            <td colspan=2 >{{prop.propSize}} {{prop.areaUnits}} ({{prop.propPercent}})%</td>
         </tr>
-    </tbody>
-</table>
+        <tr><td colspan="4">
+            <hr></td></tr>
 
-<hr></hr>
-
-<table class="ui basic inverted white table">
-    <thead>
-        <tr>
-            <th>RESULTS</th>
-            <th class = "center aligned">BASELINE</th>
-            <th class = "center aligned">TARGET</th>
-            <th class="ui yellow center aligned">Your Building</th>
+        <tr class="bottom aligned">
+            <td><B>RESULTS</B></th>
+            <td class = "center aligned"><B>BASELINE</B></td>
+            <td class = "center aligned three wide"><b>TARGET</b></td>
+            <td class="ui yellow center aligned three wide"><b>Your Building</b></td>
         </tr>
-    </thead>
-    <tbody>
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Percent Reduction from Baseline'" units=""
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Percent Reduction from Baseline'" 
+            append = "'%'" units=""
             columns="['percentBetterMedian', 'percentBetterTarget', 'percentBetterActual']"></tr>
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="scoreText" units="scoreUnits"
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
             columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']"></tr>
 
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
@@ -49,13 +44,13 @@
 
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Total GHG Emissions'" units="'Metric Tons CO2e'"
             columns="['medianEmissions', 'percentBetterEmissions', 'totalEmissions']"></tr>
-
+        <tr>
+            <td colspan=3>
+                <div style="font-size: smaller"><i>
+                    <sup>*</sup> FF-EUI = Fossil Fuel Energy Use Intensity (annual fossil fuel based energy consumption per square foot)
+                </i></div>
+            </td>
+        </tr>
     </tbody>
-
 </table>
-<div style="font-size: smaller">
-    FF-EUI<sup>*</sup> = Fossil Fuel Energy Use Intensity (annual fossil fuel based energy consumption per
-    square foot)
-</div>
-
 

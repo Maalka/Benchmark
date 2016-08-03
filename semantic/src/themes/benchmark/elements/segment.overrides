@@ -6,7 +6,8 @@
   padding: 0em;
   background-color: none;
   box-shadow: none;
-  margin: @margin;
+  margin: @groupedSegmentMargin;
+;
   border-radius: none;
   border: none;
 }

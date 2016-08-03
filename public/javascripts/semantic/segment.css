@@ -501,10 +501,10 @@
 
 /* Red */
 .ui.red.segment:not(.inverted) {
-  border-top: 2px solid #DB2828;
+  border-top: 2px solid #ee1516;
 }
 .ui.inverted.red.segment {
-  background-color: #DB2828 !important;
+  background-color: #ee1516 !important;
   color: #FFFFFF !important;
 }
 
@@ -519,10 +519,10 @@
 
 /* Yellow */
 .ui.yellow.segment:not(.inverted) {
-  border-top: 2px solid #ffff00;
+  border-top: 2px solid #f5ea14;
 }
 .ui.inverted.yellow.segment {
-  background-color: #ffff00 !important;
+  background-color: #f5ea14 !important;
   color: #FFFFFF !important;
 }
 
@@ -757,7 +757,7 @@
   padding: 0em;
   background-color: none;
   box-shadow: none;
-  margin: 1rem 0em;
+  margin: 0em;
   border-radius: none;
   border: none;
 }
