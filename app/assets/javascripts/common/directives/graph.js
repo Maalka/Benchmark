@@ -46,14 +46,19 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
 
             var showGreenEnergyChart = function () {
-              if (showExtendedChart() && true) {
+              if (showExtendedChart() && showExtendedChartGreen()) {
                 return $scope.baselineConstant !== undefined;
               }
               return false;
             };
 
             var showExtendedChart = function () {
-              return getBRByKey("actualZEPI") !== undefined;
+              return getBRByKey("siteEnergyALL") !== undefined;
+            };
+
+            var showExtendedChartGreen = function () {
+              return (getBRByKey("onSiteRenewableTotal") !== undefined ||
+                                      getBRByKey("offSitePurchasedTotal") !== undefined);
             };
 
             /***
@@ -192,10 +197,20 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
             var createGreenChartFeatures = function (remove) {
               var gap = $scope.baselineConstant - getBRByKey("actualZEPI");
-              var energyEfficiency = 100;
-              var onsiteRenewable = 40;
-              var greenPower = 60;
-              var total = energyEfficiency + onsiteRenewable + greenPower;
+
+              var totalPercentReduction = getBRByKey("percentBetterActual");
+
+              var totalSiteEnergy = getBRByKey("siteEnergyALL");
+              var onsite = getBRByKey("onSiteRenewableTotal") ? getBRByKey("onSiteRenewableTotal") : 0;
+              var purchased = getBRByKey("offSitePurchasedTotal") ? getBRByKey("offSitePurchasedTotal") : 0;
+              var totalCombinedEnergy = totalSiteEnergy + onsite + purchased;
+
+              var onsiteRenewable = totalPercentReduction * onsite / totalCombinedEnergy;
+              var greenPower = totalPercentReduction * purchased / totalCombinedEnergy;
+              var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
+
+              var total = totalPercentReduction;
+
               if (remove) {
                 updateOrAddSeries(chart, {id: "componentLineLeft", remove: true}, false);
                 updateOrAddSeries(chart, {id: "componentLineRight", remove: true}, false);
@@ -425,6 +440,10 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
 
            var loadSeries = function(chart) {
+
+              console.log(getBRByKey("onSiteRenewableTotal"));
+              console.log(getBRByKey("offSitePurchasedTotal"));
+              console.log(getBRByKey("siteEnergyALL"));
               createBaseChartFeatures();
               createExtendedChartFeatures(!showExtendedChart());
               createGreenChartFeatures(!showGreenEnergyChart());

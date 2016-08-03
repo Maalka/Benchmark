@@ -117,7 +117,11 @@ trait BaselineActions {
       Baseline.getIndirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.getTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.medianTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+      Baseline.percentBetterTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+      Baseline.onSiteRenewableTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.offSitePurchasedTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
 
     ))
 
@@ -159,7 +163,11 @@ trait BaselineActions {
       "indirectSiteEmissions",
       "totalEmissions",
       "medianEmissions",
-      "percentBetterEmissions"
+      "percentBetterEmissions",
+
+      "onSiteRenewableTotal",
+      "offSitePurchasedTotal",
+      "siteEnergyALL"
     )
 
     futures.map(fieldNames.zip(_)).map { r =>

@@ -221,10 +221,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.FFText = $sce.trustAsHtml('Site FF-EUI*');
             $scope.scoreUnits = $scope.isResidential ? "0-130" : "0-100";
 
-            console.log("medianES:",$scope.getPropResponseField(results,"medianES"));
-            console.log("targetES:",$scope.getPropResponseField(results,"targetES"));
-            console.log("actualES:",$scope.getPropResponseField(results,"actualES"));
-
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
             $scope.benchmarkResult.city = $scope.auxModel.city;
             $scope.benchmarkResult.state = $scope.auxModel.state;
@@ -296,7 +292,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
               {"totalEmissions": $scope.getPropResponseField(results,"totalEmissions")},
               {"percentBetterEmissions": $scope.getPropResponseField(results,"percentBetterEmissions")},
-              {"medianEmissions": $scope.getPropResponseField(results,"medianEmissions")}
+              {"medianEmissions": $scope.getPropResponseField(results,"medianEmissions")},
+
+              {"onSiteRenewableTotal": $scope.getPropResponseField(results,"onSiteRenewableTotal")},
+              {"offSitePurchasedTotal": $scope.getPropResponseField(results,"offSitePurchasedTotal")},
+              {"siteEnergyALL": $scope.getPropResponseField(results,"siteEnergyALL")}
         ];
         return metricsTable;
     };
@@ -343,13 +343,15 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         var validEnergy = function(e) {
             return (e.energyType !== undefined &&
+                    e.energyName !== undefined &&
                     e.energyUnits !== undefined &&
                     e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
         };
 
         var mapEnergy = function (e) { 
             return {
-                'energyType': e.energyType,
+                'energyType': (e.energyType) ? e.energyType.id : undefined,
+                'energyName': (e.energyType) ? e.energyType.name : undefined,
                 'energyUnits': e.energyUnits,
                 'energyUse': Number(e.energyUse),
                 'energyRate': null
@@ -357,7 +359,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         };
         var mapRenewableEnergy = function (e) {
             return {
-                'energyType': e.renewableType,
+                'energyType': (e.renewableType) ? e.renewableType.id : undefined,
+                'energyName': (e.renewableType) ? e.renewableType.name : undefined,
                 'energyUnits': e.renewableUnits,
                 'energyUse': Number(e.energyUse),
                 'energyRate': null

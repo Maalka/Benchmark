@@ -72,6 +72,26 @@ case class EUIMetrics(parameters: JsValue) {
       convertedEnergy <- energyConversion(sourceEnergy)
     } yield convertedEnergy.value
 
+  def onSiteRenewableTotal: Future[Double] =
+    for {
+      siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
+      convertedEnergy <- convertEnergyTuple(siteRenewableList)
+      totalOnSiteRenewable <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"onSite")
+    } yield totalOnSiteRenewable
+
+  def offSitePurchasedTotal: Future[Double] =
+    for {
+      siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
+      convertedEnergy <- convertEnergyTuple(siteRenewableList)
+      totalOnSiteRenewable <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"purchased")
+    } yield totalOnSiteRenewable
+
+  def siteEnergyALL: Future[Double] =
+    for {
+      siteEnergyList <- energyCalcs.getSiteEnergyList
+      convertedEnergy <- convertEnergyTuple(siteEnergyList)
+      totalSiteEnergyAll <- energyCalcs.getSiteEnergyTotalbyType(convertedEnergy)
+    } yield totalSiteEnergyAll
 
   def siteEnergyConverted: Future[Double] =
     for {
@@ -520,10 +540,10 @@ case class EUIMetrics(parameters: JsValue) {
 
   def convertEnergyTuple(energies: List[EnergyTuple]): Future[List[EnergyTuple]] = Future {
     (energyCalcs.country, energyCalcs.reportingUnits) match {
-      case ("USA", "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyValue in KilowattHours)}
-      case ("USA", "metric") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyValue in Gigajoules)}
+      case ("USA", "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KilowattHours)}
+      case ("USA", "metric") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in Gigajoules)}
       case (_, "metric") => energies
-      case (_, "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType, a.energyValue in KilowattHours)}
+      case (_, "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KilowattHours)}
       case _ => energies
 
     }
