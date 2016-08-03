@@ -210,7 +210,7 @@ define(['highcharts'], function() {
                     pointAttr = point.pointAttr[point.selected ? 'select' : ''] || seriesPointAttr;
                     if (graphic) { // update
                         graphic.attr({
-                            x: plotX - (options.shape === "maalkaFlagLeftBottom" ? 6 : 0),
+                            x: plotX - (options.shape === "maalkaFlagLeftBottom" || options.shape === "maalkaLongFlagLeftBottom" ? 6 : 0),
                             y: plotY,
                             r: pointAttr.r,
                             anchorX: anchorX,
@@ -230,7 +230,7 @@ define(['highcharts'], function() {
                         .css(merge(options.style, point.style))
                         .attr(pointAttr)
                         .attr({
-                            "text-anchor": options.shape === "maalkaFlagLeftBottom" ? "end": "inherit",
+                            "text-anchor": options.shape === "maalkaFlagLeftBottom" || options.shape === "maalkaLongFlagLeftBottom" ? "end": "inherit",
                             width: options.width,
                             height: options.height
                         })
@@ -305,7 +305,7 @@ define(['highcharts'], function() {
 
         return [
             'M', anchorX, anchorY - 3,
-            'L', x, y,
+            'L', x, y + 6,
             'Z'
         ];
     };
@@ -321,13 +321,35 @@ define(['highcharts'], function() {
         ];
     };
 
+    symbols.maalkaLongFlagBottom = function (x, y, w, h, options) {
+        var anchorX = (options && options.anchorX) || x,
+            anchorY = (options &&  options.anchorY) || y;
+
+        return [
+            'M', anchorX, anchorY + 3,
+            'L', x, y + h + 3,
+            'Z'
+        ];
+    };
+
     Highcharts.Renderer.prototype.symbols.maalkaFlagLeftBottom = function (x, y, w, h, options) {
          var anchorX = (options && options.anchorX) || x,
             anchorY = (options &&  options.anchorY) || y;
 
         return [
             'M', anchorX, anchorY + 3,
-            'L', anchorX, y + h,
+            'L', anchorX, y + h - 4,
+            'Z'
+        ];
+    };
+
+    Highcharts.Renderer.prototype.symbols.maalkaLongFlagLeftBottom = function (x, y, w, h, options) {
+         var anchorX = (options && options.anchorX) || x,
+            anchorY = (options &&  options.anchorY) || y;
+
+        return [
+            'M', anchorX, anchorY + 3,
+            'L', anchorX, y + h + 3,
             'Z'
         ];
     };
