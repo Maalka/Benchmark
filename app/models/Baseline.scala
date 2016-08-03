@@ -31,6 +31,24 @@ case class EUIMetrics(parameters: JsValue) {
 
   def zepiMedian:Future[Int] = buildingProps.getBaselineConstant
 
+  def percentBetterMedian:Future[Double] = Future{0}
+  def percentBetterTarget:Future[Double] = buildingProps.getPercentBetterThanMedia
+
+  def percentBetterActual:Future[Double] = {
+    for {
+      zepi <- zepiActual
+      actual <- Future(100 - zepi)
+    } yield actual
+  }
+
+  def actualGoalReduction:Future[Double] = {
+    for {
+      percentBetterEUI <- percentBetterSiteEUIConverted
+      actualEUI <- siteEUIConverted
+    } yield 100*math.abs((1 - actualEUI / percentBetterEUI.value))
+  }
+
+
   def zepiActual:Future[Double] = {
     for {
       baselineConstant <- buildingProps.getBaselineConstant
@@ -39,6 +57,7 @@ case class EUIMetrics(parameters: JsValue) {
       zepiActual <- Future(baselineConstant*actualSiteEUI.value/zepiMedianSiteEUI.value)
     } yield zepiActual
   }
+
   def zepiPercentBetter:Future[Double] = {
     for {
       baselineConstant <- buildingProps.getBaselineConstant

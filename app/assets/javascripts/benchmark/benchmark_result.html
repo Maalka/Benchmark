@@ -1,13 +1,25 @@
 <div>
 	<h3 class="ui header"><i class="bar chart icon"></i>RESULTS</h3>
 	<div class="ui padded sixteen column grid">
-	    <div class="teal inverted sixteen wide column" ng-if="benchmarkResult" style="font-size: larger; padding: 0.7em;">
+	    <div class="teal inverted sixteen wide column" ng-if="benchmarkResult" style="padding: 0.7em;">
 		    <center>
-		         Target EUI is 
-	    	     <font style="font-size:1.5em; position: relative; top:2px">{{percentBetterSiteEUI | number : 1}}</font>  
-    	    	 based on on a {{benchmarkResult.percentBetterThanMedian}}% reduction
+		         Target EUI is
+	    	     <font style="font-size:1.5em; position: relative; top:2px; color: #e6ff00">{{percentBetterSiteEUI | number : 1}}</font>
+    	    	 based on a {{benchmarkResult.percentBetterThanMedian | number : 1}}% reduction
     	   	</center>
-	    </div>
+
+			<center ng-if="showPercentBetterTarget=='decrease'" style="padding-top: 1em;">
+				Decrease Site EUI by
+				<font style="font-size:1.5em; position: relative; top:2px; color: #ee1516">{{percentBetterGoal | number : 1}}%</font>
+				to achieve target
+			</center>
+
+			<center ng-if="showPercentBetterTarget=='better'" style="padding-top: 1em;">
+				Your building is performing
+				<font style="font-size:1.5em; position: relative; top:2px; color: lightgreen;">{{percentBetterGoal | number : 1}}%</font>
+				better than its target.
+			</center>
+		</div>
 	    <div class=" sixteen wide column page-break-after" style="padding:0px" ng-if="benchmarkResult"  >
 	       <div graph benchmark-result="benchmarkResult" baseline-constant="baselineConstant" score-Graph="scoreGraph" style="width: 100%; height:400px'"></div>
 	    </div>

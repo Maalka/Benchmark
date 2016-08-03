@@ -22,12 +22,16 @@
     <thead>
         <tr>
             <th>RESULTS</th>
-            <th>BASELINE</th>
-            <th>TARGET</th>
-            <th class="ui yellow">RATING</th>
+            <th class = "center aligned">BASELINE</th>
+            <th class = "center aligned">TARGET</th>
+            <th class="ui yellow center aligned">Your Building</th>
         </tr>
     </thead>
     <tbody>
+
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Percent Reduction from Baseline'" units=""
+            columns="['percentBetterMedian', 'percentBetterTarget', 'percentBetterActual']"></tr>
+
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="scoreText" units="scoreUnits"
             columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']"></tr>
 
@@ -49,8 +53,9 @@
     </tbody>
 
 </table>
-
-<p>FF-EUI<sup>*</sup> = Fossil Fuel Energy Use Intensity (annual fossil fuel based energy consumption per
-    square foot)</p>
+<div style="font-size: smaller">
+    FF-EUI<sup>*</sup> = Fossil Fuel Energy Use Intensity (annual fossil fuel based energy consumption per
+    square foot)
+</div>
 
 

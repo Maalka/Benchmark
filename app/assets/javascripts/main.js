@@ -53,6 +53,7 @@
       'highcharts-core': '../lib/highstock/highstock',
       'highcharts-more': '../lib/highstock/highcharts-more',
       'highcharts': './highcharts-theme',
+      'maalkaflags': './highcharts/maalkaFlags',
       'matchmedia-ng': '../lib/matchmedia-ng/matchmedia-ng',
       'semantic': './semantic/semantic.min',
       'jsRoutes': '/jsroutes',
