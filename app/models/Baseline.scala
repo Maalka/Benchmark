@@ -45,6 +45,14 @@ case class EUIMetrics(parameters: JsValue) {
     for {
       percentBetterEUI <- percentBetterSiteEUIConverted
       actualEUI <- siteEUIConverted
+    } yield 100*math.abs((1 - percentBetterEUI.value / actualEUI))
+  }
+
+
+  def actualGoalBetter:Future[Double] = {
+    for {
+      percentBetterEUI <- percentBetterSiteEUIConverted
+      actualEUI <- siteEUIConverted
     } yield 100*math.abs((1 - actualEUI / percentBetterEUI.value))
   }
 

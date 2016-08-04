@@ -268,7 +268,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               var purchased = getBRByKey("offSitePurchasedTotal") ? getBRByKey("offSitePurchasedTotal") : 0;
               var totalCombinedEnergy = totalSiteEnergy + onsite + purchased;
 
-              if (totalCombinedEnergy == 0) {
+              //divide by zero condition check
+              if (totalCombinedEnergy === 0) {
                 return;
               }
 
