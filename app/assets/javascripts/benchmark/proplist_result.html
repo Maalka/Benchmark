@@ -11,7 +11,7 @@
         <tr ng-repeat="prop in propOutputList">
             <td ng-if="$first" rowspan="{{propOutputList.length}}">USES</td>
             <td>{{prop.propType}}</td>
-            <td colspan=2 >{{prop.propSize}} {{prop.areaUnits}} ({{prop.propPercent}})%</td>
+            <td colspan=2 >{{prop.propSize | number : 1}} {{prop.areaUnits}} ({{prop.propPercent | number : 1}})%</td>
         </tr>
         <tr><td colspan="4">
             <hr></td></tr>
@@ -23,7 +23,7 @@
             <td class="ui yellow center aligned three wide"><b>Your Building</b></td>
         </tr>
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Percent Reduction from Baseline'" 
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
             append = "'%'" units=""
             columns="['percentBetterMedian', 'percentBetterTarget', 'percentBetterActual']"></tr>
 
@@ -45,7 +45,7 @@
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Total GHG Emissions'" units="'Metric Tons CO2e'"
             columns="['medianEmissions', 'percentBetterEmissions', 'totalEmissions']"></tr>
         <tr>
-            <td colspan=3>
+            <td colspan=4>
                 <div style="font-size: smaller"><i>
                     <sup>*</sup> FF-EUI = Fossil Fuel Energy Use Intensity (annual fossil fuel based energy consumption per square foot)
                 </i></div>
