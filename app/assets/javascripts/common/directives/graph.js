@@ -263,10 +263,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               var totalPercentReduction = getBRByKey("percentBetterActual");
 
-              var totalSiteEnergy = getBRByKey("siteEnergyALL");
+              var totalSiteEnergy = getBRByKey("siteEnergyALL")? getBRByKey("siteEnergyALL") : 0;
               var onsite = getBRByKey("onSiteRenewableTotal") ? getBRByKey("onSiteRenewableTotal") : 0;
               var purchased = getBRByKey("offSitePurchasedTotal") ? getBRByKey("offSitePurchasedTotal") : 0;
               var totalCombinedEnergy = totalSiteEnergy + onsite + purchased;
+
+              if (totalCombinedEnergy == 0) {
+                return;
+              }
 
               var onsiteRenewable = totalPercentReduction * onsite / totalCombinedEnergy;
               var greenPower = totalPercentReduction * purchased / totalCombinedEnergy;
