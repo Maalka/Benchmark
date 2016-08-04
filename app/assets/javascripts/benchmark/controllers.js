@@ -257,10 +257,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         if($scope.siteEUI > $scope.percentBetterSiteEUI){
             $scope.showPercentBetterTarget = 'decrease';
-            $scope.percentBetterGoal = 100 - $scope.getPropResponseField(results,"percentBetterActualtoGoal");
+            $scope.percentBetterGoal = $scope.getPropResponseField(results,"percentBetterActualtoGoal");
         }else if($scope.siteEUI < $scope.percentBetterSiteEUI){
             $scope.showPercentBetterTarget = 'better';
-            $scope.percentBetterGoal = $scope.getPropResponseField(results,"percentBetterActualtoGoal");
+            $scope.percentBetterGoal = $scope.getPropResponseField(results,"actualGoalBetter");
         } else {
             $scope.showPercentBetterTarget = undefined;
         }
@@ -275,6 +275,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"percentBetterTarget": $scope.getPropResponseField(results,"percentBetterTarget")},
               {"percentBetterActual": $scope.getPropResponseField(results,"percentBetterActual")},
               {"percentBetterActualtoGoal": $scope.getPropResponseField(results,"percentBetterActualtoGoal")},
+              {"actualGoalBetter": $scope.getPropResponseField(results,"actualGoalBetter")},
 
               {"medianZEPI": $scope.getPropResponseField(results,"medianZEPI")},
               {"percentBetterZEPI": $scope.getPropResponseField(results,"percentBetterZEPI")},
