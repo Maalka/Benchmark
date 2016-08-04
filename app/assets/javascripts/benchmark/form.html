@@ -247,7 +247,7 @@
                             <div class="field">
                                  <select class="ui dropdown"
                                     ng-model="energyEntry.energyType"
-                                    ng-options="item.id as item.name for item in energyProperties.energyType track by item.name">
+                                    ng-options="item as item.name for item in energyProperties.energyType track by item.name">
                                     <option value="">Select</option>
                                 </select>
                             </div>
@@ -256,7 +256,7 @@
                             <div class="field">
                                  <select class="ui dropdown"
                                     ng-model="energyEntry.energyUnits"
-                                    ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: energyEntry.energyType}">
+                                    ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: energyEntry.energyType.id}">
                                     <option value="">Select</option>
                                 </select>
                             </div>
@@ -313,7 +313,7 @@
                             <div class="field">
                                 <select class="ui dropdown"
                                         ng-model="energyEntry.renewableType"
-                                        ng-options="item.id as item.name for item in energyProperties.renewableType track by item.name">
+                                        ng-options="item as item.name for item in energyProperties.renewableType track by item.name">
                                     <option value="">Select</option>
                                 </select>
                             </div>
