@@ -657,8 +657,10 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                           fillColor: {
                             linearGradient: { x1: 0, x2: 1, y1: 0, y2: 0 },
                             stops: [
-                              [0, '#be2026'],
-                              [0.5, '#f5ea16'],
+                              [0, '#bd2227'],
+                              [0.15, '#cd2027'],
+                              [0.5, '#f4ea0e'],
+                              [0.85, '#39a949'],
                               [1, '#3aaa49']
                             ]
                           }
