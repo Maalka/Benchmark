@@ -48,26 +48,16 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
 
             var showGreenEnergyChart = function () {
-              if (showExtendedChart() &&
-                    hasRenewableEnergy() &&
-                        positiveZEPI()) {
+              if (showExtendedChart()) {
                 return $scope.baselineConstant !== undefined;
               }
               return false;
             };
 
             var showExtendedChart = function () {
-              return getBRByKey("siteEnergyALL") !== undefined;
-            };
-
-            var positiveZEPI = function () {
               return getBRByKey("actualZEPI") ? getBRByKey("actualZEPI") < 100 : false;
             };
 
-            var hasRenewableEnergy = function () {
-              return (getBRByKey("onSiteRenewableTotal") !== undefined ||
-                                      getBRByKey("offSitePurchasedTotal") !== undefined);
-            };
 
             /***
             Update or Add a series to the chart
