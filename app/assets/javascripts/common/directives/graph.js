@@ -58,6 +58,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               return getBRByKey("actualZEPI") ? getBRByKey("actualZEPI") < 100 : false;
             };
 
+
             var showExtendedChart = function () {
               return getBRByKey("siteEUI") ? true : false;
             };
@@ -132,9 +133,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     formatter: function () {
                       var x = fixX(this.x, true);
                       if (x < 20) { 
-                        return "<span style='color: #a6a8ab;'>" + x + "</span>";
+                        return "<span style='font-weight: 100;color: #a6a8ab;'>" + x + "</span>";
                       } else {
-                        return x;
+                        return "<span style='font-weight: 100;'>" + x + "</span>";
                       }
                     },
                     verticalAlign: "bottom",
@@ -542,10 +543,13 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               baselineEUI = getBRByKey("medianSiteEUI");
               if (showExtendedChart()) {
                 if ($scope.baselineConstant - getBRByKey("percentBetterZEPI") > 30) {
-                  height = height + 90;
+                  height = height + 45;
                 } else {
-                  height = height + 120;
+                  height = height + 65;
                 }
+              if (showGreenEnergyChart()) {
+                height = height + 47;
+              }
               }
               return height;
             };
@@ -555,14 +559,21 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               if (showExtendedChart()) {
                 if ($scope.baselineConstant - getBRByKey("percentBetterZEPI") > 30) {
                   margin[0] = 20;
+                  margin[2] = 40;
                 } else {
                   margin[0] = 50;
+                  margin[2] = 40;
+                }
+                if (showGreenEnergyChart()) {
+                  margin[2] = 20;
                 }
                 margin[1] = -18;
-                margin[2] = 20;
+               // margin[2] = 20;
               }
               return margin;
             };
+
+
             var plot = function () {
 
               var options = {
