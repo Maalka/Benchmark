@@ -252,8 +252,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.computeBenchmarkMix = function(results){
 
         $scope.propOutputList = $scope.getPropResponseField(results,"propOutputList");
-        $scope.percentBetterSiteEUI = $scope.getPropResponseField(results,"percentBetterSiteEUI");
-        $scope.siteEUI = $scope.getPropResponseField(results,"siteEUI");
+        $scope.percentBetterSiteEUI = Math.ceil($scope.getPropResponseField(results,"percentBetterSiteEUI"));
+        $scope.siteEUI = Math.ceil($scope.getPropResponseField(results,"siteEUI"));
 
         if($scope.siteEUI > $scope.percentBetterSiteEUI){
             $scope.showPercentBetterTarget = 'decrease';
@@ -271,36 +271,36 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"medianES": $scope.getPropResponseField(results,"actualES")},
               {"targetES": $scope.getPropResponseField(results,"targetES")},
 
-              {"percentBetterMedian": $scope.getPropResponseField(results,"percentBetterMedian")},
-              {"percentBetterTarget": $scope.getPropResponseField(results,"percentBetterTarget")},
-              {"percentBetterActual": $scope.getPropResponseField(results,"percentBetterActual")},
-              {"percentBetterActualtoGoal": $scope.getPropResponseField(results,"percentBetterActualtoGoal")},
-              {"actualGoalBetter": $scope.getPropResponseField(results,"actualGoalBetter")},
+              {"percentBetterMedian": Math.ceil($scope.getPropResponseField(results,"percentBetterMedian"))},
+              {"percentBetterTarget": Math.ceil($scope.getPropResponseField(results,"percentBetterTarget"))},
+              {"percentBetterActual": Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
+              {"percentBetterActualtoGoal": Math.ceil($scope.getPropResponseField(results,"percentBetterActualtoGoal"))},
+              {"actualGoalBetter": Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"))},
 
-              {"medianZEPI": $scope.getPropResponseField(results,"medianZEPI")},
-              {"percentBetterZEPI": $scope.getPropResponseField(results,"percentBetterZEPI")},
-              {"actualZEPI": $scope.getPropResponseField(results,"actualZEPI")},
+              {"medianZEPI": $scope.baselineConstant},
+              {"percentBetterZEPI": $scope.baselineConstant - Math.ceil($scope.getPropResponseField(results,"percentBetterTarget"))},
+              {"actualZEPI": $scope.baselineConstant - Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
 
-              {"siteEUI": $scope.getPropResponseField(results,"siteEUI")},
-              {"sourceEUI": $scope.getPropResponseField(results,"sourceEUI")},
+              {"siteEUI": Math.ceil($scope.getPropResponseField(results,"siteEUI"))},
+              {"sourceEUI": Math.ceil($scope.getPropResponseField(results,"sourceEUI"))},
               {"siteEnergyList": $scope.getPropResponseField(results,"siteEnergyList")},
-              {"totalSiteEnergy": $scope.getPropResponseField(results,"totalSiteEnergy")},
+              {"totalSiteEnergy": Math.ceil($scope.getPropResponseField(results,"totalSiteEnergy"))},
               {"sourceEnergyList": $scope.getPropResponseField(results,"sourceEnergyList")},
-              {"totalSourceEnergy": $scope.getPropResponseField(results,"totalSourceEnergy")},
+              {"totalSourceEnergy": Math.ceil($scope.getPropResponseField(results,"totalSourceEnergy"))},
 
-              {"medianSiteEUI": $scope.getPropResponseField(results,"medianSiteEUI")},
-              {"medianSourceEUI": $scope.getPropResponseField(results,"medianSourceEUI")},
-              {"medianSiteEnergy": $scope.getPropResponseField(results,"medianSiteEnergy")},
-              {"medianSourceEnergy": $scope.getPropResponseField(results,"medianSourceEnergy")},
+              {"medianSiteEUI": Math.ceil($scope.getPropResponseField(results,"medianSiteEUI"))},
+              {"medianSourceEUI": Math.ceil($scope.getPropResponseField(results,"medianSourceEUI"))},
+              {"medianSiteEnergy": Math.ceil($scope.getPropResponseField(results,"medianSiteEnergy"))},
+              {"medianSourceEnergy": Math.ceil($scope.getPropResponseField(results,"medianSourceEnergy"))},
 
-              {"percentBetterSiteEUI": $scope.getPropResponseField(results,"percentBetterSiteEUI")},
-              {"percentBetterSourceEUI": $scope.getPropResponseField(results,"percentBetterSourceEUI")},
-              {"percentBetterSiteEnergy": $scope.getPropResponseField(results,"percentBetterSiteEnergy")},
-              {"percentBetterSourceEnergy": $scope.getPropResponseField(results,"percentBetterSourceEnergy")},
+              {"percentBetterSiteEUI": Math.ceil($scope.getPropResponseField(results,"percentBetterSiteEUI"))},
+              {"percentBetterSourceEUI": Math.ceil($scope.getPropResponseField(results,"percentBetterSourceEUI"))},
+              {"percentBetterSiteEnergy": Math.ceil($scope.getPropResponseField(results,"percentBetterSiteEnergy"))},
+              {"percentBetterSourceEnergy": Math.ceil($scope.getPropResponseField(results,"percentBetterSourceEnergy"))},
 
-              {"totalEmissions": $scope.getPropResponseField(results,"totalEmissions")},
-              {"percentBetterEmissions": $scope.getPropResponseField(results,"percentBetterEmissions")},
-              {"medianEmissions": $scope.getPropResponseField(results,"medianEmissions")},
+              {"totalEmissions": Math.ceil($scope.getPropResponseField(results,"totalEmissions"))},
+              {"percentBetterEmissions": Math.ceil($scope.getPropResponseField(results,"percentBetterEmissions"))},
+              {"medianEmissions": Math.ceil($scope.getPropResponseField(results,"medianEmissions"))},
 
               {"onSiteRenewableTotal": $scope.getPropResponseField(results,"onSiteRenewableTotal")},
               {"offSitePurchasedTotal": $scope.getPropResponseField(results,"offSitePurchasedTotal")},

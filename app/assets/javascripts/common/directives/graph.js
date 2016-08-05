@@ -48,16 +48,19 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
 
             var showGreenEnergyChart = function () {
-              if (showExtendedChart()) {
+              if (goodZEPI()) {
                 return $scope.baselineConstant !== undefined;
               }
               return false;
             };
 
-            var showExtendedChart = function () {
+            var goodZEPI = function () {
               return getBRByKey("actualZEPI") ? getBRByKey("actualZEPI") < 100 : false;
             };
 
+            var showExtendedChart = function () {
+              return getBRByKey("siteEUI") ? true : false;
+            };
 
             /***
             Update or Add a series to the chart
@@ -447,9 +450,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     return;
                   }
                 } else  if (title === "YOUR BUILDING") {
-                  text = "Score <b>" + round(x) + "</b><br>FF-EUI <b>" + zepiToEUI(round(x)) + "</b><br><b>"+title + "</b>";
-                } else {
-                  text = "<b>"+title + "</b><br><b>" + zepiToEUI(round(x)) + "</b> FF-EUI" + "<br><b>" + round(x) + "</b> Rating";
+                  text = "Score <b>" + round(x) + "</b><br>FF-EUI <b>" + Math.ceil(getBRByKey("siteEUI")) + "</b><br><b>"+title + "</b>";
+                } else if (title === "BASELINE") {
+                  text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("medianSiteEUI")) + "</b> FF-EUI" + "<br><b>" + $scope.baselineConstant + "</b> Score";
+                } if (title === "TARGET") {
+                  text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> FF-EUI" + "<br><b>" + round(x) + "</b> Score";
                 }
                 var textColor;
                 if (onlyTitle) { 
@@ -515,9 +520,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               return maxX - x;
             };
 
-            var zepiToEUI = function(zepi) {
+/*            var zepiToEUI = function(zepi) {
               return  round(zepi / $scope.baselineConstant * baselineEUI);
-            };
+            };*/
 
            var loadSeries = function(chart) {
 
@@ -574,7 +579,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                         'redraw': function () {
                           if (showExtendedChart()) {
                             removeMarker('bottom');
-                            loadMarkers('bottom', this, this.get("Rating" + 0), 61, 45);
+                            loadMarkers('bottom', this, this.get("Score" + 0), 61, 45);
                           } else {
                             removeMarker('bottom');
                           }
