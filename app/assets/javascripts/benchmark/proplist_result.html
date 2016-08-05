@@ -11,7 +11,7 @@
         <tr ng-repeat="prop in propOutputList">
             <td ng-if="$first" rowspan="{{propOutputList.length}}">USES</td>
             <td>{{prop.propType}}</td>
-            <td colspan=2 >{{prop.propSize | number : 1}} {{prop.areaUnits}} ({{prop.propPercent | number : 1}})%</td>
+            <td colspan=2 >{{prop.propSize | number : 0}} {{prop.areaUnits}} ({{prop.propPercent | number : 1}})%</td>
         </tr>
         <tr><td colspan="4">
             <hr></td></tr>
