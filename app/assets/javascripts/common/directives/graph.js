@@ -667,7 +667,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                               [0.15, '#cd2027'],
                               [0.5, '#f4ea0e'],
                               [0.85, '#39a949'],
-                              [1, '#3aaa49']
+                              [1, '#3b5829']
                             ]
                           }
                       }
