@@ -251,7 +251,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               updateOrAddSeries(chart, 
                 createMarker("YOUR BUILDING", 40, getBRByKey("actualZEPI"), 
-                  gap > 40 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom", "black", "axisLine", false)[0],
+                  gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom", "black", "axisLine", false)[0],
                 false
                 );
               var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI"));
@@ -533,9 +533,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
             var getHeight = function() {
               var height = 200;
+
               baselineEUI = getBRByKey("medianSiteEUI");
               if (showExtendedChart()) {
-                height = height + 120;
+                if ($scope.baselineConstant - getBRByKey("percentBetterZEPI") > 30) {
+                  height = height + 90;
+                } else {
+                  height = height + 120;
+                }
               }
               return height;
             };
@@ -543,7 +548,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               var margin = [60, -20, 0, -30];
               baselineEUI = getBRByKey("medianSiteEUI");
               if (showExtendedChart()) {
-                margin[0] = 50;
+                if ($scope.baselineConstant - getBRByKey("percentBetterZEPI") > 30) {
+                  margin[0] = 20;
+                } else {
+                  margin[0] = 50;
+                }
                 margin[1] = -18;
                 margin[2] = 20;
               }

@@ -12,9 +12,9 @@ import play.api.libs.functional.syntax._
  * Created by rimukas on 7/5/16.
  */
 object DegreeDays {
-  lazy val zipStationLookupTable = loadLookupTable("zip_station.json")
-  lazy val cddStationLookupTable = loadLookupTable("station_cdd.json")
-  lazy val hddStationLookupTable = loadLookupTable("station_hdd.json")
+  val zipStationLookupTable = loadLookupTable("zip_station.json")
+  val cddStationLookupTable = loadLookupTable("station_cdd.json")
+  val hddStationLookupTable = loadLookupTable("station_hdd.json")
 
   def loadLookupTable(filename:String): Future[JsValue] = {
     for {
