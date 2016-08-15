@@ -30,7 +30,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 red = "#ee1516",
                 green = "#3dab48";
 
-
+            var ticksHERS = {'20':0,'35':20,'50':40,'65':60,'80':80,'95':100,'110':120,'125':130,'140':150};
             var compareDataElement = function(a, b) {
               var aX = a.x === undefined ? a[0] : a.x;
               var bX = b.x === undefined ? b[0] : b.x;
@@ -87,18 +87,20 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               var dlOff = function(v) {
                 if (v === 120) {
                   return -11;
-                } else if (v === 20) {
+                } else if (v === 20 || v === 35) {
                   return -28;
                 } else {
                   return -20;
                 }
               };
-              for (k; k <= 140; k += 20) {
+              var spaceBar = ($scope.baselineConstant === 130) ? 15 : 20;
+
+              for (k; k <= 140; k += spaceBar) {
                 bars.push(
                   {
                     x: k,
                     y: 110,
-                    color: k === 140 ? 'transparent' : undefined,
+                    color: k > 120 ? 'transparent' : undefined,
                     dataLabels: {
                       x: dlOff(k),
                       y: 3
@@ -131,8 +133,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     align: "left",
                     useHTML: true,
                     formatter: function () {
-                      var x = fixX(this.x, true);
-                      if (x < 20) { 
+                      var x = fixBig(this.x, true);
+                      if (x < 5) {
                         return "<span style='font-weight: 100;color: #a6a8ab;'>" + x + "</span>";
                       } else {
                         return "<span style='font-weight: 100;'>" + x + "</span>";
@@ -260,12 +262,20 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 );
               var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI"));
 
-              var percentBetter = Math.abs(getBRByKey("actualZEPI") - getBRByKey("percentBetterZEPI"));
+              var percentBetter = getBRByKey("siteEUI") ? getPercentBetter(Math.ceil(getBRByKey("siteEUI"))) : undefined;
+
+              //var percentBetter = Math.abs(getBRByKey("actualZEPI") - getBRByKey("percentBetterZEPI"));
               updateOrAddSeries(chart, createMarker(isNaN(percentBetter) ? undefined : percentBetter, 
                               17, getBRByKey("percentBetterZEPI"), better ? "maalkaLongFlagLeftBottom": "maalkaLongFlagBottom", 
                               better ? green : red, "axisLine", true)[0],
                   false
                   );
+            };
+
+            var getPercentBetter = function(siteEUI) {
+                var percentBetterSiteEUI = Math.ceil(getBRByKey("percentBetterSiteEUI"));
+
+                return (siteEUI > percentBetterSiteEUI) ? getBRByKey("percentBetterActualtoGoal") : getBRByKey("actualGoalBetter");
             };
 
             var createGreenChartFeatures = function (remove) {
@@ -506,6 +516,20 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
 
             var labels = {};
+            var fixBig = function(x, noClip) {
+              if($scope.baselineConstant === 130){
+                  return 130 - ticksHERS[x];
+              }
+
+              if (x > 100 && !noClip) {
+                x = 100;
+              }
+
+              if (x < 0 && !noClip) {
+                x = -10;
+              }
+              return maxX - x;
+            };
             var fixX = function(x, noClip) {
               if($scope.baselineConstant === 130){
                   x = 100 * x / 130;
