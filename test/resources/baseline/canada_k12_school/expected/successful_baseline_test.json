@@ -20,6 +20,21 @@
       "medianES": 50
     },
     {
+      "percentBetterMedian": 0
+    },
+    {
+      "percentBetterTarget": 20
+    },
+    {
+      "percentBetterActual": 56.730540187978484
+    },
+    {
+      "percentBetterActualtoGoal": 84.88791019705239
+    },
+    {
+      "actualGoalBetter": 45.91317523497311
+    },
+    {
       "actualZEPI": 43.269459812021516
     },
     {
@@ -29,13 +44,13 @@
       "percentBetterZEPI": 80
     },
     {
-      "siteEUI": 0.2694637081344163
+      "siteEUI": 74.85103003733785
     },
     {
-      "sourceEUI": 0.47441588142290286
+      "sourceEUI": 131.78218928413966
     },
     {
-      "totalSiteEnergy": 7510.199296608001
+      "totalSiteEnergy": 2086166.47128
     },
     {
       "siteEnergyList": [
@@ -43,46 +58,46 @@
           "grid": 1500000
         },
         {
-          "naturalGas": 20000
+          "naturalGas": 586166.4712799999
         }
       ]
     },
     {
-      "totalSourceEnergy": 13222.403282540161
+      "totalSourceEnergy": 3672889.8007055996
     },
     {
       "sourceEnergyList": [
         {
-          "grid": 11070
+          "grid": 3074999.9999999995
         },
         {
-          "naturalGas": 2152.4032825401605
+          "naturalGas": 597889.8007056001
         }
       ]
     },
     {
-      "medianSiteEUI": 0.6227572733865085
+      "medianSiteEUI": 172.98813149625235
     },
     {
-      "medianSourceEUI": 1.0964220110071639
+      "medianSourceEUI": 304.56166972421215
     },
     {
-      "medianSiteEnergy": 17356.81316391532
+      "medianSiteEnergy": 4821336.989976479
     },
     {
-      "medianSourceEnergy": 30558.281383643694
+      "medianSourceEnergy": 8488411.495456582
     },
     {
-      "percentBetterSiteEUI": 0.4982058187092069
+      "percentBetterSiteEUI": 138.39050519700191
     },
     {
-      "percentBetterSourceEUI": 0.8771376088057311
+      "percentBetterSourceEUI": 243.64933577936975
     },
     {
-      "percentBetterSiteEnergy": 13885.45053113226
+      "percentBetterSiteEnergy": 3857069.591981183
     },
     {
-      "percentBetterSourceEnergy": 24446.62510691496
+      "percentBetterSourceEnergy": 6790729.196365265
     },
     {
       "directSiteEmissions": [
@@ -93,6 +108,9 @@
           "naturalGas": 105.84439345005579
         }
       ]
+    },
+    {
+      "siteEnergyALL": 2086166.47128
     }
   ],
   "errors": [
@@ -107,6 +125,12 @@
     },
     {
       "percentBetterEmissions": "Could not find PostalCode in eGridDict.json"
+    },
+    {
+      "onSiteRenewableTotal": "Could not read provided energy list"
+    },
+    {
+      "offSitePurchasedTotal": "Could not read provided energy list"
     }
   ]
 }

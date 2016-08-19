@@ -20,6 +20,12 @@
       "medianES": 50
     },
     {
+      "percentBetterMedian": 0
+    },
+    {
+      "percentBetterTarget": 20
+    },
+    {
       "medianZEPI": 100
     },
     {
@@ -58,6 +64,15 @@
       "targetES": "Could not compute EnergyStar Score - Generic Building: No Algorithm!"
     },
     {
+      "percentBetterActual": "Could not read provided energy list"
+    },
+    {
+      "percentBetterActualtoGoal": "Could not read provided energy list"
+    },
+    {
+      "actualGoalBetter": "Could not read provided energy list"
+    },
+    {
       "actualZEPI": "Could not read provided energy list"
     },
     {
@@ -92,6 +107,15 @@
     },
     {
       "percentBetterEmissions": "Could not read provided energy list"
+    },
+    {
+      "onSiteRenewableTotal": "Could not read provided energy list"
+    },
+    {
+      "offSitePurchasedTotal": "Could not read provided energy list"
+    },
+    {
+      "siteEnergyALL": "Could not read provided energy list"
     }
   ]
 }

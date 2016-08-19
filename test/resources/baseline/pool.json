@@ -10,14 +10,18 @@
   "areaUnits": "ftSQ",
   "primaryType": "office",
   "numBuildingsPartSingleMore": "single",
+  "netMetered": false,
+  "renewableEnergies":null,
   "energies": [
       {
+        "energyName": "Electric (Grid)",
         "energyType": "grid",
         "energyUnits": "kWh",
         "energyUse": 800000.0,
         "energyRate": 0.25
       },
       {
+        "energyName": "Natural Gas",
         "energyType": "naturalGas",
         "energyUnits": "therms",
         "energyUse": 30000.0,

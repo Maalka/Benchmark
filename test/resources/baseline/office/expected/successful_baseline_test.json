@@ -11,13 +11,28 @@
       ]
     },
     {
-      "actualES":94
+      "actualES": 94
     },
     {
-      "targetES":69
+      "targetES": 69
     },
     {
-      "medianES":50
+      "medianES": 50
+    },
+    {
+      "percentBetterMedian": 0
+    },
+    {
+      "percentBetterTarget": 20
+    },
+    {
+      "percentBetterActual": 52.89819438952905
+    },
+    {
+      "percentBetterActualtoGoal": 69.84486892412384
+    },
+    {
+      "actualGoalBetter": 41.12274298691131
     },
     {
       "actualZEPI": 47.10180561047095
@@ -112,7 +127,17 @@
     },
     {
       "percentBetterEmissions": 1926.9316032154175
+    },
+    {
+      "siteEnergyALL": 1520000
     }
   ],
-  "errors": []
+  "errors": [
+    {
+      "onSiteRenewableTotal": "Could not read provided energy list"
+    },
+    {
+      "offSitePurchasedTotal": "Could not read provided energy list"
+    }
+  ]
 }

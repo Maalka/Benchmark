@@ -69,6 +69,8 @@
     "reportingUnits": "us",
     "targetScore": null,
     "percentBetterThanMedian": 20,
+    "netMetered": false,
+    "renewableEnergies":null,
     "energies": null
   },
   {
@@ -140,6 +142,8 @@
     "reportingUnits": "us",
     "targetScore": null,
     "percentBetterThanMedian": 20,
+    "netMetered": false,
+    "renewableEnergies":null,
     "energies": null
   }
 ]
