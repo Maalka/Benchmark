@@ -27,9 +27,9 @@ class Application @Inject() (val cache: CacheApi) extends Controller with Securi
       .includeStatus(NOT_FOUND, 5.minutes.toSeconds.toInt)
 
   /** Serves the index page, see views/index.scala.html */
-  def index = Action {
+  def index(includeHeader: Boolean = true) = Action {
     log.debug("Index called")
-    Ok(views.html.index())
+    Ok(views.html.index(includeHeader))
   }
 
   /**
