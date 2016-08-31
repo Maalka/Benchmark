@@ -215,7 +215,7 @@
                 </div>
 
             </div>
-            <h3 class="ui header" ng-if="auxModel.newConstruction === false"><i class="lightning icon"></i>Actual Annual Energy Use</h3>
+            <h3 class="ui header" ng-if="auxModel.newConstruction === false"><i class="lightning icon"></i>Annual Energy Consumption</h3>
             <div class="ui segment energy-entry" ng-if="auxModel.newConstruction === false">
                 <p>
                     Enter the actual annual energy use for your building
@@ -247,7 +247,7 @@
                             <div class="field">
                                  <select class="ui dropdown"
                                     ng-model="energyEntry.energyType"
-                                    ng-options="item.id as item.name for item in energyProperties.energyType track by item.name">
+                                    ng-options="item as item.name for item in energyProperties.energyType track by item.name">
                                     <option value="">Select</option>
                                 </select>
                             </div>
@@ -256,7 +256,7 @@
                             <div class="field">
                                  <select class="ui dropdown"
                                     ng-model="energyEntry.energyUnits"
-                                    ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: energyEntry.energyType}">
+                                    ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: energyEntry.energyType.id}">
                                     <option value="">Select</option>
                                 </select>
                             </div>
@@ -286,7 +286,8 @@
                 </div>
             </div>
 
-            <h3 class="ui header" ng-if="auxModel.newConstruction === false"><i class="lightning icon"></i>Annual Renewable Energy Generation</h3>
+            <h3 class="ui header" ng-if="auxModel.newConstruction === false"><i class="fa fa-sun-o icon" aria-hidden="true">
+                </i>Annual Energy Generation</h3>
             <div class="ui segment energy-entry" ng-if="auxModel.newConstruction === false">
                 <p>
                     Enter the annual renewable energy generation for your
@@ -312,7 +313,7 @@
                             <div class="field">
                                 <select class="ui dropdown"
                                         ng-model="energyEntry.renewableType"
-                                        ng-options="item.id as item.name for item in energyProperties.renewableType track by item.name">
+                                        ng-options="item as item.name for item in energyProperties.renewableType track by item.name">
                                     <option value="">Select</option>
                                 </select>
                             </div>

@@ -91,6 +91,7 @@ trait BaselineActions {
       Baseline.percentBetterTarget.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.percentBetterActual.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.actualGoalReduction.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.actualGoalBetter.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       Baseline.zepiActual.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.zepiMedian.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -117,7 +118,11 @@ trait BaselineActions {
       Baseline.getIndirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.getTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.medianTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+      Baseline.percentBetterTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+      Baseline.onSiteRenewableTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.offSitePurchasedTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
 
     ))
 
@@ -133,6 +138,7 @@ trait BaselineActions {
       "percentBetterTarget",
       "percentBetterActual",
       "percentBetterActualtoGoal",
+      "actualGoalBetter",
 
       "actualZEPI",
       "medianZEPI",
@@ -159,7 +165,11 @@ trait BaselineActions {
       "indirectSiteEmissions",
       "totalEmissions",
       "medianEmissions",
-      "percentBetterEmissions"
+      "percentBetterEmissions",
+
+      "onSiteRenewableTotal",
+      "offSitePurchasedTotal",
+      "siteEnergyALL"
     )
 
     futures.map(fieldNames.zip(_)).map { r =>

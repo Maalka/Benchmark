@@ -1,9 +1,13 @@
+import javax.inject.Inject
+
 import controllers.DegreeDaysController
 import play.api.ApplicationLoader.Context
 import play.api.cache.EhCacheComponents
+import play.api.http.HttpFilters
 import play.api.mvc.{RequestHeader, EssentialAction, EssentialFilter}
 import play.api.routing.Router
 import play.api.{Logger, Application, ApplicationLoader, BuiltInComponentsFromContext}
+import play.filters.cors.CORSFilter
 import play.filters.gzip.GzipFilter
 import router.Routes
 
@@ -32,11 +36,20 @@ class HTTPRequestLoggingFilter extends EssentialFilter {
           s" took ${requestTime}ms and returned ${result.header.status}")
 
         result.withHeaders(
-          "Request-Time" -> requestTime.toString
+          "Request-Time" -> requestTime.toString,
+          "Access-Control-Allow-Origin" -> "*",
+          "Access-Control-Allow-Headers" -> "Content-Type"
+
+
         )
       }
     }
   }
+}
+
+class Filters @Inject() (corsFilter: CORSFilter) extends HttpFilters {
+  def filters = Seq(corsFilter)
+  Console.println("ASDFASDFASSDF")
 }
 
 class AppComponents(context: Context) extends BuiltInComponentsFromContext(context) with EhCacheComponents {

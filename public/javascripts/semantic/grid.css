@@ -1355,7 +1355,7 @@
 .ui.grid > .red.row,
 .ui.grid > .red.column,
 .ui.grid > .row > .red.column {
-  background-color: #DB2828 !important;
+  background-color: #ee1516 !important;
   color: #FFFFFF;
 }
 
@@ -1371,7 +1371,7 @@
 .ui.grid > .yellow.row,
 .ui.grid > .yellow.column,
 .ui.grid > .row > .yellow.column {
-  background-color: #ffff00 !important;
+  background-color: #f5ea14 !important;
   color: #FFFFFF;
 }
 
@@ -2010,6 +2010,30 @@
   .ui.grid.grid.grid > [class*="tablet only"].row:not(.computer),
   .ui.grid.grid.grid > [class*="tablet only"].column:not(.computer),
   .ui.grid.grid.grid > .row > [class*="tablet only"].column:not(.computer) {
+    display: none !important;
+  }
+}
+@media only screen and (max-width: 767px) {
+  .ui[class*="small screen only"].grid.grid.grid:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].row:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].column:not(.mobile),
+  .ui.grid.grid.grid > .row > [class*="small screen only"].column:not(.mobile) {
+    display: none !important;
+  }
+}
+@media only screen and (min-width: 1200px) and (max-width: 1919px) {
+  .ui[class*="small screen only"].grid.grid.grid:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].row:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].column:not(.mobile),
+  .ui.grid.grid.grid > .row > [class*="small screen only"].column:not(.mobile) {
+    display: none !important;
+  }
+}
+@media only screen and (min-width: 1920px) {
+  .ui[class*="small screen only"].grid.grid.grid:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].row:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].column:not(.mobile),
+  .ui.grid.grid.grid > .row > [class*="small screen only"].column:not(.mobile) {
     display: none !important;
   }
 }

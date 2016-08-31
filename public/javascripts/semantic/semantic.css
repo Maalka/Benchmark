@@ -6507,15 +6507,15 @@ h5.ui.header .sub.header {
 /*--- Red ---*/
 
 .ui.red.header {
-  color: #DB2828 !important;
+  color: #ee1516 !important;
 }
 
 a.ui.red.header:hover {
-  color: #d01919 !important;
+  color: #e40607 !important;
 }
 
 .ui.red.dividing.header {
-  border-bottom: 2px solid #DB2828;
+  border-bottom: 2px solid #ee1516;
 }
 
 /* Inverted */
@@ -6579,15 +6579,15 @@ a.ui.inverted.olive.header:hover {
 /*--- Yellow ---*/
 
 .ui.yellow.header {
-  color: #ffff00 !important;
+  color: #f5ea14 !important;
 }
 
 a.ui.yellow.header:hover {
-  color: #e5e600 !important;
+  color: #f0e400 !important;
 }
 
 .ui.yellow.dividing.header {
-  border-bottom: 2px solid #ffff00;
+  border-bottom: 2px solid #f5ea14;
 }
 
 /* Inverted */
@@ -14938,11 +14938,11 @@ ol.ui.horizontal.list li:before,
 /* Red */
 
 .ui.red.segment:not(.inverted) {
-  border-top: 2px solid #DB2828;
+  border-top: 2px solid #ee1516;
 }
 
 .ui.inverted.red.segment {
-  background-color: #DB2828 !important;
+  background-color: #ee1516 !important;
   color: #FFFFFF !important;
 }
 
@@ -14960,11 +14960,11 @@ ol.ui.horizontal.list li:before,
 /* Yellow */
 
 .ui.yellow.segment:not(.inverted) {
-  border-top: 2px solid #ffff00;
+  border-top: 2px solid #f5ea14;
 }
 
 .ui.inverted.yellow.segment {
-  background-color: #ffff00 !important;
+  background-color: #f5ea14 !important;
   color: #FFFFFF !important;
 }
 
@@ -15235,7 +15235,7 @@ ol.ui.horizontal.list li:before,
   padding: 0em;
   background-color: none;
   box-shadow: none;
-  margin: 1rem 0em;
+  margin: 0em;
   border-radius: none;
   border: none;
 }
@@ -17244,7 +17244,7 @@ ol.ui.horizontal.list li:before,
 .ui.form .inline.fields.required > .field:after {
   margin: -0.2em 0em 0em 0.2em;
   content: '*';
-  color: #DB2828;
+  color: #ee1516;
 }
 
 .ui.form select {
@@ -18789,7 +18789,7 @@ ol.ui.horizontal.list li:before,
 .ui.grid > .red.row,
 .ui.grid > .red.column,
 .ui.grid > .row > .red.column {
-  background-color: #DB2828 !important;
+  background-color: #ee1516 !important;
   color: #FFFFFF;
 }
 
@@ -18807,7 +18807,7 @@ ol.ui.horizontal.list li:before,
 .ui.grid > .yellow.row,
 .ui.grid > .yellow.column,
 .ui.grid > .row > .yellow.column {
-  background-color: #ffff00 !important;
+  background-color: #f5ea14 !important;
   color: #FFFFFF;
 }
 
@@ -19539,6 +19539,33 @@ ol.ui.horizontal.list li:before,
   .ui.grid.grid.grid > [class*="tablet only"].row:not(.computer),
   .ui.grid.grid.grid > [class*="tablet only"].column:not(.computer),
   .ui.grid.grid.grid > .row > [class*="tablet only"].column:not(.computer) {
+    display: none !important;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .ui[class*="small screen only"].grid.grid.grid:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].row:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].column:not(.mobile),
+  .ui.grid.grid.grid > .row > [class*="small screen only"].column:not(.mobile) {
+    display: none !important;
+  }
+}
+
+@media only screen and (min-width: 1200px) and (max-width: 1919px) {
+  .ui[class*="small screen only"].grid.grid.grid:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].row:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].column:not(.mobile),
+  .ui.grid.grid.grid > .row > [class*="small screen only"].column:not(.mobile) {
+    display: none !important;
+  }
+}
+
+@media only screen and (min-width: 1920px) {
+  .ui[class*="small screen only"].grid.grid.grid:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].row:not(.mobile),
+  .ui.grid.grid.grid > [class*="small screen only"].column:not(.mobile),
+  .ui.grid.grid.grid > .row > [class*="small screen only"].column:not(.mobile) {
     display: none !important;
   }
 }
@@ -20957,8 +20984,8 @@ Floated Menu / Item
 
 .ui.menu .red.active.item,
 .ui.red.menu .active.item {
-  border-color: #DB2828 !important;
-  color: #DB2828 !important;
+  border-color: #ee1516 !important;
+  color: #ee1516 !important;
 }
 
 .ui.menu .orange.active.item,
@@ -20969,8 +20996,8 @@ Floated Menu / Item
 
 .ui.menu .yellow.active.item,
 .ui.yellow.menu .active.item {
-  border-color: #ffff00 !important;
-  color: #ffff00 !important;
+  border-color: #f5ea14 !important;
+  color: #f5ea14 !important;
 }
 
 .ui.menu .olive.active.item,
@@ -21162,7 +21189,7 @@ Floated Menu / Item
 
 .ui.inverted.menu .red.active.item,
 .ui.inverted.red.menu {
-  background-color: #DB2828;
+  background-color: #ee1516;
 }
 
 .ui.inverted.red.menu .item:before {
@@ -21192,7 +21219,7 @@ Floated Menu / Item
 
 .ui.inverted.menu .yellow.active.item,
 .ui.inverted.yellow.menu {
-  background-color: #ffff00;
+  background-color: #f5ea14;
 }
 
 .ui.inverted.yellow.menu .item:before {
@@ -22344,7 +22371,7 @@ Floated Menu / Item
   font-style: none;
   font-weight: bold;
   text-transform: none;
-  border-bottom: 1px solid rgba(34, 36, 38, 0.1);
+  border-bottom: 0px solid rgba(34, 36, 38, 0.1);
   border-left: none;
 }
 
@@ -22949,11 +22976,11 @@ Floated Menu / Item
 /* Red */
 
 .ui.red.table {
-  border-top: 0.2em solid #DB2828;
+  border-top: 0.2em solid #ee1516;
 }
 
 .ui.inverted.red.table {
-  background-color: #DB2828 !important;
+  background-color: #ee1516 !important;
   color: #FFFFFF !important;
 }
 
@@ -22971,11 +22998,11 @@ Floated Menu / Item
 /* Yellow */
 
 .ui.yellow.table {
-  border-top: 0.2em solid #ffff00;
+  border-top: 0.2em solid #f5ea14;
 }
 
 .ui.inverted.yellow.table {
-  background-color: #ffff00 !important;
+  background-color: #f5ea14 !important;
   color: #FFFFFF !important;
 }
 
@@ -23528,7 +23555,7 @@ Floated Menu / Item
 
 td.ui.yellow,
 th.ui.yellow {
-  color: #ffff00 !important;
+  color: #f5ea14 !important;
 }
 
 /*******************************

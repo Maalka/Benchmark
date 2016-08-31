@@ -119,4 +119,8 @@ class Application @Inject() (val cache: CacheApi) extends Controller with Securi
     Ok.discardingCookies(DiscardingCookie(name = AuthTokenCookieKey))
   }
 
+  def options = Action {
+    Ok("")
+  }
+
 }

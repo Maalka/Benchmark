@@ -4,19 +4,19 @@
 	    <div class="teal inverted sixteen wide column" ng-if="benchmarkResult" style="padding: 0.7em;">
 		    <center>
 		         Target EUI is
-	    	     <font style="font-size:1.5em; position: relative; top:2px; color: #e6ff00">{{percentBetterSiteEUI | number : 1}}</font>
-    	    	 based on a {{benchmarkResult.percentBetterThanMedian | number : 1}}% reduction
+	    	     <font style="font-size:1.5em; position: relative; top:2px; color: #f5ea14;">{{percentBetterSiteEUI | number : 0}}</font>
+    	    	 based on a {{benchmarkResult.percentBetterThanMedian | number : 0}}% reduction
     	   	</center>
 
 			<center ng-if="showPercentBetterTarget=='decrease'" style="padding-top: 1em;">
-				Decrease Site EUI by
-				<font style="font-size:1.5em; position: relative; top:2px; color: #ee1516">{{percentBetterGoal | number : 1}}%</font>
-				to achieve target
+				Decrease current EUI by
+				<font style="font-size:1.5em; position: relative; top:2px; color: #ee1516">{{percentBetterGoal | number : 0}}%</font>
+				more to achieve target
 			</center>
 
 			<center ng-if="showPercentBetterTarget=='better'" style="padding-top: 1em;">
 				Your building is performing
-				<font style="font-size:1.5em; position: relative; top:2px; color: lightgreen;">{{percentBetterGoal | number : 1}}%</font>
+				<font style="font-size:1.5em; position: relative; top:2px; color: lightgreen;">{{percentBetterGoal | number : 0}}%</font>
 				better than its target.
 			</center>
 		</div>

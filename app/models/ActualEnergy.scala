@@ -59,6 +59,26 @@ case class EUICalculator(parameters: JsValue) {
     } yield siteEnergyList
   }
 
+
+  def getSiteRenewableEnergyList: Future[List[EnergyTuple]] = {
+    for {
+      entries <- getRenewableEnergyList
+      siteRenewableEnergyList <- computeSiteEnergy(entries)
+    } yield siteRenewableEnergyList
+  }
+
+  def getRenewableEnergyTotalbyType(entryList:List[EnergyTuple],entryType:String): Future[Double] = Future {
+    entryType match {
+      case "onSite" => entryList.filterNot(_.energyName == "Off-Site Purchased").map(_.energyValue.value).sum
+      case "purchased" => entryList.filter(_.energyName == "Off-Site Purchased").map(_.energyValue.value).sum
+      case _ => 0.0
+    }
+  }
+
+  def getSiteEnergyTotalbyType(entryList:List[EnergyTuple]): Future[Double] = Future {
+    entryList.map(_.energyValue.value).sum
+  }
+
   def getTotalSiteEnergy: Future[Energy] = {
     for {
       siteEnergyList <- getSiteEnergyList
@@ -66,6 +86,7 @@ case class EUICalculator(parameters: JsValue) {
       siteRenewableSum <- getTotalSiteRenewableEnergy
     } yield siteEnergySum - siteRenewableSum
   }
+
 
   def getTotalSiteRenewableEnergy: Future[Energy] = {
     val local = for {
@@ -97,7 +118,7 @@ case class EUICalculator(parameters: JsValue) {
       case a: EnergyList => a.energies.map {
         case a: EnergyMetrics => {
           Energy((a.energyUse, a.energyUnits)) match {
-            case b:Success[Energy] => EnergyTuple(a.energyType,b.get)
+            case b:Success[Energy] => EnergyTuple(a.energyType,a.energyName,b.get)
             case b: Failure[Energy] => throw new Exception("Could not determine energy unit for entry")
           }
         }
@@ -105,7 +126,7 @@ case class EUICalculator(parameters: JsValue) {
       case a: RenewableEnergyList => a.renewableEnergies.map {
         case a: EnergyMetrics => {
           Energy((a.energyUse, a.energyUnits)) match {
-            case b:Success[Energy] => EnergyTuple(a.energyType,b.get)
+            case b:Success[Energy] => EnergyTuple(a.energyType,a.energyName,b.get)
             case b: Failure[Energy] => throw new Exception("Could not determine energy unit for entry")
           }
         }
@@ -165,10 +186,10 @@ case class EUICalculator(parameters: JsValue) {
   def computeSourceEnergy[T](entries: T): Future[List[EnergyTuple]] = Future{
     entries match {
       case a: EnergyList => a.energies.map {
-        case a: EnergyMetrics => sourceConvert(a.energyType, Energy((a.energyUse, a.energyUnits)))
+        case a: EnergyMetrics => sourceConvert(a.energyType,a.energyName, Energy((a.energyUse, a.energyUnits)))
       }
       case a: RenewableEnergyList => a.renewableEnergies.map {
-        case a: EnergyMetrics => sourceConvert(a.energyType, Energy((a.energyUse, a.energyUnits)))
+        case a: EnergyMetrics => sourceConvert(a.energyType,a.energyName, Energy((a.energyUse, a.energyUnits)))
       }
       case _ => throw new Exception("Could not compute Source Energy from Site Energy")
     }
@@ -204,8 +225,8 @@ case class EUICalculator(parameters: JsValue) {
 
   def convertOutput(energies: List[EnergyTuple]): Future[List[EnergyTuple]] = Future {
     country match {
-      case "USA" => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyValue in KBtus)}
-      case _ => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType, a.energyValue in Gigajoules)}
+      case "USA" => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KBtus)}
+      case _ => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName, a.energyValue in Gigajoules)}
     }
   }
 
@@ -216,7 +237,7 @@ case class EUICalculator(parameters: JsValue) {
     }
   }
 
-  def sourceConvert(energyType: String, siteEnergy: Try[Energy]): EnergyTuple = {
+  def sourceConvert(energyType: String, energyName:String, siteEnergy: Try[Energy]): EnergyTuple = {
     val sourceEnergyValue = siteEnergy match {
         case a: Success[Energy] => {
         (energyType, country) match {
@@ -250,7 +271,7 @@ case class EUICalculator(parameters: JsValue) {
       }}
       case a: Failure[Energy] => throw new Exception("Could not read site energy entry")
     }
-    return EnergyTuple(energyType,sourceEnergyValue)
+    return EnergyTuple(energyType,energyName,sourceEnergyValue)
   }
 
   def getParkingEnergy: Future[Energy] = Future {
@@ -326,10 +347,11 @@ object ConversionInfo {
   implicit val conversionInfoReads: Reads[ConversionInfo] = Json.reads[ConversionInfo]
 }
 
-case class EnergyMetrics(energyType:String,energyUnits:String,energyUse:Double,energyRate:Option[Double])
+case class EnergyMetrics(energyType:String,energyName:String,energyUnits:String,energyUse:Double,energyRate:Option[Double])
 object EnergyMetrics {
   implicit val energyReads: Reads[EnergyMetrics] = (
     (JsPath \ "energyType").read[String] and
+    (JsPath \ "energyName").read[String] and
     (JsPath \ "energyUnits").read[String] and
     (JsPath \ "energyUse").read[Double](min(0.0)) and
     (JsPath \ "energyRate").readNullable[Double]
@@ -378,7 +400,7 @@ object Parking {
   implicit val parkingRead: Reads[Parking] = Json.reads[Parking]
 }
 
-case class EnergyTuple(energyType: String, energyValue: Energy)
+case class EnergyTuple(energyType: String, energyName: String, energyValue: Energy)
 case class NetMetered(netMetered: Boolean)
 object NetMetered {
   implicit val netMeteredRead: Reads[NetMetered] = Json.reads[NetMetered]

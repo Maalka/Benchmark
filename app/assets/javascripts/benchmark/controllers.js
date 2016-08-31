@@ -48,6 +48,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.mainColumnWidth = "eight wide column";
         }
     };
+    matchmedia.on('only screen and (min-width: 1200px) and (max-width: 1919px)', function(match){
+        $scope.largeScreen = match.matches;
+    });
+    matchmedia.on('only screen and (max-width: 1199px)', function(match){
+        $scope.largeScreen = !match.matches;
+    });
+
     matchmedia.onPrint(setMedia, $scope);
 
     setMedia();
@@ -221,10 +228,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.FFText = $sce.trustAsHtml('Site FF-EUI*');
             $scope.scoreUnits = $scope.isResidential ? "0-130" : "0-100";
 
-            console.log("medianES:",$scope.getPropResponseField(results,"medianES"));
-            console.log("targetES:",$scope.getPropResponseField(results,"targetES"));
-            console.log("actualES:",$scope.getPropResponseField(results,"actualES"));
-
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
             $scope.benchmarkResult.city = $scope.auxModel.city;
             $scope.benchmarkResult.state = $scope.auxModel.state;
@@ -249,15 +252,15 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.computeBenchmarkMix = function(results){
 
         $scope.propOutputList = $scope.getPropResponseField(results,"propOutputList");
-        $scope.percentBetterSiteEUI = $scope.getPropResponseField(results,"percentBetterSiteEUI");
-        $scope.siteEUI = $scope.getPropResponseField(results,"siteEUI");
+        $scope.percentBetterSiteEUI = Math.ceil($scope.getPropResponseField(results,"percentBetterSiteEUI"));
+        $scope.siteEUI = Math.ceil($scope.getPropResponseField(results,"siteEUI"));
 
         if($scope.siteEUI > $scope.percentBetterSiteEUI){
             $scope.showPercentBetterTarget = 'decrease';
-            $scope.percentBetterGoal = 100 - $scope.getPropResponseField(results,"percentBetterActualtoGoal");
+            $scope.percentBetterGoal = Math.ceil($scope.getPropResponseField(results,"percentBetterActualtoGoal"));
         }else if($scope.siteEUI < $scope.percentBetterSiteEUI){
             $scope.showPercentBetterTarget = 'better';
-            $scope.percentBetterGoal = $scope.getPropResponseField(results,"percentBetterActualtoGoal");
+            $scope.percentBetterGoal = Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"));
         } else {
             $scope.showPercentBetterTarget = undefined;
         }
@@ -268,35 +271,40 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"medianES": $scope.getPropResponseField(results,"actualES")},
               {"targetES": $scope.getPropResponseField(results,"targetES")},
 
-              {"percentBetterMedian": $scope.getPropResponseField(results,"percentBetterMedian")},
-              {"percentBetterTarget": $scope.getPropResponseField(results,"percentBetterTarget")},
-              {"percentBetterActual": $scope.getPropResponseField(results,"percentBetterActual")},
-              {"percentBetterActualtoGoal": $scope.getPropResponseField(results,"percentBetterActualtoGoal")},
+              {"percentBetterMedian": Math.ceil($scope.getPropResponseField(results,"percentBetterMedian"))},
+              {"percentBetterTarget": Math.ceil($scope.getPropResponseField(results,"percentBetterTarget"))},
+              {"percentBetterActual": Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
+              {"percentBetterActualtoGoal": Math.ceil($scope.getPropResponseField(results,"percentBetterActualtoGoal"))},
+              {"actualGoalBetter": Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"))},
 
-              {"medianZEPI": $scope.getPropResponseField(results,"medianZEPI")},
-              {"percentBetterZEPI": $scope.getPropResponseField(results,"percentBetterZEPI")},
-              {"actualZEPI": $scope.getPropResponseField(results,"actualZEPI")},
+              {"medianZEPI": $scope.baselineConstant},
+              {"percentBetterZEPI": $scope.baselineConstant - Math.ceil($scope.getPropResponseField(results,"percentBetterTarget"))},
+              {"actualZEPI": $scope.baselineConstant - Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
 
-              {"siteEUI": $scope.getPropResponseField(results,"siteEUI")},
-              {"sourceEUI": $scope.getPropResponseField(results,"sourceEUI")},
+              {"siteEUI": Math.ceil($scope.getPropResponseField(results,"siteEUI"))},
+              {"sourceEUI": Math.ceil($scope.getPropResponseField(results,"sourceEUI"))},
               {"siteEnergyList": $scope.getPropResponseField(results,"siteEnergyList")},
-              {"totalSiteEnergy": $scope.getPropResponseField(results,"totalSiteEnergy")},
+              {"totalSiteEnergy": Math.ceil($scope.getPropResponseField(results,"totalSiteEnergy"))},
               {"sourceEnergyList": $scope.getPropResponseField(results,"sourceEnergyList")},
-              {"totalSourceEnergy": $scope.getPropResponseField(results,"totalSourceEnergy")},
+              {"totalSourceEnergy": Math.ceil($scope.getPropResponseField(results,"totalSourceEnergy"))},
 
-              {"medianSiteEUI": $scope.getPropResponseField(results,"medianSiteEUI")},
-              {"medianSourceEUI": $scope.getPropResponseField(results,"medianSourceEUI")},
-              {"medianSiteEnergy": $scope.getPropResponseField(results,"medianSiteEnergy")},
-              {"medianSourceEnergy": $scope.getPropResponseField(results,"medianSourceEnergy")},
+              {"medianSiteEUI": Math.ceil($scope.getPropResponseField(results,"medianSiteEUI"))},
+              {"medianSourceEUI": Math.ceil($scope.getPropResponseField(results,"medianSourceEUI"))},
+              {"medianSiteEnergy": Math.ceil($scope.getPropResponseField(results,"medianSiteEnergy"))},
+              {"medianSourceEnergy": Math.ceil($scope.getPropResponseField(results,"medianSourceEnergy"))},
 
-              {"percentBetterSiteEUI": $scope.getPropResponseField(results,"percentBetterSiteEUI")},
-              {"percentBetterSourceEUI": $scope.getPropResponseField(results,"percentBetterSourceEUI")},
-              {"percentBetterSiteEnergy": $scope.getPropResponseField(results,"percentBetterSiteEnergy")},
-              {"percentBetterSourceEnergy": $scope.getPropResponseField(results,"percentBetterSourceEnergy")},
+              {"percentBetterSiteEUI": Math.ceil($scope.getPropResponseField(results,"percentBetterSiteEUI"))},
+              {"percentBetterSourceEUI": Math.ceil($scope.getPropResponseField(results,"percentBetterSourceEUI"))},
+              {"percentBetterSiteEnergy": Math.ceil($scope.getPropResponseField(results,"percentBetterSiteEnergy"))},
+              {"percentBetterSourceEnergy": Math.ceil($scope.getPropResponseField(results,"percentBetterSourceEnergy"))},
 
-              {"totalEmissions": $scope.getPropResponseField(results,"totalEmissions")},
-              {"percentBetterEmissions": $scope.getPropResponseField(results,"percentBetterEmissions")},
-              {"medianEmissions": $scope.getPropResponseField(results,"medianEmissions")}
+              {"totalEmissions": Math.ceil($scope.getPropResponseField(results,"totalEmissions"))},
+              {"percentBetterEmissions": Math.ceil($scope.getPropResponseField(results,"percentBetterEmissions"))},
+              {"medianEmissions": Math.ceil($scope.getPropResponseField(results,"medianEmissions"))},
+
+              {"onSiteRenewableTotal": $scope.getPropResponseField(results,"onSiteRenewableTotal")},
+              {"offSitePurchasedTotal": $scope.getPropResponseField(results,"offSitePurchasedTotal")},
+              {"siteEnergyALL": $scope.getPropResponseField(results,"siteEnergyALL")}
         ];
         return metricsTable;
     };
@@ -329,11 +337,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.propList = [];
 
         if($scope.auxModel.reportingUnits==="us"){
-            $scope.tableEnergyUnits="kWh";
-            $scope.tableEUIUnits="kWh/ft²";
+            $scope.tableEnergyUnits="KBtu";
+            $scope.tableEUIUnits="KBtu/ft²";
         }else {
-            $scope.tableEnergyUnits="MJ";
-            $scope.tableEUIUnits="MJ/m²";
+            $scope.tableEnergyUnits="kWh";
+            $scope.tableEUIUnits="kWh/m²";
         }
 
         if($scope.auxModel.CDD === undefined || $scope.auxModel.HDD === undefined ||
@@ -343,13 +351,15 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         var validEnergy = function(e) {
             return (e.energyType !== undefined &&
+                    e.energyName !== undefined &&
                     e.energyUnits !== undefined &&
                     e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
         };
 
         var mapEnergy = function (e) { 
             return {
-                'energyType': e.energyType,
+                'energyType': (e.energyType) ? e.energyType.id : undefined,
+                'energyName': (e.energyType) ? e.energyType.name : undefined,
                 'energyUnits': e.energyUnits,
                 'energyUse': Number(e.energyUse),
                 'energyRate': null
@@ -357,7 +367,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         };
         var mapRenewableEnergy = function (e) {
             return {
-                'energyType': e.renewableType,
+                'energyType': (e.renewableType) ? e.renewableType.id : undefined,
+                'energyName': (e.renewableType) ? e.renewableType.name : undefined,
                 'energyUnits': e.renewableUnits,
                 'energyUse': Number(e.energyUse),
                 'energyRate': null

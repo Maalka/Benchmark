@@ -69,14 +69,18 @@
     "reportingUnits": "metric",
     "targetScore": null,
     "percentBetterThanMedian": 20,
+    "netMetered": false,
+    "renewableEnergies":null,
     "energies": [
       {
+        "energyName": "Electric (Grid)",
         "energyType": "grid",
         "energyUnits": "kWh",
         "energyUse": 1500000,
         "energyRate": null
       },
       {
+        "energyName": "Natural Gas",
         "energyType": "naturalGas",
         "energyUnits": "therms",
         "energyUse": 20000,

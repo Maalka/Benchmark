@@ -25,6 +25,7 @@ define(['angular','./main'], function(angular) {
         'result': "=",
         'field': "=",
         'units': "=",
+        'append': "=",
         'columns': "="
       },
       templateUrl: 'javascripts/common/partials/benchmark_result_row.html',
@@ -68,7 +69,6 @@ define(['angular','./main'], function(angular) {
             }
           }
           scope.resultColumns = columns;
-
           scope.title = scope.field;
           scope.subTitle =  scope.units;
         });

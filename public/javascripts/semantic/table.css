@@ -62,7 +62,7 @@
   font-style: none;
   font-weight: bold;
   text-transform: none;
-  border-bottom: 1px solid rgba(34, 36, 38, 0.1);
+  border-bottom: 0px solid rgba(34, 36, 38, 0.1);
   border-left: none;
 }
 .ui.table thead tr > th:first-child {
@@ -605,10 +605,10 @@
 
 /* Red */
 .ui.red.table {
-  border-top: 0.2em solid #DB2828;
+  border-top: 0.2em solid #ee1516;
 }
 .ui.inverted.red.table {
-  background-color: #DB2828 !important;
+  background-color: #ee1516 !important;
   color: #FFFFFF !important;
 }
 
@@ -623,10 +623,10 @@
 
 /* Yellow */
 .ui.yellow.table {
-  border-top: 0.2em solid #ffff00;
+  border-top: 0.2em solid #f5ea14;
 }
 .ui.inverted.yellow.table {
-  background-color: #ffff00 !important;
+  background-color: #f5ea14 !important;
   color: #FFFFFF !important;
 }
 
@@ -1090,7 +1090,7 @@
 }
 td.ui.yellow,
 th.ui.yellow {
-  color: #ffff00 !important;
+  color: #f5ea14 !important;
 }
 
 

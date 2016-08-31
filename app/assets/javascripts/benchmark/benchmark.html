@@ -9,15 +9,22 @@
         </div>
 
         <div class="two wide column computer only tablet only" ng-if="media !== 'print'"></div>
-        <div class="fourteen wide column" ng-if="media !== 'print'">
+        <div class="twelve wide column large screen only" ng-if="media !== 'print'">
             Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
             existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
             see the User Guide above.
         </div>
-        <!-- setup the response grids -->
-        <!--<div class="two wide column" ng-if="media === 'desktop'"></div>-->
-        <div class="eight wide column" 
-            ng-class="{'desktop-padding-left': media === 'desktop'}"
+        <div class="fourteen wide column  small screen only" ng-if="media !== 'print'">
+            Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
+            existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
+            see the User Guide above.
+        </div>
+        <div class="two wide column large screen only" ng-if="media !== 'print'"></div>
+
+        <!-- setup the response grids *** LARGE SCREEN-->
+
+        <div class="eight wide column" ng-if="media !== 'print'" 
+            ng-class="{'desktop-padding-left': largeScreen}"
             id="data-input">
             <div class="ui hidden divider"></div>
             <div ng-include src="'javascripts/benchmark/form.html'">Not Defined</div>
@@ -36,8 +43,8 @@
                 </div>
             </div>
         </div>
-        <div class="eight wide column" 
-            ng-class="{'desktop-padding-right': media === 'desktop'}"
+        <div class="eight wide column" ng-if="media !== 'print'"
+            ng-class="{'desktop-padding-right': largeScreen}"
             element="'#data-input'">
             <div class="ui hidden divider"></div>
             <div ng-include src="'javascripts/benchmark/benchmark_result.html'" style="padding-left: 1em;">Not Defined</div>

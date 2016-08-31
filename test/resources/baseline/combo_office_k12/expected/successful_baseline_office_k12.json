@@ -26,6 +26,21 @@
       "medianES": 50
     },
     {
+      "percentBetterMedian": 0
+    },
+    {
+      "percentBetterTarget": 20
+    },
+    {
+      "percentBetterActual": 16.137871715549338
+    },
+    {
+      "percentBetterActualtoGoal": 4.605330634289107
+    },
+    {
+      "actualGoalBetter": 4.827660355563279
+    },
+    {
       "actualZEPI": 83.86212828445066
     },
     {
@@ -106,7 +121,17 @@
     },
     {
       "percentBetterEmissions": 3269.811484805083
+    },
+    {
+      "siteEnergyALL": 5000000
     }
   ],
-  "errors": []
+  "errors": [
+    {
+      "onSiteRenewableTotal": "Could not read provided energy list"
+    },
+    {
+      "offSitePurchasedTotal": "Could not read provided energy list"
+    }
+  ]
 }

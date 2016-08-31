@@ -14,6 +14,21 @@
       "medianES": 50
     },
     {
+      "percentBetterMedian": 0
+    },
+    {
+      "percentBetterTarget": 20
+    },
+    {
+      "percentBetterActual": -15.142827504918046
+    },
+    {
+      "percentBetterActualtoGoal": 30.521073927437648
+    },
+    {
+      "actualGoalBetter": 43.92853438114754
+    },
+    {
       "actualZEPI": 115.14282750491805
     },
     {
@@ -23,60 +38,60 @@
       "percentBetterZEPI": 80
     },
     {
-      "siteEUI": 0.6039651586924174
+      "siteEUI": 167.7680996367826
     },
     {
-      "sourceEUI": 1.8489783462568978
+      "sourceEUI": 513.6050961824715
     },
     {
-      "totalSiteEnergy": 5611.019929660801
+      "totalSiteEnergy": 1558616.647128
     },
     {
       "siteEnergyList": [
         {
-          "grid": 5400.000000000001
+          "grid": 1500000
         },
         {
-          "naturalGas": 211.01992966080002
+          "naturalGas": 58616.647128
         }
       ]
     },
     {
-      "totalSourceEnergy": 17177.570926143842
+      "totalSourceEnergy": 4771547.4794844
     },
     {
       "sourceEnergyList": [
         {
-          "grid": 16956
+          "grid": 4710000
         },
         {
-          "naturalGas": 221.57092614384
+          "naturalGas": 61547.4794844
         }
       ]
     },
     {
-      "medianSiteEUI": 0.5245356326399232
+      "medianSiteEUI": 145.70434239997866
     },
     {
-      "medianSourceEUI": 1.6058128728668943
+      "medianSourceEUI": 446.0591313519151
     },
     {
-      "medianSiteEnergy": 4873.095486057209
+      "medianSiteEnergy": 1353637.6350158914
     },
     {
-      "medianSourceEnergy": 14918.489756046802
+      "medianSourceEnergy": 4144024.9322352223
     },
     {
-      "percentBetterSiteEUI": 0.41962850611193864
+      "percentBetterSiteEUI": 116.56347391998294
     },
     {
-      "percentBetterSourceEUI": 1.2846502982935155
+      "percentBetterSourceEUI": 356.84730508153206
     },
     {
-      "percentBetterSiteEnergy": 3898.4763888457674
+      "percentBetterSiteEnergy": 1082910.108012713
     },
     {
-      "percentBetterSourceEnergy": 11934.79180483744
+      "percentBetterSourceEnergy": 3315219.9457881777
     },
     {
       "directSiteEmissions": [
@@ -106,6 +121,9 @@
     },
     {
       "percentBetterEmissions": 721.8321986373829
+    },
+    {
+      "siteEnergyALL": 1558616.647128
     }
   ],
   "errors": [
@@ -114,6 +132,12 @@
     },
     {
       "targetES": "Could not compute EnergyStar Score - Generic Building: No Algorithm!"
+    },
+    {
+      "onSiteRenewableTotal": "Could not read provided energy list"
+    },
+    {
+      "offSitePurchasedTotal": "Could not read provided energy list"
     }
   ]
 }

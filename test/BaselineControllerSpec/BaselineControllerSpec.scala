@@ -74,7 +74,7 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
     "be valid" in successfulBaselineTest("/baseline/adult_education/adult_education.json", "/baseline/adult_education/expected/successful_baseline_test.json")
     "actualES response be invalid" in errorFieldBaselineTest("/baseline/adult_education/adult_education.json", "actualES")
     "totalSiteEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/adult_education/adult_education.json", "totalSiteEnergy").as[Double] mustBe 5611.019929660801
+      successFieldBaselineTest("/baseline/adult_education/adult_education.json", "totalSiteEnergy").as[Double] mustBe 1558616.647128
     }
   }
 
@@ -110,13 +110,13 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
     "ES errors be invalid" in noErrorFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "ES")
     "targetES errors be invalid" in noErrorFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "targetES")
     "totalSiteEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "totalSiteEnergy").as[Double] mustBe 7510.199296608001
+      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "totalSiteEnergy").as[Double] mustBe 2086166.47128
     }
     "percentBetterSourceEUI response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "percentBetterSourceEUI").as[Double] mustBe 0.8771376088057311
+      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "percentBetterSourceEUI").as[Double] mustBe 243.64933577936975
     }
     "medianSourceEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "medianSourceEnergy").as[Double] mustBe 30558.281383643694
+      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "medianSourceEnergy").as[Double] mustBe 8488411.495456582
     }
   }
 
