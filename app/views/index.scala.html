@@ -1,4 +1,4 @@
-@()<!DOCTYPE html>
+@(includeHeader: Boolean)<!DOCTYPE html>
 <html>
   <head>
     <title data-ng-bind="pageTitle"></title>
@@ -9,53 +9,13 @@
     <!-- <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/semantic-ui/semantic.min.css")" /> -->
     @*-- Add More CSS here -- *@
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
-    <link rel="stylesheet" media="print" href="@routes.Assets.versioned("stylesheets/print.css")">    
+    <link rel="stylesheet" media="print" href="@routes.Assets.versioned("stylesheets/print.css")">
     <script data-main="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript" src="@routes.Assets.versioned("lib/requirejs/require.js")"></script>
   </head>
   <body id="benchmark" ng-cloak>
-    <div style="background:black;padding-top:14px;margin-bottom:14px">
-      <div class="ui stackable grid container">
-          <div class="three wide column" ng-if="media === 'print'"> 
-              <img src="/assets/images/2030logo.png" style="position:absolute;left: -10px;z-index:9999">
-          </div>
-
-          <div class="two wide column computer only tablet only" ng-if="media !== 'print'"> 
-              <img src="/assets/images/2030logo.png" style="position:absolute;left: -10px;z-index:9999">
-          </div>
-
-          <div class="two wide column mobile only non printable">
-              <img src="/assets/images/2030logo.png" class="ui image floated left">
-                 <h1 class="ui inverted huge header">ENERGY</h1><br>
-                 <b>TARGET & RATING TOOL</b>
-          </div>
-          <div class="black nine wide column computer only tablet only non printable"  ng-if="media !== 'print'" style="padding-top:0;padding-bottom:0">
-              <h1 class="ui inverted huge header" style="position:absolute;bottom:-7px">
-                 ENERGY <b>TARGET & RATING TOOL</b>
-              </h1>
-          </div>
-           <div class="black five wide column" style="padding-top:0;padding-bottom:0"  ng-if="media !== 'print'">
-              <div class="ui text inverted fluid three item menu">
-                  <a class="item" href="#/">home</a>
-                  <a class="item" href="#/guide">user guide</a>
-                  <a class="item" href="#/about">about</a>
-              </div>
-          </div>
-
-          <!-- print header -->
-          <div class="black eight wide column" ng-if="media === 'print'" style="padding-top:0;padding-bottom:0">
-              <h1 class="ui inverted huge header" style="position:absolute;bottom:-6px">
-                 ENERGY <b>TARGET & RATING TOOL</b>
-              </h1>
-          </div>
-           <div class="black five wide column" style="padding-top:0;padding-bottom:0"  ng-if="media === 'print'">
-              <div class="ui text inverted fluid three item menu">
-                  <a class="item">home</a>
-                  <a class="item">user guide</a>
-                  <a class="item">about</a>
-              </div>
-          </div>
-      </div>
-    </div>
+    @if(includeHeader) {
+      @header()
+    }
     <div data-ng-view  ng-cloak>
     </div>
   </body>
