@@ -3,7 +3,10 @@
 # ~~~~
 
 # Home page
-GET           /                    controllers.Application.index()
+GET           /                    controllers.Application.index(includeHeader: Boolean=true)
+
+# iframe page
+GET           /iframe/             controllers.Application.index(includeHeader: Boolean=false)
 
 # JavaScript routes object
 GET           /jsroutes.js         controllers.Application.jsRoutes()
