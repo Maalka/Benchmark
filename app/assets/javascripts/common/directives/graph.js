@@ -86,12 +86,25 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               var k = ($scope.baselineConstant === 130) ? 12 : 20;
 
               var dlOff = function(v) {
-                if (v === 120) {
+                var tempV = Math.floor(v);
+                if (tempV === 120) {
                   return -11;
-                } else if (v === 27.4 || v === 12.0 || v === 42.8 || v === 20) {
+                } else if (tempV === 27 || tempV === 12 || tempV === 42 || tempV === 20) {
                   return -28;
+                } else if (tempV === 135) {
+                  return -15;
+                } else if (tempV === 119) {
+                  return -5;
                 } else {
                   return -20;
+                }
+              };
+
+              var dlYOff = function(v) {
+                if (v > 120) {
+                  return -10;
+                } else {
+                  return 3;
                 }
               };
 
@@ -102,11 +115,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 bars.push(
                   {
                     x: k,
-                    y: 110,
+                    y: k > 120 ? -20 : 110,
                     color: k > 180 ? 'transparent' : undefined,
                     dataLabels: {
                       x: dlOff(k),
-                      y: 3
+                      y: dlYOff(k)
                     }
                   });
               }
