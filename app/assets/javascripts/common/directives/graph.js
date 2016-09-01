@@ -30,7 +30,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 red = "#ee1516",
                 green = "#3dab48";
 
-            var ticksHERS = {'20':0,'35':20,'50':40,'65':60,'80':80,'95':100,'110':120,'125':130,'140':150};
+            var ticksHERS = {'12.0':20,'27.4':40,'42.8':60,'58.2':80,'73.6':100,'89.0':120,'104.4':140,'119.8':160,'135.2':180};
             var compareDataElement = function(a, b) {
               var aX = a.x === undefined ? a[0] : a.x;
               var bX = b.x === undefined ? b[0] : b.x;
@@ -83,24 +83,27 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             ****/
             var createBaseChartFeatures = function() {
               var bars = [];
-              var k = 20;
+              var k = ($scope.baselineConstant === 130) ? 12 : 20;
+
               var dlOff = function(v) {
                 if (v === 120) {
                   return -11;
-                } else if (v === 20 || v === 35) {
+                } else if (v === 27.4 || v === 12.0 || v === 42.8 || v === 20) {
                   return -28;
                 } else {
                   return -20;
                 }
               };
-              var spaceBar = ($scope.baselineConstant === 130) ? 15 : 20;
+
+              var spaceBar = ($scope.baselineConstant === 130) ? 15.4 : 20;
+
 
               for (k; k <= 140; k += spaceBar) {
                 bars.push(
                   {
                     x: k,
                     y: 110,
-                    color: k > 120 ? 'transparent' : undefined,
+                    color: k > 180 ? 'transparent' : undefined,
                     dataLabels: {
                       x: dlOff(k),
                       y: 3
@@ -517,8 +520,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
             var labels = {};
             var fixBig = function(x, noClip) {
+
               if($scope.baselineConstant === 130){
-                  return 130 - ticksHERS[x];
+                  return 160 - ticksHERS[x.toFixed(1)];
               }
 
               if (x > 100 && !noClip) {

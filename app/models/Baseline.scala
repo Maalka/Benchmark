@@ -464,7 +464,7 @@ case class EUIMetrics(parameters: JsValue) {
         region match {
           case "West" => 65.8 / 128.2
           case "Midwest" => 103.3 / 168.9
-          case "South" => 40.0 / 162.0
+          case "South" => 63.3 / 162.0
           case "Northeast" => 89.3 / 145.5
         }
       }
