@@ -60,7 +60,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
 
             var showExtendedChart = function () {
-              return getBRByKey("siteEUI") ? true : false;
+              return getBRByKey("actualZEPI") ? true : false;
             };
 
             /***
@@ -102,7 +102,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               var dlYOff = function(v) {
                 if (v > 120) {
-                  return -10;
+                  return -13;
                 } else {
                   return 3;
                 }
@@ -237,11 +237,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
 
             var createExtendedChartFeatures = function (remove) {
-              var gap = $scope.baselineConstant - getBRByKey("actualZEPI");
+
               if (remove) {
                 updateOrAddSeries(chart, { "id": "progressLine", "remove": true}, false);
               } else {
-                updateOrAddSeries(chart, { type: 'line', 
+                updateOrAddSeries(chart, { type: 'line',
                   name: "progressLine",
                   id: 'progressLine',
                   data: sortData([
@@ -269,23 +269,20 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   showInLegend: false,
                   enableMouseTracking: false
                 });
-              }
 
-              updateOrAddSeries(chart, 
-                createMarker("YOUR BUILDING", 40, getBRByKey("actualZEPI"), 
-                  gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom", "black", "axisLine", false)[0],
-                false
+                var gap = $scope.baselineConstant - getBRByKey("actualZEPI");
+                var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI"));
+                var percentBetter = getBRByKey("siteEUI") ? getPercentBetter(Math.ceil(getBRByKey("siteEUI"))) : undefined;
+
+                updateOrAddSeries(chart,
+                    createMarker("YOUR BUILDING", 40, getBRByKey("actualZEPI"),
+                      gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom", "black", "axisLine", false)[0],false
                 );
-              var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI"));
-
-              var percentBetter = getBRByKey("siteEUI") ? getPercentBetter(Math.ceil(getBRByKey("siteEUI"))) : undefined;
-
-              //var percentBetter = Math.abs(getBRByKey("actualZEPI") - getBRByKey("percentBetterZEPI"));
-              updateOrAddSeries(chart, createMarker(isNaN(percentBetter) ? undefined : percentBetter, 
-                              17, getBRByKey("percentBetterZEPI"), better ? "maalkaLongFlagLeftBottom": "maalkaLongFlagBottom", 
-                              better ? green : red, "axisLine", true)[0],
-                  false
-                  );
+                updateOrAddSeries(chart, createMarker(isNaN(percentBetter) ? undefined : percentBetter,
+                      17, getBRByKey("percentBetterZEPI"), better ? "maalkaLongFlagLeftBottom": "maalkaLongFlagBottom",
+                      better ? green : red, "axisLine", true)[0], false
+                );
+              }
             };
 
             var getPercentBetter = function(siteEUI) {
@@ -295,27 +292,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
 
             var createGreenChartFeatures = function (remove) {
-              var gap = $scope.baselineConstant - getBRByKey("actualZEPI");
 
-              var totalPercentReduction = getBRByKey("percentBetterActual");
-
-              var totalSiteEnergy = getBRByKey("siteEnergyALL")? getBRByKey("siteEnergyALL") : 0;
-              var onsite = getBRByKey("onSiteRenewableTotal") ? getBRByKey("onSiteRenewableTotal") : 0;
-              var purchased = getBRByKey("offSitePurchasedTotal") ? getBRByKey("offSitePurchasedTotal") : 0;
-              var totalCombinedEnergy = totalSiteEnergy + onsite + purchased;
-
-
-              //divide by zero condition check
-              if (totalCombinedEnergy === 0) {
-                return;
-              }
-
-              var onsiteRenewable = totalPercentReduction * onsite / totalCombinedEnergy;
-              var greenPower = totalPercentReduction * purchased / totalCombinedEnergy;
-              var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
-
-              var total = totalPercentReduction;
-
+              console.log(remove);
               if (remove) {
                 updateOrAddSeries(chart, {id: "componentLineLeft", remove: true}, false);
                 updateOrAddSeries(chart, {id: "componentLineRight", remove: true}, false);
@@ -323,6 +301,28 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 updateOrAddSeries(chart, {id: "onsiteRenewable", remove: true}, false);
                 updateOrAddSeries(chart, {id: "greenPower", remove: true}, false);
               } else {
+
+                var gap = $scope.baselineConstant - getBRByKey("actualZEPI");
+
+                var totalPercentReduction = getBRByKey("percentBetterActual");
+
+                var totalSiteEnergy = getBRByKey("siteEnergyALL")? getBRByKey("siteEnergyALL") : 0;
+                var onsite = getBRByKey("onSiteRenewableTotal") ? getBRByKey("onSiteRenewableTotal") : 0;
+                var purchased = getBRByKey("offSitePurchasedTotal") ? getBRByKey("offSitePurchasedTotal") : 0;
+                var totalCombinedEnergy = totalSiteEnergy + onsite + purchased;
+
+
+                //divide by zero condition check
+                if (totalCombinedEnergy === 0) {
+                  return;
+                }
+
+                var onsiteRenewable = totalPercentReduction * onsite / totalCombinedEnergy;
+                var greenPower = totalPercentReduction * purchased / totalCombinedEnergy;
+                var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
+
+                var total = totalPercentReduction;
+
                 updateOrAddSeries(chart, { type: 'line', 
                   name: "componentLineLeft",
                   id: 'componentLineLeft',
