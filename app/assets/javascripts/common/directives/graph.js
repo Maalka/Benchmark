@@ -60,7 +60,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
 
             var showExtendedChart = function () {
-              return getBRByKey("siteEUI") ? true : false;
+              return getBRByKey("actualZEPI") ? true : false;
             };
 
             /***
@@ -102,7 +102,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               var dlYOff = function(v) {
                 if (v > 120) {
-                  return -10;
+                  return -13;
                 } else {
                   return 3;
                 }
@@ -139,7 +139,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   },
                   showInLegend: false
                 }, false);
-                
+
               updateOrAddSeries(chart, { type: 'column',
                   id: 'lines',
                   name: 'lines',
@@ -257,11 +257,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
 
             var createExtendedChartFeatures = function (remove) {
-              var gap = $scope.baselineConstant - getBRByKey("actualZEPI");
+
               if (remove) {
                 updateOrAddSeries(chart, { "id": "progressLine", "remove": true}, false);
               } else {
-                updateOrAddSeries(chart, { type: 'line', 
+                updateOrAddSeries(chart, { type: 'line',
                   name: "progressLine",
                   id: 'progressLine',
                   data: sortData([
@@ -289,23 +289,20 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   showInLegend: false,
                   enableMouseTracking: false
                 });
-              }
 
-              updateOrAddSeries(chart, 
-                createMarker("YOUR BUILDING", 40, getBRByKey("actualZEPI"), 
-                  gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom", "black", "axisLine", false)[0],
-                false
+                var gap = $scope.baselineConstant - getBRByKey("actualZEPI");
+                var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI"));
+                var percentBetter = getBRByKey("siteEUI") ? getPercentBetter(Math.ceil(getBRByKey("siteEUI"))) : undefined;
+
+                updateOrAddSeries(chart,
+                    createMarker("YOUR BUILDING", 40, getBRByKey("actualZEPI"),
+                      gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom", "black", "axisLine", false)[0],false
                 );
-              var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI"));
-
-              var percentBetter = getBRByKey("siteEUI") ? getPercentBetter(Math.ceil(getBRByKey("siteEUI"))) : undefined;
-
-              //var percentBetter = Math.abs(getBRByKey("actualZEPI") - getBRByKey("percentBetterZEPI"));
-              updateOrAddSeries(chart, createMarker(isNaN(percentBetter) ? undefined : percentBetter, 
-                              17, getBRByKey("percentBetterZEPI"), better ? "maalkaLongFlagLeftBottom": "maalkaLongFlagBottom", 
-                              better ? green : red, "axisLine", true)[0],
-                  false
-                  );
+                updateOrAddSeries(chart, createMarker(isNaN(percentBetter) ? undefined : percentBetter,
+                      17, getBRByKey("percentBetterZEPI"), better ? "maalkaLongFlagLeftBottom": "maalkaLongFlagBottom",
+                      better ? green : red, "axisLine", true)[0], false
+                );
+              }
             };
 
             var getPercentBetter = function(siteEUI) {
@@ -342,6 +339,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
 
                 var total = totalPercentReduction;
+
                 updateOrAddSeries(chart, { type: 'line', 
                   name: "componentLineLeft",
                   id: 'componentLineLeft',
