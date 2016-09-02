@@ -55,12 +55,19 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
 
             var goodZEPI = function () {
-              return getBRByKey("actualZEPI") ? getBRByKey("actualZEPI") < 100 : false;
+              return isNaN(checkSiteEUI()) ? false : getBRByKey("actualZEPI") < 100;
             };
 
-
             var showExtendedChart = function () {
-              return getBRByKey("actualZEPI") ? true : false;
+              return isNaN(checkSiteEUI()) ? false : true;
+            };
+
+            var checkSiteEUI = function() {
+                if (getBRByKey("actualZEPI")) {
+                    return getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : 0;
+                }else {
+                    return getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : undefined;
+                }
             };
 
             /***
@@ -102,7 +109,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               var dlYOff = function(v) {
                 if (v > 120) {
-                  return -13;
+                  return -10;
                 } else {
                   return 3;
                 }
@@ -272,28 +279,31 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
                 var gap = $scope.baselineConstant - getBRByKey("actualZEPI");
                 var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getBRByKey("actualZEPI"));
-                var percentBetter = getBRByKey("siteEUI") ? getPercentBetter(Math.ceil(getBRByKey("siteEUI"))) : undefined;
+                var percentBetter = function() {
+                    if (isNaN(getBRByKey("actualZEPI"))) {
+                        return getBRByKey("siteEUI") ? getPercentBetter(Math.ceil(getBRByKey("siteEUI"))) : undefined;
+                    }else {
+                        return getBRByKey("siteEUI") ? getPercentBetter(Math.ceil(getBRByKey("siteEUI"))) : 0;
+                    }
+                };
+
+                var getPercentBetter = function(siteEUI) {
+                    return (siteEUI > Math.ceil(getBRByKey("percentBetterSiteEUI"))) ? getBRByKey("percentBetterActualtoGoal") : getBRByKey("actualGoalBetter");
+                };
 
                 updateOrAddSeries(chart,
                     createMarker("YOUR BUILDING", 40, getBRByKey("actualZEPI"),
                       gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom", "black", "axisLine", false)[0],false
                 );
-                updateOrAddSeries(chart, createMarker(isNaN(percentBetter) ? undefined : percentBetter,
+                updateOrAddSeries(chart, createMarker(percentBetter(),
                       17, getBRByKey("percentBetterZEPI"), better ? "maalkaLongFlagLeftBottom": "maalkaLongFlagBottom",
                       better ? green : red, "axisLine", true)[0], false
                 );
               }
             };
 
-            var getPercentBetter = function(siteEUI) {
-                var percentBetterSiteEUI = Math.ceil(getBRByKey("percentBetterSiteEUI"));
-
-                return (siteEUI > percentBetterSiteEUI) ? getBRByKey("percentBetterActualtoGoal") : getBRByKey("actualGoalBetter");
-            };
-
             var createGreenChartFeatures = function (remove) {
 
-              console.log(remove);
               if (remove) {
                 updateOrAddSeries(chart, {id: "componentLineLeft", remove: true}, false);
                 updateOrAddSeries(chart, {id: "componentLineRight", remove: true}, false);
@@ -477,7 +487,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     return;
                   }
                 } else  if (title === "YOUR BUILDING") {
-                  text = "Score <b>" + round(x) + "</b><br>FF-EUI <b>" + Math.ceil(getBRByKey("siteEUI")) + "</b><br><b>"+title + "</b>";
+                  text = "Score <b>" + round(x) + "</b><br>FF-EUI <b>" + checkSiteEUI() + "</b><br><b>"+title + "</b>";
                 } else if (title === "BASELINE") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("medianSiteEUI")) + "</b> FF-EUI" + "<br><b>" + $scope.baselineConstant + "</b> Score";
                 } if (title === "TARGET") {
@@ -561,10 +571,6 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               }
               return maxX - x;
             };
-
-/*            var zepiToEUI = function(zepi) {
-              return  round(zepi / $scope.baselineConstant * baselineEUI);
-            };*/
 
            var loadSeries = function(chart) {
 

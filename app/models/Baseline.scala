@@ -99,7 +99,7 @@ case class EUIMetrics(parameters: JsValue) {
       siteEnergyList <- energyCalcs.getSiteEnergyList
       convertedEnergy <- convertEnergyTuple(siteEnergyList)
       totalSiteEnergyAll <- energyCalcs.getSiteEnergyTotalbyType(convertedEnergy)
-    } yield totalSiteEnergyAll
+    } yield  totalSiteEnergyAll
 
   def siteEnergyConverted: Future[Double] =
     for {
@@ -136,9 +136,16 @@ case class EUIMetrics(parameters: JsValue) {
   def medianSiteEnergyConverted:Future[Energy] = {
     for {
       siteRatio <- siteToSourceRatio
+      backupRatio <- defaultSiteToSourceRatio
       sourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
       convertedEnergy <- energyConversion(sourceEnergy)
-    } yield convertedEnergy * siteRatio
+    } yield {
+      if(siteRatio.isNaN) {
+        convertedEnergy * backupRatio
+      }else {
+        convertedEnergy * siteRatio
+      }
+    }
   }
   def medianSourceEnergyConverted:Future[Energy] = {
     for {
@@ -190,9 +197,16 @@ case class EUIMetrics(parameters: JsValue) {
   def percentBetterSiteEnergyConverted:Future[Energy] = {
     for {
       siteRatio <- siteToSourceRatio
+      backupRatio <- defaultSiteToSourceRatio
       sourceEnergy <- percentBetterSourceEnergy
       convertedEnergy <- energyConversion(sourceEnergy)
-    } yield convertedEnergy * siteRatio
+    } yield {
+      if(siteRatio.isNaN) {
+        convertedEnergy * backupRatio
+      }else {
+        convertedEnergy * siteRatio
+      }
+    }
   }
 
 
@@ -244,8 +258,15 @@ case class EUIMetrics(parameters: JsValue) {
   def medianSiteEnergy:Future[Energy] = {
     for {
       siteRatio <- siteToSourceRatio
+      backupRatio <- defaultSiteToSourceRatio
       sourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
-    } yield sourceEnergy * siteRatio
+    } yield {
+      if(siteRatio.isNaN) {
+        sourceEnergy * backupRatio
+      }else {
+        sourceEnergy * siteRatio
+      }
+    }
   }
   def medianSourceEnergy:Future[Energy] = {
     for {
@@ -291,8 +312,15 @@ case class EUIMetrics(parameters: JsValue) {
   def percentBetterSiteEnergy:Future[Energy] = {
     for {
       siteRatio <- siteToSourceRatio
+      backupRatio <- defaultSiteToSourceRatio
       sourceEnergy <- percentBetterSourceEnergy
-    } yield sourceEnergy * siteRatio
+    } yield {
+      if(siteRatio.isNaN) {
+        sourceEnergy * backupRatio
+      }else {
+        sourceEnergy * siteRatio
+      }
+    }
   }
 
 
@@ -334,7 +362,6 @@ case class EUIMetrics(parameters: JsValue) {
     } yield ratio
 
     local.recoverWith{case NonFatal(th) => defaultSiteToSourceRatio }
-
   }
 
   def defaultSiteToSourceRatio:Future[Double] = {
@@ -464,7 +491,7 @@ case class EUIMetrics(parameters: JsValue) {
         region match {
           case "West" => 65.8 / 128.2
           case "Midwest" => 103.3 / 168.9
-          case "South" => 63.3 / 162.0
+          case "South" => 40.0 / 162.0
           case "Northeast" => 89.3 / 145.5
         }
       }
