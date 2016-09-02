@@ -119,6 +119,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
 
               for (k; k <= 140; k += spaceBar) {
+                if (k > 118 && k < 122) { 
+                  continue;
+                }
                 bars.push(
                   {
                     x: k,
@@ -131,7 +134,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   });
               }
 
-              updateOrAddSeries(chart, {
+             updateOrAddSeries(chart, {
                   name: 'zepi',
                   id: 'zepi',
                   type: 'area',
@@ -143,6 +146,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   },
                   showInLegend: false
                 }, false);
+
               updateOrAddSeries(chart, { type: 'column',
                   id: 'lines',
                   name: 'lines',
@@ -172,6 +176,22 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   data: bars,
                   showInLegend: false
                 }, false);
+
+              updateOrAddSeries(chart, { type: 'line',
+                id: "zero",
+                name: "zero",
+                color: "black",
+                animation: false,
+                dataLabels: {
+                  style: { "fontSize": "16px" },
+                  enabled: true,
+                  verticalAlign: "bottom",
+                  color: "black",
+                  y: -6,
+                  x: -1
+                },
+                data: [[120, 0]]
+              }, false);
 
               /*
                 // the 0 use case... i don't think that i can dynamicly change the "0"
@@ -303,7 +323,10 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
 
             var createGreenChartFeatures = function (remove) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 38789f9d99f7f26e82fa2e9b87c3b6839e7d89fe
               if (remove) {
                 updateOrAddSeries(chart, {id: "componentLineLeft", remove: true}, false);
                 updateOrAddSeries(chart, {id: "componentLineRight", remove: true}, false);
@@ -311,7 +334,6 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 updateOrAddSeries(chart, {id: "onsiteRenewable", remove: true}, false);
                 updateOrAddSeries(chart, {id: "greenPower", remove: true}, false);
               } else {
-
                 var gap = $scope.baselineConstant - getBRByKey("actualZEPI");
 
                 var totalPercentReduction = getBRByKey("percentBetterActual");

@@ -1,4 +1,4 @@
-# Architecture 2030 Baseline Tool for Assessing Building Energy Efficiency Relative to National Median Performance for similar building types.
+# Architecture 2030 Baseline Tool in partnership with Maalka (http://www.maalka.com) for Assessing Building Energy Efficiency Relative to National Median Performance for similar building types.
 
 ## Intro
 
