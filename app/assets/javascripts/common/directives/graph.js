@@ -773,7 +773,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   },
                   series: []
               };
-            
+
               $timeout(function () {
 
                 angular.element($element).highcharts(options, function () { 
