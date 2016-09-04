@@ -36,9 +36,14 @@ case class EUIMetrics(parameters: JsValue) {
 
   def percentBetterActual:Future[Double] = {
     for {
-      zepi <- zepiActual
-      actual <- Future(100 - zepi)
-    } yield actual
+      medianSiteEUI <- medianSiteEUIConverted
+      actualEUI <- siteEUIConverted
+    } yield {
+      actualEUI match {
+        case x if x < medianSiteEUI.value => 100*math.abs((1 - actualEUI / medianSiteEUI.value))
+        case x  => -100*math.abs((1 - medianSiteEUI.value / actualEUI))
+      }
+    }
   }
 
   def actualGoalReduction:Future[Double] = {
