@@ -39,7 +39,8 @@ case class EUICalculator(parameters: JsValue) {
   def isNetMetered:Future[Boolean] = Future{
     parameters.asOpt[NetMetered] match {
       case Some(a) => a.netMetered
-      case _ => throw new Exception("Could not tell if Net Metered")
+      case _ => false //default to false (subtract renewables from total)
+      //throw new Exception("Could not tell if Net Metered")
     }
   }
 
