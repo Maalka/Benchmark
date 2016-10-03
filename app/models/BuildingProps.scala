@@ -47,7 +47,8 @@ case class BuildingProperties(parameters: JsValue) {
   def getPercentBetterThanMedia:Future[Double] = Future{
     parameters.validate[PercentBetterThanMedian] match {
       case JsSuccess(a, _) => a.target
-      case JsError(err) => throw new Exception("Could not determine target EUI!")
+      case JsError(err) => 20.0 //default to 20
+      //throw new Exception("Could not determine target EUI!")
     }
   }
 
