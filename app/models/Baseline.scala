@@ -138,6 +138,7 @@ case class EUIMetrics(parameters: JsValue) {
       convertedEUI <- EUIConversionConstant(siteTotalEnergy,buildingSize)
     } yield convertedEUI.value
 
+
   def medianSiteEnergyConverted:Future[Energy] = {
     for {
       siteRatio <- siteToSourceRatio
@@ -145,13 +146,23 @@ case class EUIMetrics(parameters: JsValue) {
       sourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
       convertedEnergy <- energyConversion(sourceEnergy)
     } yield {
-      if(siteRatio.isNaN) {
-        convertedEnergy * backupRatio
-      }else {
-        convertedEnergy * siteRatio
+      result.head.asOpt[CountryBuildingType] match {
+        case Some(CountryBuildingType(_, "SingleFamilyDetached")) => convertedEnergy * backupRatio
+        case Some(CountryBuildingType(_, "SingleFamilyAttached")) => convertedEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MultiFamilyLessThan5")) => convertedEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MultiFamilyMoreThan4")) => convertedEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MobileHome")) => convertedEnergy * backupRatio
+        case _ => {
+          if(siteRatio.isNaN) {
+            convertedEnergy * backupRatio
+          }else {
+            convertedEnergy * siteRatio
+          }
+        }
       }
     }
   }
+
   def medianSourceEnergyConverted:Future[Energy] = {
     for {
       sourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
@@ -206,10 +217,19 @@ case class EUIMetrics(parameters: JsValue) {
       sourceEnergy <- percentBetterSourceEnergy
       convertedEnergy <- energyConversion(sourceEnergy)
     } yield {
-      if(siteRatio.isNaN) {
-        convertedEnergy * backupRatio
-      }else {
-        convertedEnergy * siteRatio
+      result.head.asOpt[CountryBuildingType] match {
+        case Some(CountryBuildingType(_, "SingleFamilyDetached")) => convertedEnergy * backupRatio
+        case Some(CountryBuildingType(_, "SingleFamilyAttached")) => convertedEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MultiFamilyLessThan5")) => convertedEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MultiFamilyMoreThan4")) => convertedEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MobileHome")) => convertedEnergy * backupRatio
+        case _ => {
+          if(siteRatio.isNaN) {
+            convertedEnergy * backupRatio
+          }else {
+            convertedEnergy * siteRatio
+          }
+        }
       }
     }
   }
@@ -266,10 +286,19 @@ case class EUIMetrics(parameters: JsValue) {
       backupRatio <- defaultSiteToSourceRatio
       sourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
     } yield {
-      if(siteRatio.isNaN) {
-        sourceEnergy * backupRatio
-      }else {
-        sourceEnergy * siteRatio
+      result.head.asOpt[CountryBuildingType] match {
+        case Some(CountryBuildingType(_, "SingleFamilyDetached")) => sourceEnergy * backupRatio
+        case Some(CountryBuildingType(_, "SingleFamilyAttached")) => sourceEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MultiFamilyLessThan5")) => sourceEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MultiFamilyMoreThan4")) => sourceEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MobileHome")) => sourceEnergy * backupRatio
+        case _ => {
+          if(siteRatio.isNaN) {
+            sourceEnergy * backupRatio
+          }else {
+            sourceEnergy * siteRatio
+          }
+        }
       }
     }
   }
@@ -320,10 +349,19 @@ case class EUIMetrics(parameters: JsValue) {
       backupRatio <- defaultSiteToSourceRatio
       sourceEnergy <- percentBetterSourceEnergy
     } yield {
-      if(siteRatio.isNaN) {
-        sourceEnergy * backupRatio
-      }else {
-        sourceEnergy * siteRatio
+      result.head.asOpt[CountryBuildingType] match {
+        case Some(CountryBuildingType(_, "SingleFamilyDetached")) => sourceEnergy * backupRatio
+        case Some(CountryBuildingType(_, "SingleFamilyAttached")) => sourceEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MultiFamilyLessThan5")) => sourceEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MultiFamilyMoreThan4")) => sourceEnergy * backupRatio
+        case Some(CountryBuildingType(_, "MobileHome")) => sourceEnergy * backupRatio
+        case _ => {
+          if(siteRatio.isNaN) {
+            sourceEnergy * backupRatio
+          }else {
+            sourceEnergy * siteRatio
+          }
+        }
       }
     }
   }
@@ -577,6 +615,62 @@ case class EUIMetrics(parameters: JsValue) {
     }
   }
 
+  def residentialSiteEUI(rezParams:JsValue):Future[Double] = Future {
+
+    val countryBuilding = rezParams.asOpt[CountryBuildingType]
+    val region: String = buildingProps.getRegion
+
+    countryBuilding match {
+
+      case Some(CountryBuildingType("USA", "SingleFamilyDetached")) =>
+      {
+        region match {
+          case "West" => 38.4
+          case "Midwest" => 49.5
+          case "South" => 41.5
+          case "Northeast" => 45.7
+        }
+      }
+      case Some(CountryBuildingType("USA", "SingleFamilyAttached")) =>
+      {
+        region match {
+          case "West" => 38.8
+          case "Midwest" => 44.8
+          case "South" => 38.8
+          case "Northeast" => 50.3
+        }
+      }
+      case Some(CountryBuildingType("USA", "MultiFamilyLessThan5")) =>
+      {
+        region match {
+          case "West" => 47.6
+          case "Midwest" => 74.0
+          case "South" => 46.9
+          case "Northeast" => 57.8
+        }
+      }
+      case Some(CountryBuildingType("USA", "MultiFamilyMoreThan4")) =>
+      {
+        region match {
+          case "West" => 40.0
+          case "Midwest" => 50.9
+          case "South" => 47.9
+          case "Northeast" => 60.7
+        }
+      }
+      case Some(CountryBuildingType("USA", "MobileHome")) =>
+      {
+        region match {
+          case "West" => 65.8
+          case "Midwest" => 103.3
+          case "South" => 40.0
+          case "Northeast" => 89.3
+        }
+      }
+
+      case _ => throw new Exception("Could not find Residential Default Site to Source Ratio")
+    }
+  }
 
   def convertEnergyTuple(energies: List[EnergyTuple]): Future[List[EnergyTuple]] = Future {
     (energyCalcs.country, energyCalcs.reportingUnits) match {

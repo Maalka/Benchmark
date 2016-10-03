@@ -300,9 +300,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
             var createExtendedChartFeatures = function (remove) {
               if (remove) {
-                updateOrAddSeries(chart, { "id": "progressLine", "remove": true}, false);
+                //updateOrAddSeries(chart, { "id": "progressLine", "remove": true}, false);
               } else {
-                updateOrAddSeries(chart, { type: 'line',
+/*                updateOrAddSeries(chart, { type: 'line',
                   name: "progressLine",
                   id: 'progressLine',
                   data: sortData([
@@ -329,21 +329,22 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   dashStyle: "ShortDot",
                   showInLegend: false,
                   enableMouseTracking: false
-                });
+                });*/
 
                 var gap = (getTempZEPI() !== undefined) ? $scope.baselineConstant - getTempZEPI() : 0;
-                var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getTempZEPI());
+
 
                 updateOrAddSeries(chart,
                     createMarker("YOUR BUILDING", 40, getTempZEPI(),
                       gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
                       "black", "axisLine", false)[0],false
                 );
+                /*var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getTempZEPI());
                 updateOrAddSeries(chart,
                     createMarker("PROGRESS PERCENT", 17, getBRByKey("percentBetterZEPI"),
                     better ? "maalkaLongFlagLeftBottom": "maalkaLongFlagBottom",
                     better ? green : red, "axisLine", true)[0], false
-                );
+                );*/
               }
             };
 
@@ -539,7 +540,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   textColor = fixX(getBRByKey("percentBetterZEPI")) < fixX(getTempZEPI()) ? green : red;
                 }
                 return [
-                    {   id: onlyTitle ? series + "marker" : title + "0",
+                    {   id: title + "0",
                         dataLabels:{
                           useHTML:true,
                         },
@@ -621,8 +622,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                         case "progressLine":
                             updateOrAddSeries(chart, {id: "progressLine", remove: true}, false);
                             break;
-                        case "PROGRESS PERCENT":
-                            updateOrAddSeries(chart, {id: "PROGRESS PERCENT", remove: true}, false);
+                        case "PROGRESS PERCENT0":
+                            updateOrAddSeries(chart, {id: "PROGRESS PERCENT0", remove: true}, false);
                             break;
                      }
                   }
