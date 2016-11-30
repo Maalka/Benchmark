@@ -98,7 +98,7 @@ case class EUIMetrics(parameters: JsValue) {
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
       totalOnSiteRenewable <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"purchased")
     } yield totalOnSiteRenewable
-
+  //this is the total site energy without accounting for renewable generation and/or purchasing
   def siteEnergyALL: Future[Double] =
     for {
       siteEnergyList <- energyCalcs.getSiteEnergyList
@@ -106,6 +106,7 @@ case class EUIMetrics(parameters: JsValue) {
       totalSiteEnergyAll <- energyCalcs.getSiteEnergyTotalbyType(convertedEnergy)
     } yield  totalSiteEnergyAll
 
+  //this is the total site energy accounting for renewable generation and/or purchasing
   def siteEnergyConverted: Future[Double] =
     for {
       siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
@@ -674,7 +675,7 @@ case class EUIMetrics(parameters: JsValue) {
 
   def convertEnergyTuple(energies: List[EnergyTuple]): Future[List[EnergyTuple]] = Future {
     (energyCalcs.country, energyCalcs.reportingUnits) match {
-      case ("USA", "us") => energies //energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KilowattHours)}
+      case ("USA", "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KBtus)}
       case ("USA", "metric") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KilowattHours)}
       case (_, "metric") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KilowattHours)}
       case (_, "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KBtus)}
