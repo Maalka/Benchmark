@@ -99,6 +99,7 @@ trait BaselineActions {
 
       Baseline.siteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.sourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      //this is the total site energy accounting for renewable generation and/or purchasing
       Baseline.siteEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.siteEnergyListConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.sourceEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -122,6 +123,7 @@ trait BaselineActions {
 
       Baseline.onSiteRenewableTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.offSitePurchasedTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      //this is the total site energy without accounting for renewable generation and/or purchasing
       Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
 
     ))

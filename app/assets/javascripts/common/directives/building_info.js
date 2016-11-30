@@ -872,7 +872,7 @@ define(['angular','./main'], function(angular) {
                         }, 
                         {
                             name: "percentHeated",
-                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            default: $scope.buildingProperties.areaHVAC[5].id,
                             fields: $scope.buildingProperties.areaHVAC,
                             type: "select",
                             title: "Percent Heated",
@@ -880,7 +880,7 @@ define(['angular','./main'], function(angular) {
                         },
                         {
                             name: "percentCooled",
-                            default: $scope.buildingProperties.areaHVAC[10].id,
+                            default: $scope.buildingProperties.areaHVAC[2].id,
                             fields: $scope.buildingProperties.areaHVAC,
                             type: "select",
                             title: "Percent Cooled",
