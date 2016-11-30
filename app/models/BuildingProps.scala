@@ -44,11 +44,32 @@ case class BuildingProperties(parameters: JsValue) {
     }
   }
 
-  def getPercentBetterThanMedia:Future[Double] = Future{
+  def getPercentBetterThanMedia:Future[Double] = {
+    for {
+      targetToggle <- getTargetToggle
+      baselineConstant <- getBaselineConstant
+      toggleValue <- getToggleValue
+      percentBetterReturn <- Future{
+        targetToggle match {
+          case "zeroScore" => baselineConstant - toggleValue
+          case _ => toggleValue
+        }
+      }
+    } yield percentBetterReturn
+  }
+
+  def getToggleValue:Future[Double] = Future{
     parameters.validate[PercentBetterThanMedian] match {
       case JsSuccess(a, _) => a.target
       case JsError(err) => 20.0 //default to 20
       //throw new Exception("Could not determine target EUI!")
+    }
+  }
+
+  def getTargetToggle:Future[String] = Future{
+    parameters.validate[TargetToggle] match {
+      case JsSuccess(a, _) => a.targetToggle
+      case JsError(err) => "percentReduction"
     }
   }
 
@@ -174,7 +195,12 @@ object BaselineConstant {
 case class PercentBetterThanMedian(target:Double)
 object PercentBetterThanMedian {
   implicit val percentBetterReads: Reads[PercentBetterThanMedian] = (JsPath \ "percentBetterThanMedian").read[Double](
-    Reads.min(0.0) andKeep Reads.max(100.0)).map(new PercentBetterThanMedian(_))
+    Reads.min(0.0) andKeep Reads.max(130.0)).map(new PercentBetterThanMedian(_))
+}
+
+case class TargetToggle(targetToggle: String)
+object TargetToggle {
+  implicit val targetToggleRead: Reads[TargetToggle] = Json.reads[TargetToggle]
 }
 
 case class PropParams(propType:String,propSize:Double,propPercent:Double,areaUnits:String)

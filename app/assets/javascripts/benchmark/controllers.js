@@ -26,10 +26,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.mainColumnWidth = "";
     $scope.propText = "Primary Function of Building";
     $scope.buildingZone = "commercial";
+    $scope.targetToggle = "percentReduction";
     $scope.isResidential = false;
 
     // check the media to handel the ng-if media statements
-    // it turns out that form elements do not respect "display: none" 
+    // it turns out that form elements do not respect "display: none"
     // and need to be removed from the dom
     var setMedia = function (){
         if (matchmedia.isPrint()) {
@@ -63,6 +64,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.$apply();
     });
 
+
+
     $scope.$watch("auxModel.buildingType", function (v) {
         if (v === undefined || v === null) {
             return;
@@ -93,7 +96,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 type: v.id,
                 name: v.name,
                 country:$scope.auxModel.country,
-                buildingZone: $scope.auxModel.buildingZone
+                buildingZone: $scope.auxModel.buildingZone,
+                toggleTarget: $scope.auxModel.targetToggle
             });
 
             $scope.propText="Add Another Use";
@@ -111,6 +115,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.$watch("auxModel.newConstruction", function (v) {
         if(v === true){
             $scope.auxModel.percentBetterThanMedian = 70;
+            $scope.auxModel.targetToggle = "percentReduction";
         }else{
             $scope.auxModel.percentBetterThanMedian = 20;
         }
@@ -232,10 +237,16 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.benchmarkResult.city = $scope.auxModel.city;
             $scope.benchmarkResult.state = $scope.auxModel.state;
             $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
-            $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
+            console.log($scope.auxModel.targetToggle);
+            if ($scope.auxModel.targetToggle === "zeroScore") {
+                $scope.benchmarkResult.percentBetterThanMedian = $scope.baselineConstant - $scope.auxModel.percentBetterThanMedian;
+            } else {
+                $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
+            }
 
         });
     };
+
 
     $scope.getPropResponseField = function(propResponse,key){
         var returnValue;
@@ -333,7 +344,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         if($scope.forms.baselineForm === undefined) {
             return;
         }
-        $scope.forms.hasValidated = true; /// only check the field errors if this form has attempted to validate. 
+        $scope.forms.hasValidated = true; /// only check the field errors if this form has attempted to validate.
         $scope.propList = [];
 
         if($scope.auxModel.reportingUnits==="us"){
@@ -356,7 +367,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
         };
 
-        var mapEnergy = function (e) { 
+        var mapEnergy = function (e) {
             return {
                 'energyType': (e.energyType) ? e.energyType.id : undefined,
                 'energyName': (e.energyType) ? e.energyType.name : undefined,
@@ -382,6 +393,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
                     $scope.propTypes[i].propertyModel.baselineConstant = $scope.isResidential ? 130 : 100;
                     $scope.propTypes[i].propertyModel.country = $scope.auxModel.country;
+                    $scope.propTypes[i].propertyModel.targetToggle = $scope.auxModel.targetToggle;
                     $scope.propTypes[i].propertyModel.city = $scope.auxModel.city;
                     $scope.propTypes[i].propertyModel.postalCode = $scope.auxModel.postalCode;
                     $scope.propTypes[i].propertyModel.state = $scope.auxModel.state;
