@@ -8,7 +8,10 @@
                 <li>Make sure you have filled out all of the required fields</li>
             </ul>
         </div>
-        <h3 class="ui header"><i class="globe icon"></i>ABOUT YOUR DESIGN PROJECT</h3>
+        <h3 class="ui header">
+            <i class="globe icon"></i>ABOUT YOUR DESIGN PROJECT
+        </h3>
+
         <div class="entry">
             <div class="ui segment about">
                 <div class="ui grid">
@@ -71,10 +74,12 @@
                         </div>
                     </div>
                     <div class="five wide column" ng-show="lacksDD">
-                        <label class="design-label">Degree Days
-                            <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" 
-                                target="_blank"><i class="large circle help icon"></i></a>
-                        </label>
+                        <div class="tooltip">Degree Days
+                            <i class="large circle help icon"></i>
+                            <span class="tooltiptext">No Degree Days found for your ZipCode!
+                                <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" target="_blank">Click Here</a>
+                            </span>
+                        </div>
                     </div>
                     <div class="eleven wide column" ng-show="lacksDD">
                         <div class="inline fields">
@@ -115,6 +120,9 @@
 
                         </div>
                     </div>
+                    <div class="tooltip">
+                        <i class="large info circle icon"></i><span class="tooltiptext">Add text about what it means to be an existing building</span>
+                    </div>
                 </div>
 
             </div>
@@ -142,12 +150,28 @@
                             <label for="project-zeroScore">ZERO Score</label>
                         </div>
                     </div>
+                    <div class="tooltip">
+                        <i class="large info circle icon"></i><span class="tooltiptext">What does it mean to choose ZERO Score??</span>
+                    </div>
                 </div>
 
-                <div class="inline fields">
+                <div class="inline fields" ng-if="auxModel.targetToggle==='percentReduction'">
                     <div class="one wide field"></div>
-                    <div class="three wide required field">
-                        <div class="ui icon input">
+                    <div class="four wide required field">
+                        <div class="ui input">
+                            <input type="number" ng-model="auxModel.percentBetterThanMedian"
+                                   name="percentBetterThanMedian" placeholder="Target"
+                                   min="0" max="130">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label ng-show="!forms.baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
+                    </div>
+                </div>
+                <div class="inline fields" ng-if="auxModel.targetToggle==='zeroScore'">
+                    <div class="seven wide field"></div>
+                    <div class="four wide required field">
+                        <div class="ui input">
                             <input type="number" ng-model="auxModel.percentBetterThanMedian"
                                    name="percentBetterThanMedian" placeholder="Target"
                                    min="0" max="130">
@@ -160,6 +184,7 @@
                 <div class="sixteen wide column">
                     <div class="ui divider"></div>
                 </div>
+
                 <div class="ui fifteen wide column left aligned">
                     <div checkbox class="ui checkbox checked" style="margin-top:.2em;margin-bottom:1em;">
                         <input type="checkbox" id="is2030" ng-model="auxModel.is2030" ng-init="auxModel.is2030=false"
@@ -259,6 +284,9 @@
                                 <input type="checkbox" id="netMetered" ng-model="auxModel.netMetered" ng-init="auxModel.netMetered=false"
                                        ng-true-value=true ng-false-value=false>
                                 <label for="netMetered">Net Metered?</label>
+                            </div>
+                            <div class="tooltip">
+                                <i class="large info circle icon"></i><span class="tooltiptext">Give me the definition of net metered!</span>
                             </div>
                         </div>
                         <div class="five wide column">

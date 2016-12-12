@@ -44,6 +44,8 @@ case class BuildingProperties(parameters: JsValue) {
     }
   }
 
+
+
   def getPercentBetterThanMedia:Future[Double] = {
     for {
       targetToggle <- getTargetToggle

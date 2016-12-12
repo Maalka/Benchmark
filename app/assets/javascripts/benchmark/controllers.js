@@ -227,7 +227,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.futures = benchmarkServices.getZEPIMetrics($scope.propList);
 
         $q.resolve($scope.futures).then(function (results) {
-            $scope.baselineConstant = $scope.isResidential ? 130 : 100;
+            $scope.baselineConstant = $scope.getBaselineConstant();
             $scope.scoreText = "Score";
             $scope.scoreGraph = "Rating";
             $scope.FFText = $sce.trustAsHtml('Site FF-EUI*');
@@ -239,7 +239,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
             console.log($scope.auxModel.targetToggle);
             if ($scope.auxModel.targetToggle === "zeroScore") {
-                $scope.benchmarkResult.percentBetterThanMedian = $scope.baselineConstant - $scope.auxModel.percentBetterThanMedian;
+                $scope.benchmarkResult.percentBetterThanMedian = $scope.getBaselineConstant() - $scope.auxModel.percentBetterThanMedian;
             } else {
                 $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
             }
@@ -247,6 +247,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         });
     };
 
+    $scope.getBaselineConstant = function(){
+        if ($scope.isResidential === true && $scope.auxModel.is2030 === true){
+            return 130;
+        } else {
+            return 100;
+        }
+    };
 
     $scope.getPropResponseField = function(propResponse,key){
         var returnValue;
@@ -288,9 +295,9 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"percentBetterActualtoGoal": Math.ceil($scope.getPropResponseField(results,"percentBetterActualtoGoal"))},
               {"actualGoalBetter": Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"))},
 
-              {"medianZEPI": $scope.baselineConstant},
-              {"percentBetterZEPI": $scope.baselineConstant - Math.ceil($scope.getPropResponseField(results,"percentBetterTarget"))},
-              {"actualZEPI": $scope.baselineConstant - Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
+              {"medianZEPI": $scope.getBaselineConstant()},
+              {"percentBetterZEPI": $scope.getBaselineConstant() - Math.ceil($scope.getPropResponseField(results,"percentBetterTarget"))},
+              {"actualZEPI": $scope.getBaselineConstant() - Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
 
               {"siteEUI": Math.ceil($scope.getPropResponseField(results,"siteEUI"))},
               {"sourceEUI": Math.ceil($scope.getPropResponseField(results,"sourceEUI"))},
@@ -391,7 +398,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             for (var i = 0; i < $scope.propTypes.length; i++){
                 if($scope.propTypes[i].valid === true){
 
-                    $scope.propTypes[i].propertyModel.baselineConstant = $scope.isResidential ? 130 : 100;
+                    $scope.propTypes[i].propertyModel.baselineConstant = $scope.getBaselineConstant();
                     $scope.propTypes[i].propertyModel.country = $scope.auxModel.country;
                     $scope.propTypes[i].propertyModel.targetToggle = $scope.auxModel.targetToggle;
                     $scope.propTypes[i].propertyModel.city = $scope.auxModel.city;

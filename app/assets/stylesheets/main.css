@@ -8,6 +8,38 @@ input.small {
 	width: 8rem !important;
 }
 
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 360px;
+    background-color: #D9D9D9;
+    text-align: left;
+    line-height:1.7em !important;
+
+
+    box-shadow: 0 1px 2px 0 rgba(34,36,38,.15);
+    margin: 1rem 0;
+    padding: 1em;
+    border-radius: 2;
+    border: 1px solid rgba(34,36,38,.15);
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    bottom: 1%;
+    left: 95%;
+}
+
 div.only.print {
 	display: none !important;
 }
