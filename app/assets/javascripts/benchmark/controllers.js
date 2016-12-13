@@ -408,8 +408,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.CDD = $scope.auxModel.CDD;
                     $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
                     $scope.propTypes[i].propertyModel.targetScore = null;
-                    $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
                     $scope.propTypes[i].propertyModel.netMetered = $scope.auxModel.netMetered;
+
+                    if($scope.getBaselineConstant() !== 100){
+                      $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.getBaselineConstant()*$scope.auxModel.percentBetterThanMedian/100;
+                    } else {
+                      $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
+                    }
 
                     if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
                         $scope.propTypes[i].propertyModel.energies=null;
