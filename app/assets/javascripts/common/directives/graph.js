@@ -335,7 +335,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
 
                 updateOrAddSeries(chart,
-                    createMarker("YOUR BUILDING", 40, getTempZEPI(),
+                    createMarker("YOUR BUILDING", 20, getTempZEPI(),
                       gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
                       "black", "axisLine", false)[0],false
                 );
@@ -352,7 +352,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               if (remove) {
                 updateOrAddSeries(chart, {id: "componentLineLeft", remove: true}, false);
-                updateOrAddSeries(chart, {id: "componentLineRight", remove: true}, false);
+                //updateOrAddSeries(chart, {id: "componentLineRight", remove: true}, false);
                 updateOrAddSeries(chart, {id: "energyEfficiency", remove: true}, false);
                 updateOrAddSeries(chart, {id: "onsiteRenewable", remove: true}, false);
                 updateOrAddSeries(chart, {id: "greenPower", remove: true}, false);
@@ -392,7 +392,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     },
                     {
                       x: fixX($scope.baselineConstant),
-                      y: -110,
+                      y: -60,
                       marker: {
                         enabled: false
                       }
@@ -405,21 +405,21 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   showInLegend: false,
                   enableMouseTracking: false
                 });
-
+/*
                 updateOrAddSeries(chart, { type: 'line',
                   name: "componentLineRight",
                   id: 'componentLineRight',
                   data: sortData([
                     {
                       x: fixX(getTempZEPI()),
-                      y: -85,
+                      y: -65,
                       marker: {
                         enabled: false
                       }
                     },
                     {
                       x: fixX(getTempZEPI()),
-                      y: -110,
+                      y: -90,
                       marker: {
                         enabled: false
                       }
@@ -431,7 +431,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   dashStyle: "ShortDot",
                   showInLegend: false,
                   enableMouseTracking: false
-                });
+                });*/
 
                 // add the energy source breakdown.
 
@@ -441,14 +441,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   data: sortData([
                     {
                       x: fixX($scope.baselineConstant),
-                      y: -120,
+                      y: -65,
                       marker: {
                         enabled: false
                       }
                     },
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
-                      y: -120,
+                      y: -65,
                       marker: {
                         enabled: false
                       }
@@ -468,7 +468,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   data: sortData([
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
-                      y: -120,
+                      y: -65,
                       marker: {
                         enabled: false
                       }
@@ -476,7 +476,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total)),
-                      y: -120,
+                      y: -65,
                       marker: {
                         enabled: false
                       }
@@ -497,7 +497,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total)),
-                      y: -120,
+                      y: -65,
                       marker: {
                         enabled: false
                       }
@@ -506,7 +506,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total) -
                         gap * (greenPower / total)),
-                      y: -120,
+                      y: -65,
                       marker: {
                         enabled: false
                       }
