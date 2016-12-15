@@ -1,8 +1,11 @@
 
 <div class="inline fields">
-    <label class="static">Degree Days
-        <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" target="_blank"><i class="large circle help icon"></i></a>
-    </label>
+    <div class="tooltip">Degree Days
+        <i class="large circle help icon"></i>
+        <span class="tooltiptext">No Degree Days found for your ZipCode!
+            <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" target="_blank">Click Here</a>
+        </span>
+    </div>
     <div class="six wide required field">
         <label>HDD</label>
         <input type="number" ng-model="auxModel.HDD"

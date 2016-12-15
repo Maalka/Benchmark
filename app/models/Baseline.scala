@@ -31,6 +31,7 @@ case class EUIMetrics(parameters: JsValue) {
 
   def zepiMedian:Future[Int] = buildingProps.getBaselineConstant
 
+
   def percentBetterMedian:Future[Double] = Future{0}
   def percentBetterTarget:Future[Double] = buildingProps.getPercentBetterThanMedia
 
