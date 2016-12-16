@@ -117,11 +117,10 @@
                             <input type="radio" id="project-cb-existing" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"a
                                ng-value='false'>
                             <label for="project-cb-existing">Existing Building (&lt;40% New)</label>
-
                         </div>
                     </div>
-                    <div class="tooltip">
-                        <i class="large info circle icon"></i><span class="tooltiptext">Add text about what it means to be an existing building</span>
+                    <div class="tooltip sup">
+                        i<span class="tooltiptext">New constructions have a target of 70% reductions in energy-use relative to national averages. Existing buildings have a 20% goal. </span>
                     </div>
                 </div>
 
@@ -149,9 +148,6 @@
                                    ng-value="'zeroScore'">
                             <label for="project-zeroScore">ZERO Score</label>
                         </div>
-                    </div>
-                    <div class="tooltip">
-                        <i class="large info circle icon"></i><span class="tooltiptext">What does it mean to choose ZERO Score??</span>
                     </div>
                 </div>
 
@@ -181,15 +177,20 @@
                         <label ng-show="!forms.baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
                     </div>
                 </div>
-                <div class="sixteen wide column">
-                    <div class="ui divider"></div>
-                </div>
-
-                <div class="ui fifteen wide column left aligned">
-                    <div checkbox class="ui checkbox checked" style="margin-top:.2em;margin-bottom:1em;">
-                        <input type="checkbox" id="is2030" ng-model="auxModel.is2030" ng-init="auxModel.is2030=false"
-                               ng-true-value=true ng-false-value=false>
-                        <label for="is2030">Are you using the ZERO Tool to meet 2030 Challenge Targets?</label>
+                <div ng-if="auxModel.targetToggle==='percentReduction'">
+                    <div class="sixteen wide column">
+                        <div class="ui divider"></div>
+                    </div>
+                    <div class="ui fifteen wide column left aligned">
+                        <div checkbox class="ui checkbox checked" style="margin-top:.2em;margin-bottom:1em;">
+                            <input type="checkbox" id="is2030" ng-model="auxModel.is2030" ng-init="auxModel.is2030=false"
+                                   ng-true-value=true ng-false-value=false>
+                            <label for="is2030">Are you using the ZERO Tool to meet 2030 Challenge Targets?
+                            <div class="tooltip sup">
+                                i <span class="tooltiptext">2030 Challenge Targets are based on ZEPI score for Commercial Buildings and HERS score for Residential Buildings</span>
+                            </div>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -285,8 +286,8 @@
                                        ng-true-value=true ng-false-value=false>
                                 <label for="netMetered">Net Metered?</label>
                             </div>
-                            <div class="tooltip">
-                                <i class="large info circle icon"></i><span class="tooltiptext">Give me the definition of net metered!</span>
+                            <div class="tooltip sup">
+                                i <span class="tooltiptext">If you're energy entries below already account for renewable energy that is purchased or generated on-site, check this box.</span>
                             </div>
                         </div>
                         <div class="five wide column">

@@ -296,7 +296,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"actualGoalBetter": Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"))},
 
               {"medianZEPI": $scope.getBaselineConstant()},
-              {"percentBetterZEPI": $scope.getBaselineConstant() - Math.ceil($scope.getPropResponseField(results,"percentBetterTarget"))},
+              {"percentBetterZEPI": Math.ceil($scope.getPropResponseField(results,"percentBetterZEPI"))},
               {"actualZEPI": $scope.getBaselineConstant() - Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
 
               {"siteEUI": Math.ceil($scope.getPropResponseField(results,"siteEUI"))},
@@ -408,8 +408,9 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.CDD = $scope.auxModel.CDD;
                     $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
                     $scope.propTypes[i].propertyModel.targetScore = null;
-                    $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
                     $scope.propTypes[i].propertyModel.netMetered = $scope.auxModel.netMetered;
+                    $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
+
 
                     if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
                         $scope.propTypes[i].propertyModel.energies=null;
