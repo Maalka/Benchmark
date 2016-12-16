@@ -417,6 +417,12 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
 
+                    if($scope.isResidential && !$scope.auxModel.is2030 && ($scope.propTypes[i].type !== "MultiFamily")){
+                        $scope.propTypes[i].propertyModel.target2030=true;
+                    } else {
+                        $scope.propTypes[i].propertyModel.target2030=false;
+                    }
+
                     if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
                         $scope.propTypes[i].propertyModel.energies=null;
                     } else {
