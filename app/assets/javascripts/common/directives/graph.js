@@ -335,7 +335,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
 
                 updateOrAddSeries(chart,
-                    createMarker("YOUR BUILDING", 20, getTempZEPI(),
+                    createMarker("YOUR BUILDING", 17, getTempZEPI(),
                       gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
                       "black", "axisLine", false)[0],false
                 );
@@ -352,7 +352,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               if (remove) {
                 updateOrAddSeries(chart, {id: "componentLineLeft", remove: true}, false);
-                //updateOrAddSeries(chart, {id: "componentLineRight", remove: true}, false);
+                updateOrAddSeries(chart, {id: "componentLineRight", remove: true}, false);
                 updateOrAddSeries(chart, {id: "energyEfficiency", remove: true}, false);
                 updateOrAddSeries(chart, {id: "onsiteRenewable", remove: true}, false);
                 updateOrAddSeries(chart, {id: "greenPower", remove: true}, false);
@@ -392,7 +392,34 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     },
                     {
                       x: fixX($scope.baselineConstant),
-                      y: -60,
+                      y: -75,
+                      marker: {
+                        enabled: false
+                      }
+                    }
+                  ]),
+                  animation: false,
+                  color: "#595959",
+                  arrow: true,
+                  dashStyle: "ShortDot",
+                  showInLegend: false,
+                  enableMouseTracking: false
+                });
+
+                updateOrAddSeries(chart, { type: 'line',
+                  name: "componentLineRight",
+                  id: 'componentLineRight',
+                  data: sortData([
+                    {
+                      x: fixX(getTempZEPI()),
+                      y: -50,
+                      marker: {
+                        enabled: false
+                      }
+                    },
+                    {
+                      x: fixX(getTempZEPI()),
+                      y: -75,
                       marker: {
                         enabled: false
                       }
@@ -405,33 +432,6 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   showInLegend: false,
                   enableMouseTracking: false
                 });
-/*
-                updateOrAddSeries(chart, { type: 'line',
-                  name: "componentLineRight",
-                  id: 'componentLineRight',
-                  data: sortData([
-                    {
-                      x: fixX(getTempZEPI()),
-                      y: -65,
-                      marker: {
-                        enabled: false
-                      }
-                    },
-                    {
-                      x: fixX(getTempZEPI()),
-                      y: -90,
-                      marker: {
-                        enabled: false
-                      }
-                    }
-                  ]),
-                  animation: false,
-                  color: "#77aad4",
-                  arrow: true,
-                  dashStyle: "ShortDot",
-                  showInLegend: false,
-                  enableMouseTracking: false
-                });*/
 
                 // add the energy source breakdown.
 
@@ -457,7 +457,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   lineWidth: 20,
                   linecap: "square",
                   animation: false,
-                  color: "#1c70b8",
+                  color: "#595959",
                   showInLegend: true,
                   enableMouseTracking: false
                 });
@@ -485,7 +485,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   lineWidth: 20,
                   linecap: "square",
                   animation: false,
-                  color: "#77aad4",
+                  color: "#1c70b8",
                   showInLegend: true,
                   enableMouseTracking: false
                 });
