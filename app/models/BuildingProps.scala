@@ -37,6 +37,7 @@ case class BuildingProperties(parameters: JsValue) {
       case _ => throw new Exception("Could not retrieve State")
     }
   }
+
   def getBaselineConstant: Future[Int] = Future{
     parameters.asOpt[BaselineConstant] match {
       case Some(a) => a.baselineConstant
@@ -45,6 +46,13 @@ case class BuildingProperties(parameters: JsValue) {
   }
 
 
+  def getTarget2030Value:Boolean = {
+    parameters.validate[Target2030] match {
+      case JsSuccess(a, _) => a.target2030
+      case JsError(err) => false
+      //throw new Exception("Could not determine target EUI!")
+    }
+  }
 
   def getPercentBetterThanMedia:Future[Double] = {
     for {
@@ -175,6 +183,11 @@ case class BuildingProperties(parameters: JsValue) {
 case class PosInt(value: Int)
 object PosInt {
   implicit val reads: Reads[PosInt] = JsPath.read[Int](Reads.min(0)).map(new PosInt(_))
+}
+
+case class Target2030(target2030: Boolean)
+object Target2030 {
+  implicit val Target2030Reads:Reads[Target2030] = Json.format[Target2030]
 }
 
 case class PosDouble(value: Double)

@@ -77,7 +77,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
             for(var i = 0; i < $scope.buildingProperties.buildingType.residential.length; i++ ) {
                 if( $scope.buildingProperties.buildingType.residential[i].id === v.id){
-                    $scope.isResidential = true;
+                    if (v.id === "MultiFamily"){
+                        $scope.isResidential = false;
+                    } else {
+                        $scope.isResidential = true;
+                    }
                     $scope.propTypes = [];
                     break;
                 }
@@ -85,7 +89,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
             for(var j = 0; j < $scope.propTypes.length; j++ ) {
                 for(var k = 0; k < $scope.buildingProperties.buildingType.residential.length; k++ ) {
-                    if( $scope.propTypes[j].type === $scope.buildingProperties.buildingType.residential[k].id){
+                    if( $scope.propTypes[j].type === $scope.buildingProperties.buildingType.residential[k].id &&
+                    $scope.propTypes[j].type !== "MultiFamily"){
                         $scope.clearProp($scope.propTypes[j]);
                         break;
                     }
@@ -231,7 +236,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.scoreText = "Score";
             $scope.scoreGraph = "Rating";
             $scope.FFText = $sce.trustAsHtml('Site FF-EUI*');
-            $scope.scoreUnits = $scope.isResidential ? "0-130" : "0-100";
+            $scope.scoreUnits = $scope.isResidential  ? "0-130" : "0-100";
 
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
             $scope.benchmarkResult.city = $scope.auxModel.city;
@@ -411,6 +416,12 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.netMetered = $scope.auxModel.netMetered;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
+
+                    if($scope.isResidential && !$scope.auxModel.is2030 && ($scope.propTypes[i].type !== "MultiFamily")){
+                        $scope.propTypes[i].propertyModel.target2030=true;
+                    } else {
+                        $scope.propTypes[i].propertyModel.target2030=false;
+                    }
 
                     if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
                         $scope.propTypes[i].propertyModel.energies=null;
@@ -599,7 +610,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 residential: [
                     {id:"SingleFamilyDetached",name:"Single Family - Detached"},
                     {id:"SingleFamilyAttached",name:"Single Family - Attached"},
-                    {id:"MobileHome",name:"Mobile Home"}
+                    {id:"MobileHome",name:"Mobile Home"},
+                    {id:"MultiFamily",name:"Multifamily Housing"}
                 ]
             }
         };

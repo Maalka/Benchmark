@@ -17,6 +17,15 @@ case class CombinedPropTypes(params: JsValue) {
   val result = params.as[List[JsValue]]
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
 
+
+  def convertToZeroScale(value:Energy):Energy = {
+    if(buildingProps.getTarget2030Value == false) {
+      value
+    }else {
+      value * 100 / 130
+    }
+  }
+
   def getWholeBuildingSourceMedianEnergy:Future[Energy] = {
     for {
       wholeBuildingSourceMedianEUI <- getWholeBuildingSourceMedianEUI
@@ -42,7 +51,7 @@ case class CombinedPropTypes(params: JsValue) {
             }
           }
         }
-      } yield lookUpSourceMedianEUI
+      } yield convertToZeroScale(lookUpSourceMedianEUI)
     }
 
   def getMedianSourceEUI(buildingList:List[JsValue]):Future[Energy] = {

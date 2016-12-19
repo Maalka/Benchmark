@@ -6,6 +6,7 @@
             </div>
             <ul class="list">
                 <li>Make sure you have filled out all of the required fields</li>
+                <li>Please note that commas are not allowed in the numeric fields</li>
             </ul>
         </div>
         <h3 class="ui header">
@@ -320,7 +321,7 @@
                         </div>
                         <div class="five wide column">
                             <div class="ui input">
-                                <input ng-model="energyEntry.energyUse" value ="{{energyEntry.energyUse}}">
+                                <input type="number" ng-model="energyEntry.energyUse" value ="{{energyEntry.energyUse}}">
                             </div>
                         </div>
                         <div ng-repeat-end class="one wide column">
@@ -386,7 +387,7 @@
                         </div>
                         <div class="five wide column">
                             <div class="ui input">
-                                <input ng-model="energyEntry.energyUse" value ="{{energyEntry.energyUse}}">
+                                <input type="number" ng-model="energyEntry.energyUse" value ="{{energyEntry.energyUse}}">
                             </div>
                         </div>
                         <div ng-repeat-end class="one wide column">
@@ -407,8 +408,6 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </form>
 </div>

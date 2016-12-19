@@ -25,15 +25,19 @@ case class EUIMetrics(parameters: JsValue) {
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
   val buildingEmissions:Emissions = Emissions(result.head)
 
+
   def getESScore:Future[Int] = es.getESScore
   def getTargetESScore:Future[Int] = es.getTargetESScore
   def getMedianESScore:Future[Int] = Future(50)
+
 
   def zepiMedian:Future[Int] = buildingProps.getBaselineConstant
 
 
   def percentBetterMedian:Future[Double] = Future{0}
   def percentBetterTarget:Future[Double] = buildingProps.getPercentBetterThanMedia
+
+
 
   def percentBetterActual:Future[Double] = {
     for {
