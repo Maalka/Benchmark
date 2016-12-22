@@ -455,6 +455,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
     };
 
+
         $scope.geographicProperties = {
                 country:
                     [{id:"USA",name:"United States"},

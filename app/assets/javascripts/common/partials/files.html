@@ -1,75 +1,15 @@
-<div ng-cloak>
-	<div class="ui basic right aligned segment">
-		<form name="form" class="ui form">
-			<button class="ui right labeled icon button"
-				ngf-select
-				ng-model="attachment"
-				name="attachment"
-				ngf-max-size="20MB" ng-class="{disabled: loadingFileFiller.attachmentName !== undefined}">
-				<i class="attach basic icon"></i>
-					{{ attachment.name || "Upload File" }}
-			</button>
 
-			<button ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined" class="ui primary button" 
-					type="submit" 
-					ng-click="submit()">submit</button>
-		</form>
-	</div>
+<form name="form" class="ui form">
+	<button class="ui right labeled icon button"
+		ngf-select
+		ng-model="attachment"
+		name="attachment"
+		ngf-max-size="20MB" ng-class="{disabled: loadingFileFiller.attachmentName !== undefined}">
+		<i class="attach basic icon"></i>
+			{{ attachment.name || "Upload CSV" }}
+	</button>
 
-	<div ng-if="!files.length > 0">
-		<div class="ui message"> There are no files attached to this property</div>
-	</div>
-	<div ng-if="files.length > 0" class="ng-cloak">
-		<div class="ui hidden divider"></div>
-		<modal class="ui modal" 
-			ng-if="files"
-	        data-attachModel=".image-modal">
-			<div class="image content" ng-if="imageModel.src !== undefined">
-		        <img ng-src="{{imageModel.src}}" style = " display: block; width: 100%; height: 100%">
-		    </div>
-		</modal>
-		<div class="ui four doubling cards" nv-file-over="" uploader="uploader">
-			<div class="ui card" ng-if="loadingFileFiller.attachmentName !== undefined">
-				<div class="content">
-					<div class="ui active centered large text loader">
-						<p ng-if="loadingFileFiller.progressPercentage < 100">
-							Uploading: {{ loadingFileFiller.progressPercentage}}%
-						</p>
-						<p ng-if="loadingFileFiller.progressPercentage === 100">
-							Processing
-						</p>
-					</div>
-				</div>
-			</div>
-			<div ng-repeat = "f in files" class="ui card">
-			    <div class="content">
-					<div class="header">{{ f.title | humanizeTruncate : 28 : 12 : 12 }}</div>
-				    <div class="meta">{{ f.creationTime | momentCalendarTime }}</div>
-		        </div>
-			    <div class="ui image" ng-if="f.json.preview === true">
-					<img class="image" ng-if = "f.json.mimeType.indexOf('image') !== 0"
-						ng-src="/services/property/{{propertyId}}/file/{{f.guid}}?thumb=true">
-
-			    	<img class="image-modal" popup ng-if = "f.json.mimeType.indexOf('image') === 0"
-						ng-click="imageModel['src'] = '/services/property/' + propertyId + '/file/' + f.guid"
-						data-on="'click'" data-inline="'false'" data.popup="'#' + guid + '-popup'"
-					 	data-popup-position="'top center'"
-						ng-src="/services/property/{{propertyId}}/file/{{f.guid}}?thumb=true">	
-			    	<div class="ui popup" id="{{guid}}-popup" ng-if = "f.json.mimeType.indexOf('image') === 0">{{f.description}}</div>
-			    </div>
-				<div class="extra content">
-				    <span class="left floated like">
-				    	<a href="/services/property/{{propertyId}}/file/{{f.guid}}" target="_new"><i class="external icon"></i>
-				      		download</a>
-				    </span>
-			    	<span class="right floated">
-				    	<a ng-click="deleteFile(f.guid);" target="_new">
-				     		<i class="external delete icon"></i>
-						      delete
-					     </a>
-				    </span>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+	<button ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined" class="ui primary button"
+			type="submit"
+			ng-click="submitFile()">submit</button>
+</form>

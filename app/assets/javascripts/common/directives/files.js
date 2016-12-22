@@ -1,21 +1,24 @@
+/**
+ * A directive
+ * for uploading
+ * CSV files
+ */
 define(['angular', './main', 'angular-file-upload'], function(angular) {
     'use strict';
-    var mod = angular.module('common.directives.controls');
+
+    var mod = angular.module('common.directives');
+
     mod.directive('files', ['$log', 'errorPopoverService', 'playRoutes', 'Upload', function ($log, errorPopover, playRoutes, Upload) {
         return {
             restrict: 'E',
-            scope: {
-                'portfolioId': "=",
-                'propertyId': "="
-            },
+            scope: {},
             templateUrl: "javascripts/common/partials/files.html",
-            controller: ["$scope", "$element", "$timeout", "playRoutes", "portfolioService", "userService", 
-                function ($scope, $element, $timeout, playRoutes, portfolioService, userService) {
+            controller: ["$scope", "$element", "$timeout", "playRoutes",
+                function ($scope, $element, $timeout, playRoutes) {
                 $scope.searchInput = "";
-                var portfolio;
-                var user;
 
-                $scope.submit = function() {
+
+                $scope.submitFile = function() {
                     if ($scope.attachment) {
                         $scope.upload($scope.attachment);
                     }
@@ -24,13 +27,13 @@ define(['angular', './main', 'angular-file-upload'], function(angular) {
 
                 $scope.upload = function (file) {
                     Upload.upload({
-                        url: playRoutes.controllers.PropertyController.putFile($scope.propertyId).url,
+                        url: playRoutes.controllers.CSVController.upload().url,
                         data: {attachment: file}
                     }).then(function (resp) {
                         console.log('Success ' + resp.config.data.attachment.name + 'uploaded. Response: ' + resp.data);
                         $scope.attachment  = undefined;
 
-                        if (resp.data.status == "OK") {
+                        if (resp.data.status === "OK") {
                             $timeout(function () { 
                                 $scope.property.documents.push(resp.data.result);
                                 $scope.files.unshift(resp.data.result);
@@ -54,48 +57,6 @@ define(['angular', './main', 'angular-file-upload'], function(angular) {
                         console.log('progress: ' + progressPercentage + '% ' + evt.config.data.attachment.name);
                     });
                  };
-
-                $scope.loading = true;
-                $scope.imageModel = {};
-                portfolioService.bootstrapPortfolio($scope.portfolioId).then(function (_portfolio) {
-                    portfolio = _portfolio;
-                    return _portfolio;
-                }).then(function (_portfolio){ 
-                    return portfolioService.property($scope.portfolioId, $scope.propertyId).then ( function (property){
-                        return property;
-                    });
-                }).then(function(property){ 
-                    $scope.property = property;
-                    $scope.loading = false;
-                });
-                $scope.$watch("property", function (property) {
-                    if(property !== undefined) {
-                        $scope.files = property.documents.filter(function (d) { 
-                            return d.mimeType === "maalka/file";
-                        });
-                    }
-                });
-                $scope.putFile = function() { 
-
-                };
-                $scope.deleteFile = function(guid) { 
-                    if ($scope.property !== undefined) {
-                        playRoutes.controllers.PropertyController.deleteFile($scope.propertyId, guid).delete().then ( function (response) {
-                            if (response.data.status === "OK") {
-                                $scope.property.documents = $scope.property.documents.filter(function (d) { 
-                                    return d.guid !== guid;
-                                });
-                                // the watch should find this... but it doesn't.
-                                $scope.files = $scope.property.documents.filter(function (d) { 
-                                    return d.mimeType === "maalka/file";
-                                });                                
-                            } else {
-                                console.log("error deleting file");
-                                console.log(response);
-                            }
-                        });
-                    }
-                };
             }]
         };
     }]);
