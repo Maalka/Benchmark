@@ -1,5 +1,4 @@
 <div>
-    <files></files>
     <form class="ui form" novalidate ng-class="{'error': !forms.baselineForm.$valid && forms.hasValidated}" name="forms.baselineForm" ng-cloak>
         <div class="ui error message" ng-if="!forms.baselineForm.$valid && forms.hasValidated">
             <div class="header">
@@ -24,7 +23,7 @@
                     <div class="eleven wide column">
                         <div class="inline fields">
                             <div class="sixteen wide field required">
-                                <input type="text" ng-model="auxModel.buildingName"
+                                <input type="text" ng-model="meter.buildingName"
                                        required name="buildingName" min="0" placeholder="Building Name">
                             </div>
                         </div>
@@ -35,7 +34,7 @@
                     <div class="eleven wide column">
                         <div class="inline fields">
                             <div class="sixteen wide field required">
-                                <input type="text" ng-model="auxModel.postalCode" ng-blur="postalCodeCheck()"
+                                <input type="text" ng-model="meter.postalCode"
                                        required name="postalCode" placeholder="Postal Code">
                             </div>
                         </div>
@@ -46,92 +45,157 @@
                     <div class="eleven wide column">
                         <div class="inline fields">
                             <div class="sixteen wide field required">
-                                <input type="text" ng-model="auxModel.meter.name"
+                                <input type="text" ng-model="meter.meterName"
                                        required name="meterName" placeholder="Meter Name">
                             </div>
                         </div>
                     </div>
-                    <div class="five wide column">
-                        <label class="design-label">City | State/Prov.</label>
-                    </div>
-                    <div class="eleven wide column">
-                        <div class="inline fields required">
-                            <div class="nine wide field">
-                                <input type="text" ng-model="auxModel.city"
-                                     required name="city" placeholder="City">
+
+                    <div class="sixteen wide column">
+                        <div class="inline fields">
+                            <div class="three wide field">
+                                <label class="design-label">Start Date</label>
                             </div>
-                            <div class="seven wide field">
-                                <select class="ui dropdown search"
-                                    ng-model="auxModel.state"
-                                    ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: auxModel.country}"
-                                    required
-                                    name="state">
+                            <div class="five wide field required">
+                                <input type="text" ng-model="meter.startDate"
+                                       required name="startDate" placeholder="Start Date">
+                            </div>
+
+                            <div class="three wide field">
+                                <label class="design-label">End Date</label>
+                            </div>
+                            <div class="five wide field required">
+                                    <input type="text" ng-model="meter.endDate"
+                                           required name="endDate" placeholder="End Date">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sixteen wide column">
+                        <div class="inline fields">
+                            <div class="three wide field">
+                                <label class="design-label">DD Type</label>
+                            </div>
+                            <div class="five wide field required">
+                                <select class="ui dropdown"
+                                        dropdown
+                                        ng-model="meter.ddType"
+                                        ng-options="item.id as item.name for item in meter.thresholdOptions"
+                                        required>
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="three wide field">
+                                <label class="design-label">Threshold</label>
+                            </div>
+                            <div class="five wide field required">
+                                <input type="text" ng-model="meter.ddThreshold"
+                                       required name="ddthreshold" placeholder="Threshold (F)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sixteen wide column">
+                        <div class="inline fields">
+                            <div class="field">
+                                <label class="design-label">CSV Data Frequency</label>
+                            </div>
+                            <div class="five wide field required">
+                                <select class="ui dropdown"
+                                        dropdown
+                                        ng-model="meter.frequency"
+                                        ng-options="item.id as item.name for item in meter.frequencyOptions"
+                                        required>
                                     <option value="">Select</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-
-                    <div class="five wide column" ng-show="lacksDD">
-                        <div class="tooltip">Degree Days
-                            <i class="large circle help icon"></i>
-                            <span class="tooltiptext">No Degree Days found for your ZipCode!
-                                <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" target="_blank">Click Here</a>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="eleven wide column" ng-show="lacksDD">
+                    <div class="sixteen wide column">
                         <div class="inline fields">
-                            <div class="two wide field">
-                                <label>HDD</label>
+                            <div class="four wide field">
+                                <label class="design-label">Days of Week</label>
                             </div>
-                            <div class="five wide field required">
-                                <input type="number" ng-model="auxModel.HDD"
-                                       required name="HDD" min="0" placeholder="HDD">
+                            <div class="ui positive checkbox field">
+                                <input type         = "checkbox"
+                                       ng-model        = "monday" id="M"
+                                       ng-init         = false
+                                       ng-true-value   = true
+                                       ng-false-value  = false
+                                       name            = "monday">
+                                <label>M</label>
                             </div>
-                            <div class="two wide field">
-                                <label>CDD</label>
-                            </div>                    
-                            <div class="four wide field required">
-                                <input type="number" ng-model="auxModel.CDD"
-                               required name="CDD" min="0">
+                            <div class="ui positive checkbox field">
+                                <input type         = "checkbox"
+                                       ng-model        = "tuesday" id="T"
+                                       ng-init         = false
+                                       ng-true-value   = true
+                                       ng-false-value  = false
+                                       name            = "tuesday">
+                                <label>T</label>
+                            </div>
+                            <div class="ui positive checkbox field">
+                                <input type         = "checkbox"
+                                       ng-model        = "wednesday" id="W"
+                                       ng-init         = false
+                                       ng-true-value   = true
+                                       ng-false-value  = false
+                                       name            = "wednesday">
+                                <label>W</label>
+                            </div>
+                            <div class="ui positive checkbox field">
+                                <input type         = "checkbox"
+                                       ng-model        = "thursday" id="Th"
+                                       ng-init         = false
+                                       ng-true-value   = true
+                                       ng-false-value  = false
+                                       name            = "thursday">
+                                <label>Th</label>
+                            </div>
+                            <div class="ui positive checkbox field">
+                                <input type         = "checkbox"
+                                       ng-model        = "friday" id="F"
+                                       ng-init         = false
+                                       ng-true-value   = true
+                                       ng-false-value  = false
+                                       name            = "friday">
+                                <label>F</label>
+                            </div>
+                            <div class="ui positive checkbox field">
+                                <input type         = "checkbox"
+                                       ng-model        = "saturday" id="Sa"
+                                       ng-init         = false
+                                       ng-true-value   = true
+                                       ng-false-value  = false
+                                       name            = "saturday">
+                                <label>Sa</label>
+                            </div>
+                            <div class="ui positive checkbox field">
+                                <input type         = "checkbox"
+                                       ng-model        = "sunday" id="Su"
+                                       ng-init         = false
+                                       ng-true-value   = true
+                                       ng-false-value  = false
+                                       name            = "sunday">
+                                <label>Su</label>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="sixteen wide column">
-                    <div class="ui divider"></div>
-                </div>
-                <div class="inline fields">
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" id="project-cb-new" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"
-                               ng-value='true'>
-                            <label for='project-cb-new'>New construction</label>
 
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" id="project-cb-existing" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"a
-                               ng-value='false'>
-                            <label for="project-cb-existing">Existing Building (&lt;40% New)</label>
-                        </div>
-                    </div>
-                    <div class="tooltip sup">
-                        i<span class="tooltiptext">New constructions have a target of 70% reductions in energy-use relative to national averages. Existing buildings have a 20% goal. </span>
-                    </div>
                 </div>
 
             </div>
-            <h3 class="ui header"><i class="line chart icon"></i>Energy Reduction Target</h3>
+            <h3 class="ui header"><i class="line chart icon"></i>ENTER TIME SERIES DATA</h3>
             <div class="ui segment reduction page-break-after">
-                <p>
-                    Enter your target expressed as either a ZERO Score or as
-                    a percent reduction from a baseline EUI. A baseline
-                    represents a typical modern building.
-                </p>
+                <div class="inline fields">
+                    <div class="six wide field">
+                        <files></files>
+                    </div>
+                    <div class="field">
+                        Upload Time Series CSV
+                    </div>
+
+
+                </div>
             </div>
         </div>
     </form>

@@ -6,7 +6,6 @@ import play.api.libs.json.{JsValue, Json}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import com.github.tototoshi.csv._
 import play.api.Play
 
 import scala.reflect.io.File

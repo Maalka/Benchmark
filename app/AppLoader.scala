@@ -1,6 +1,6 @@
 import javax.inject.Inject
 
-import controllers.{CSVController, DegreeDaysController}
+import controllers.{CSVController}
 import play.api.ApplicationLoader.Context
 import play.api.cache.EhCacheComponents
 import play.api.http.HttpFilters
@@ -56,7 +56,6 @@ class AppComponents(context: Context) extends BuiltInComponentsFromContext(conte
 
   lazy val applicationController = new controllers.Application(defaultCacheApi)
   lazy val baselineController = new controllers.BaselineController(defaultCacheApi)
-  lazy val degreeDaysController = new DegreeDaysController(defaultCacheApi)
   lazy val csvController = new CSVController(defaultCacheApi)
 //  lazy val usersController = new controllers.Users(defaultCacheApi)
   lazy val assets = new controllers.Assets(httpErrorHandler)
@@ -64,7 +63,7 @@ class AppComponents(context: Context) extends BuiltInComponentsFromContext(conte
   // Routes is a generated class
   //override def router: Router = new Routes(httpErrorHandler, applicationController, baselineController, usersController, assets)
   override def router: Router = new Routes(httpErrorHandler, applicationController, baselineController,
-    degreeDaysController, csvController, assets)
+    csvController, assets)
   val gzipFilter = new GzipFilter(shouldGzip =
     (request, response) => {
       val contentType = response.headers.get("Content-Type")
