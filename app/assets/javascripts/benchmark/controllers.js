@@ -28,6 +28,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.buildingZone = "commercial";
     $scope.targetToggle = "percentReduction";
     $scope.isResidential = false;
+    $scope.meter = {};
 
     // check the media to handel the ng-if media statements
     // it turns out that form elements do not respect "display: none"
@@ -348,9 +349,6 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         }
     });
 
-    $scope.degreeDaysCheck = function () {
-        $scope.computeDegreeDays();
-    };
 
     $scope.submit = function () {
         if($scope.forms.baselineForm === undefined) {
