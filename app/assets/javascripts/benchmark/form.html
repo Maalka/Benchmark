@@ -57,18 +57,17 @@
                                 <label class="design-label">Start Date</label>
                             </div>
                             <div class="five wide field required">
-                                <input type="text" ng-model="meter.startDate"
-                                       required name="startDate" placeholder="Start Date">
+                                <input type="text" daterangepicker start-date="newData['x']" required name="startDate"
+                                                          ng-model="meter.startDate" placeholder="Start Date" />
                             </div>
 
                             <div class="three wide field">
                                 <label class="design-label">End Date</label>
                             </div>
                             <div class="five wide field required">
-                                    <input type="text" ng-model="meter.endDate"
+                                    <input type="text" daterangepicker ng-model="meter.endDate"
                                            required name="endDate" placeholder="End Date">
                             </div>
-                            <daterangepicker></daterangepicker>
                         </div>
                     </div>
                     <div class="sixteen wide column">
