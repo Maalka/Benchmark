@@ -13,6 +13,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.meter = {};
 
 
+
     // check the media to handel the ng-if media statements
     // it turns out that form elements do not respect "display: none"
     // and need to be removed from the dom
@@ -92,9 +93,12 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 $scope.meterName = $scope.meter.meterName;
                 $scope.normalizeStartDate = $scope.meter.startDate;
                 $scope.normalizeEndDate = $scope.meter.endDate;
-                $scope.ddType = $scope.meter.ddType;
-                $scope.ddThreshold = $scope.meter.ddThreshold;
                 $scope.dataFrequency = $scope.meter.frequency;
+
+                $scope.ddThreshold = $scope.meter.ddThreshold ? $scope.meter.ddThreshold  : 65;
+                $scope.ddType = $scope.meter.ddType ? $scope.meter.ddType  : "avg";
+
+
 
                 $scope.days = [
                     $scope.monday,
@@ -105,6 +109,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.saturday,
                     $scope.sunday,
                 ];
+
+        console.log($scope);
 
 
         }else {

@@ -49,9 +49,10 @@ trait BaselineActions {
 
 
 
-  def getZEPIMetrics() = Action.async(parse.json) { implicit request =>
+  def normalize() = Action.async(parse.json) { implicit request =>
 
-    Future{OK}
+    Future{Ok("File has been uploaded")}
+
 
   }
 }
