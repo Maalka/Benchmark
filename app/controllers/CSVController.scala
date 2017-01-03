@@ -27,7 +27,9 @@ trait CSVActions {
         val uploadedFile = upload.ref.moveTo(new File(s"/tmp/upload/$filename"))
         val reader = CSVReader.open(uploadedFile)
         val csvOutput: CSVcompute = CSVcompute(reader.all())
-        csvOutput.getOutput.map {out => Console.println("line: out" + out)}
+
+        Console.println("csv output: " + csvOutput)
+
         Ok("File uploaded") }
     }.getOrElse {
       Future{
