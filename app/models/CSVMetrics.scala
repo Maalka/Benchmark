@@ -1,33 +1,30 @@
 package models
 
-import java.io.InputStream
+import org.joda.time.DateTime
 
-import play.api.libs.json.{JsValue, Json}
-
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import play.api.Play
+import scala.concurrent.Future
 
-import scala.reflect.io.File
 
 /**
   * Created by rimukas on 12/19/16.
   */
 
 
-
-
 case class CSVcompute(parameters: Any) {
 
+  val allLines = List[CSVLine]
 
-
-
-  def getOutput: Future[String] = {
-    Future{"yeh"}
+  val value = parameters match {
+    case List(startDate: DateTime, endDate: DateTime, value: Double, unit: String) => CSVLine(startDate, endDate, value, unit)
   }
 
-
-
+  def getOutput: Future[CSVLine] = {
+    Future{
+      value
+    }
+  }
 
 }
 
+case class CSVLine(startDate: DateTime, endDate: DateTime, value: Double, unit: String)
