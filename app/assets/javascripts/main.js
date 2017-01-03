@@ -18,6 +18,9 @@
         deps: ['jquery'],
         exports: 'angular'
       },
+      'angular-file-upload': {
+        deps: ['angular']
+      },
       'angular-route': ['angular'],
       'angular-cookies': ['angular'],
       'maalka-templates': {
@@ -50,6 +53,7 @@
       'angular': '../lib/angularjs/angular',
       'angular-route': '../lib/angularjs/angular-route',
       'angular-cookies': '../lib/angularjs/angular-cookies',
+      'angular-file-upload': '../lib/ng-file-upload/ng-file-upload',
       'highcharts-core': '../lib/highstock/highstock',
       'highcharts-more': '../lib/highstock/highcharts-more',
       'highcharts': './highcharts-theme',

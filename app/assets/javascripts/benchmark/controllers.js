@@ -6,28 +6,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
   'use strict';
   var DashboardCtrl = function($rootScope, $scope, $window, $sce, $timeout, $q, $log, matchmedia, benchmarkServices) {
 
-    $rootScope.pageTitle = "2030 Baseline";
-    //The model that will be submitted for analysis
-    $scope.auxModel = {};
-    //The table of energy information input by user, default to empty
-    $scope.energies = [{}, {}];
-    $scope.renewableEnergies = [{}, {}];
-    //For displaying user-input energy entries after having been saved
-    $scope.propList = [];
-    $scope.benchmarkResult = null;
-    $scope.lacksDD = false;
-
-    $scope.propOutputList = [];
-    $scope.tableEUIUnits = null;
-    $scope.tableEnergyUnits = null;
+    $rootScope.pageTitle = "Weather Normalization";
     $scope.forms = {'hasValidated': false};
-    $scope.propTypes = [];
     $scope.matchmedia = matchmedia;
     $scope.mainColumnWidth = "";
-    $scope.propText = "Primary Function of Building";
-    $scope.buildingZone = "commercial";
-    $scope.targetToggle = "percentReduction";
-    $scope.isResidential = false;
+    $scope.meter = {};
+
+
 
     // check the media to handel the ng-if media statements
     // it turns out that form elements do not respect "display: none"
@@ -66,268 +51,23 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
 
 
-    $scope.$watch("auxModel.buildingType", function (v) {
-        if (v === undefined || v === null) {
-            return;
-        }
-
-        if(($scope.auxModel.country) && (v)){
-
-            $scope.isResidential = false;
-
-            for(var i = 0; i < $scope.buildingProperties.buildingType.residential.length; i++ ) {
-                if( $scope.buildingProperties.buildingType.residential[i].id === v.id){
-                    if (v.id === "MultiFamily"){
-                        $scope.isResidential = false;
-                    } else {
-                        $scope.isResidential = true;
-                    }
-                    $scope.propTypes = [];
-                    break;
-                }
-            }
-
-            for(var j = 0; j < $scope.propTypes.length; j++ ) {
-                for(var k = 0; k < $scope.buildingProperties.buildingType.residential.length; k++ ) {
-                    if( $scope.propTypes[j].type === $scope.buildingProperties.buildingType.residential[k].id &&
-                    $scope.propTypes[j].type !== "MultiFamily"){
-                        $scope.clearProp($scope.propTypes[j]);
-                        break;
-                    }
-                }
-            }
-
-            $scope.propTypes.push({
-                type: v.id,
-                name: v.name,
-                country:$scope.auxModel.country,
-                buildingZone: $scope.auxModel.buildingZone,
-                toggleTarget: $scope.auxModel.targetToggle
-            });
-
-            $scope.propText="Add Another Use";
-            // there seems to be a $digest issue where undefined isn't carried through to the dropdown directive
-            $scope.auxModel.resetBuildingType = true;
-            $scope.auxModel.buildingType = undefined;
-        }
-    });
-
-    $scope.$watch("auxModel.country", function () {
-        $scope.benchmarkResult = null;
-        $scope.clearGeography();
-    });
-
-    $scope.$watch("auxModel.newConstruction", function (v) {
-        if(v === true){
-            $scope.auxModel.percentBetterThanMedian = 70;
-            $scope.auxModel.targetToggle = "percentReduction";
-        }else{
-            $scope.auxModel.percentBetterThanMedian = 20;
-        }
-    });
-
-    $scope.clearGeography = function () {
-        $scope.auxModel.city = "";
-        $scope.auxModel.state = null;
-        //$scope.auxModel.postalCode = "";
-        $scope.auxModel.buildingType = undefined;
-        $scope.propTypes = [];
-    };
-
-
-    //populate user-input energy information table to calculate site/source EUI and Energy Star metrics
-    //display errors when present
-    $scope.addEnergiesRow = function(){
-        $scope.energies.push({});
-    };
-
-    $scope.print = function () {
-        window.print();
-    };
-
-    $scope.removeRow = function(index){
-        $scope.energies.splice(index, 1);
-        if ($scope.energies.length ===    1) {
-            $scope.addEnergiesRow();
-        }
-    };
-
-    $scope.addRenewableEnergiesRow = function(){
-        $scope.renewableEnergies.push({});
-    };
-
-    $scope.removeRenewableRow = function(index){
-        $scope.renewableEnergies.splice(index, 1);
-        if ($scope.renewableEnergies.length ===    1) {
-            $scope.addRenewableEnergiesRow();
-        }
-    };
-
-
-
-    $scope.removeProp = function(prop){
-        var index;
-        for(var i = 0; i < $scope.propTypes.length; i++ ) {
-            if($scope.propTypes[i].name === prop.model.name && $scope.propTypes[i].country === prop.model.country) {
-                index = i;
-                break;
-            }
-        }
-
-        $scope.propTypes.splice(index, 1);
-        if($scope.propTypes.length === 0){
-            $scope.propText="Primary Function of Building";
-        }
-    };
-
-    $scope.clearProp = function(prop){
-        var index;
-
-        for(var i = 0; i < $scope.propTypes.length; i++ ) {
-            if($scope.propTypes[i].name === prop.name && $scope.propTypes[i].country === prop.country) {
-                index = i;
-                break;
-            }
-        }
-
-        $scope.propTypes.splice(index, 1);
-        if($scope.propTypes.length === 0){
-            $scope.propText="Primary Function of Building";
-        }
-    };
-
-    $scope.postalCodeCheck = function() {
-        if($scope.auxModel.postalCode){
-            if($scope.auxModel.postalCode.length > 4){
-                $scope.temp = {"postalCode":$scope.auxModel.postalCode};
-                $scope.computeDegreeDays();
-            }else{
-                $scope.clearDegreeDays();
-            }
-        }else{
-            $scope.clearDegreeDays();
-         }
-    };
-
-    $scope.clearDegreeDays = function(){
-        $scope.auxModel.HDD = null;
-        $scope.auxModel.CDD = null;
-        $scope.lacksDD = true;
-    };
-
-    $scope.computeDegreeDays = function(){
-
-        $scope.futures = benchmarkServices.getDDMetrics($scope.temp);
-        $q.resolve($scope.futures).then(function (results) {
-            $scope.auxModel.CDD = $scope.getPropResponseField(results,"CDD");
-            $scope.auxModel.HDD = $scope.getPropResponseField(results,"HDD");
-            if (results.errors.length > 0){
-                $scope.lacksDD = true;
-            }
-        });
-    };
 
     $scope.computeBenchmarkResult = function(){
 
         $scope.futures = benchmarkServices.getZEPIMetrics($scope.propList);
 
         $q.resolve($scope.futures).then(function (results) {
-            $scope.baselineConstant = $scope.getBaselineConstant();
-            $scope.scoreText = "Score";
-            $scope.scoreGraph = "Rating";
-            $scope.FFText = $sce.trustAsHtml('Site FF-EUI*');
-            $scope.scoreUnits = $scope.isResidential  ? "0-130" : "0-100";
-
-            $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
-            $scope.benchmarkResult.city = $scope.auxModel.city;
-            $scope.benchmarkResult.state = $scope.auxModel.state;
-            $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
-            console.log($scope.auxModel.targetToggle);
-            if ($scope.auxModel.targetToggle === "zeroScore") {
-                $scope.benchmarkResult.percentBetterThanMedian = $scope.getBaselineConstant() - $scope.auxModel.percentBetterThanMedian;
-            } else {
-                $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
-            }
-
+            console.log(results);
         });
     };
 
-    $scope.getBaselineConstant = function(){
-        if ($scope.isResidential === true && $scope.auxModel.is2030 === true){
-            return 130;
-        } else {
-            return 100;
-        }
-    };
 
-    $scope.getPropResponseField = function(propResponse,key){
-        var returnValue;
-
-        for (var i =0; i < propResponse.values.length; i ++) {
-            if (propResponse.values[i][key] !== undefined) {
-              returnValue = propResponse.values[i][key];
-              break;
-            }
-        }
-        return returnValue;
-    };
 
     $scope.computeBenchmarkMix = function(results){
 
-        $scope.propOutputList = $scope.getPropResponseField(results,"propOutputList");
-        $scope.percentBetterSiteEUI = Math.ceil($scope.getPropResponseField(results,"percentBetterSiteEUI"));
-        $scope.siteEUI = Math.ceil($scope.getPropResponseField(results,"siteEUI"));
-
-        if($scope.siteEUI > $scope.percentBetterSiteEUI){
-            $scope.showPercentBetterTarget = 'decrease';
-            $scope.percentBetterGoal = Math.ceil($scope.getPropResponseField(results,"percentBetterActualtoGoal"));
-        }else if($scope.siteEUI < $scope.percentBetterSiteEUI){
-            $scope.showPercentBetterTarget = 'better';
-            $scope.percentBetterGoal = Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"));
-        } else {
-            $scope.showPercentBetterTarget = undefined;
-        }
-
+        console.log(results);
         var metricsTable = [
-
-              {"actualES": $scope.getPropResponseField(results,"actualES")},
-              {"medianES": $scope.getPropResponseField(results,"actualES")},
-              {"targetES": $scope.getPropResponseField(results,"targetES")},
-
-              {"percentBetterMedian": Math.ceil($scope.getPropResponseField(results,"percentBetterMedian"))},
-              {"percentBetterTarget": Math.ceil($scope.getPropResponseField(results,"percentBetterTarget"))},
-              {"percentBetterActual": Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
-              {"percentBetterActualtoGoal": Math.ceil($scope.getPropResponseField(results,"percentBetterActualtoGoal"))},
-              {"actualGoalBetter": Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"))},
-
-              {"medianZEPI": $scope.getBaselineConstant()},
-              {"percentBetterZEPI": Math.ceil($scope.getPropResponseField(results,"percentBetterZEPI"))},
-              {"actualZEPI": $scope.getBaselineConstant() - Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
-
-              {"siteEUI": Math.ceil($scope.getPropResponseField(results,"siteEUI"))},
-              {"sourceEUI": Math.ceil($scope.getPropResponseField(results,"sourceEUI"))},
-              {"siteEnergyList": $scope.getPropResponseField(results,"siteEnergyList")},
-              {"totalSiteEnergy": Math.ceil($scope.getPropResponseField(results,"totalSiteEnergy"))},
-              {"sourceEnergyList": $scope.getPropResponseField(results,"sourceEnergyList")},
-              {"totalSourceEnergy": Math.ceil($scope.getPropResponseField(results,"totalSourceEnergy"))},
-
-              {"medianSiteEUI": Math.ceil($scope.getPropResponseField(results,"medianSiteEUI"))},
-              {"medianSourceEUI": Math.ceil($scope.getPropResponseField(results,"medianSourceEUI"))},
-              {"medianSiteEnergy": Math.ceil($scope.getPropResponseField(results,"medianSiteEnergy"))},
-              {"medianSourceEnergy": Math.ceil($scope.getPropResponseField(results,"medianSourceEnergy"))},
-
-              {"percentBetterSiteEUI": Math.ceil($scope.getPropResponseField(results,"percentBetterSiteEUI"))},
-              {"percentBetterSourceEUI": Math.ceil($scope.getPropResponseField(results,"percentBetterSourceEUI"))},
-              {"percentBetterSiteEnergy": Math.ceil($scope.getPropResponseField(results,"percentBetterSiteEnergy"))},
-              {"percentBetterSourceEnergy": Math.ceil($scope.getPropResponseField(results,"percentBetterSourceEnergy"))},
-
-              {"totalEmissions": Math.ceil($scope.getPropResponseField(results,"totalEmissions"))},
-              {"percentBetterEmissions": Math.ceil($scope.getPropResponseField(results,"percentBetterEmissions"))},
-              {"medianEmissions": Math.ceil($scope.getPropResponseField(results,"medianEmissions"))},
-
-              {"onSiteRenewableTotal": $scope.getPropResponseField(results,"onSiteRenewableTotal")},
-              {"offSitePurchasedTotal": $scope.getPropResponseField(results,"offSitePurchasedTotal")},
-              {"siteEnergyALL": $scope.getPropResponseField(results,"siteEnergyALL")}
+            //the return after weather normalization
         ];
         return metricsTable;
     };
@@ -338,122 +78,57 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         }
     };
 
-    $scope.$watch("auxModel.reportingUnits", function (value) {
-        if (value === undefined) {
-            return;
-        }
-        // only submit if the user has already CLICK on the submit button
-        if($scope.forms.hasValidated) {
-            $scope.submit();
-        }
-    });
-
-    $scope.degreeDaysCheck = function () {
-        $scope.computeDegreeDays();
-    };
 
     $scope.submit = function () {
         if($scope.forms.baselineForm === undefined) {
             return;
         }
         $scope.forms.hasValidated = true; /// only check the field errors if this form has attempted to validate.
-        $scope.propList = [];
-
-        if($scope.auxModel.reportingUnits==="us"){
-            $scope.tableEnergyUnits="KBtu";
-            $scope.tableEUIUnits="KBtu/ft²";
-        }else {
-            $scope.tableEnergyUnits="kWh";
-            $scope.tableEUIUnits="kWh/m²";
-        }
-
-        if($scope.auxModel.CDD === undefined || $scope.auxModel.HDD === undefined ||
-        $scope.auxModel.HDD === null || $scope.auxModel.HDD === null){
-            $scope.lacksDD = true;
-        }
-
-        var validEnergy = function(e) {
-            return (e.energyType !== undefined &&
-                    e.energyName !== undefined &&
-                    e.energyUnits !== undefined &&
-                    e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
-        };
-
-        var mapEnergy = function (e) {
-            return {
-                'energyType': (e.energyType) ? e.energyType.id : undefined,
-                'energyName': (e.energyType) ? e.energyType.name : undefined,
-                'energyUnits': e.energyUnits,
-                'energyUse': Number(e.energyUse),
-                'energyRate': null
-            };
-        };
-        var mapRenewableEnergy = function (e) {
-            return {
-                'energyType': (e.renewableType) ? e.renewableType.id : undefined,
-                'energyName': (e.renewableType) ? e.renewableType.name : undefined,
-                'energyUnits': e.renewableUnits,
-                'energyUse': Number(e.energyUse),
-                'energyRate': null
-            };
-        };
-
 
         if($scope.forms.baselineForm.$valid){
-            for (var i = 0; i < $scope.propTypes.length; i++){
-                if($scope.propTypes[i].valid === true){
-
-                    $scope.propTypes[i].propertyModel.baselineConstant = $scope.getBaselineConstant();
-                    $scope.propTypes[i].propertyModel.country = $scope.auxModel.country;
-                    $scope.propTypes[i].propertyModel.targetToggle = $scope.auxModel.targetToggle;
-                    $scope.propTypes[i].propertyModel.city = $scope.auxModel.city;
-                    $scope.propTypes[i].propertyModel.postalCode = $scope.auxModel.postalCode;
-                    $scope.propTypes[i].propertyModel.state = $scope.auxModel.state;
-                    $scope.propTypes[i].propertyModel.HDD = $scope.auxModel.HDD;
-                    $scope.propTypes[i].propertyModel.CDD = $scope.auxModel.CDD;
-                    $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
-                    $scope.propTypes[i].propertyModel.targetScore = null;
-                    $scope.propTypes[i].propertyModel.netMetered = $scope.auxModel.netMetered;
-                    $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
 
-                    if($scope.isResidential && !$scope.auxModel.is2030 && ($scope.propTypes[i].type !== "MultiFamily")){
-                        $scope.propTypes[i].propertyModel.target2030=true;
-                    } else {
-                        $scope.propTypes[i].propertyModel.target2030=false;
-                    }
+                $scope.buildingName = $scope.meter.buildingName;
+                $scope.postalCode = $scope.meter.postalCode;
+                $scope.meterName = $scope.meter.meterName;
+                $scope.normalizeStartDate = $scope.meter.startDate;
+                $scope.normalizeEndDate = $scope.meter.endDate;
+                $scope.dataFrequency = $scope.meter.frequency;
 
-                    if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
-                        $scope.propTypes[i].propertyModel.energies=null;
-                    } else {
-                        $scope.propTypes[i].propertyModel.energies = $scope.energies.map(mapEnergy).filter(validEnergy);
-                    }
+                $scope.ddThreshold = $scope.meter.ddThreshold ? $scope.meter.ddThreshold  : 65;
+                $scope.ddType = $scope.meter.ddType ? $scope.meter.ddType  : "avg";
 
-                    if($scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy).length===0){
-                        $scope.propTypes[i].propertyModel.renewableEnergies=null;
-                    } else {
-                        $scope.propTypes[i].propertyModel.renewableEnergies = $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy);
-                    }
 
-                    $scope.propList.push($scope.propTypes[i].propertyModel);
 
-                } else {
-                    $log.info('Error in ' + $scope.propTypes[i].type);
-                }
-            }
+                $scope.days = [
+                    $scope.monday,
+                    $scope.tuesday,
+                    $scope.wednesday,
+                    $scope.thursday,
+                    $scope.friday,
+                    $scope.saturday,
+                    $scope.sunday,
+                ];
+
+        console.log($scope);
+
+
         }else {
             $scope.submitErrors();
         }
-
-        $log.info($scope.propList);
-
-        if ($scope.propList.length !== 0){
-                $scope.computeBenchmarkResult();
-            }else{
-                $scope.benchmarkResult = null;
-            }
-
     };
+
+        $scope.meter.thresholdOptions =  [
+                {id:"avg",name:"Average"},
+                {id:"min",name:"Minimum"},
+                {id:"max",name:"Maximum"}
+        ];
+
+        $scope.meter.frequencyOptions =  [
+                {id:"day",name:"Day"},
+                {id:"month",name:"Month"}
+        ];
+
 
         $scope.geographicProperties = {
                 country:

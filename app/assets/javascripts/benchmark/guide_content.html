@@ -1,43 +1,46 @@
-<h2 class="ui header">HOW TO USE THE 2030 ENERGY TARGET & RATING TOOL</h2>
+<h2 class="ui header">HOW TO USE THE WEATHER NORMALIZATION TOOL</h2>
 
 <ol class="ui list">
-	<li value="1)">Enter the Geographical Information about your Building (e.g. location)</li>
-	<li value="2)">Enter the number of Heating Degree Days (HDD) and Cooling Degree Days (CDD) for your 
-		location. If you don’t know these, click on the <i class="large circle blue help icon"></i> for help. </li>
-	<li value="3)">Select if your building is a new or existing building.
+	<li value="1)">Enter the  Information about your Building (e.g. name, location)</li>
+	<li value="2)">Enter the name of the energy meter for which you wanter to assess weather sensitivity (for your records)</li>
+	<li value="3)">Select the starting date of the range over which you want to analyze weather sensitivity.
 		<ol>
-			<li value="a.">Note: it is important that your zip code is correct for computing the correct carbon 
-				emissions</li>
+			<li value="a.">Note: It is important that the starting date is within the date range of your energy data CSV file.</li>
 		</ol>
 	</li>
-	<li value="4)">Select the Primary Function of your Building
+	<li value="4)">Select the ending date of the range over which you want to analyze weather sensitivity.
 		<ol>
-			<li value="a.">For Architecture 2030, new constructions have a goal of performing 70% better the
-				National Median </li>
-			<li value="b.">Existing buildings have a goal of performing 20% better than the National Median
-				Note: based on CBECS 2003 data</li>
+			<li value="a.">Note: It is important that the starting date is within the date range of your energy data CSV file. </li>
 		</ol>
 	</li>
-	<li value="5)">Select the Primary Function of your Building
+	<li value="5)">Select how you want to determine degree days.
 		<ol>
-			<li value="a.">This will expose additional fields for your specific building type</li>
-			<li value="b.">You must fill each field – if you don’t know the value you can use the default values for 
-				your building type</li>
-			<li value="c.">You can add any number of building uses</li>
+			<li value="a.">Average: Uses Daily Average Temperature to calculate degree days.</li>
+			<li value="b.">Maximum: Uses Daily Max Temperature to calculate degree days.</li>
+			<li value="c.">Minimum: Uses Daily Min Temperature to calculate degree days.</li>
 		</ol>
 	</li>
-	<li value="6)">Enter your annual energy use information if you want to know how your building is currently 
-		performing relative to the National Median</li>
-	<li value="7)">Click ‘Compute Target’ to learn how close you are to your goal!
+	<li value="6)">Enter the threshold for which you want to calculate degree days. The default is 65 Degrees Fahrenheit.
 		<ol>
-			<li value="a.">The Baseline Column of the results table shows the metrics for the National Median of 
-				buildings similar to your own </li>
-			<li value="b.">The Target Column shows the goal that you should be aiming for. </li>
-			<li value="c.">The Rating Column shows how well your building is currently performing.</li>
-			<li value="d.">If your Rating zEPI score is lower than the Target zEPI score, you are doing great!</li>
+			<li value="a.">Heating Degree Days (HDD) are computed by subtracting Daily Avg/Min/Max Temperatyre from the threshold (default: 65 Degrees). If the difference is < 0, HDD = 0 for that day. </li>
+			<li value="c.">Cooling Degree Days (CDD) are computed by subtracting the threshold (default: 65 Degrees) from the Daily Avg/Min/Max Temperature. If the difference is < 0, CDD = 0 for that day. </li>
 		</ol>
 	</li>
+	<li value="7)">Select the frequency of the energy data in your uploaded CSV.
+		<ol>
+			<li value="a.">The frequency of the data can be either daily or monthly</li>
+		</ol>
+	</li>
+	<li value="8)">Select the Days of Week for which you want to perform the analysis.
+		<ol>
+			<li value="a.">Your building may be operated differently on certain days of the week. For instance, weekends might not be occupied
+			and so you might want to just analyze weather sensitivity of your weekday (M,Tu,W,Th,F) energy consumption.</li>
+		</ol>
+	</li>
+	<li value="9)">Upload your CSV making sure that it is in the correct format.
+		<ol>
+			<li value="a.">If your CSV is not in the correct format, then the analysis will not work!</li>
+		</ol>
+	</li>
+	<li value="10)"> Click 'Get Results' and see a plot of your building's weather sensitivity! </li>
 </ol>
-<h3 class="ui">
-To Learn more about the zEPI Score: <a href="http://newbuildings.org/code_policy/zepi/" target="_new">http://newbuildings.org/code_policy/zepi/</a>
-</h2>

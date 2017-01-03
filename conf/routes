@@ -15,11 +15,10 @@ GET           /jsroutes.js         controllers.Application.jsRoutes()
 # ~~~~
 
 # Baselining
-POST          /baseline             controllers.BaselineController.getZEPIMetrics()
+POST          /baseline             controllers.BaselineController.normalize()
 OPTIONS       /baseline             controllers.Application.options()
-POST          /degreedays           controllers.DegreeDaysController.getDDMetrics()
 OPTIONS       /degreedays           controllers.Application.options()
-
+POST          /csvmetrics           controllers.CSVController.upload
 
 # Authentication
 #POST          /login               controllers.Application.login()
