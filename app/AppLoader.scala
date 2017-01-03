@@ -1,12 +1,12 @@
 import javax.inject.Inject
 
-import controllers.DegreeDaysController
+import controllers.{CSVController}
 import play.api.ApplicationLoader.Context
 import play.api.cache.EhCacheComponents
 import play.api.http.HttpFilters
-import play.api.mvc.{RequestHeader, EssentialAction, EssentialFilter}
+import play.api.mvc.{EssentialAction, EssentialFilter, RequestHeader}
 import play.api.routing.Router
-import play.api.{Logger, Application, ApplicationLoader, BuiltInComponentsFromContext}
+import play.api.{Application, ApplicationLoader, BuiltInComponentsFromContext, Logger}
 import play.filters.cors.CORSFilter
 import play.filters.gzip.GzipFilter
 import router.Routes
@@ -56,14 +56,14 @@ class AppComponents(context: Context) extends BuiltInComponentsFromContext(conte
 
   lazy val applicationController = new controllers.Application(defaultCacheApi)
   lazy val baselineController = new controllers.BaselineController(defaultCacheApi)
-  lazy val degreeDaysController = new DegreeDaysController(defaultCacheApi)
+  lazy val csvController = new CSVController(defaultCacheApi)
 //  lazy val usersController = new controllers.Users(defaultCacheApi)
   lazy val assets = new controllers.Assets(httpErrorHandler)
 
   // Routes is a generated class
   //override def router: Router = new Routes(httpErrorHandler, applicationController, baselineController, usersController, assets)
   override def router: Router = new Routes(httpErrorHandler, applicationController, baselineController,
-    degreeDaysController, assets)
+    csvController, assets)
   val gzipFilter = new GzipFilter(shouldGzip =
     (request, response) => {
       val contentType = response.headers.get("Content-Type")
