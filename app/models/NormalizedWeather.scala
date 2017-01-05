@@ -19,4 +19,10 @@ import scala.util._
 import scala.util.control.NonFatal
 
 case class NormalizedWeather(parameters: JsValue) {
+
+  println(parameters)
+
 }
+
+
+

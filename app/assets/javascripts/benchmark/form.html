@@ -34,7 +34,7 @@
                     <div class="eleven wide column">
                         <div class="inline fields">
                             <div class="sixteen wide field required">
-                                <input type="text" ng-model="meter.postalCode"
+                                <input type="number" ng-model="meter.postalCode"
                                        required name="postalCode" placeholder="Postal Code">
                             </div>
                         </div>
@@ -70,7 +70,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="sixteen wide column">
+                    <!--<div class="sixteen wide column">
                         <div class="inline fields">
                             <div class="three wide field">
                                 <label class="design-label">DD Type</label>
@@ -79,7 +79,7 @@
                                 <select class="ui dropdown"
                                         dropdown
                                         ng-model="meter.ddType"
-                                        ng-options="item.id as item.name for item in meter.thresholdOptions"
+                                        ng-options="item.id as item.name for item in thresholdOptions"
                                         required>
                                     <option value="">Select</option>
                                 </select>
@@ -92,7 +92,7 @@
                                        required name="ddthreshold" placeholder="Threshold (F)">
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="sixteen wide column">
                         <div class="inline fields">
                             <div class="field">
@@ -102,7 +102,7 @@
                                 <select class="ui dropdown"
                                         dropdown
                                         ng-model="meter.frequency"
-                                        ng-options="item.id as item.name for item in meter.frequencyOptions"
+                                        ng-options="item.id as item.name for item in frequencyOptions"
                                         required>
                                     <option value="">Select</option>
                                 </select>
@@ -111,72 +111,20 @@
                     </div>
 
                     <div class="sixteen wide column">
-                        <div class="inline fields">
+                        <div class="inline fields" ng-hide="hideDays">
                             <div class="four wide field">
-                                <label class="design-label">Days of Week</label>
+                                <label class="design-label">Days</label>
                             </div>
-                            <div class="ui positive checkbox field">
-                                <input type         = "checkbox"
-                                       ng-model        = "monday" id="M"
-                                       ng-init         = false
-                                       ng-true-value   = true
-                                       ng-false-value  = false
-                                       name            = "monday">
-                                <label>M</label>
-                            </div>
-                            <div class="ui positive checkbox field">
-                                <input type         = "checkbox"
-                                       ng-model        = "tuesday" id="Tu"
-                                       ng-init         = false
-                                       ng-true-value   = true
-                                       ng-false-value  = false
-                                       name            = "tuesday">
-                                <label>T</label>
-                            </div>
-                            <div class="ui positive checkbox field">
-                                <input type         = "checkbox"
-                                       ng-model        = "wednesday" id="W"
-                                       ng-init         = false
-                                       ng-true-value   = true
-                                       ng-false-value  = false
-                                       name            = "wednesday">
-                                <label>W</label>
-                            </div>
-                            <div class="ui positive checkbox field">
-                                <input type         = "checkbox"
-                                       ng-model        = "thursday" id="Th"
-                                       ng-init         = false
-                                       ng-true-value   = true
-                                       ng-false-value  = false
-                                       name            = "thursday">
-                                <label>Th</label>
-                            </div>
-                            <div class="ui positive checkbox field">
-                                <input type         = "checkbox"
-                                       ng-model        = "friday" id="F"
-                                       ng-init         = false
-                                       ng-true-value   = true
-                                       ng-false-value  = false
-                                       name            = "friday">
-                                <label>F</label>
-                            </div>
-                            <div class="ui positive checkbox field">
-                                <input type         = "checkbox"
-                                       ng-model        = "saturday" id="Sa"
-                                       ng-init         = false
-                                       ng-true-value   = true
-                                       ng-false-value  = false
-                                       name            = "saturday">
-                                <label>Sa</label>
-                            </div>
-                            <div class="ui positive checkbox field">
-                                <input type         = "checkbox"
-                                       ng-model        = "sunday" id="Su"
-                                       ng-init         = false
-                                       ng-true-value   = true
-                                       ng-false-value  = false
-                                       name            = "sunday">
-                                <label>Su</label>
+                            <div class="inline fields" ng-repeat="field in daysOfWeek">
+                                <div class="ui positive checkbox field">
+                                    <input type         = "checkbox"
+                                           ng-model        = "filter[field.name]" id="field-{{ field.name }}"
+                                           ng-init         = "filter[field.name] = field.default"
+                                           ng-true-value   = true
+                                           ng-false-value  = false
+                                           name            = "{{ field.name }}">
+                                    <label for="field-{{ field.name }}">{{ field.title }}</label>
+                                </div>
                             </div>
                         </div>
                     </div>
