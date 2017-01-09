@@ -35,9 +35,6 @@ trait CSVActions {
         val filename = upload.filename
         val uploadedFile = upload.ref.moveTo(new File(s"/tmp/upload/$filename"))
 
-
-//        NormalizedWeather(form, csvOutput)
-
         Ok("File uploaded") }
     }.getOrElse {
       Future{
