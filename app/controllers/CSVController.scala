@@ -34,10 +34,9 @@ trait CSVActions {
         import java.io.File
         val filename = upload.filename
         val uploadedFile = upload.ref.moveTo(new File(s"/tmp/upload/$filename"))
-        val reader = CSVReader.open(uploadedFile)
-        val csvOutput: CSVcompute = CSVcompute(reader.all())
 
-        NormalizedWeather(form, csvOutput)
+
+//        NormalizedWeather(form, csvOutput)
 
         Ok("File uploaded") }
     }.getOrElse {
