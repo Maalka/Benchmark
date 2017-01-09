@@ -4,10 +4,12 @@ package controllers
   * Created by rimukas on 12/19/16.
   */
 
+import akka.dispatch.Envelope
 import com.github.tototoshi.csv.CSVReader
 import com.google.inject.Inject
 import models._
 import play.api.cache.CacheApi
+import play.api.libs.json.{JsString, JsValue, Json}
 import play.api.mvc._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -20,6 +22,13 @@ trait CSVActions {
 
   def upload = Action.async(parse.multipartFormData) {implicit request =>
 
+    val form:JsValue = {
+      val tempForm = request.body.dataParts.flatMap {
+        case (key,value) => value.headOption
+      }
+      Json.parse(tempForm.head)
+    }
+
     request.body.file("attachment").map { upload =>
       Future {
         import java.io.File
@@ -28,7 +37,7 @@ trait CSVActions {
         val reader = CSVReader.open(uploadedFile)
         val csvOutput: CSVcompute = CSVcompute(reader.all())
 
-        Console.println("csv output: " + csvOutput)
+        NormalizedWeather(form, csvOutput)
 
         Ok("File uploaded") }
     }.getOrElse {
@@ -36,6 +45,7 @@ trait CSVActions {
         Ok("File is missing")
       }
     }
+
 
 
 

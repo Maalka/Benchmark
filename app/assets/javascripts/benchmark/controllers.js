@@ -88,13 +88,47 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         }
     };
 
+    $scope.submitFile = function() {
+        if ($scope.attachment) {
+            $scope.upload($scope.attachment);
+        }
+    };
+
+    $scope.getMeter = function() {
+
+        if($scope.forms.baselineForm === undefined) {
+            return undefined;
+        }
+        if($scope.forms.baselineForm.$valid){
+            $scope.meter.valid = true;
+        } else {
+            $scope.meter.valid = false;
+        }
+
+        $scope.meter.filter = [];
+        $scope.meter.ddThreshold = $scope.meter.ddThreshold ? $scope.meter.ddThreshold  : 65;
+        $scope.meter.ddType = $scope.meter.ddType ? $scope.meter.ddType  : "avg";
+        $scope.daysOfWeek.forEach(function (v){
+            if($scope.filter[v.name]===true){
+                $scope.meter.filter.push(v.name);
+            }
+        });
+
+        return $scope.meter;
+    };
+
+
+
 
     $scope.submit = function () {
+
         if($scope.forms.baselineForm === undefined) {
             return;
         }
         $scope.forms.hasValidated = true; /// only check the field errors if this form has attempted to validate.
         $scope.meter.filter = [];
+
+
         if($scope.forms.baselineForm.$valid){
             $scope.meter.ddThreshold = $scope.meter.ddThreshold ? $scope.meter.ddThreshold  : 65;
             $scope.meter.ddType = $scope.meter.ddType ? $scope.meter.ddType  : "avg";

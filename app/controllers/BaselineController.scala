@@ -18,7 +18,6 @@ trait BaselineActions {
 
   def normalize() = Action.async(parse.json) { implicit request =>
 
-    val normalize = new NormalizedWeather(request.body)
 
     Future{Ok("File has been uploaded")}
 

@@ -1,7 +1,7 @@
 /**
  * A directive
  * for uploading
- * CSV files
+ * picking dates
  */
 define(['angular', './main'], function(angular) {
     'use strict';

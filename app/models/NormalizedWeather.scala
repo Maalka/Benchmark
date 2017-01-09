@@ -1,24 +1,22 @@
 package models
 
 /**
- * Created by rimukas on 10/20/15.
+ * Created by rimukas on 1/8/16.
  */
 
+import org.joda.time._
 import play.api.libs.json._
-import play.api.libs.json.Reads._
-import squants.energy.{Gigajoules, KBtus}
-import squants.space.{SquareMeters, SquareFeet, Area}
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+
 import scala.language.implicitConversions
 import play.api.libs.functional.syntax._
-import squants.energy._
-import EnergyConversions.EnergyNumeric
 
 import scala.util._
 import scala.util.control.NonFatal
+import scala.concurrent.Future
 
-case class NormalizedWeather(parameters: JsValue) {
+
+
+case class NormalizedWeather(parameters: JsValue, entries:CSVcompute) {
 
   val building:Building = {
     parameters.asOpt[Building] match {
@@ -33,8 +31,19 @@ case class NormalizedWeather(parameters: JsValue) {
     }
   }
 
-  println(building.buildingName)
-  meter.filter.map(println)
+  val userInterval:Interval = {
+    new Interval(entries.normalizeDate(meter.startDate).get, entries.normalizeDate(meter.endDate).get)
+  }
+
+
+  val filteredTempEnergy = entries.goodEntries.collect {
+    case CSVLine(a, b, c, d, e) if (userInterval.contains(a) && userInterval.contains(b)) => (c,d)
+  }
+
+  filteredTempEnergy.map(println)
+
+
+
 
 }
 
