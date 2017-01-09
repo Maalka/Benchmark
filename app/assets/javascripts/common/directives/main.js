@@ -4,5 +4,5 @@
 
  define(['angular'], function(angular) {
      'use strict';
-     return angular.module('common.directives', []);
+     return angular.module('common.directives', ["ngFileUpload"]);
  });
