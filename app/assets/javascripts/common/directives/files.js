@@ -11,9 +11,7 @@ define(['angular', './main', 'angular-file-upload'], function(angular) {
     mod.directive('files', ['$log', 'errorPopoverService', 'playRoutes', 'Upload', function ($log, errorPopover, playRoutes, Upload) {
         return {
             restrict: 'E',
-            scope: {
-                meter: '=meter'
-            },
+            scope: {},
             templateUrl: "javascripts/common/partials/files.html",
             controller: ["$scope", "$element", "$timeout", "playRoutes",
                 function ($scope, $element, $timeout, playRoutes) {
@@ -21,20 +19,16 @@ define(['angular', './main', 'angular-file-upload'], function(angular) {
 
 
                 $scope.submitFile = function() {
-
-                    if($scope.meter.valid) {
-                        if ($scope.attachment) {
-                            $scope.upload($scope.attachment,$scope.meter);
-                        }
+                    if ($scope.attachment) {
+                        $scope.upload($scope.attachment);
                     }
                 };
                 $scope.loadingFileFiller = {};
 
-                $scope.upload = function (file,form) {
+                $scope.upload = function (file) {
                     Upload.upload({
                         url: playRoutes.controllers.CSVController.upload().url,
-                        data: {attachment: file,
-                               "userSubmitted": JSON.stringify(form)
+                        data: {attachment: file
                               }
                     }).then(function (resp) {
                         console.log('Success ' + resp.config.data.attachment.name + 'uploaded. Response: ' + resp.data);

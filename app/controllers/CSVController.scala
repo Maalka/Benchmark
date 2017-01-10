@@ -22,18 +22,13 @@ trait CSVActions {
 
   def upload = Action.async(parse.multipartFormData) {implicit request =>
 
-    val form:JsValue = {
-      val tempForm = request.body.dataParts.flatMap {
-        case (key,value) => value.headOption
-      }
-      Json.parse(tempForm.head)
-    }
-
     request.body.file("attachment").map { upload =>
       Future {
         import java.io.File
         val filename = upload.filename
         val uploadedFile = upload.ref.moveTo(new File(s"/tmp/upload/$filename"))
+        val reader = CSVReader.open(uploadedFile)
+        val csvOutput: CSVcompute = CSVcompute(reader.all())
 
         Ok("File uploaded") }
     }.getOrElse {

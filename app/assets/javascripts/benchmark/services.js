@@ -4,7 +4,7 @@ define(['angular', 'common'], function(angular) {
 	mod.service('benchmarkServices', ['playRoutes', function(playRoutes) { 
 		var services = {
 			'normalize': function(model) {
-				return playRoutes.controllers.BaselineController.normalize().post(model).then(function (response)  {
+				return playRoutes.controllers.ParseController.normalize().post(model).then(function (response)  {
 					/// handle errors (500 etc)
 					return response.data;
 				});

@@ -25,16 +25,9 @@ trait ParseActions {
     val reader = CSVReader.open(filename)
     val csvOutput: CSVcompute = CSVcompute(reader.all())
 
-    val filtered = NormalizedWeather(request.body, csvOutput).filteredTempEnergy
-
-    val (temperature, energy) = filtered.unzip
-
-    val result = WeatherNormalization.segmentedRegression(temperature.toArray, energy.toArray)
-    Console.println("result: " + result(0)(1))
-
     Future{Ok("File has been uploaded")}
 
 
   }
 }
-class ParseController @Inject() (val cache: CacheApi) extends Controller with Security with Logging with BaselineActions
+class ParseController @Inject() (val cache: CacheApi) extends Controller with Security with Logging with ParseActions
