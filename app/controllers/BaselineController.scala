@@ -15,8 +15,6 @@ import scala.language.implicitConversions
 trait BaselineActions {
   this: Controller =>
 
-
-
   def normalize() = Action.async(parse.json) { implicit request =>
 
     println(request.body)
@@ -29,8 +27,16 @@ trait BaselineActions {
 
     val (temperature, energy) = filtered.unzip
 
-    val result = WeatherNormalization.segmentedRegression(temperature.toArray, energy.toArray)
-    Console.println("result: " + result(0)(1))
+    val output = WeatherNormalization.calculateOutput(temperature.toArray, energy.toArray)
+
+    output._1.map{ println(_)}
+    output._2.map{ println(_)}
+
+    val output_just_segmented = WeatherNormalization.segmentedRegression(temperature.toArray, energy.toArray)
+
+    output_just_segmented.map {o =>  println("breakpoint1: " + o.psi(0).est) }
+    output_just_segmented.map {o =>  println("residuals: " + o.residuals) }
+    output_just_segmented.map {o =>  println("coefficients: " + o.coefficients) }
 
     Future{Ok("File has been uploaded")}
 
