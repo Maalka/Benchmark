@@ -12,14 +12,6 @@ import router.Routes
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-
-class AppLoader extends ApplicationLoader {
-  override def load(context: Context): Application = {
-    Logger.configure(context.environment)
-    new AppComponents(context).application
-  }
-}
-
 class HTTPRequestLoggingFilter extends EssentialFilter {
   def apply(nextFilter: EssentialAction) = new EssentialAction {
     def apply(requestHeader: RequestHeader) = {
@@ -46,31 +38,6 @@ class HTTPRequestLoggingFilter extends EssentialFilter {
   }
 }
 
-class Filters @Inject() (corsFilter: CORSFilter) extends HttpFilters {
-  def filters = Seq(corsFilter)
-  Console.println("ASDFASDFASSDF")
-}
-
-class AppComponents(context: Context) extends BuiltInComponentsFromContext(context) with EhCacheComponents {
-
-  lazy val applicationController = new controllers.Application(defaultCacheApi)
-  lazy val baselineController = new controllers.BaselineController(defaultCacheApi)
-  lazy val degreeDaysController = new controllers.DegreeDaysController(defaultCacheApi)
-  lazy val csvController = new controllers.CSVController(defaultCacheApi)
-  lazy val parseController = new controllers.ParseController(defaultCacheApi)
-
-  //  lazy val usersController = new controllers.Users(defaultCacheApi)
-  lazy val assets = new controllers.Assets(httpErrorHandler)
-
-  // Routes is a generated class
-  //override def router: Router = new Routes(httpErrorHandler, applicationController, baselineController, usersController, assets)
-  override def router: Router = new Routes(httpErrorHandler, applicationController, baselineController,
-    degreeDaysController, csvController, parseController, assets)
-  val gzipFilter = new GzipFilter(shouldGzip =
-    (request, response) => {
-      val contentType = response.headers.get("Content-Type")
-      contentType.exists(_.startsWith("text/html")) || request.path.endsWith("jsroutes.js")
-    })
-
-  override lazy val httpFilters: Seq[EssentialFilter] = Seq(gzipFilter, new HTTPRequestLoggingFilter())
+class Filters @Inject() (corsFilter: CORSFilter, gzipFilter: GzipFilter) extends HttpFilters {
+  def filters = Seq(corsFilter, gzipFilter, new HTTPRequestLoggingFilter())
 }
