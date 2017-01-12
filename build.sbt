@@ -43,7 +43,10 @@ libraryDependencies ++= Seq(
   "org.webjars" % "highstock" % "4.2.3",
   "org.webjars" % "matchmedia-ng" % "1.0.5",
   "com.github.tototoshi" %% "scala-csv" % "1.2.1",
-  "org.webjars.bower" % "ng-file-upload" % "12.0.4"
+  "org.webjars.bower" % "ng-file-upload" % "12.0.4",
+
+  "com.typesafe.akka" %% "akka-stream" % "2.4.8",
+  "com.typesafe.play" %% "play-streams-experimental" % "2.4.8"
 
 )
 
