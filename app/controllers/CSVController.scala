@@ -50,7 +50,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
   implicit val materializer = ActorMaterializer()
 
   implicit val timeout = Timeout(5 seconds)
-
+  val listCompute = new CSVlistCompute
 
   def upload = Action.async(parse.multipartFormData) { implicit request =>
     request.body.file("attachment").map { upload =>
@@ -62,7 +62,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
       Source.single(CSVcompute(reader.all)).map(_.buildingJsonList).mapConcat { seq =>
         seq.to[scala.collection.immutable.Iterable]
       }.mapAsync(1) { json =>
-        Future((json \ "id").asOpt[String])
+        listCompute.getMetrics(json)
       }.runFold(Seq.empty[Option[String]]) { case (l, r) =>
         l :+ r
       }.map { r =>

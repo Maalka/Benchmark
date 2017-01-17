@@ -108,32 +108,40 @@ case class CSVcompute(parameters: List[List[String]]) {
     "mSQ"
   )
 
-  val buildingList:Seq[DefaultBuilding] ={
-    parameters.collect {
-      case List(a,b,c,d,e,f,g) if {
-        states.contains(b.trim) && propTypes.contains(e.trim) && GFAUnits.contains(g.trim) && tryFormat(c,"int") &&
-          tryFormat(d,"double")
-      } => DefaultBuilding(a.trim,b.trim,c.trim,d.toDouble,e,f.toDouble,g)
-    }
+
+  val withDefaults:Seq[JsonBuilding] = parameters.collect {
+    case List(a, b, c, d, e, f, g) if {
+      states.contains(b.trim) && propTypes.contains(e.trim) && GFAUnits.contains(g.trim) && tryFormat(c, "int") &&
+        tryFormat(d, "double")
+    } => JsonBuilding(a.trim, b.trim, c.trim, d.toDouble, e.trim, f.toDouble, g.trim)
+  }
+  val withoutDefaults:Seq[JsonBuilding] = parameters.collect {
+    case List(a,b,c,d,e,f,g) if {
+      states.contains(b.trim) && !propTypes.contains(e.trim) && GFAUnits.contains(g.trim) && tryFormat(c,"int") &&
+        tryFormat(d,"double")
+    } => JsonBuilding(a.trim,b.trim,c.trim,d.toDouble,e.trim,f.toDouble,g.trim)
   }
 
   val badEntries = parameters.filterNot {
     case List(a,b,c,d,e,f,g) if {
-      states.contains(b.trim) && propTypes.contains(e.trim) && GFAUnits.contains(g.trim) && tryFormat(c,"int") &&
+      states.contains(b.trim) && GFAUnits.contains(g.trim) && tryFormat(c,"int") &&
         tryFormat(d,"double")
     }  => true
     case _ => false
   }
 
-  val buildingJsonList = buildingList.map(getDefaults(_))
-  buildingJsonList.map(println)
+  val buildingJsonList = withDefaults.map(getDefaults(_))
 
+
+  println(withDefaults)
   println("-----------------------")
-  println(buildingList, badEntries)
+  println(withoutDefaults)
+  println("-----------------------")
+  println(badEntries)
 
   def roundAt(p: Int)(n: Double): Double = { val s = math pow (10, p); (math round n * s) / s }
 
-  def getDefaults(building:DefaultBuilding):JsValue = {
+  def getDefaults(building:JsonBuilding):JsValue = {
     val defaults = building.buildingType match {
       case "DataCenter" => JsObject(Map (
         "annualITEnergy" -> JsNull
@@ -271,11 +279,11 @@ case class CSVcompute(parameters: List[List[String]]) {
 }
 
 
-case class DefaultBuilding(address: String, state: String, postalCode:String, percentBetterThanMedian:Double,
+case class JsonBuilding(address: String, state: String, postalCode:String, percentBetterThanMedian:Double,
                            buildingType: String, GFA:Double, areaUnits:String, baselineConstant:Int=100,
                            country:String="USA", reportingUnits:String="us",netMetered:Boolean=false,
                            HDD:Double=6346, CDD:Double=815)
 
-object DefaultBuilding {
-  implicit val defaultBuildingWrites: Writes[DefaultBuilding] = Json.writes[DefaultBuilding]
+object JsonBuilding {
+  implicit val jsonBuildingWrites: Writes[JsonBuilding] = Json.writes[JsonBuilding]
 }
