@@ -20,10 +20,12 @@ import play.api.libs.concurrent.Akka
 import play.api.libs.json.{JsString, JsValue, Json}
 import play.api.mvc._
 
+
 import scala.concurrent.duration._
 import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.util.control.NonFatal
+import scala.language.postfixOps
 
 
 class CSVController @Inject() (val cache: CacheApi) extends Controller with Security with Logging {
@@ -62,7 +64,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
       Source.single(CSVcompute(reader.all)).map(_.buildingJsonList).mapConcat { seq =>
         seq.to[scala.collection.immutable.Iterable]
       }.mapAsync(1) { json =>
-        listCompute.getMetrics(json)
+        Future((json \ "id").asOpt[String])
       }.runFold(Seq.empty[Option[String]]) { case (l, r) =>
         l :+ r
       }.map { r =>

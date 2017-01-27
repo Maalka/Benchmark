@@ -22,8 +22,9 @@ import play.api.libs.json._
  */
 object DegreeDays {
   val zipStationLookupTable = loadLookupTable("zip_station.json")
-  val cddStationLookupTable = loadLookupTable("station_cdd.json")
-  val hddStationLookupTable = loadLookupTable("station_hdd.json")
+  val ddStationLookupTable = loadLookupTable("station_dd.json")
+  //val cddStationLookupTable = loadLookupTable("station_cdd.json")
+  //val hddStationLookupTable = loadLookupTable("station_hdd.json")
 
   def loadLookupTable(filename:String): Future[JsValue] = {
     for {
@@ -59,28 +60,14 @@ case class DegreeDays(parameters:JsValue) {
     } yield zipStation
   }
 
-  def getCDD: Future[Int] = {
-    for {
-      lookUpTable <- lookupCDD
-      ddSum <- computeDD("all",lookUpTable)
-    } yield ddSum
-  }
-
-  def getHDD: Future[Int] = {
-    for {
-      lookUpTable <- lookupHDD
-      ddSum <- computeDD("all",lookUpTable)
-    } yield ddSum
-  }
-
-  def lookupCDD: Future[DDmonths] = {
+  def lookupCDD: Future[Int] = {
     for {
       zipStation <- lookupWeatherStation
-      futureTable <- cddStationLookupTable
+      futureTable <- ddStationLookupTable
       ddMonths <- {
         Future{
-          (futureTable \ zipStation \ "months").get.validate[DDmonths] match {
-            case JsSuccess(a,_) => a
+          (futureTable \ zipStation \ "CDD").toOption match {
+            case Some(a) => a.as[Int]
             case _ => throw new Exception("Could not match Zip Code to Weather Station")
           }
         }
@@ -88,15 +75,15 @@ case class DegreeDays(parameters:JsValue) {
     } yield ddMonths
   }
 
-  def lookupHDD: Future[DDmonths] = {
+  def lookupHDD: Future[Int] = {
     for {
 
       zipStation <- lookupWeatherStation
-      futureTable <- hddStationLookupTable
+      futureTable <- ddStationLookupTable
       ddMonths <- {
         Future{
-          (futureTable \ zipStation \ "months").get.validate[DDmonths] match {
-            case JsSuccess(a,_) => a
+          (futureTable \ zipStation \ "HDD").toOption match {
+            case Some(a) => a.as[Int]
             case _ => throw new Exception("Could not match Zip Code to Weather Station")
           }
         }
