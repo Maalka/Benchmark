@@ -8,7 +8,7 @@ import play.api.libs.json._
 
 import scala.collection.generic.SeqFactory
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Future, TimeoutException}
 import scala.util.{Success, Try}
 
 
@@ -130,8 +130,12 @@ case class CSVcompute(parameters: List[List[String]]) {
     case _ => false
   }
 
-  val buildingJsonList = withDefaults.map(getDefaults(_))
+  val buildingJsonList:Seq[JsValue] = withDefaults.map(getDefaults(_))
 
+
+  val HDDlist = {
+    Future.sequence(buildingJsonList.map(DegreeDays(_).lookupCDD))
+  }
 
   println(withDefaults)
   println("-----------------------")
@@ -278,11 +282,9 @@ case class CSVcompute(parameters: List[List[String]]) {
   }
 }
 
-
 case class JsonBuilding(address: String, state: String, postalCode:String, percentBetterThanMedian:Double,
                            buildingType: String, GFA:Double, areaUnits:String, baselineConstant:Int=100,
-                           country:String="USA", reportingUnits:String="us",netMetered:Boolean=false,
-                           HDD:Double=6346, CDD:Double=815)
+                           country:String="USA", reportingUnits:String="us",netMetered:Boolean=false)
 
 object JsonBuilding {
   implicit val jsonBuildingWrites: Writes[JsonBuilding] = Json.writes[JsonBuilding]

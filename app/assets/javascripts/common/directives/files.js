@@ -31,7 +31,7 @@ define(['angular', './main', 'angular-file-upload'], function(angular) {
                         data: {attachment: file
                               }
                     }).then(function (resp) {
-                        console.log('Success ' + resp.config.data.attachment.name + 'uploaded. Response: ' + resp.data);
+                        console.log('Success ' + resp.config.data.attachment.name + ' uploaded. Response: ' + resp.data);
                         $scope.attachment  = undefined;
 
                         if (resp.data.status === "OK") {
