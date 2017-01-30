@@ -19,7 +19,7 @@ trait BaselineActions {
 
     println(request.body)
 
-    val filename = "/tmp/upload/" + "weather_norm_sample_hyphen.csv"
+    val filename = "/tmp/upload/" + "weather_norm_sample.csv"
     val reader = CSVReader.open(filename)
     val csvOutput: CSVcompute = CSVcompute(reader.all())
 

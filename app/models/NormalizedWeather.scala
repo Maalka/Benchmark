@@ -31,11 +31,12 @@ case class NormalizedWeather(parameters: JsValue, entries:CSVcompute) {
     }
   }
 
+  //convert date strings to date intervals using normalizeDate in CSVMetrics
   val userInterval:Interval = {
     new Interval(entries.normalizeDate(meter.startDate).get, entries.normalizeDate(meter.endDate).get)
   }
 
-
+//if row start date and end date are within user submitted start and end, then return
   val filteredTempEnergy = entries.goodEntries.collect {
     case CSVLine(a, b, c, d, e) if (userInterval.contains(a) && userInterval.contains(b)) => (c,d)
   }
@@ -55,8 +56,8 @@ object Building {
   implicit val buildingRead: Reads[Building] = Json.reads[Building]
 }
 
-case class Meter(meterName: String, startDate: String, endDate: String, frequency: String, ddThreshold: Int,
-                 ddType: String, filter:Array[String])
+case class Meter(meterName: String, startDate: String, endDate: String, frequency:String, ddThreshold:Int,
+                 ddType:String, filter:Array[String])
 
 object Meter {
   implicit val meterRead: Reads[Meter] = Json.reads[Meter]

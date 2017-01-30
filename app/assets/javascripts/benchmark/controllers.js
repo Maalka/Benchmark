@@ -108,6 +108,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.meter.filter = [];
         $scope.meter.ddThreshold = $scope.meter.ddThreshold ? $scope.meter.ddThreshold  : 65;
         $scope.meter.ddType = $scope.meter.ddType ? $scope.meter.ddType  : "avg";
+        $scope.meter.frequency = $scope.meter.frequency ? $scope.meter.frequency  : "month";
         $scope.daysOfWeek.forEach(function (v){
             if($scope.filter[v.name]===true){
                 $scope.meter.filter.push(v.name);
