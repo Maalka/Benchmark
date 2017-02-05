@@ -98,11 +98,11 @@ case class CSVlistCompute() {
       }
       val results = r.collect {
         case (n, Right(s)) => Json.obj(n -> s)
+        case (n, Left(s)) => Json.obj(n -> s)
       }
 
-      println( Json.obj(
-        "values" -> results,
-        "errors" -> errors
+      println ( Json.obj(
+        "values" -> results
       ))
 
       Json.obj(
@@ -112,4 +112,11 @@ case class CSVlistCompute() {
     }
   }
 
+}
+
+case class GoodBuilding(buildingName:String,medianZEPI:Int,medianSiteEUI:Double,medianSourceEUI:Double,medianSiteEnergy:Double,
+                        medianSourceEnergy:Double)
+
+object GoodBuilding {
+  implicit val goodBuildingWrites: Writes[GoodBuilding] = Json.writes[GoodBuilding]
 }

@@ -4,7 +4,7 @@ package controllers
   * Created by rimukas on 12/19/16.
   */
 
-import java.io.{PrintWriter, StringWriter}
+import java.io.{File, PrintWriter, StringWriter}
 
 import akka.actor.ActorSystem
 import akka.dispatch.Envelope
@@ -77,7 +77,6 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
       Future(Ok("OK"))
 
       val csvTemp = CSVlistCompute()
-      //println(CSVcompute(reader.all).badEntries)
 
       Source.fromIterator(() => CSVcompute(reader.all).goodBuildingJsonList.toIterator).map{
         js =>(js,DegreeDays(js))
@@ -89,11 +88,9 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
           // case if there is no cdd/hdd returned, means we don't know where in the country the building is because the zip
           //code doesn't match, this should be show in the output with the rest of the badEntries list
         }
-        case _ => {
-          Future(Json.toJson("shit!"))
-        }
+
       }.runWith(Sink.ignore).map { r =>
-        println(r)
+        println(r.toString())
         Ok(r.toString())
       }.recover {
         case NonFatal(th) =>
@@ -105,6 +102,10 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
         Ok("File is missing")
       }
     }
+
+
+
+    //al f = new File("out_list.csv")
 
 
   }

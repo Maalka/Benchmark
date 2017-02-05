@@ -1,19 +1,24 @@
 package models
 
-import java.util.Locale
+import java.io.{File, InputStream}
 
-import org.joda.time.format._
-import org.joda.time._
+import play.api.Play
 import play.api.libs.json._
 
-import scala.collection.generic.SeqFactory
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, TimeoutException}
 import scala.util.{Success, Try}
+import play.api.Play.current
 
 
 case class CSVcompute(parameters: List[List[String]]) {
 
+  val validZipCodes:String = {
+    Play.application.resourceAsStream("valid_zipcodes.json") match {
+      case Some(is: InputStream) => {
+        Json.parse(is).toString()
+      }
+      case _ => throw new Exception("Could not open file")
+    }
+  }
 
   def tryFormat(CSVvalue:String,checkType:String):Boolean = {
     checkType match {
@@ -111,15 +116,16 @@ case class CSVcompute(parameters: List[List[String]]) {
 
   val goodBuildingJsonList:Seq[JsValue] =  parameters.collect {
     case List(a, b, c, d, e, f) if {
-      states.contains(b.trim) && GFAUnits.contains(f.trim) && tryFormat(c, "int") &&
-        tryFormat(e,"double")
+      states.contains(b.trim) && GFAUnits.contains(f.trim) && validZipCodes.contains(c.trim) && (c.trim.length == 5) &&
+      tryFormat(e,"double")
     } => getDefaults(GoodJsonBuilding(a.trim, b.trim, c.trim, d.trim, e.toDouble, f.trim))
   }
 
 
   val badEntries = parameters.filterNot {
     case List(a,b,c,d,e,f) if {
-      states.contains(b.trim) && GFAUnits.contains(f.trim) && tryFormat(c,"int") && tryFormat(e,"double")
+      states.contains(b.trim) && GFAUnits.contains(f.trim) && validZipCodes.contains(c.trim) && (c.trim.length == 5) &&
+        tryFormat(e,"double")
     }  => true
     case _ => false
   }
