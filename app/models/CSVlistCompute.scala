@@ -117,6 +117,8 @@ case class CSVlistCompute() {
 
     ))
 
+
+
     val fieldNames = Seq(
 
       "propOutputList",
@@ -163,6 +165,8 @@ case class CSVlistCompute() {
       "siteEnergyALL"
     )
 
+
+
     futures.map(fieldNames.zip(_)).map { r =>
       val errors = r.collect {
         case (n, Left(s)) => Json.obj(n -> s)
@@ -170,12 +174,17 @@ case class CSVlistCompute() {
       val results = r.collect {
         case (n, Right(s)) => Json.obj(n -> s)
       }
+
+      println( Json.obj(
+        "values" -> results,
+        "errors" -> errors
+      ))
+
       Json.obj(
         "values" -> results,
         "errors" -> errors
       )
     }
-
   }
 
 }

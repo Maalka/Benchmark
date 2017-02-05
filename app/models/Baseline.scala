@@ -16,7 +16,9 @@ import scala.util.control.NonFatal
 
 case class EUIMetrics(parameters: JsValue) {
 
+
   val result = parameters.as[List[JsValue]]
+
 
   val combinedPropMetrics:CombinedPropTypes = CombinedPropTypes(parameters)
   val es:ES = ES(parameters)

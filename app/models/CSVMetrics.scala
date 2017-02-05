@@ -14,16 +14,17 @@ import scala.util.{Success, Try}
 
 case class CSVcompute(parameters: List[List[String]]) {
 
+
   def tryFormat(CSVvalue:String,checkType:String):Boolean = {
     checkType match {
       case "int" => {
-        Try{CSVvalue.toInt} match {
+        Try{CSVvalue.trim.toInt} match {
           case Success(a) => true
           case _ => false
         }
       }
       case "double" => {
-        Try{CSVvalue.toDouble} match {
+        Try{CSVvalue.trim.toDouble} match {
           case Success(a) => true
           case _ => false
         }
@@ -48,7 +49,7 @@ case class CSVcompute(parameters: List[List[String]]) {
     "Warehouse",
     "WastewaterCenter",
     "WorshipCenter"
-   )
+  )
 
   val states:List[String] = List(
     "AL",
@@ -108,44 +109,26 @@ case class CSVcompute(parameters: List[List[String]]) {
     "mSQ"
   )
 
+  val goodBuildingJsonList:Seq[JsValue] =  parameters.collect {
+    case List(a, b, c, d, e, f) if {
+      states.contains(b.trim) && GFAUnits.contains(f.trim) && tryFormat(c, "int") &&
+        tryFormat(e,"double")
+    } => getDefaults(GoodJsonBuilding(a.trim, b.trim, c.trim, d.trim, e.toDouble, f.trim))
+  }
 
-  val withDefaults:Seq[JsonBuilding] = parameters.collect {
-    case List(a, b, c, d, e, f, g) if {
-      states.contains(b.trim) && propTypes.contains(e.trim) && GFAUnits.contains(g.trim) && tryFormat(c, "int") &&
-        tryFormat(d, "double")
-    } => JsonBuilding(a.trim, b.trim, c.trim, d.toDouble, e.trim, f.toDouble, g.trim)
-  }
-  val withoutDefaults:Seq[JsonBuilding] = parameters.collect {
-    case List(a,b,c,d,e,f,g) if {
-      states.contains(b.trim) && !propTypes.contains(e.trim) && GFAUnits.contains(g.trim) && tryFormat(c,"int") &&
-        tryFormat(d,"double")
-    } => JsonBuilding(a.trim,b.trim,c.trim,d.toDouble,e.trim,f.toDouble,g.trim)
-  }
 
   val badEntries = parameters.filterNot {
-    case List(a,b,c,d,e,f,g) if {
-      states.contains(b.trim) && GFAUnits.contains(g.trim) && tryFormat(c,"int") &&
-        tryFormat(d,"double")
+    case List(a,b,c,d,e,f) if {
+      states.contains(b.trim) && GFAUnits.contains(f.trim) && tryFormat(c,"int") && tryFormat(e,"double")
     }  => true
     case _ => false
   }
 
-  val buildingJsonList:Seq[JsValue] = withDefaults.map(getDefaults(_))
 
-
-  val HDDlist = {
-    Future.sequence(buildingJsonList.map(DegreeDays(_).lookupCDD))
-  }
-
-  println(withDefaults)
-  println("-----------------------")
-  println(withoutDefaults)
-  println("-----------------------")
-  println(badEntries)
 
   def roundAt(p: Int)(n: Double): Double = { val s = math pow (10, p); (math round n * s) / s }
 
-  def getDefaults(building:JsonBuilding):JsValue = {
+  def getDefaults(building:GoodJsonBuilding):JsValue = {
     val defaults = building.buildingType match {
       case "DataCenter" => JsObject(Map (
         "annualITEnergy" -> JsNull
@@ -270,6 +253,9 @@ case class CSVcompute(parameters: List[List[String]]) {
         "percentHeated" -> JsNumber(50),
         "percentCooled" -> JsNumber(20)
       ))
+      case _ => JsObject(Map (
+        "default" -> JsBoolean(false)
+      ))
     }
 
     val buildingJson = Json.toJson(building)
@@ -280,12 +266,23 @@ case class CSVcompute(parameters: List[List[String]]) {
 
     buildingJson.as[JsObject].deepMerge(defaults).deepMerge(defaultNulls)
   }
+
+
+  def buildingToJson(building:GoodJsonBuilding):JsValue = {
+    val buildingJson = Json.toJson(building)
+    val defaultNulls = JsObject(Map(
+      "energies" -> JsNull,
+      "renewableEnergies" -> JsNull
+    ))
+    buildingJson.as[JsObject]
+  }
 }
 
-case class JsonBuilding(address: String, state: String, postalCode:String, percentBetterThanMedian:Double,
+case class GoodJsonBuilding(address: String, state: String, postalCode:String,
                            buildingType: String, GFA:Double, areaUnits:String, baselineConstant:Int=100,
-                           country:String="USA", reportingUnits:String="us",netMetered:Boolean=false)
+                           country:String="USA", reportingUnits:String="us",netMetered:Boolean=false, percentBetterThanMedian:Double=20)
 
-object JsonBuilding {
-  implicit val jsonBuildingWrites: Writes[JsonBuilding] = Json.writes[JsonBuilding]
+object GoodJsonBuilding {
+  implicit val jsonBuildingWrites: Writes[GoodJsonBuilding] = Json.writes[GoodJsonBuilding]
 }
+

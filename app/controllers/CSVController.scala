@@ -25,6 +25,7 @@ import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.util.control.NonFatal
 import scala.language.postfixOps
+import scala.util.Try
 
 
 class CSVController @Inject() (val cache: CacheApi) extends Controller with Security with Logging {
@@ -59,7 +60,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
     val zipWith = builder.add(ZipWith[Int,Int,JsValue,(Int,Int,JsValue)]((_, _, _)))
 
     val broadcast = builder.add(Broadcast[(JsValue,DegreeDays)](3))
-    broadcast.out(0).mapAsync(1)(_._2.lookupCDD)~> zipWith.in0
+    broadcast.out(0).mapAsync(1)(_._2.lookupCDD) ~> zipWith.in0
     broadcast.out(1).mapAsync(1)(_._2.lookupHDD) ~> zipWith.in1
     broadcast.out(2).map(_._1) ~> zipWith.in2
 
@@ -75,17 +76,26 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
       val reader = CSVReader.open(uploadedFile)
       Future(Ok("OK"))
 
-      Source.fromIterator(() => CSVcompute(reader.all).buildingJsonList.toIterator).map{
-        js => (js,DegreeDays(js))
+      val csvTemp = CSVlistCompute()
+      //println(CSVcompute(reader.all).badEntries)
+
+      Source.fromIterator(() => CSVcompute(reader.all).goodBuildingJsonList.toIterator).map{
+        js =>(js,DegreeDays(js))
       }.via(calculateDegreeDays).mapAsync(1){
-        case (cdd,hdd,js) =>
-           val csvTemp = CSVlistCompute()
-          csvTemp.getMetrics(Json.obj("cdd" -> cdd,"hdd" -> hdd) ++ js.asInstanceOf[JsObject])
+        case (cdd,hdd,js) => {
+          println("--------")
+
+          csvTemp.getMetrics(Json.toJson(List(Json.obj("CDD" -> cdd,"HDD" -> hdd) ++ js.asInstanceOf[JsObject])))
+          // case if there is no cdd/hdd returned, means we don't know where in the country the building is because the zip
+          //code doesn't match, this should be show in the output with the rest of the badEntries list
+        }
       }.runWith(Sink.ignore).map { r =>
         println(r)
         Ok(r.toString())
       }.recover {
-        case NonFatal(th) => Ok("Failed")
+        case NonFatal(th) =>
+          println(th)
+          Ok("Failed")
       }
     }.getOrElse {
       Future {
