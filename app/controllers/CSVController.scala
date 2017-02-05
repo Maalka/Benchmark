@@ -89,6 +89,9 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
           // case if there is no cdd/hdd returned, means we don't know where in the country the building is because the zip
           //code doesn't match, this should be show in the output with the rest of the badEntries list
         }
+        case _ => {
+          Future(Json.toJson("shit!"))
+        }
       }.runWith(Sink.ignore).map { r =>
         println(r)
         Ok(r.toString())

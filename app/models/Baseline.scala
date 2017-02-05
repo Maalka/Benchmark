@@ -38,6 +38,7 @@ case class EUIMetrics(parameters: JsValue) {
 
   def percentBetterMedian:Future[Double] = Future{0}
   def percentBetterTarget:Future[Double] = buildingProps.getPercentBetterThanMedia
+  def getBuildingName:Future[String] = Future{buildingProps.buildingName}
 
 
 

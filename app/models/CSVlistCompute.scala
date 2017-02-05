@@ -70,101 +70,26 @@ case class CSVlistCompute() {
 
     val futures = Future.sequence(Seq(
 
-      Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-      Baseline.getESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.getTargetESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.getMedianESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-      Baseline.percentBetterMedian.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterTarget.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterActual.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.actualGoalReduction.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.actualGoalBetter.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-      Baseline.zepiActual.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.getBuildingName.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.zepiMedian.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.zepiPercentBetter.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-      Baseline.siteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.sourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      //this is the total site energy accounting for renewable generation and/or purchasing
-      Baseline.siteEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.siteEnergyListConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.sourceEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.sourceEnergyListConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
       Baseline.medianSiteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.medianSourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.medianSiteEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.medianSourceEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-      Baseline.percentBetterSiteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterSourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterSiteEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterSourceEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-      Baseline.getDirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.getIndirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.getTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.medianTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-      Baseline.onSiteRenewableTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.offSitePurchasedTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      //this is the total site energy without accounting for renewable generation and/or purchasing
-      Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+      Baseline.medianSourceEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
 
     ))
 
-
-
     val fieldNames = Seq(
 
-      "propOutputList",
 
-      "actualES",
-      "targetES",
-      "medianES",
-
-      "percentBetterMedian",
-      "percentBetterTarget",
-      "percentBetterActual",
-      "percentBetterActualtoGoal",
-      "actualGoalBetter",
-
-      "actualZEPI",
+      "buildingName",
       "medianZEPI",
-      "percentBetterZEPI",
-
-      "siteEUI",
-      "sourceEUI",
-      "totalSiteEnergy",
-      "siteEnergyList",
-      "totalSourceEnergy",
-      "sourceEnergyList",
-
       "medianSiteEUI",
       "medianSourceEUI",
       "medianSiteEnergy",
-      "medianSourceEnergy",
+      "medianSourceEnergy"
 
-      "percentBetterSiteEUI",
-      "percentBetterSourceEUI",
-      "percentBetterSiteEnergy",
-      "percentBetterSourceEnergy",
-
-      "directSiteEmissions",
-      "indirectSiteEmissions",
-      "totalEmissions",
-      "medianEmissions",
-      "percentBetterEmissions",
-
-      "onSiteRenewableTotal",
-      "offSitePurchasedTotal",
-      "siteEnergyALL"
     )
-
 
 
     futures.map(fieldNames.zip(_)).map { r =>

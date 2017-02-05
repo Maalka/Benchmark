@@ -278,7 +278,7 @@ case class CSVcompute(parameters: List[List[String]]) {
   }
 }
 
-case class GoodJsonBuilding(address: String, state: String, postalCode:String,
+case class GoodJsonBuilding(buildingName: String, state: String, postalCode:String,
                            buildingType: String, GFA:Double, areaUnits:String, baselineConstant:Int=100,
                            country:String="USA", reportingUnits:String="us",netMetered:Boolean=false, percentBetterThanMedian:Double=20)
 
