@@ -16,7 +16,9 @@ import scala.util.control.NonFatal
 
 case class EUIMetrics(parameters: JsValue) {
 
+
   val result = parameters.as[List[JsValue]]
+
 
   val combinedPropMetrics:CombinedPropTypes = CombinedPropTypes(parameters)
   val es:ES = ES(parameters)
@@ -36,6 +38,7 @@ case class EUIMetrics(parameters: JsValue) {
 
   def percentBetterMedian:Future[Double] = Future{0}
   def percentBetterTarget:Future[Double] = buildingProps.getPercentBetterThanMedia
+  def getBuildingName:Future[String] = Future{buildingProps.buildingName}
 
 
 

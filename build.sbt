@@ -7,7 +7,7 @@ name := "benchmark"
 organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
-version := "1.2.4.0"
+version := "1.2.5.0"
 
 scalaVersion in ThisBuild := "2.11.6"
 
@@ -41,7 +41,14 @@ libraryDependencies ++= Seq(
   "org.webjars" % "angularjs" % "1.4.7" exclude("org.webjars", "jquery"),
   "org.webjars" % "highcharts" % "4.2.3",
   "org.webjars" % "highstock" % "4.2.3",
-  "org.webjars" % "matchmedia-ng" % "1.0.5"
+  "org.webjars" % "matchmedia-ng" % "1.0.5",
+  "com.github.tototoshi" %% "scala-csv" % "1.2.1",
+  "org.webjars.bower" % "ng-file-upload" % "12.0.4",
+
+  "com.typesafe.akka" %% "akka-slf4j" % "2.4.8",
+  "com.typesafe.akka" %% "akka-stream" % "2.4.8",
+  "com.typesafe.play" %% "play-streams-experimental" % "2.4.8"
+
 )
 
 // Scala Compiler Options

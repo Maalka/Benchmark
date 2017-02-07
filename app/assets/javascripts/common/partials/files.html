@@ -1,0 +1,28 @@
+
+<form name="form" class="ui form">
+	<div class="inline fields">
+		<div class="field">
+			<button class="ui blue button"
+				ngf-select
+				ng-model="attachment"
+				name="attachment"
+				ngf-max-size="20MB" ng-class="{disabled: loadingFileFiller.attachmentName !== undefined}">
+					{{ "Select CSV" }}
+			</button>
+
+		</div>
+
+		<div class="field">
+			<button ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined" class="ui green button"
+			type="submit" ng-click="submitFile()">submit
+			</button>
+			<p ng-if="attachment === undefined && loadingFileFiller.attachmentName === undefined">
+				<< Upload your data here >>
+			</p>
+			<p style="color:red;" ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined">
+				{{attachment.name}}
+			</p>
+		</div>
+	</div>
+
+</form>

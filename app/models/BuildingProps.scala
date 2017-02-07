@@ -37,6 +37,12 @@ case class BuildingProperties(parameters: JsValue) {
       case _ => throw new Exception("Could not retrieve State")
     }
   }
+  val buildingName: String = {
+    parameters.asOpt[ConversionInfo] match {
+      case Some(a) => a.buildingName
+      case _ => throw new Exception("Could not retrieve Building Name")
+    }
+  }
 
   def getBaselineConstant: Future[Int] = Future{
     parameters.asOpt[BaselineConstant] match {

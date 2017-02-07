@@ -47,8 +47,8 @@ trait DegreeDaysActions {
     val futures = Future.sequence(Seq(
 
       DD.lookupWeatherStation.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      DD.getCDD.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      DD.getHDD.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+      DD.lookupCDD.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      DD.lookupHDD.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
 
     ))
 
