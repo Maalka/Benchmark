@@ -25,7 +25,7 @@ import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.util.control.NonFatal
 import scala.language.postfixOps
-import scala.util.Try
+import scala.util.{Success, Failure, Try}
 
 
 class CSVController @Inject() (val cache: CacheApi) extends Controller with Security with Logging {
@@ -57,16 +57,27 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
   val calculateDegreeDays = Flow.fromGraph(GraphDSL.create() { implicit builder =>
     import GraphDSL.Implicits._
 
-    val zipWith = builder.add(ZipWith[Int,Int,JsValue,(Int,Int,JsValue)]((_, _, _)))
+    val zipWith = builder.add(ZipWith[Try[Int],Try[Int],JsValue,(Try[Int],Try[Int],JsValue)]((_, _, _)))
 
     val broadcast = builder.add(Broadcast[(JsValue,DegreeDays)](3))
-    broadcast.out(0).mapAsync(1)(_._2.lookupCDD) ~> zipWith.in0
-    broadcast.out(1).mapAsync(1)(_._2.lookupHDD) ~> zipWith.in1
+    broadcast.out(0).mapAsync(1) { v =>
+      futureToFutureTry[Int](v._2.lookupCDD)
+    } ~> zipWith.in0
+    broadcast.out(1).mapAsync(1) { v =>
+      futureToFutureTry[Int](v._2.lookupHDD)
+    } ~> zipWith.in1
     broadcast.out(2).map(_._1) ~> zipWith.in2
-
     FlowShape(broadcast.in, zipWith.out)
 
   })
+
+
+  def futureToFutureTry[T](future: Future[T]): Future[Try[T]] = {
+    future.map(Try(_)).recover {
+      case NonFatal(th) => Failure(th)
+    }
+
+  }
 
   def upload = Action.async(parse.multipartFormData) { implicit request =>
     request.body.file("attachment").map { upload =>
@@ -78,20 +89,36 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
 
       val csvTemp = CSVlistCompute()
 
+      val CSVWriterFlow = Flow[(Try[Int], Try[Int], JsValue, Try[JsValue])].map{
+        case (Success(hdd), Success(cdd), js, Success(metrics)) =>
+          // success write success row
+        case (hddTry, cddTry, js, metricsTry) =>
+          //write your error here
+
+
+      }
+
       Source.fromIterator(() => CSVcompute(reader.all).goodBuildingJsonList.toIterator).map{
         js =>(js,DegreeDays(js))
       }.via(calculateDegreeDays).mapAsync(1){
-        case (cdd,hdd,js) => {
-          println("--------")
+        case (ccdTry, hddTry, js) if ccdTry.isSuccess && hddTry.isSuccess => {
+          futureToFutureTry[JsValue](
+            csvTemp.getMetrics(Json.toJson(List(Json.obj("CDD" -> ccdTry.get, "HDD" -> hddTry.get) ++ js.asInstanceOf[JsObject])))
+          ).map {
+            case Success(metrics) => (ccdTry, hddTry, js, Try(metrics))
+            case i => (ccdTry, hddTry, js, i)
 
-          csvTemp.getMetrics(Json.toJson(List(Json.obj("CDD" -> cdd,"HDD" -> hdd) ++ js.asInstanceOf[JsObject])))
-          // case if there is no cdd/hdd returned, means we don't know where in the country the building is because the zip
-          //code doesn't match, this should be show in the output with the rest of the badEntries list
+            // case if there is no cdd/hdd returned, means we don't know where in the country the building is because the zip
+            //code doesn't match, this should be show in the output with the rest of the badEntries list
+          }
         }
-
-      }.runWith(Sink.ignore).map { r =>
-        println(r.toString())
-        Ok(r.toString())
+        case (ccdTry,hddTry, js) =>
+          Future(
+            (ccdTry, hddTry, js, Failure(new Throwable("dfdf")))
+          )
+      }.via(CSVWriterFlow).runWith(Sink.ignore).map { r =>
+        println(r.toString)
+        Ok(r.toString)
       }.recover {
         case NonFatal(th) =>
           println(th)
