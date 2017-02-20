@@ -129,12 +129,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
         Ok("File is missing")
       }
     }
-
-
-
     //al f = new File("out_list.csv")
-
-
   }
 }
 
