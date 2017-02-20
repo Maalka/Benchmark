@@ -11,13 +11,13 @@ import akka.dispatch.Envelope
 import akka.stream._
 import akka.stream.scaladsl._
 import akka.util.Timeout
-import com.github.tototoshi.csv.CSVReader
+import com.github.tototoshi.csv.{CSVReader, CSVWriter}
 import com.google.inject.Inject
 import models._
 import models.CSVlistCompute
 import play.api.cache.CacheApi
 import play.api.libs.concurrent.Akka
-import play.api.libs.json.{JsObject, JsString, JsValue, Json}
+import play.api.libs.json._
 import play.api.mvc._
 
 import scala.concurrent.duration._
@@ -25,7 +25,7 @@ import scala.concurrent.Future
 import scala.language.implicitConversions
 import scala.util.control.NonFatal
 import scala.language.postfixOps
-import scala.util.{Success, Failure, Try}
+import scala.util.{Failure, Success, Try}
 
 
 class CSVController @Inject() (val cache: CacheApi) extends Controller with Security with Logging {
@@ -80,25 +80,53 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
   }
 
   def upload = Action.async(parse.multipartFormData) { implicit request =>
+
+    val proc = new File("processed.csv")
+    val writer = CSVWriter.open(proc)
+    writer.writeRow(List("buildingName","medianZEPI","medianSiteEUI","medianSourceEUI","medianSiteEnergy","medianSourceEnergy"))
+
+
+    val err = new File("unprocessed.csv")
+    val error_writer = CSVWriter.open(err)
+
+
     request.body.file("attachment").map { upload =>
       import java.io.File
       val filename = upload.filename
       val uploadedFile = upload.ref.moveTo(new File(s"/tmp/upload/$filename"))
       val reader = CSVReader.open(uploadedFile)
+
       Future(Ok("OK"))
 
       val csvTemp = CSVlistCompute()
+      val csvList = CSVcompute(reader.all)
 
       val CSVWriterFlow = Flow[(Try[Int], Try[Int], JsValue, Try[JsValue])].map{
-        case (Success(hdd), Success(cdd), js, Success(metrics)) =>
+        case (hdd, cdd, js, Success(metrics)) => {
           // success write success row
-        case (hddTry, cddTry, js, metricsTry) =>
-          //write your error here
+          val metricsList = List(
+            metrics \ "values" \\ "buildingName",
+            metrics \ "values" \\ "medianZEPI",
+            metrics \ "values" \\ "medianSiteEUI",
+            metrics \ "values" \\ "medianSourceEUI",
+            metrics \ "values" \\ "medianSiteEnergy",
+            metrics \ "values" \\ "medianSourceEnergy"
+          ).flatten
 
+          writer.writeRow(metricsList)
+          println(metricsList)
+          }
 
+        case (_, _, _, Failure(metrics)) =>
+          metrics match {
+            case NonFatal(th) => {
+              writer.writeRow(List(th.getMessage))
+              println(th.getMessage)
+            }
+          }
       }
 
-      Source.fromIterator(() => CSVcompute(reader.all).goodBuildingJsonList.toIterator).map{
+      Source.fromIterator(() => csvList.goodBuildingJsonList.toIterator).map{
         js =>(js,DegreeDays(js))
       }.via(calculateDegreeDays).mapAsync(1){
         case (ccdTry, hddTry, js) if ccdTry.isSuccess && hddTry.isSuccess => {
@@ -107,17 +135,18 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
           ).map {
             case Success(metrics) => (ccdTry, hddTry, js, Try(metrics))
             case i => (ccdTry, hddTry, js, i)
-
-            // case if there is no cdd/hdd returned, means we don't know where in the country the building is because the zip
-            //code doesn't match, this should be show in the output with the rest of the badEntries list
           }
         }
-        case (ccdTry,hddTry, js) =>
-          Future(
-            (ccdTry, hddTry, js, Failure(new Throwable("dfdf")))
-          )
+        case (ccdTry,hddTry, js) => Future(
+          (ccdTry, hddTry, js, Failure(new Throwable("Invalid Postal Code")))
+        )
+
       }.via(CSVWriterFlow).runWith(Sink.ignore).map { r =>
-        println(r.toString)
+
+        error_writer.writeAll(csvList.badEntries)
+        error_writer.close()
+        writer.close()
+
         Ok(r.toString)
       }.recover {
         case NonFatal(th) =>
@@ -125,11 +154,13 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
           Ok("Failed")
       }
     }.getOrElse {
+
       Future {
         Ok("File is missing")
       }
     }
     //al f = new File("out_list.csv")
+
   }
 }
 
