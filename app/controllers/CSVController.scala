@@ -4,7 +4,8 @@ package controllers
   * Created by rimukas on 12/19/16.
   */
 
-import java.io.{File, PrintWriter, StringWriter}
+import java.io.{BufferedInputStream, PrintWriter, StringWriter, File, FileInputStream}
+import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import akka.actor.ActorSystem
 import akka.dispatch.Envelope
@@ -16,7 +17,9 @@ import com.google.inject.Inject
 import models._
 import models.CSVlistCompute
 import play.api.cache.CacheApi
+import play.api.libs.Files.TemporaryFile
 import play.api.libs.concurrent.Akka
+import play.api.libs.iteratee.Enumerator
 import play.api.libs.json._
 import play.api.mvc._
 
@@ -34,7 +37,6 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
   import play.api.Play.current
 
   implicit val system = Akka.system
-
 
   val decider: Supervision.Decider = {
     case NonFatal(th) =>
@@ -80,23 +82,23 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
   }
 
   def upload = Action.async(parse.multipartFormData) { implicit request =>
+    import java.nio.file.Files
 
-    val proc = new File("processed.csv")
+    var tempDir = Files.createTempDirectory("reports")
+    val proc = new File(tempDir + File.separator + "processed.csv")
+
     val writer = CSVWriter.open(proc)
+
     writer.writeRow(List("buildingName","medianZEPI","medianSiteEUI","medianSourceEUI","medianSiteEnergy","medianSourceEnergy"))
 
-
-    val err = new File("unprocessed.csv")
+    val err = new File(tempDir + File.separator + "unprocessed.csv")
     val error_writer = CSVWriter.open(err)
 
-
     request.body.file("attachment").map { upload =>
-      import java.io.File
       val filename = upload.filename
-      val uploadedFile = upload.ref.moveTo(new File(s"/tmp/upload/$filename"))
-      val reader = CSVReader.open(uploadedFile)
+      val uploadedFile = upload.ref.moveTo(new File(tempDir + File.separator + "filename"))
 
-      Future(Ok("OK"))
+      val reader = CSVReader.open(uploadedFile)
 
       val csvTemp = CSVlistCompute()
       val csvList = CSVcompute(reader.all)
@@ -142,12 +144,30 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
         )
 
       }.via(CSVWriterFlow).runWith(Sink.ignore).map { r =>
-
-        error_writer.writeAll(csvList.badEntries)
+                error_writer.writeAll(csvList.badEntries)
         error_writer.close()
         writer.close()
 
-        Ok(r.toString)
+
+        val enumerator = Enumerator.outputStream { os =>
+          val zip = new ZipOutputStream(os)
+          Seq(proc, err, uploadedFile).foreach { f =>
+            zip.putNextEntry(new ZipEntry("result/%s".format(f.getName)))
+            val in = new BufferedInputStream(new FileInputStream(f))
+            var b = in.read()
+            while (b > -1) {
+              zip.write(b)
+              b = in.read
+            }
+            in.close()
+            zip.closeEntry()
+          }
+          zip.close()
+        }
+        Ok.stream(enumerator >>> Enumerator.eof).withHeaders(
+          "Content-Type"->"application/zip",
+          "Content-Disposition"->"attachment; filename=result.zip"
+        )
       }.recover {
         case NonFatal(th) =>
           println(th)
