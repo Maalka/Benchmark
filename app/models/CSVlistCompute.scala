@@ -101,9 +101,6 @@ case class CSVlistCompute() {
         case (n, Left(s)) => Json.obj(n -> s)
       }
 
-      println ( Json.obj(
-        "values" -> results
-      ))
 
       Json.obj(
         "values" -> results,
@@ -120,3 +117,7 @@ case class GoodBuilding(buildingName:String,medianZEPI:Int,medianSiteEUI:Double,
 object GoodBuilding {
   implicit val goodBuildingWrites: Writes[GoodBuilding] = Json.writes[GoodBuilding]
 }
+
+
+
+

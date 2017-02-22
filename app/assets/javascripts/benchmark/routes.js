@@ -9,7 +9,8 @@ define(['angular', './controllers', 'common'], function(angular, controllers) {
     $routeProvider
         .when('/',  {templateUrl: 'javascripts/benchmark/benchmark.html',  controller:controllers.DashboardCtrl})
         .when('/about',  {templateUrl: 'javascripts/benchmark/about.html'})
-        .when('/guide',  {templateUrl: 'javascripts/benchmark/guide.html'});
+        .when('/guide',  {templateUrl: 'javascripts/benchmark/guide.html'})
+        .when('/bulk',  {templateUrl: 'javascripts/benchmark/bulk.html'});
   }]);
   return mod;
 });
