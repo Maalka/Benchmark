@@ -116,14 +116,14 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
           ).flatten
 
           writer.writeRow(metricsList)
-          println(metricsList)
+          //println(metricsList)
           }
 
         case (_, _, _, Failure(metrics)) =>
           metrics match {
             case NonFatal(th) => {
               writer.writeRow(List(th.getMessage))
-              println(th.getMessage)
+             // println(th.getMessage)
             }
           }
       }
@@ -170,7 +170,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
         )
       }.recover {
         case NonFatal(th) =>
-          println(th)
+          //println(th)
           Ok("Failed")
       }
     }.getOrElse {
