@@ -11,14 +11,14 @@ import play.api.Play.current
 
 case class CSVcompute(parameters: List[List[String]]) {
 
-  val validZipCodes:String = {
+/*  val validZipCodes:String = {
     Play.application.resourceAsStream("valid_zipcodes.json") match {
       case Some(is: InputStream) => {
         Json.parse(is).toString()
       }
       case _ => throw new Exception("Could not open file")
     }
-  }
+  }*/
 
   def tryFormat(CSVvalue:String,checkType:String):Boolean = {
     checkType match {
@@ -116,16 +116,16 @@ case class CSVcompute(parameters: List[List[String]]) {
 
   val goodBuildingJsonList:Seq[JsValue] =  parameters.collect {
     case List(a, b, c, d, e, f) if {
-      states.contains(b.trim) && GFAUnits.contains(f.trim) && validZipCodes.contains(c.trim) && (c.trim.length == 5) &&
-      tryFormat(e,"double")
+      states.contains(b.trim) && GFAUnits.contains(f.trim) && (c.trim.length == 5) &&
+      tryFormat(e,"double") //&& validZipCodes.contains(c.trim)
     } => getDefaults(GoodJsonBuilding(a.trim, b.trim, c.trim, d.trim, e.toDouble, f.trim))
   }
 
 
   val badEntries = parameters.filterNot {
     case List(a,b,c,d,e,f) if {
-      states.contains(b.trim) && GFAUnits.contains(f.trim) && validZipCodes.contains(c.trim) && (c.trim.length == 5) &&
-        tryFormat(e,"double")
+      states.contains(b.trim) && GFAUnits.contains(f.trim) &&  (c.trim.length == 5) &&
+        tryFormat(e,"double") //validZipCodes.contains(c.trim) &&
     }  => true
     case _ => false
   }
