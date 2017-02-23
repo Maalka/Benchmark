@@ -374,7 +374,7 @@ case class CombinedPropTypes(params: JsValue) {
           case Some(is: InputStream) => {
             Json.parse(is)
           }
-          case _ => throw new Exception("Could not open file")
+          case i => throw new Exception("lookUpTable - Could not open file: %s".format(i))
         }
       }
       obj <- Future {

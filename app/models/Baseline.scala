@@ -484,7 +484,7 @@ case class EUIMetrics(parameters: JsValue) {
           case Some(is: InputStream) => {
             Json.parse(is)
           }
-          case _ => throw new Exception("Could not open file")
+          case i => throw new Exception("statePropEnergyMix - Could not open file: %s".format(i))
         }
       }
     } yield json

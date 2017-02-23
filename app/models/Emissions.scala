@@ -236,7 +236,7 @@ case class Emissions(parameters:JsValue) {
           case Some(is: InputStream) => {
             Json.parse(is)
           }
-          case _ => throw new Exception("Could not open file")
+          case i => throw new Exception("eGrid - Could not open file: %s".format(i))
         }
       }
     } yield json

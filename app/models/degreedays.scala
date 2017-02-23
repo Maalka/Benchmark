@@ -34,7 +34,7 @@ object DegreeDays {
           case Some(is: InputStream) => {
             Json.parse(is)
           }
-          case _ => throw new Exception("Could not open file")
+          case i => throw new Exception("Degree Days - Could not open file: %s".format(i))
         }
       }
     } yield json
