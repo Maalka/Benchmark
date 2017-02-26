@@ -469,11 +469,25 @@ case class EUIMetrics(parameters: JsValue) {
   }
 
   def getMix(state:String,propType:String):Future[Double] = {
-    val mixTable = loadEnergyMixTable.map { case a => (a \ state \ propType).toOption}
-    mixTable.map{
-      case Some(a) => a.as[Double]
-      case _ => throw new Exception("Could not find State and PropType in statePropertyEnergyMix.json")
-    }
+    val local = for {
+      mixLookup <- loadEnergyMixTable.map { case a => (a \ state \ propType).toOption }
+      mixValue <- mixLookup match {
+        case Some(a) => Future{a.as[Double]}
+        case _ => throw new Exception("Could not find State and PropType in statePropertyEnergyMix.json")
+      }
+    } yield mixValue
+
+    local.recoverWith{case NonFatal(th) => getDefaultMix(state)}
+  }
+
+  def getDefaultMix(state:String):Future[Double] = {
+    for {
+      mixLookup <- loadEnergyMixTable.map { case a => (a \ state \ "Other").toOption }
+      mixValue <- mixLookup match {
+        case Some(a) => Future{a.as[Double]}
+        case _ => throw new Exception("Could not find Default energyMix in statePropertyEnergyMix.json")
+      }
+    } yield mixValue
   }
 
   def loadEnergyMixTable: Future[JsValue] = {
@@ -547,6 +561,8 @@ case class EUIMetrics(parameters: JsValue) {
           case "Northeast" => 89.3 / 145.5
         }
       }
+
+
       //Canadian Building Medians
       case Some(CountryBuildingType("Canada", "AdultEducation")) => 1.18 / 1.44
       case Some(CountryBuildingType("Canada", "College")) => 0.76 / 1.56

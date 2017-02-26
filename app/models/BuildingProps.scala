@@ -370,6 +370,7 @@ case class GenericBuilding (GFA:PosDouble,areaUnits:String, country:String, buil
     case "SingleFamilyDetached" => "Single Family - Detached"
     case "SingleFamilyAttached" => "Single Family - Attached"
     case "MobileHome" => "Mobile Home"
+    case _ => "Other"
     }
   }
 

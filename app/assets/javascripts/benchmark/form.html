@@ -110,104 +110,43 @@
                             <input type="radio" id="project-cb-new" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"
                                ng-value='true'>
                             <label for='project-cb-new'>New construction</label>
-
                         </div>
                     </div>
                     <div class="field">
                         <div class="ui radio checkbox">
-                            <input type="radio" id="project-cb-existing" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"a
+                            <input type="radio" id="project-cb-existing" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"
                                ng-value='false'>
-                            <label for="project-cb-existing">Existing Building (&lt;40% New)</label>
-                        </div>
-                    </div>
-                    <div class="tooltip sup">
-                        i<span class="tooltiptext">New constructions have a target of 70% reductions in energy-use relative to national averages. Existing buildings have a 20% goal. </span>
-                    </div>
-                </div>
-
-            </div>
-            <h3 class="ui header"><i class="bullseye icon"></i>Energy Reduction Target</h3>
-            <div class="ui segment reduction page-break-after">
-                <p>
-                    Enter your target expressed as either a ZERO Score or as
-                    a percent reduction from a baseline EUI. A baseline
-                    represents a typical modern building.
-                </p>
-
-                <div class="inline fields">
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" id="project-percentReduction" ng-model="auxModel.targetToggle" ng-init="auxModel.targetToggle='percentReduction'"
-                                   ng-value="'percentReduction'">
-                            <label for='project-percentReduction'>Percent Reduction</label>
-
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" id="project-zeroScore" ng-model="auxModel.targetToggle" ng-init="auxModel.targetToggle='percentReduction'"
-                                   ng-value="'zeroScore'">
-                            <label for="project-zeroScore">ZERO Score</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="inline fields" ng-if="auxModel.targetToggle==='percentReduction'">
-                    <div class="one wide field"></div>
-                    <div class="four wide required field">
-                        <div class="ui input">
-                            <input type="number" ng-model="auxModel.percentBetterThanMedian"
-                                   name="percentBetterThanMedian" placeholder="Target"
-                                   min="0" max="130">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label ng-show="!forms.baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                    </div>
-                </div>
-                <div class="inline fields" ng-if="auxModel.targetToggle==='zeroScore'">
-                    <div class="seven wide field"></div>
-                    <div class="four wide required field">
-                        <div class="ui input">
-                            <input type="number" ng-model="auxModel.percentBetterThanMedian"
-                                   name="percentBetterThanMedian" placeholder="Target"
-                                   min="0" max="130">
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label ng-show="!forms.baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
-                    </div>
-                </div>
-                <div ng-if="auxModel.targetToggle==='percentReduction'">
-                    <div class="sixteen wide column">
-                        <div class="ui divider"></div>
-                    </div>
-                    <div class="ui fifteen wide column left aligned">
-                        <div checkbox class="ui checkbox checked" style="margin-top:.2em;margin-bottom:1em;">
-                            <input type="checkbox" id="is2030" ng-model="auxModel.is2030" ng-init="auxModel.is2030=false"
-                                   ng-true-value=true ng-false-value=false>
-                            <label for="is2030">Are you using the ZERO Tool to meet 2030 Challenge Targets?
-                            <div class="tooltip sup">
-                                i <span class="tooltiptext">2030 Challenge Targets are based on ZEPI score for Commercial Buildings and HERS score for Residential Buildings</span>
-                            </div>
+                            <label for="project-cb-existing">Existing Building (&lt;40% New)
+                                <div class="tooltip">
+                                    <sup>i</sup>
+                                    <span class="tooltiptext">Buildings should be considered new construction if 60% or more of the building area (including structure, envelope, and energy-consuming systems) will be new construction. If less than 40% of the building area is new construction, the project should be considered an existing building.</span>
+                                </div>
                             </label>
                         </div>
                     </div>
                 </div>
+
             </div>
-            <h3 class="ui header"><i class="building icon"></i>PROPERTY USE DETAILS</h3>
+            <h3 class="ui header"><i class="building icon"></i>BUILDING USE DETAILS</h3>
             <div class="ui segment page-break-after" ng-class="{'disabled': !forms.baselineForm.country.$valid}">
-                <p>
+
+                <div class="field">
                     In order to provide you with an appropriate comparison
                     for your building, we need to know how spaces in this
                     building will be used. If your building has multiple uses,
                     add them below.
-                </p>
-                 <div class="inline fields">
+
+                    <div class="tooltip">
+                        <sup>i</sup>
+                        <span class="tooltiptext">The total area of all space uses should equal the gross floor area of the building. For a description of each Property Use type and associated space use characteristic inputs, refer to the ENERGY STAR Portfolio Manager Glossary.</span>
+                    </div>
+                </div>
+
+                <div class="inline fields">
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" id="project-commercial" ng-model="auxModel.buildingZone" ng-init="auxModel.buildingZone='commercial'"
-                               ng-value="'commercial'">
+                                   ng-value="'commercial'">
                             <label for='project-commercial'>Commercial</label>
 
                         </div>
@@ -215,7 +154,7 @@
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" id="project-residential" ng-model="auxModel.buildingZone" ng-init="auxModel.buildingZone='commercial'"
-                               ng-value="'residential'">
+                                   ng-value="'residential'">
                             <label for="project-residential">Residential</label>
 
                         </div>
@@ -225,11 +164,11 @@
                     <div class="sixteen wide field">
                         <label>{{propText}}</label>
                         <select class="ui dropdown search"
-                            dropdown
-                            reset = "auxModel.resetBuildingType"
-                            ng-model="auxModel.buildingType"
-                            ng-options="item as item.name for item in buildingProperties.buildingType[auxModel.buildingZone] | orderBy : 'name'"
-                            name="buildingType">
+                                dropdown
+                                reset = "auxModel.resetBuildingType"
+                                ng-model="auxModel.buildingType"
+                                ng-options="item as item.name for item in buildingProperties.buildingType[auxModel.buildingZone] | orderBy : 'name'"
+                                name="buildingType">
                             <option value="">Select</option>
                         </select>
                     </div>
@@ -270,14 +209,109 @@
                 </div>
 
             </div>
+            <h3 class="ui header"><i class="bullseye icon"></i>Energy Reduction Target</h3>
+            <div class="ui segment reduction page-break-after">
+
+                <div class="field">
+                    Enter your target expressed as either a percent
+                    reduction from baseline EUI, or as a ZERO Score. A
+                    baseline represents a typical modern building.
+                    <div class="tooltip">
+                        <sup>i</sup>
+                        <span class="tooltiptext">A typical modern building represents an energy consumption profile that is based on data from the 2003 Commercial Building Energy Consumption Survey (CBECS) or the 2001 Residential Energy Consumption Survey (RECS). Baselines are normalized by climate, weather, space type, building size, occupancy, and schedule.</span>
+                    </div>
+                </div>
+
+                <div class="inline fields">
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" id="project-percentReduction" ng-model="auxModel.targetToggle" ng-init="auxModel.targetToggle='percentReduction'"
+                                   ng-value="'percentReduction'">
+                            <label for='project-percentReduction'>Percent Reduction
+                                <div class="tooltip">
+                                    <sup>i</sup>
+                                    <span class="tooltiptext">
+                                        2030 Challenge percent reduction from baseline targets for new construction are:
+                                        <ul>
+                                            <li>70% today</li>
+                                            <li>80% in 2020</li>
+                                            <li>90% in 2025</li>
+                                            <li>Carbon-neutral in 2030 (using no fossil fuel GHG emitting energy to operate)</li>
+                                        </ul>
+                                        2030 Challenge percent reduction from baseline targets for existing buildings are:
+                                        <ul>
+                                            <li>20% today</li>
+                                            <li>35% in 2025</li>
+                                            <li>50% in 2030</li>
+                                        </ul>
+                                    </span>
+                                </div>
+                            </label>
+
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" id="project-zeroScore" ng-model="auxModel.targetToggle" ng-init="auxModel.targetToggle='percentReduction'"
+                                   ng-value="'zeroScore'">
+                            <label for="project-zeroScore">ZERO Score
+                                <div class="tooltip">
+                                    <sup>i</sup>
+                                    <span class="tooltiptext">A ZERO Score is calculated on a linear scale, where a score of 100 represents the 2030 Challenge baseline (a typical modern building) and a score of 0 represents a zero net carbon building. ZERO Scores are equivalent to the inverse of the Percent Reduction value.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="inline fields" ng-if="auxModel.targetToggle==='percentReduction'">
+                    <div class="one wide field"></div>
+                    <div class="four wide required field">
+                        <div class="ui input">
+                            <input type="number" ng-model="auxModel.percentBetterThanMedian"
+                                   name="percentBetterThanMedian" placeholder="Target"
+                                   min="0" max="130">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label ng-show="!forms.baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
+                    </div>
+                </div>
+                <div class="inline fields" ng-if="auxModel.targetToggle==='zeroScore'">
+                    <div class="seven wide field"></div>
+                    <div class="four wide required field">
+                        <div class="ui input">
+                            <input type="number" ng-model="auxModel.percentBetterThanMedian"
+                                   name="percentBetterThanMedian" placeholder="Target"
+                                   min="0" max="130">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label ng-show="!forms.baselineForm.percentBetterThanMedian.$valid"><font color="red">[Must Be Number Between 0-100]</font></label>
+                    </div>
+                </div>
+                <div ng-if="auxModel.targetToggle==='percentReduction'">
+                    <div class="sixteen wide column">
+                        <div class="ui divider"></div>
+                    </div>
+                    <div class="ui fifteen wide column left aligned">
+                        <div checkbox class="ui checkbox checked" style="margin-top:.2em;margin-bottom:1em;">
+                            <input type="checkbox" id="is2030" ng-model="auxModel.is2030" ng-init="auxModel.is2030=false"
+                                   ng-true-value=true ng-false-value=false>
+                            <label for="is2030">Are you using the ZERO Tool to meet 2030 Challenge Targets?</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <h3 class="ui header" ng-if="auxModel.newConstruction === false"><i class="lightning icon"></i>Annual Energy Consumption</h3>
             <div class="ui segment energy-entry" ng-if="auxModel.newConstruction === false">
                 <p>
-                    Enter the actual annual energy use for your building
-                    below. This will generate a rating so that you can
-                    compare your building’s performance to your target.
-                    To get the most accurate metrics, provide total annual
-                    energy use from all energy types. 
+                    Enter the annual energy consumption for the building
+                    below. Include all fossil fuel-based energy that is
+                    sourced from off-site, either through a direct
+                    connection to a utility or through transportation to the
+                    site.
                 </p>
                 <div>
                     <div class="ui grid">
@@ -285,10 +319,12 @@
                             <div checkbox class="ui checkbox checked" style="margin-top:.2em;margin-bottom:1em;">
                                 <input type="checkbox" id="netMetered" ng-model="auxModel.netMetered" ng-init="auxModel.netMetered=false"
                                        ng-true-value=true ng-false-value=false>
-                                <label for="netMetered">Net Metered?</label>
-                            </div>
-                            <div class="tooltip sup">
-                                i <span class="tooltiptext">If you're energy entries below already account for renewable energy that is purchased or generated on-site, check this box.</span>
+                                <label for="netMetered">Net Metered?
+                                    <div class="tooltip">
+                                        <sup>i</sup>
+                                        <span class="tooltiptext">For the purposes of this calculation, all utility-provided energy consumption data should be considered fossil fuel-based, unless a project-specific contract for green power procurement is in place.</span>
+                                    </div>
+                                </label>
                             </div>
                         </div>
                         <div class="five wide column">
@@ -348,11 +384,10 @@
                 </i>Annual Energy Generation</h3>
             <div class="ui segment energy-entry" ng-if="auxModel.newConstruction === false">
                 <p>
-                    Enter the annual renewable energy generation for your
-                    building below. This will help generate a rating so that
-                    you can compare your building’s performance to your
-                    target. To get the most accurate metrics, provide total
-                    renewable energy generation from all energy types.
+                    Enter the annual energy generation for your building
+                    below. Include all non fossil fuel-based renewable
+                    energy that is either generated on site or procured
+                    from certified green power providers.
                 </p>
 
                 <div>

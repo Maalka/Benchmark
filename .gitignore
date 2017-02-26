@@ -18,3 +18,8 @@ bin
 /.cache
 /.target
 *~
+csvmetrics
+out.zip
+result/filename
+result/processed.csv
+result/unprocessed.csv
