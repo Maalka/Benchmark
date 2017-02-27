@@ -118,7 +118,7 @@
                                ng-value='false'>
                             <label for="project-cb-existing">Existing Building (&lt;40% New)
                                 <div class="tooltip">
-                                    <sup>i</sup>
+                                    <sup><i class="blue circle info icon"></i></sup>
                                     <span class="tooltiptext">Buildings should be considered new construction if 60% or more of the building area (including structure, envelope, and energy-consuming systems) will be new construction. If less than 40% of the building area is new construction, the project should be considered an existing building.</span>
                                 </div>
                             </label>
@@ -137,7 +137,7 @@
                     add them below.
 
                     <div class="tooltip">
-                        <sup>i</sup>
+                        <sup><i class="blue circle info icon"></i></sup>
                         <span class="tooltiptext">The total area of all space uses should equal the gross floor area of the building. For a description of each Property Use type and associated space use characteristic inputs, refer to the ENERGY STAR Portfolio Manager Glossary.</span>
                     </div>
                 </div>
@@ -217,7 +217,7 @@
                     reduction from baseline EUI, or as a ZERO Score. A
                     baseline represents a typical modern building.
                     <div class="tooltip">
-                        <sup>i</sup>
+                        <sup><i class="blue circle info icon"></i></sup>
                         <span class="tooltiptext">A typical modern building represents an energy consumption profile that is based on data from the 2003 Commercial Building Energy Consumption Survey (CBECS) or the 2001 Residential Energy Consumption Survey (RECS). Baselines are normalized by climate, weather, space type, building size, occupancy, and schedule.</span>
                     </div>
                 </div>
@@ -229,7 +229,7 @@
                                    ng-value="'percentReduction'">
                             <label for='project-percentReduction'>Percent Reduction
                                 <div class="tooltip">
-                                    <sup>i</sup>
+                                    <sup><i class="blue circle info icon"></i></sup>
                                     <span class="tooltiptext">
                                         2030 Challenge percent reduction from baseline targets for new construction are:
                                         <ul>
@@ -256,7 +256,7 @@
                                    ng-value="'zeroScore'">
                             <label for="project-zeroScore">ZERO Score
                                 <div class="tooltip">
-                                    <sup>i</sup>
+                                    <sup><i class="blue circle info icon"></i></sup>
                                     <span class="tooltiptext">A ZERO Score is calculated on a linear scale, where a score of 100 represents the 2030 Challenge baseline (a typical modern building) and a score of 0 represents a zero net carbon building. ZERO Scores are equivalent to the inverse of the Percent Reduction value.</span>
                                 </div>
                             </label>
@@ -306,12 +306,17 @@
 
             <h3 class="ui header" ng-if="auxModel.newConstruction === false"><i class="lightning icon"></i>Annual Energy Consumption</h3>
             <div class="ui segment energy-entry" ng-if="auxModel.newConstruction === false">
-                <p>
+                <div class="field">
                     Enter the annual energy consumption for the building
                     below. Include all fossil fuel-based energy that is
                     sourced from off-site, either through a direct
                     connection to a utility or through transportation to the
                     site.
+                <div class="tooltip">
+                    <sup><i class="blue circle info icon"></i></sup>
+                    <span class="tooltiptext">For the purposes of this calculation, all utility-provided energy consumption data should be considered fossil fuel-based, unless a project-specific contract for green power procurement is in place.</span>
+                </div>
+            </div>
                 </p>
                 <div>
                     <div class="ui grid">
@@ -321,8 +326,9 @@
                                        ng-true-value=true ng-false-value=false>
                                 <label for="netMetered">Net Metered?
                                     <div class="tooltip">
-                                        <sup>i</sup>
-                                        <span class="tooltiptext">For the purposes of this calculation, all utility-provided energy consumption data should be considered fossil fuel-based, unless a project-specific contract for green power procurement is in place.</span>
+                                        <sup><i class="blue circle info icon"></i></sup>
+                                        <span class="tooltiptext">Check this box if your utility bills aggregate on-site energy consumption and on-
+                                            site energy generation. Leave the box unchecked if you have separate consumption and generation data. Either way, enter energy generation data below.</span>
                                     </div>
                                 </label>
                             </div>
