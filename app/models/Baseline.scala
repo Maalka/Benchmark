@@ -426,7 +426,18 @@ case class EUIMetrics(parameters: JsValue) {
         }
       }
       statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
-      defaultRatio <- getDefaultRatio(statePropEnergyMix)
+      defaultRatio <- {
+        println(stateBuildingType.buildingType)
+        stateBuildingType.buildingType match {
+          case "SingleFamilyDetached" => residentialSitetoSourceRatio(result.head)
+          case "SingleFamilyAttached" => residentialSitetoSourceRatio(result.head)
+          case "MultiFamilyLessThan5" => residentialSitetoSourceRatio(result.head)
+          case "MultiFamilyMoreThan4" => residentialSitetoSourceRatio(result.head)
+          case "MobileHome" => residentialSitetoSourceRatio(result.head)
+          case _ => getDefaultRatio(statePropEnergyMix)
+        }
+      }
+
     } yield defaultRatio
 
     local.recoverWith{case NonFatal(th) => residentialSitetoSourceRatio(result.head)}
