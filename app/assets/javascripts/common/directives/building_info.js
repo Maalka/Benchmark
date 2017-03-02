@@ -100,6 +100,13 @@ define(['angular','./main'], function(angular) {
                         $scope.propFieldsRequired = true;
                     }
                 });
+                $scope.isSmall = function (GFA) {
+                    if(GFA<=5000){
+                       return true;
+                    } else {
+                       return false;
+                    }
+                };
                 $scope.buildingProperties = {
                     areaUnits: [
                             {id:"ftSQ",name:"sq.ft"},
@@ -450,7 +457,13 @@ define(['angular','./main'], function(angular) {
                     ],
 
                     FinancialOffice: [
-
+                        {
+                            name: "isSmallBank",
+                            default: $scope.isSmall(GFA),
+                            type: "checkbox",
+                            title: "Small Bank",
+                            required: "all"
+                        },
                         {
                             name: "weeklyOperatingHours",
                             default: 65,
@@ -733,11 +746,11 @@ define(['angular','./main'], function(angular) {
                             name: "wastewaterInfluentBiologicalOxygenDemand",
                             default: 200.0,
                             type: "number",
-                            title: "Influent Biological Oxygen Demand",
+                            title: "Influent Biological Oxygen Demand (mg/l)",
                             required: "USA"
                         },
                         {
-                            name: "wastewaterEffluentBiologicalOxygenDemand",
+                            name: "wastewaterEffluentBiologicalOxygenDemand(mg/l)",
                             default: 8.0,
                             type: "number",
                             title: "Effluent Biological Oxygen Demand",
@@ -747,7 +760,7 @@ define(['angular','./main'], function(angular) {
                             name: "wastewaterAvgInfluentInflow",
                             default: null,
                             type: "number",
-                            title: "Wastewater Average Influent Inflow",
+                            title: "Wastewater Average Influent Inflow (MGD)",
                             required: "USA"
                         },
                         {
@@ -768,7 +781,7 @@ define(['angular','./main'], function(angular) {
                             name: "wastewaterPlantDesignFlowRate",
                             default: null,
                             type: "number",
-                            title: "Plant Design Flow Rate",
+                            title: "Plant Design Flow Rate (MGD)",
                             required: "USA"
                         },
                         {
@@ -892,7 +905,8 @@ define(['angular','./main'], function(angular) {
                             name: "annualITEnergy",
                             default: null,
                             type: "number",
-                            title: "Annual IT Energy (kWh)"
+                            title: "Annual IT Energy (kWh)",
+                            required: "all"
                         }
                     ],
                     };

@@ -438,9 +438,9 @@ case class FinancialOffice(GFA:PosDouble, numComputers:PosDouble, weeklyOperatin
     RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.value / buildingSize * 1000)),
     RegressionSegment(0.0077, 4411, HDD.value * percentHeated.value / 100),
     RegressionSegment(0.0144, 1157, CDD.value * percentCooled.value / 100),
-    RegressionSegment(-64.83, 9.535, log(buildingSize)),
-    RegressionSegment(34.2, .5616, log(numWorkersMainShift.value / buildingSize * 1000)),
-    RegressionSegment(56.3, 0, 1)
+    RegressionSegment(-64.83 * isSmallBank, 9.535, log(buildingSize)),
+    RegressionSegment(34.2 * isSmallBank, .5616, log(numWorkersMainShift.value / buildingSize * 1000)),
+    RegressionSegment(56.3 * isSmallBank, 0, 1)
   )
 }
 /**

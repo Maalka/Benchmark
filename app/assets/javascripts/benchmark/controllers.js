@@ -532,7 +532,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
             buildingType: {
                 commercial: [
-                    {id:"Office",name:"Bank Branch"},
+                    {id:"FinancialOffice",name:"Bank Branch"},
                     {id:"FinancialOffice",name:"Financial Office"},
                     {id:"AdultEducation",name:"Adult Education"},
                     {id:"College",name:"College / University"},
@@ -564,7 +564,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"FastFoodRestaurant",name:"Fast Food Restaurant"},
                     {id:"Restaurant",name:"Restaurant"},
                     {id:"Supermarket",name:"Supermarket"},
-                    {id:"WholesaleClub",name:"Wholesale Club"},
+                    {id:"Retail",name:"Wholesale Club"},
                     {id:"FoodSales",name:"Food Sales"},
                     {id:"FoodService",name:"Food Service"},
                     {id:"AmbulatorySurgicalCenter",name:"Ambulatory Surgical Center"},
@@ -584,7 +584,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"MixedUse",name:"Mixed Use Property"},
                     {id:"Office",name:"Office"},
                     {id:"VeterinaryOffice",name:"Veterinary Office"},
-                    {id:"Courthouse",name:"Courthouse"},
+                    {id:"Office",name:"Courthouse"},
                     {id:"DrinkingWaterTreatment",name:"Drinking Water Treatment Center"},
                     {id:"FireStation",name:"Fire Station"},
                     {id:"Library",name:"Library"},
