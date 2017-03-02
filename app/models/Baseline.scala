@@ -427,7 +427,6 @@ case class EUIMetrics(parameters: JsValue) {
       }
       statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
       defaultRatio <- {
-        println(stateBuildingType.buildingType)
         stateBuildingType.buildingType match {
           case "SingleFamilyDetached" => residentialSitetoSourceRatio(result.head)
           case "SingleFamilyAttached" => residentialSitetoSourceRatio(result.head)
