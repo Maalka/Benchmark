@@ -639,6 +639,7 @@ case class EUIMetrics(parameters: JsValue) {
       case Some(CountryBuildingType("Canada","Hotel")) => 1.12 / 1.75
       case Some(CountryBuildingType("Canada","WorshipCenter")) => 0.86 / 1.06
       case Some(CountryBuildingType("Canada","Warehouse")) => 0.75 / 0.93
+      case Some(CountryBuildingType("Canada","RefrigeratedWarehouse")) => 0.90 / 1.23 // there is no median for refrigerated warehouse in Canada (it's cold there!!)
       case Some(CountryBuildingType("Canada","SeniorCare")) => 1.12 / 1.88
       case Some(CountryBuildingType("Canada","Retail")) => 0.85 / 1.52
       case Some(CountryBuildingType("Canada","ResidenceHall")) => 1.45 / 2.05

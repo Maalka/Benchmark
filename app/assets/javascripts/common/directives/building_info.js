@@ -900,6 +900,52 @@ define(['angular','./main'], function(angular) {
                             required: "USA"
                         }
                     ],
+                    RefrigeratedWarehouse: [
+                         {
+                            name: "isWarehouseRefrigerated",
+                            default: true,
+                            type: "checkbox",
+                            title: "Is Refrigerated",
+                            required: "all"
+                        },
+                        {
+                            name: "weeklyOperatingHours",
+                            default: 60,
+                            type: "number",
+                            title: "Number of Weekly Operating Hours",
+                            required: "USA"
+                        },
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(0.59*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift",
+                            required: "USA"
+                        },
+                        {
+                            name: "numWalkinRefrUnits",
+                            default: 0.0,
+                            type: "number",
+                            title: "Number of Walk-in Refrigeration Units",
+                            required: "USA"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[5].id,
+                            fields: $scope.buildingProperties.areaHVAC,
+                            type: "select",
+                            title: "Percent Heated",
+                            required: "USA"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[2].id,
+                            fields: $scope.buildingProperties.areaHVAC,
+                            type: "select",
+                            title: "Percent Cooled",
+                            required: "USA"
+                        }
+                    ],
                     DataCenter: [
                         {
                             name: "annualITEnergy",
@@ -947,6 +993,7 @@ define(['angular','./main'], function(angular) {
                        "SeniorCare",
                        "Supermarket",
                        "Warehouse",
+                       "RefrigeratedWarehouse",
                        "WastewaterCenter",
                        "WorshipCenter"
                ];

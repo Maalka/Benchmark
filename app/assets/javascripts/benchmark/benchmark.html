@@ -1,25 +1,6 @@
 
 <div>
     <div class="ui stackable grid container" style="padding-top:14px">
-        <div class="three wide column computer only tablet only" ng-if="media === 'print'"></div>
-        <div class="thirteen wide column" ng-if="media === 'print'">
-            Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
-            existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
-            see the User Guide above.
-        </div>
-
-        <div class="two wide column computer only tablet only" ng-if="media !== 'print'"></div>
-        <div class="twelve wide column large screen only" ng-if="media !== 'print'">
-            Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
-            existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
-            see the User Guide above.
-        </div>
-        <div class="fourteen wide column  small screen only" ng-if="media !== 'print'">
-            Enter information about your building below and your annual energy consumption target will be shown to the right. If you have an
-            existing building, you may also enter annual energy use to generate a rating and compare it against the target. For more information,
-            see the User Guide above.
-        </div>
-        <div class="two wide column large screen only" ng-if="media !== 'print'"></div>
 
         <!-- setup the response grids *** LARGE SCREEN-->
 
@@ -32,7 +13,7 @@
                 <div class="ui sixteen wide grid">
                         <div class="fifteen wide column right aligned">
                             <h3 class="ui header" style="padding-top: 1px;">
-                                <a href ng-click="submit()">Compute Target</a>
+                                <a href ng-click="submit()">Calculate Baseline and Target</a>
                             </h3>
                         </div>
                         <div class="one wide column">

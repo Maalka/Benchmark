@@ -117,6 +117,12 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.clearGeography();
     });
 
+    $scope.$watch("auxModel.targetToggle", function (v) {
+        if(v === 'zeroScore'){
+        $scope.auxModel.is2030=false;
+    }
+    });
+
     $scope.$watch("auxModel.newConstruction", function (v) {
         if(v === true){
             $scope.auxModel.percentBetterThanMedian = 70;
@@ -606,7 +612,9 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"PowerStation",name:"Energy / Power Station"},
                     {id:"OtherUtility",name:"Other Utility Station"},
                     {id:"SelfStorageFacility",name:"Self Storage Facility"},
-                    {id:"Warehouse",name:"Warehouse / Distribution Center"},
+                    {id:"Warehouse",name:"Warehouse - UnRefrigerated"},
+                    {id:"RefrigeratedWarehouse",name:"Warehouse - Refrigerated"},
+                    {id:"Warehouse",name:"Distribution Center"},
                 ],
                 residential: [
                     {id:"SingleFamilyDetached",name:"Single Family - Detached"},
@@ -631,6 +639,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
            "SeniorCare",
            "Supermarket",
            "Warehouse",
+           "RefrigeratedWarehouse",
            "WastewaterCenter",
            "WorshipCenter"
        ];

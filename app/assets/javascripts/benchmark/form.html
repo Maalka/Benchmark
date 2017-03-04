@@ -116,12 +116,7 @@
                         <div class="ui radio checkbox">
                             <input type="radio" id="project-cb-existing" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"
                                ng-value='false'>
-                            <label for="project-cb-existing">Existing Building (&lt;40% New)
-                                <div class="tooltip">
-                                    <sup><i class="blue circle info icon"></i></sup>
-                                    <span class="tooltiptext">Buildings should be considered new construction if 60% or more of the building area (including structure, envelope, and energy-consuming systems) will be new construction. If less than 40% of the building area is new construction, the project should be considered an existing building.</span>
-                                </div>
-                            </label>
+                            <label for="project-cb-existing">Existing Building</label>
                         </div>
                     </div>
                 </div>
@@ -138,7 +133,7 @@
 
                     <div class="tooltip">
                         <sup><i class="blue circle info icon"></i></sup>
-                        <span class="tooltiptext">The total area of all space uses should equal the gross floor area of the building. For a description of each Property Use type and associated space use characteristic inputs, refer to the ENERGY STAR Portfolio Manager Glossary.</span>
+                        <span class="tooltiptext">The total area of all space uses should equal the gross floor area of the building. For a description of each use type and associated space use characteristic inputs, refer to the ENERGY STAR Portfolio Manager Glossary.</span>
                     </div>
                 </div>
 
@@ -187,6 +182,7 @@
                     <div ng-if="prop.type=='SeniorCare' && prop.country=='USA'" building-Info forms='forms' type='SeniorCare' model="prop"></div>
                     <div ng-if="prop.type=='Supermarket' && prop.country=='USA'" building-Info forms='forms' type='Supermarket' model="prop"></div>
                     <div ng-if="prop.type=='Warehouse' && prop.country=='USA'" building-Info forms='forms' type='Warehouse' model="prop"></div>
+                    <div ng-if="prop.type=='RefrigeratedWarehouse' && prop.country=='USA'" building-Info forms='forms' type='RefrigeratedWarehouse' model="prop"></div>
                     <div ng-if="prop.type=='WastewaterCenter' && prop.country=='USA'" building-Info forms='forms' type='WastewaterCenter' model="prop"></div>
                     <div ng-if="prop.type=='WorshipCenter' && prop.country=='USA'" building-Info forms='forms' type='WorshipCenter' model="prop"></div>
                     <div ng-if="prop.type=='MultiFamily' && prop.country=='USA'" building-Info forms='forms' type='MultiFamily' model="prop"></div>
@@ -197,13 +193,15 @@
                     <div ng-if="prop.type=='Office' && prop.country=='Canada'" building-Info forms='forms' type='OfficeCanada' model="prop"></div>
                     <div ng-if="prop.type=='Supermarket' && prop.country=='Canada'" building-Info forms='forms' type='SupermarketCanada' model="prop"></div>
 
-                    <div ng-if="prop.type!='DataCenter' && prop.type!='Hospital' &&
+                    <div ng-if="prop.country=='USA' && prop.type!='DataCenter' && prop.type!='Hospital' &&
                         prop.type!='Hotel' && prop.type!='K12School' && prop.type!='MedicalOffice' &&
                         prop.type!='Office' && prop.type!='ResidenceHall' && prop.type!='Retail' &&
-                        prop.type!='SeniorCare' && prop.type!='Supermarket' && prop.type!='Warehouse' &&
+                        prop.type!='SeniorCare' && prop.type!='Supermarket' && prop.type!='RefrigeratedWarehouse' && prop.type!='Warehouse' &&
                         prop.type!='WastewaterCenter' && prop.type!='MultiFamily' &&
                         prop.type!='WorshipCenter'" building-Info forms='forms' type='Generic' model="prop">
-
+                    </div>
+                    <div ng-if="prop.country=='Canada' && prop.type!='Hospital' && prop.type!='K12School' &&
+                        prop.type!='MedicalOffice' && prop.type!='Office' && prop.type!='Supermarket'" building-Info forms='forms' type='Generic' model="prop">
                     </div>
 
                 </div>
@@ -214,7 +212,7 @@
 
                 <div class="field">
                     Enter your target expressed as either a percent
-                    reduction from baseline EUI, or as a ZERO Score. A
+                    reduction from baseline EUI, or as a Zero Score. A
                     baseline represents a typical modern building.
                     <div class="tooltip">
                         <sup><i class="blue circle info icon"></i></sup>
@@ -231,14 +229,14 @@
                                 <div class="tooltip">
                                     <sup><i class="blue circle info icon"></i></sup>
                                     <span class="tooltiptext">
-                                        2030 Challenge percent reduction from baseline targets for new construction are:
+                                        2030 Challenge reduction targets for new construction and major renovations are:
                                         <ul>
                                             <li>70% today</li>
                                             <li>80% in 2020</li>
                                             <li>90% in 2025</li>
                                             <li>Carbon-neutral in 2030 (using no fossil fuel GHG emitting energy to operate)</li>
                                         </ul>
-                                        2030 Challenge percent reduction from baseline targets for existing buildings are:
+                                        2030 Challenge reduction targets for existing buildings are:
                                         <ul>
                                             <li>20% today</li>
                                             <li>35% in 2025</li>
@@ -254,10 +252,10 @@
                         <div class="ui radio checkbox">
                             <input type="radio" id="project-zeroScore" ng-model="auxModel.targetToggle" ng-init="auxModel.targetToggle='percentReduction'"
                                    ng-value="'zeroScore'">
-                            <label for="project-zeroScore">ZERO Score
+                            <label for="project-zeroScore">Zero Score
                                 <div class="tooltip">
                                     <sup><i class="blue circle info icon"></i></sup>
-                                    <span class="tooltiptext">A ZERO Score is calculated on a linear scale, where a score of 100 represents the 2030 Challenge baseline (a typical modern building) and a score of 0 represents a zero net carbon building. ZERO Scores are equivalent to the inverse of the Percent Reduction value.</span>
+                                    <span class="tooltiptext">A Zero Score is calculated on a linear scale, where a score of 100 represents the 2030 Challenge baseline (a typical modern building) and a score of 0 represents a zero net carbon building. Zero Scores are equivalent to the inverse of the Percent Reduction value.</span>
                                 </div>
                             </label>
                         </div>
@@ -298,7 +296,7 @@
                         <div checkbox class="ui checkbox checked" style="margin-top:.2em;margin-bottom:1em;">
                             <input type="checkbox" id="is2030" ng-model="auxModel.is2030" ng-init="auxModel.is2030=false"
                                    ng-true-value=true ng-false-value=false>
-                            <label for="is2030">Are you using the ZERO Tool to meet 2030 Challenge Targets?</label>
+                            <label for="is2030">Are you using the Zero Tool to meet 2030 Challenge Targets?</label>
                         </div>
                     </div>
                 </div>

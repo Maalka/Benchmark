@@ -52,6 +52,7 @@ case class CSVcompute(parameters: List[List[String]]) {
     "SeniorCare",
     "Supermarket",
     "Warehouse",
+    "RefrigeratedWarehouse",
     "WastewaterCenter",
     "WorshipCenter"
   )
@@ -182,6 +183,7 @@ case class CSVcompute(parameters: List[List[String]]) {
         "percentCooled" -> JsNumber(100)
       ))
       case "FinancialOffice" => JsObject(Map (
+        "isSmallBank" -> JsBoolean(true),
         "weeklyOperatingHours" -> JsNumber(65),
         "numWorkersMainShift" -> JsNumber(roundAt(2)(2.3*building.GFA/1000)),
         "numComputers" -> JsNumber(roundAt(2)(2*building.GFA/1000)),
@@ -253,6 +255,15 @@ case class CSVcompute(parameters: List[List[String]]) {
         "hasFoodPreparation" -> JsBoolean(false)
       ))
       case "Warehouse" => JsObject(Map (
+        "isWarehouseRefrigerated" -> JsBoolean(false),
+        "weeklyOperatingHours" -> JsNumber(60),
+        "numWorkersMainShift" -> JsNumber(roundAt(2)(0.59*building.GFA/1000)),
+        "numWalkinRefrUnits" -> JsNumber(0.0),
+        "percentHeated" -> JsNumber(50),
+        "percentCooled" -> JsNumber(20)
+      ))
+      case "RefrigeratedWarehouse" => JsObject(Map (
+        "isWarehouseRefrigerated" -> JsBoolean(true),
         "weeklyOperatingHours" -> JsNumber(60),
         "numWorkersMainShift" -> JsNumber(roundAt(2)(0.59*building.GFA/1000)),
         "numWalkinRefrUnits" -> JsNumber(0.0),
