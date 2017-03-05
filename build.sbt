@@ -23,6 +23,23 @@ dockerUpdateLatest := true
 
 linuxPackageMappings += packageTemplateMapping(s"/var/run/${name.value}/")() withUser name.value withGroup name.value
 
+javaOptions in Universal ++= Seq(
+  // JVM memory tuning
+  "-J-Xmx1024m",
+  "-J-Xms512m",
+
+  // Since play uses separate pidfile we have to provide it with a proper path
+  // name of the pid file must be play.pid
+  s"-Dpidfile.path=/var/run/${name.value}/play.pid",
+
+  // alternative, you can remove the PID file
+  // s"-Dpidfile.path=/dev/null",
+
+  // Use separate configuration file for production environment
+  s"-Dconfig.file=/etc/${name.value}/prod.conf"
+)
+
+
 lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
 lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
 
