@@ -2,10 +2,10 @@
 
     <div class="inline fields">
         <div class="six wide field" ng-if="propertyModelFields[model.type].length > 0">
-            <h3 class="ui header">{{ buildingName }}<h3>
+            <h3 class="ui header">{{ buildingName }}</h3>
         </div>
         <div class="thirteen wide field" ng-if="!propertyModelFields[model.type].length > 0">
-            <h3 class="ui header">{{ buildingName }}<h3>
+            <h3 class="ui header">{{ buildingName }}</h3>
         </div>
         <div class="seven wide field" ng-if="propertyModelFields[model.type].length > 0"
             ng-class="{'disabled': !propertyModel.GFA || !propertyModel.areaUnits}">

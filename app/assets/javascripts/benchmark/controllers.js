@@ -24,7 +24,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.propTypes = [];
     $scope.matchmedia = matchmedia;
     $scope.mainColumnWidth = "";
-    $scope.propText = "Primary Function of Building";
+    $scope.propText = "Primary Building Use";
     $scope.buildingZone = "commercial";
     $scope.targetToggle = "percentReduction";
     $scope.isResidential = false;
@@ -182,7 +182,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $scope.propTypes.splice(index, 1);
         if($scope.propTypes.length === 0){
-            $scope.propText="Primary Function of Building";
+            $scope.propText="Primary Building Use";
         }
     };
 
@@ -198,7 +198,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $scope.propTypes.splice(index, 1);
         if($scope.propTypes.length === 0){
-            $scope.propText="Primary Function of Building";
+            $scope.propText="Primary Building Use";
         }
     };
 
