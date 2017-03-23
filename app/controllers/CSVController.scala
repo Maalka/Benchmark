@@ -96,7 +96,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
 
     request.body.file("attachment").map { upload =>
       val filename = upload.filename
-      val uploadedFile = upload.ref.moveTo(new File(tempDir + File.separator + filename))
+      val uploadedFile = upload.ref.moveTo(new File(tempDir + File.separator + "filename"))
 
       val reader = CSVReader.open(uploadedFile)
 
