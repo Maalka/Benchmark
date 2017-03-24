@@ -23,9 +23,7 @@
       },
       'angular-route': ['angular'],
       'angular-cookies': ['angular'],
-      'filesaver': {
-        exports: 'filesaver'
-      },
+      'filesaver': {},
       'maalka-templates': {
         deps: ['angular']
       },
