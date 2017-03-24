@@ -21,6 +21,7 @@ dockerRepository := Some("maalka")
 dockerBaseImage := "maalka/oracle8"
 dockerUpdateLatest := true
 
+/*
 linuxPackageMappings += packageTemplateMapping(s"/var/run/${name.value}/")() withUser name.value withGroup name.value
 
 javaOptions in Universal ++= Seq(
@@ -39,7 +40,7 @@ javaOptions in Universal ++= Seq(
   s"-Dconfig.file=/etc/${name.value}/prod.conf"
 )
 
-
+*/
 lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
 lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
 
@@ -102,8 +103,10 @@ pipelineStages := Seq(rjs, digest, gzip)
 
 // RequireJS with sbt-rjs (https://github.com/sbt/sbt-rjs#sbt-rjs)
 // ~~~
-RjsKeys.paths += ("jsRoutes" -> ("/jsroutes" -> "empty:"),
-                  "filesaver" -> ("../lib/filesaver/" -> "empty:"))
+RjsKeys.paths := Map("jsRoutes" -> ("/jsroutes" -> "empty:"),
+                  "filesaver" -> ("../lib/filesaver/" -> "empty:"),
+                  "angular" -> ("../lib/angularjs/" -> "empty:"),
+                  "jquery" -> ("../lib/jquery/" -> "empty:"))
 
 //RjsKeys.mainModule := "main"
 
