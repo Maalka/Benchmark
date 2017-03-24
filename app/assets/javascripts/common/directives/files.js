@@ -1,11 +1,11 @@
+/*global saveAs*/
 /**
  * A directive
  * for uploading
  * CSV files
  */
-define(['angular', './main', 'angular-file-upload'], function(angular) {
+define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angular) {
     'use strict';
-
     var mod = angular.module('common.directives');
 
     mod.directive('files', ['$log', 'errorPopoverService', 'playRoutes', 'Upload', function ($log, errorPopover, playRoutes, Upload) {
@@ -16,9 +16,16 @@ define(['angular', './main', 'angular-file-upload'], function(angular) {
             controller: ["$scope", "$element", "$timeout", "playRoutes",
                 function ($scope, $element, $timeout, playRoutes) {
                 $scope.searchInput = "";
-
+                // function str2bytes (str) {
+                //     var bytes = new Uint8Array(str.length);
+                //     for (var i=0; i<str.length; i++) {
+                //         bytes[i] = str.charCodeAt(i);
+                //     }
+                //     return bytes;
+                // }
 
                 $scope.submitFile = function() {
+                    $scope.error = undefined;
                     if ($scope.attachment) {
                         $scope.upload($scope.attachment);
                     }
@@ -26,18 +33,31 @@ define(['angular', './main', 'angular-file-upload'], function(angular) {
                 $scope.loadingFileFiller = {};
 
                 $scope.upload = function (file) {
+                    // https://github.com/eligrey/FileSaver.js/issues/156
                     Upload.upload({
+                        responseType: "arraybuffer",
                         url: playRoutes.controllers.CSVController.upload().url,
-                        data: {attachment: file
-                              }
+                        cache: false,
+                        headers: {
+                            'Content-Type': 'application/zip; charset=utf-8'
+                        },
+                        transformResponse: function (data) {
+                            //The data argument over here is arraybuffer but $http returns response
+                            // as object, thus returning the response as an object with a property holding the
+                            // binary file arraybuffer data
+                            var response = {};
+                            response.arrayBuffer = data;
+                            return response;
+                        },
+                        data: {
+                            attachment: file
+                        }
                     }).then(function (resp) {
-                        console.log('Success ' + resp.config.data.attachment.name + ' uploaded. Response: ' + resp.data);
                         $scope.attachment  = undefined;
-
+                        var blob = new Blob([resp.data.arrayBuffer], {type: "application/zip;charset=utf-8"});
+                        saveAs(blob, "filename.zip");
                         if (resp.data.status === "OK") {
                             $timeout(function () { 
-                                $scope.property.documents.push(resp.data.result);
-                                $scope.files.unshift(resp.data.result);
                                 $scope.loadingFileFiller = {};
                             }, 1000);
                         } else {
@@ -47,15 +67,11 @@ define(['angular', './main', 'angular-file-upload'], function(angular) {
                                     messageHeader: resp.data.response
                                 });
                         }
-                    }, function (resp) {
-                        console.log('Error status: ' + resp.status);
-                    }, function (evt) {
-                        var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                        $scope.loadingFileFiller = {
-                            progressPercentage: progressPercentage,
-                            attachmentName: evt.config.data.attachment.name
+                    }).catch(function () {
+                        $scope.error = {
+                            'messageType': "Error",
+                            'messageDesscription': "There is a error with the bulk csv that you are uploading.  Please make sure that the file contains all of the fields that are required"
                         };
-                        console.log('progress: ' + progressPercentage + '% ' + evt.config.data.attachment.name);
                     });
                  };
             }]
