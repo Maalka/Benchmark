@@ -102,7 +102,8 @@ pipelineStages := Seq(rjs, digest, gzip)
 
 // RequireJS with sbt-rjs (https://github.com/sbt/sbt-rjs#sbt-rjs)
 // ~~~
-RjsKeys.paths += ("jsRoutes" -> ("/jsroutes" -> "empty:"))
+RjsKeys.paths += ("jsRoutes" -> ("/jsroutes" -> "empty:"),
+                  "filesaver" -> ("../lib/filesaver/" -> "empty:"))
 
 //RjsKeys.mainModule := "main"
 

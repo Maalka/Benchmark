@@ -1,10 +1,9 @@
-/*global saveAs*/
 /**
  * A directive
  * for uploading
  * CSV files
  */
-define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angular) {
+define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angular, saveAs) {
     'use strict';
     var mod = angular.module('common.directives');
 
