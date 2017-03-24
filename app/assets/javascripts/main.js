@@ -23,6 +23,9 @@
       },
       'angular-route': ['angular'],
       'angular-cookies': ['angular'],
+      'filesaver': {
+        exports: 'filesaver'
+      },
       'maalka-templates': {
         deps: ['angular']
       },
@@ -54,6 +57,7 @@
       'angular-route': '../lib/angularjs/angular-route',
       'angular-cookies': '../lib/angularjs/angular-cookies',
       'angular-file-upload': '../lib/ng-file-upload/ng-file-upload',
+      'filesaver': '../lib/filesaver/FileSaver',
       'highcharts-core': '../lib/highstock/highstock',
       'highcharts-more': '../lib/highstock/highcharts-more',
       'highcharts': './highcharts-theme',

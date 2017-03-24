@@ -59,6 +59,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "highcharts" % "4.2.3",
   "org.webjars" % "highstock" % "4.2.3",
   "org.webjars" % "matchmedia-ng" % "1.0.5",
+  "org.webjars.bower" % "filesaver" % "1.3.3",
   "com.github.tototoshi" %% "scala-csv" % "1.2.1",
   "org.webjars.bower" % "ng-file-upload" % "12.0.4",
 
