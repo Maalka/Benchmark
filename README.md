@@ -53,3 +53,14 @@ Deployment:
 
 
 This uses the uglified JavaScript files, versioned and compressed assets, and loads WebJars resources from the jsDelivr CDN.
+
+### Install deb
+* run sbt debian:packageBin
+* dpkg -i target/maalka-benchmark_<<VERSION>>.deb
+* apt-get install -f
+
+To remove a previous version of maalka-benchmark
+* dpkg --remove maalka-benchmark
+
+To see what version is installed
+* dpkg-query -l | grep maalka-benchmark
