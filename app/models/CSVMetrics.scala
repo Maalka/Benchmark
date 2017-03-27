@@ -54,7 +54,8 @@ case class CSVcompute(parameters: List[List[String]]) {
     "Warehouse",
     "RefrigeratedWarehouse",
     "WastewaterCenter",
-    "WorshipCenter"
+    "WorshipCenter",
+    "FinancialOffice"
   )
 
   val states:List[String] = List(
