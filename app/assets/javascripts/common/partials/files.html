@@ -20,8 +20,10 @@
 
         </div>
         <div class="field">
-            <button ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined" class="ui green button"
-            type="submit" ng-click="submitFile()">submit
+            <button ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined" 
+                class="ui green button"
+                ng-class="{loading: loading}"
+                type="submit" ng-click="submitFile()">submit
             </button>
             <p ng-if="attachment === undefined && loadingFileFiller.attachmentName === undefined">
                 << Upload your data here >>

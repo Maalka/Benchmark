@@ -30,9 +30,11 @@ define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angul
                     }
                 };
                 $scope.loadingFileFiller = {};
+                $scope.loading = false;
 
                 $scope.upload = function (file) {
                     // https://github.com/eligrey/FileSaver.js/issues/156
+                    $scope.loading = true;
                     Upload.upload({
                         responseType: "arraybuffer",
                         url: playRoutes.controllers.CSVController.upload().url,
@@ -52,6 +54,7 @@ define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angul
                             attachment: file
                         }
                     }).then(function (resp) {
+                        $scope.loading = false;
                         $scope.attachment  = undefined;
                         var blob = new Blob([resp.data.arrayBuffer], {type: "application/zip;charset=utf-8"});
                         saveAs(blob, "Results.zip");
@@ -67,6 +70,7 @@ define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angul
                                 });
                         }
                     }).catch(function () {
+                        $scope.loading = false;
                         $scope.error = {
                             'messageType': "Error",
                             'messageDesscription': "There is a error with the bulk csv that you are uploading.  Please make sure that the file contains all of the fields that are required"
