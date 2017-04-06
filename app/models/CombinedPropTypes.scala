@@ -177,6 +177,7 @@ case class CombinedPropTypes(params: JsValue) {
               case ("USA", "WorshipCenter") => KBtus(70.7)
               case ("USA", "WastewaterCenter") => KBtus(148.1)
               case ("USA", "Warehouse") => KBtus(60.0)
+              case ("USA", "RefrigeratedWarehouse") => KBtus(252.6)
               case ("USA", "Supermarket") => KBtus(480.0)
               case ("USA", "SeniorCare") => KBtus(243.2)
               case ("USA", "Retail") => KBtus(114.4)
@@ -374,7 +375,7 @@ case class CombinedPropTypes(params: JsValue) {
           case Some(is: InputStream) => {
             Json.parse(is)
           }
-          case _ => throw new Exception("Could not open file")
+          case i => throw new Exception("lookUpTable - Could not open file: %s".format(i))
         }
       }
       obj <- Future {
@@ -394,6 +395,7 @@ case class CombinedPropTypes(params: JsValue) {
       case ("USA", "WorshipCenter") => Play.current.configuration.getString("baseline.worshipCenter")
       case ("USA", "WastewaterCenter") => Play.current.configuration.getString("baseline.wastewaterCenter")
       case ("USA", "Warehouse") => Play.current.configuration.getString("baseline.warehouse")
+      case ("USA", "RefrigeratedWarehouse") => Play.current.configuration.getString("baseline.warehouse")
       case ("USA", "Supermarket") => Play.current.configuration.getString("baseline.supermarket")
       case ("USA", "SeniorCare") => Play.current.configuration.getString("baseline.seniorCare")
       case ("USA", "Retail") => Play.current.configuration.getString("baseline.retail")
@@ -610,6 +612,7 @@ case class CombinedPropTypes(params: JsValue) {
         case ("Canada","Hotel") => 1.75
         case ("Canada","WorshipCenter") => 1.06
         case ("Canada","Warehouse") => 0.93
+        case ("Canada","RefrigeratedWarehouse") => 1.23
         case ("Canada","SeniorCare") => 1.88
         case ("Canada","Retail") => 1.52
         case ("Canada","ResidenceHall") => 2.05

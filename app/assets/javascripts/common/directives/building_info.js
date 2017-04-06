@@ -100,6 +100,13 @@ define(['angular','./main'], function(angular) {
                         $scope.propFieldsRequired = true;
                     }
                 });
+                $scope.isSmall = function (GFA) {
+                    if(GFA<=5000){
+                       return true;
+                    } else {
+                       return false;
+                    }
+                };
                 $scope.buildingProperties = {
                     areaUnits: [
                             {id:"ftSQ",name:"sq.ft"},
@@ -450,7 +457,13 @@ define(['angular','./main'], function(angular) {
                     ],
 
                     FinancialOffice: [
-
+                        {
+                            name: "isSmallBank",
+                            default: $scope.isSmall(GFA),
+                            type: "checkbox",
+                            title: "Small Bank",
+                            required: "all"
+                        },
                         {
                             name: "weeklyOperatingHours",
                             default: 65,
@@ -733,11 +746,11 @@ define(['angular','./main'], function(angular) {
                             name: "wastewaterInfluentBiologicalOxygenDemand",
                             default: 200.0,
                             type: "number",
-                            title: "Influent Biological Oxygen Demand",
+                            title: "Influent Biological Oxygen Demand (mg/l)",
                             required: "USA"
                         },
                         {
-                            name: "wastewaterEffluentBiologicalOxygenDemand",
+                            name: "wastewaterEffluentBiologicalOxygenDemand(mg/l)",
                             default: 8.0,
                             type: "number",
                             title: "Effluent Biological Oxygen Demand",
@@ -747,7 +760,7 @@ define(['angular','./main'], function(angular) {
                             name: "wastewaterAvgInfluentInflow",
                             default: null,
                             type: "number",
-                            title: "Wastewater Average Influent Inflow",
+                            title: "Wastewater Average Influent Inflow (MGD)",
                             required: "USA"
                         },
                         {
@@ -768,7 +781,7 @@ define(['angular','./main'], function(angular) {
                             name: "wastewaterPlantDesignFlowRate",
                             default: null,
                             type: "number",
-                            title: "Plant Design Flow Rate",
+                            title: "Plant Design Flow Rate (MGD)",
                             required: "USA"
                         },
                         {
@@ -887,12 +900,59 @@ define(['angular','./main'], function(angular) {
                             required: "USA"
                         }
                     ],
+                    RefrigeratedWarehouse: [
+                         {
+                            name: "isWarehouseRefrigerated",
+                            default: true,
+                            type: "checkbox",
+                            title: "Is Refrigerated",
+                            required: "all"
+                        },
+                        {
+                            name: "weeklyOperatingHours",
+                            default: 60,
+                            type: "number",
+                            title: "Number of Weekly Operating Hours",
+                            required: "USA"
+                        },
+                        {
+                            name: "numWorkersMainShift",
+                            default: $scope.round(0.59*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Workers on Main Shift",
+                            required: "USA"
+                        },
+                        {
+                            name: "numWalkinRefrUnits",
+                            default: 0.0,
+                            type: "number",
+                            title: "Number of Walk-in Refrigeration Units",
+                            required: "USA"
+                        },
+                        {
+                            name: "percentHeated",
+                            default: $scope.buildingProperties.areaHVAC[5].id,
+                            fields: $scope.buildingProperties.areaHVAC,
+                            type: "select",
+                            title: "Percent Heated",
+                            required: "USA"
+                        },
+                        {
+                            name: "percentCooled",
+                            default: $scope.buildingProperties.areaHVAC[2].id,
+                            fields: $scope.buildingProperties.areaHVAC,
+                            type: "select",
+                            title: "Percent Cooled",
+                            required: "USA"
+                        }
+                    ],
                     DataCenter: [
                         {
                             name: "annualITEnergy",
                             default: null,
                             type: "number",
-                            title: "Annual IT Energy (kWh)"
+                            title: "Annual IT Energy (kWh)",
+                            required: "all"
                         }
                     ],
                     };
@@ -933,6 +993,7 @@ define(['angular','./main'], function(angular) {
                        "SeniorCare",
                        "Supermarket",
                        "Warehouse",
+                       "RefrigeratedWarehouse",
                        "WastewaterCenter",
                        "WorshipCenter"
                ];

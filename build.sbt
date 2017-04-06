@@ -7,7 +7,7 @@ name := "benchmark"
 organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
-version := "1.3.0.0"
+version := "1.3.0.0-noBulk"
 
 scalaVersion in ThisBuild := "2.11.6"
 
@@ -21,8 +21,26 @@ dockerRepository := Some("maalka")
 dockerBaseImage := "maalka/oracle8"
 dockerUpdateLatest := true
 
+/*
 linuxPackageMappings += packageTemplateMapping(s"/var/run/${name.value}/")() withUser name.value withGroup name.value
 
+javaOptions in Universal ++= Seq(
+  // JVM memory tuning
+  "-J-Xmx1024m",
+  "-J-Xms512m",
+
+  // Since play uses separate pidfile we have to provide it with a proper path
+  // name of the pid file must be play.pid
+  s"-Dpidfile.path=/var/run/${name.value}/play.pid",
+
+  // alternative, you can remove the PID file
+  // s"-Dpidfile.path=/dev/null",
+
+  // Use separate configuration file for production environment
+  s"-Dconfig.file=/etc/${name.value}/prod.conf"
+)
+
+*/
 lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
 lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
 
@@ -42,6 +60,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "highcharts" % "4.2.3",
   "org.webjars" % "highstock" % "4.2.3",
   "org.webjars" % "matchmedia-ng" % "1.0.5",
+  "org.webjars.bower" % "filesaver" % "1.3.3",
   "com.github.tototoshi" %% "scala-csv" % "1.2.1",
   "org.webjars.bower" % "ng-file-upload" % "12.0.4",
 
@@ -84,7 +103,10 @@ pipelineStages := Seq(rjs, digest, gzip)
 
 // RequireJS with sbt-rjs (https://github.com/sbt/sbt-rjs#sbt-rjs)
 // ~~~
-RjsKeys.paths += ("jsRoutes" -> ("/jsroutes" -> "empty:"))
+RjsKeys.paths := Map("jsRoutes" -> ("/jsroutes" -> "empty:"),
+                  "filesaver" -> ("../lib/filesaver/" -> "empty:"),
+                  "angular" -> ("../lib/angularjs/" -> "empty:"),
+                  "jquery" -> ("../lib/jquery/" -> "empty:"))
 
 //RjsKeys.mainModule := "main"
 

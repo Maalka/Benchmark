@@ -85,14 +85,14 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
     import java.nio.file.Files
 
     var tempDir = Files.createTempDirectory("reports")
-    val proc = new File(tempDir + File.separator + "processed.csv")
+    val processedEntries = new File(tempDir + File.separator + "processed.csv")
 
-    val writer = CSVWriter.open(proc)
+    val writer = CSVWriter.open(processedEntries)
 
     writer.writeRow(List("buildingName","medianZEPI","medianSiteEUI","medianSourceEUI","medianSiteEnergy","medianSourceEnergy"))
 
-    val err = new File(tempDir + File.separator + "unprocessed.csv")
-    val error_writer = CSVWriter.open(err)
+    val unprocessedEntries = new File(tempDir + File.separator + "unprocessed.csv")
+    val error_writer = CSVWriter.open(unprocessedEntries)
 
     request.body.file("attachment").map { upload =>
       val filename = upload.filename
@@ -116,14 +116,14 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
           ).flatten
 
           writer.writeRow(metricsList)
-          println(metricsList)
+          //println(metricsList)
           }
 
         case (_, _, _, Failure(metrics)) =>
           metrics match {
             case NonFatal(th) => {
               writer.writeRow(List(th.getMessage))
-              println(th.getMessage)
+             // println(th.getMessage)
             }
           }
       }
@@ -151,7 +151,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
 
         val enumerator = Enumerator.outputStream { os =>
           val zip = new ZipOutputStream(os)
-          Seq(proc, err, uploadedFile).foreach { f =>
+          Seq(processedEntries, unprocessedEntries, uploadedFile).foreach { f =>
             zip.putNextEntry(new ZipEntry("result/%s".format(f.getName)))
             val in = new BufferedInputStream(new FileInputStream(f))
             var b = in.read()
@@ -170,7 +170,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
         )
       }.recover {
         case NonFatal(th) =>
-          println(th)
+          //println(th)
           Ok("Failed")
       }
     }.getOrElse {

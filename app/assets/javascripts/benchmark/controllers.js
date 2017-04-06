@@ -24,7 +24,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.propTypes = [];
     $scope.matchmedia = matchmedia;
     $scope.mainColumnWidth = "";
-    $scope.propText = "Primary Function of Building";
+    $scope.propText = "Primary Building Use";
     $scope.buildingZone = "commercial";
     $scope.targetToggle = "percentReduction";
     $scope.isResidential = false;
@@ -117,6 +117,12 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.clearGeography();
     });
 
+    $scope.$watch("auxModel.targetToggle", function (v) {
+        if(v === 'zeroScore'){
+        $scope.auxModel.is2030=false;
+    }
+    });
+
     $scope.$watch("auxModel.newConstruction", function (v) {
         if(v === true){
             $scope.auxModel.percentBetterThanMedian = 70;
@@ -176,7 +182,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $scope.propTypes.splice(index, 1);
         if($scope.propTypes.length === 0){
-            $scope.propText="Primary Function of Building";
+            $scope.propText="Primary Building Use";
         }
     };
 
@@ -192,7 +198,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $scope.propTypes.splice(index, 1);
         if($scope.propTypes.length === 0){
-            $scope.propText="Primary Function of Building";
+            $scope.propText="Primary Building Use";
         }
     };
 
@@ -360,11 +366,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.propList = [];
 
         if($scope.auxModel.reportingUnits==="us"){
-            $scope.tableEnergyUnits="KBtu";
-            $scope.tableEUIUnits="KBtu/ft²";
+            $scope.tableEnergyUnits="KBtu/yr";
+            $scope.tableEUIUnits="KBtu/ft²/yr";
         }else {
-            $scope.tableEnergyUnits="kWh";
-            $scope.tableEUIUnits="kWh/m²";
+            $scope.tableEnergyUnits="kWh/yr";
+            $scope.tableEUIUnits="kWh/m²/yr";
         }
 
         if($scope.auxModel.CDD === undefined || $scope.auxModel.HDD === undefined ||
@@ -532,7 +538,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
             buildingType: {
                 commercial: [
-                    {id:"Office",name:"Bank Branch"},
+                    {id:"FinancialOffice",name:"Bank Branch"},
                     {id:"FinancialOffice",name:"Financial Office"},
                     {id:"AdultEducation",name:"Adult Education"},
                     {id:"College",name:"College / University"},
@@ -564,7 +570,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"FastFoodRestaurant",name:"Fast Food Restaurant"},
                     {id:"Restaurant",name:"Restaurant"},
                     {id:"Supermarket",name:"Supermarket"},
-                    {id:"WholesaleClub",name:"Wholesale Club"},
+                    {id:"Retail",name:"Wholesale Club"},
                     {id:"FoodSales",name:"Food Sales"},
                     {id:"FoodService",name:"Food Service"},
                     {id:"AmbulatorySurgicalCenter",name:"Ambulatory Surgical Center"},
@@ -584,7 +590,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"MixedUse",name:"Mixed Use Property"},
                     {id:"Office",name:"Office"},
                     {id:"VeterinaryOffice",name:"Veterinary Office"},
-                    {id:"Courthouse",name:"Courthouse"},
+                    {id:"Office",name:"Courthouse"},
                     {id:"DrinkingWaterTreatment",name:"Drinking Water Treatment Center"},
                     {id:"FireStation",name:"Fire Station"},
                     {id:"Library",name:"Library"},
@@ -606,7 +612,9 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"PowerStation",name:"Energy / Power Station"},
                     {id:"OtherUtility",name:"Other Utility Station"},
                     {id:"SelfStorageFacility",name:"Self Storage Facility"},
-                    {id:"Warehouse",name:"Warehouse / Distribution Center"},
+                    {id:"Warehouse",name:"Warehouse - UnRefrigerated"},
+                    {id:"RefrigeratedWarehouse",name:"Warehouse - Refrigerated"},
+                    {id:"Warehouse",name:"Distribution Center"},
                 ],
                 residential: [
                     {id:"SingleFamilyDetached",name:"Single Family - Detached"},
@@ -631,6 +639,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
            "SeniorCare",
            "Supermarket",
            "Warehouse",
+           "RefrigeratedWarehouse",
            "WastewaterCenter",
            "WorshipCenter"
        ];

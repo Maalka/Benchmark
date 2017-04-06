@@ -21,23 +21,29 @@
       'angular-file-upload': {
         deps: ['angular']
       },
-      'angular-route': ['angular'],
-      'angular-cookies': ['angular'],
+      'angular-route': { 
+        deps: ['angular']
+      },
+      'angular-cookies': { 
+        deps: ['angular']
+      },
+      'filesaver': {
+        exports: 'saveAs'
+      },
       'maalka-templates': {
         deps: ['angular']
       },
-      'matchmedia-ng': ['angular'],
+      'matchmedia-ng': {
+        deps: ['angular']
+      },
       'highcharts-core': {
-        deps: ['jquery'],
-        exports: 'highcharts-core'
+        deps: ['jquery']
       },
       'highcharts-more': {
-        deps: ['highcharts-core'],
-        exports: 'highcharts-more'
+        deps: ['highcharts-core']
       },
       'highcharts': {
-        deps: ['highcharts-more'],
-        exports: 'highcharts'
+        deps: ['highcharts-more']
       },
       'semantic': {
         deps: ['jquery', 'angular']
@@ -49,11 +55,12 @@
     },
     paths: {
       'requirejs': '../lib/requirejs/require',
-      'jquery': ['../lib/jquery/jquery'],
+      'jquery': '../lib/jquery/jquery',
       'angular': '../lib/angularjs/angular',
       'angular-route': '../lib/angularjs/angular-route',
       'angular-cookies': '../lib/angularjs/angular-cookies',
       'angular-file-upload': '../lib/ng-file-upload/ng-file-upload',
+      'filesaver': '../lib/filesaver/FileSaver',
       'highcharts-core': '../lib/highstock/highstock',
       'highcharts-more': '../lib/highstock/highcharts-more',
       'highcharts': './highcharts-theme',

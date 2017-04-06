@@ -96,6 +96,7 @@ case class BuildingProperties(parameters: JsValue) {
       case Some(CountryBuildingType("USA", "WorshipCenter")) => parameters.validate[WorshipCenter]
       case Some(CountryBuildingType("USA", "WastewaterCenter")) => parameters.validate[WastewaterCenter]
       case Some(CountryBuildingType("USA", "Warehouse")) => parameters.validate[Warehouse]
+      case Some(CountryBuildingType("USA", "RefrigeratedWarehouse")) => parameters.validate[RefrigeratedWarehouse]
       case Some(CountryBuildingType("USA", "Supermarket")) => parameters.validate[Supermarket]
       case Some(CountryBuildingType("USA", "SeniorCare")) => parameters.validate[SeniorCare]
       case Some(CountryBuildingType("USA", "Retail")) => parameters.validate[Retail]
@@ -367,9 +368,11 @@ case class GenericBuilding (GFA:PosDouble,areaUnits:String, country:String, buil
     case "OtherUtility" => "Other Utility Station"
     case "SelfStorageFacility" => "Self Storage Facility"
     case "Warehouse" => "Warehouse / Distribution Center"
+    case "RefrigeratedWarehouse" => "Refrigerated Warehouse"
     case "SingleFamilyDetached" => "Single Family - Detached"
     case "SingleFamilyAttached" => "Single Family - Attached"
     case "MobileHome" => "Mobile Home"
+    case _ => "Other"
     }
   }
 
@@ -437,9 +440,9 @@ case class FinancialOffice(GFA:PosDouble, numComputers:PosDouble, weeklyOperatin
     RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.value / buildingSize * 1000)),
     RegressionSegment(0.0077, 4411, HDD.value * percentHeated.value / 100),
     RegressionSegment(0.0144, 1157, CDD.value * percentCooled.value / 100),
-    RegressionSegment(-64.83, 9.535, log(buildingSize)),
-    RegressionSegment(34.2, .5616, log(numWorkersMainShift.value / buildingSize * 1000)),
-    RegressionSegment(56.3, 0, 1)
+    RegressionSegment(-64.83 * isSmallBank, 9.535, log(buildingSize)),
+    RegressionSegment(34.2 * isSmallBank, .5616, log(numWorkersMainShift.value / buildingSize * 1000)),
+    RegressionSegment(56.3 * isSmallBank, 0, 1)
   )
 }
 /**
@@ -591,9 +594,6 @@ case class Warehouse(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDoub
                      HDD:PosDouble, CDD:PosDouble,isWarehouseRefrigerated:Option[Boolean], percentHeated:PosDouble,
                      percentCooled:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
-
-
-
   val printed:String = "Warehouse"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(82.18, 0, 1), // regression constant
@@ -613,6 +613,30 @@ case class Warehouse(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDoub
   */
 object Warehouse {
   implicit val warehouseReads: Reads[Warehouse] = Json.reads[Warehouse]
+}
+case class RefrigeratedWarehouse(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, numWalkinRefrUnits:PosDouble,
+                     HDD:PosDouble, CDD:PosDouble,isWarehouseRefrigerated:Option[Boolean], percentHeated:PosDouble,
+                     percentCooled:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
+
+  val printed:String = "RefrigeratedWarehouse"
+  val regressionSegments = Seq[RegressionSegment] (
+    RegressionSegment(82.18, 0, 1), // regression constant
+    RegressionSegment(168.6 * isWarehouseRefrigerated, 0, 1),
+    RegressionSegment(13.63, 9.806, log(buildingSize)),
+    RegressionSegment(41.84, 0.5943, numWorkersMainShift.value * 1000 / buildingSize),
+    RegressionSegment(0.3111, 60.93, weeklyOperatingHours.value),
+    RegressionSegment(0.0708 * isWarehouseRefrigerated,1570,CDD.value),
+    RegressionSegment(0.011 * converseBoolean(isWarehouseRefrigerated),2707,HDD.value * percentHeated.value / 100),
+    RegressionSegment(.0205 * converseBoolean(isWarehouseRefrigerated), 378.7, CDD.value * percentCooled.value / 100),
+    RegressionSegment(262.3 * converseBoolean(isWarehouseRefrigerated), 0.0096, numWalkinRefrUnits.value * 1000 / buildingSize )
+  )
+}
+
+/**
+  * Warehouse companion object.  Contains built in JSON validation.
+  */
+object RefrigeratedWarehouse {
+  implicit val refrigeratedWarehouseReads: Reads[RefrigeratedWarehouse] = Json.reads[RefrigeratedWarehouse]
 }
 
 /**

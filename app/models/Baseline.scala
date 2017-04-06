@@ -426,7 +426,17 @@ case class EUIMetrics(parameters: JsValue) {
         }
       }
       statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
-      defaultRatio <- getDefaultRatio(statePropEnergyMix)
+      defaultRatio <- {
+        stateBuildingType.buildingType match {
+          case "SingleFamilyDetached" => residentialSitetoSourceRatio(result.head)
+          case "SingleFamilyAttached" => residentialSitetoSourceRatio(result.head)
+          case "MultiFamilyLessThan5" => residentialSitetoSourceRatio(result.head)
+          case "MultiFamilyMoreThan4" => residentialSitetoSourceRatio(result.head)
+          case "MobileHome" => residentialSitetoSourceRatio(result.head)
+          case _ => getDefaultRatio(statePropEnergyMix)
+        }
+      }
+
     } yield defaultRatio
 
     local.recoverWith{case NonFatal(th) => residentialSitetoSourceRatio(result.head)}
@@ -469,11 +479,25 @@ case class EUIMetrics(parameters: JsValue) {
   }
 
   def getMix(state:String,propType:String):Future[Double] = {
-    val mixTable = loadEnergyMixTable.map { case a => (a \ state \ propType).toOption}
-    mixTable.map{
-      case Some(a) => a.as[Double]
-      case _ => throw new Exception("Could not find State and PropType in statePropertyEnergyMix.json")
-    }
+    val local = for {
+      mixLookup <- loadEnergyMixTable.map { case a => (a \ state \ propType).toOption }
+      mixValue <- mixLookup match {
+        case Some(a) => Future{a.as[Double]}
+        case _ => throw new Exception("Could not find State and PropType in statePropertyEnergyMix.json")
+      }
+    } yield mixValue
+
+    local.recoverWith{case NonFatal(th) => getDefaultMix(state)}
+  }
+
+  def getDefaultMix(state:String):Future[Double] = {
+    for {
+      mixLookup <- loadEnergyMixTable.map { case a => (a \ state \ "Other").toOption }
+      mixValue <- mixLookup match {
+        case Some(a) => Future{a.as[Double]}
+        case _ => throw new Exception("Could not find Default energyMix in statePropertyEnergyMix.json")
+      }
+    } yield mixValue
   }
 
   def loadEnergyMixTable: Future[JsValue] = {
@@ -484,7 +508,7 @@ case class EUIMetrics(parameters: JsValue) {
           case Some(is: InputStream) => {
             Json.parse(is)
           }
-          case _ => throw new Exception("Could not open file")
+          case i => throw new Exception("statePropEnergyMix - Could not open file: %s".format(i))
         }
       }
     } yield json
@@ -547,6 +571,8 @@ case class EUIMetrics(parameters: JsValue) {
           case "Northeast" => 89.3 / 145.5
         }
       }
+
+
       //Canadian Building Medians
       case Some(CountryBuildingType("Canada", "AdultEducation")) => 1.18 / 1.44
       case Some(CountryBuildingType("Canada", "College")) => 0.76 / 1.56
@@ -613,6 +639,7 @@ case class EUIMetrics(parameters: JsValue) {
       case Some(CountryBuildingType("Canada","Hotel")) => 1.12 / 1.75
       case Some(CountryBuildingType("Canada","WorshipCenter")) => 0.86 / 1.06
       case Some(CountryBuildingType("Canada","Warehouse")) => 0.75 / 0.93
+      case Some(CountryBuildingType("Canada","RefrigeratedWarehouse")) => 0.90 / 1.23 // there is no median for refrigerated warehouse in Canada (it's cold there!!)
       case Some(CountryBuildingType("Canada","SeniorCare")) => 1.12 / 1.88
       case Some(CountryBuildingType("Canada","Retail")) => 0.85 / 1.52
       case Some(CountryBuildingType("Canada","ResidenceHall")) => 1.45 / 2.05
