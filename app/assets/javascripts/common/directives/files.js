@@ -54,7 +54,7 @@ define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angul
                     }).then(function (resp) {
                         $scope.attachment  = undefined;
                         var blob = new Blob([resp.data.arrayBuffer], {type: "application/zip;charset=utf-8"});
-                        saveAs(blob, "report.zip");
+                        saveAs(blob, "Results.zip");
                         if (resp.data.status === "OK") {
                             $timeout(function () { 
                                 $scope.loadingFileFiller = {};

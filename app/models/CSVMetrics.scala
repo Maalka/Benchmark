@@ -8,17 +8,20 @@ import play.api.libs.json._
 import scala.util.{Success, Try}
 import play.api.Play.current
 
+import scala.collection.generic.SeqFactory
+import scala.concurrent.Future
+
 
 case class CSVcompute(parameters: List[List[String]]) {
 
-/*  val validZipCodes:String = {
+  val validZipCodes:String = {
     Play.application.resourceAsStream("valid_zipcodes.json") match {
       case Some(is: InputStream) => {
         Json.parse(is).toString()
       }
       case _ => throw new Exception("Could not open file")
     }
-  }*/
+  }
 
   def tryFormat(CSVvalue:String,checkType:String):Boolean = {
     checkType match {
@@ -111,25 +114,159 @@ case class CSVcompute(parameters: List[List[String]]) {
     "WY"
   )
 
+  val buildingTypes:List[String] = List(
+    "AdultEducation",
+    "College",
+    "PreSchool",
+    "VocationalSchool",
+    "OtherEducation",
+    "ConventionCenter",
+    "MovieTheater",
+    "Museum",
+    "PerformingArts",
+    "BowlingAlley",
+    "FitnessCenter",
+    "IceRink",
+    "RollerRink",
+    "SwimmingPool",
+    "OtherRecreation",
+    "Stadium",
+    "FinancialOffice",
+    "Retail",
+    "DistributionCenter",
+    "Warehouse",
+    "SpecialtyHospital",
+    "MedicalOffice",
+    "OutpatientCenter",
+    "PhysicalTherapyCenter",
+    "SeniorCare",
+    "UrgentCareCenter",
+    "Barracks",
+    "Hotel",
+    "MultiFamily",
+    "Prison",
+    "ResidenceHall",
+    "ResidentialLodging",
+    "MixedUse",
+    "Office",
+    "VeterinaryOffice",
+    "Courthouse",
+    "OtherUtility",
+    "SelfStorageFacility",
+    "RefrigeratedWarehouse",
+    "IndoorArena",
+    "RaceTrack",
+    "Aquarium",
+    "Bar",
+    "Nightclub",
+    "Casino",
+    "Zoo",
+    "OtherEntertainment",
+    "GasStation",
+    "ConvenienceStore",
+    "FastFoodRestaurant",
+    "Restaurant",
+    "Supermarket",
+    "WholesaleClub",
+    "FoodSales",
+    "FoodService",
+    "AmbulatorySurgicalCenter",
+    "Hospital",
+    "StripMall",
+    "DrinkingWaterTreatment",
+    "FireStation",
+    "Library",
+    "PostOffice",
+    "PoliceStation",
+    "MeetingHall",
+    "TransportationTerminal",
+    "WastewaterCenter",
+    "OtherPublicServices",
+    "WorshipCenter",
+    "AutoDealership",
+    "EnclosedMall",
+    "DataCenter",
+    "PersonalServices",
+    "RepairServices",
+    "OtherServices",
+    "PowerStation",
+    "EnergyStation",
+    "K12School",
+
+    "BankBranch", // FinancialOffice
+    "K12School",
+    "DistributionCenter", // Warehouse
+    "ConvenienceStoreWithGas", // GasStation
+    "ConvenienceStoreNoGas", // GasStation
+    "MixedUseProperty", // MixedUse
+    "WarehouseRefrigerated", //RefrigeratedWarehouse
+    "WarehouseUnRefrigerated", // Warehouse
+    "Other"
+  )
+
+
+  def getBuildingType(bldgType:String):String = {
+      bldgType match {
+        case "BankBranch" => "FinancialOffice"
+        case "DistributionCenter" => "Warehouse"
+        case "ConvenienceStoreWithGas" => "GasStation"
+        case "ConvenienceStoreNoGas" => "ConvenienceStore"
+        case "MixedUseProperty" => "MixedUse"
+        case "WarehouseRefrigerated" => "RefrigeratedWarehouse"
+        case "WarehouseUnRefrigerated" => "Warehouse"
+        case "EnergyStation" => "PowerStation"
+        case _ => bldgType
+    }
+  }
+
   val GFAUnits:List[String] = List(
     "ftSQ",
     "mSQ"
   )
 
+  val outputUnits:String = {
+    val units = parameters.flatten.dropWhile(!GFAUnits.contains(_)).headOption
+    if (units.isDefined) {
+      units.get
+    } else {
+      "Bad Units"
+    }
+  }
+  val reportingUnits:String = {
+    if (outputUnits == "mSQ") {
+      "metric"
+    } else {
+      "us"
+    }
+  }
+
   val goodBuildingJsonList:Seq[JsValue] =  parameters.collect {
     case List(a, b, c, d, e, f) if {
       states.contains(b.trim) && GFAUnits.contains(f.trim) && (c.trim.length == 5) &&
-      tryFormat(e,"double") //&& validZipCodes.contains(c.trim)
-    } => getDefaults(GoodJsonBuilding(a.trim, b.trim, c.trim, d.trim, e.toDouble, f.trim))
+      tryFormat(e,"double") && validZipCodes.contains(c.trim)
+    } => getDefaults(GoodJsonBuilding(a.trim, b.trim, c.trim, getBuildingType(d.trim), e.toDouble, outputUnits, reportingUnits))
   }
-
 
   val badEntries = parameters.filterNot {
     case List(a,b,c,d,e,f) if {
       states.contains(b.trim) && GFAUnits.contains(f.trim) &&  (c.trim.length == 5) &&
-        tryFormat(e,"double") //validZipCodes.contains(c.trim) &&
+        tryFormat(e,"double") && validZipCodes.contains(c.trim)
     }  => true
     case _ => false
+  }
+
+  val badEntriesWithErrors = badEntries.map{
+     _ match {
+       case List(a,b,c,d,e,f) if (a == "Building Address") => List(a,b,c,d,e,f)
+       case List(a,b,c,d,e,f) => {
+         val stateEntry = if (states.contains(b.trim)){b.trim}else{"ERROR"}
+         val unitsEntry = if (GFAUnits.contains(f.trim)){f.trim}else{"ERROR"}
+         val postalCodeEntry = if (validZipCodes.contains(c.trim) && c.trim.length == 5 ){c.trim}else{"ERROR"}
+         val GFAEntry = if (tryFormat(e,"double")){e.toDouble}else{"ERROR"}
+         val buildingEntry = if (d.trim.length > 0){d.trim}else{"ERROR"}
+         List(a,stateEntry,postalCodeEntry,buildingEntry,GFAEntry,unitsEntry)
+       }
+    }
   }
 
 
@@ -297,8 +434,9 @@ case class CSVcompute(parameters: List[List[String]]) {
 }
 
 case class GoodJsonBuilding(buildingName: String, state: String, postalCode:String,
-                           buildingType: String, GFA:Double, areaUnits:String, baselineConstant:Int=100,
-                           country:String="USA", reportingUnits:String="us",netMetered:Boolean=false, percentBetterThanMedian:Double=20)
+                           buildingType: String, GFA:Double, areaUnits:String, reportingUnits:String,
+                            baselineConstant:Int=100, country:String="USA",netMetered:Boolean=false,
+                            percentBetterThanMedian:Double=20)
 
 object GoodJsonBuilding {
   implicit val jsonBuildingWrites: Writes[GoodJsonBuilding] = Json.writes[GoodJsonBuilding]
