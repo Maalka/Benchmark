@@ -70,10 +70,11 @@ define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angul
                                 });
                         }
                     }).catch(function () {
+
                         $scope.loading = false;
                         $scope.error = {
                             'messageType': "Error",
-                            'messageDesscription': "There is a error with the bulk csv that you are uploading.  Please make sure that the file contains all of the fields that are required"
+                            'messageDesscription': "There is an error with the bulk csv that you are uploading.  Please make sure that the file contains all of the fields that are required"
                         };
                     });
                  };
