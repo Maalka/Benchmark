@@ -4,7 +4,7 @@ package controllers
   * Created by rimukas on 12/19/16.
   */
 
-import java.io.{BufferedInputStream, PrintWriter, StringWriter, File, FileInputStream}
+import java.io._
 import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import akka.actor.ActorSystem
@@ -12,7 +12,7 @@ import akka.dispatch.Envelope
 import akka.stream._
 import akka.stream.scaladsl._
 import akka.util.Timeout
-import com.github.tototoshi.csv.{CSVReader, CSVWriter}
+import com.github.tototoshi.csv.{CSVReader, CSVWriter, DefaultCSVFormat, QUOTE_NONE, Quoting}
 import com.google.inject.Inject
 import models._
 import models.CSVlistCompute
@@ -87,6 +87,12 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
     var tempDir = Files.createTempDirectory("Results")
     val processedEntries = new File(tempDir + File.separator + "Results.csv")
 
+
+    implicit object MyFormat extends DefaultCSVFormat {
+      override val quoting: Quoting = QUOTE_NONE
+    }
+
+
     val writer = CSVWriter.open(processedEntries)
 
 
@@ -107,14 +113,15 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
 
 
       csvList.outputUnits match {
-        case "mSQ" => writer.writeRow(List("Building ID","Baseline Score","Baseline Site FF-EUI (kWh/m2/yr)","Baseline Source FF-EUI (kWh/m2/yr)","Baseline Site Energy (kWh/m2)","Baseline Source Energy (kWh/m2)"))
-        case "ftSQ" => writer.writeRow(List("Building ID","Baseline Score","Baseline Site FF-EUI (kBtu/ft2/yr)","Baseline Source FF-EUI (kBtu/ft2/yr)","Baseline Site Energy (kBtu/ft2)","Baseline Source Energy (kBtu/ft2)"))
+        case "sq.m" => writer.writeRow(List("Building ID","Baseline Score","Baseline Site FF-EUI (kWh/m2/yr)","Baseline Source FF-EUI (kWh/m2/yr)","Baseline Site Energy (kWh/m2)","Baseline Source Energy (kWh/m2)"))
+        case "sq.ft" => writer.writeRow(List("Building ID","Baseline Score","Baseline Site FF-EUI (kBtu/ft2/yr)","Baseline Source FF-EUI (kBtu/ft2/yr)","Baseline Site Energy (kBtu/ft2)","Baseline Source Energy (kBtu/ft2)"))
         case _ => writer.writeRow(List("Building ID","Baseline Score","Baseline Site FF-EUI","Baseline Source FF-EUI","Baseline Site Energy","Baseline Source Energy"))
       }
 
 
       val CSVWriterFlow = Flow[(Try[Int], Try[Int], JsValue, Try[JsValue])].map{
         case (hdd, cdd, js, Success(metrics)) => {
+
           // success write success row
           val metricsList = List(
             metrics \ "values" \\ "buildingName",
@@ -124,6 +131,8 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
             metrics \ "values" \\ "medianSiteEnergy",
             metrics \ "values" \\ "medianSourceEnergy"
           ).flatten
+
+
 
           writer.writeRow(metricsList)
           //println(metricsList)
