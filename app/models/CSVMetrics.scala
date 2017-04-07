@@ -220,8 +220,8 @@ case class CSVcompute(parameters: List[List[String]]) {
   }
 
   val GFAUnits:List[String] = List(
-    "ftSQ",
-    "mSQ"
+    "sq.m",
+    "sq.ft"
   )
 
   val outputUnits:String = {
@@ -233,10 +233,17 @@ case class CSVcompute(parameters: List[List[String]]) {
     }
   }
   val reportingUnits:String = {
-    if (outputUnits == "mSQ") {
+    if (outputUnits == "sq.m") {
       "metric"
     } else {
       "us"
+    }
+  }
+  def convertGFAUnits(CSVUnits:String):String = {
+    if (CSVUnits == "sq.m") {
+      "mSQ"
+    } else {
+      "ftSQ"
     }
   }
 
@@ -244,7 +251,7 @@ case class CSVcompute(parameters: List[List[String]]) {
     case List(a, b, c, d, e, f) if {
       states.contains(b.trim) && GFAUnits.contains(f.trim) && (c.trim.length == 5) &&
       tryFormat(e,"double") && validZipCodes.contains(c.trim)
-    } => getDefaults(GoodJsonBuilding(a.trim, b.trim, c.trim, getBuildingType(d.trim), e.toDouble, outputUnits, reportingUnits))
+    } => getDefaults(GoodJsonBuilding(a.trim, b.trim, c.trim, getBuildingType(d.trim), e.toDouble, convertGFAUnits(f.trim), reportingUnits))
   }
 
   val badEntries = parameters.filterNot {
@@ -257,7 +264,7 @@ case class CSVcompute(parameters: List[List[String]]) {
 
   val badEntriesWithErrors = badEntries.map{
      _ match {
-       case List(a,b,c,d,e,f) if (a == "Building Address") => List(a,b,c,d,e,f)
+       case List(a,b,c,d,e,f) if (a == "Building ID") => List(a,b,c,d,e,f)
        case List(a,b,c,d,e,f) => {
          val stateEntry = if (states.contains(b.trim)){b.trim}else{"ERROR"}
          val unitsEntry = if (GFAUnits.contains(f.trim)){f.trim}else{"ERROR"}
