@@ -44,7 +44,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
 
       val sw = new StringWriter
       th.printStackTrace(new PrintWriter(sw))
-      Console.println(sw.toString)
+      //Console.println(sw.toString)
       //Supervision.Resume
       Supervision.Stop
 
@@ -107,9 +107,9 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
 
 
       csvList.outputUnits match {
-        case "mSQ" => writer.writeRow(List("buildingName","Baseline Score","Baseline Site FF-EUI (kWh/m2/yr)","Baseline Source FF-EUI (kWh/m2/yr)","Baseline Site Energy (kWh/m2)","Baseline Source Energy (kWh/m2)"))
-        case "ftSQ" => writer.writeRow(List("buildingName","Baseline Score","Baseline Site FF-EUI (kBtu/ft2/yr)","Baseline Source FF-EUI (kBtu/ft2/yr)","Baseline Site Energy (kBtu/ft2)","Baseline Source Energy (kBtu/ft2)"))
-        case _ => writer.writeRow(List("buildingName","Baseline Score","Baseline Site FF-EUI","Baseline Source FF-EUI","Baseline Site Energy","Baseline Source Energy"))
+        case "mSQ" => writer.writeRow(List("Building ID","Baseline Score","Baseline Site FF-EUI (kWh/m2/yr)","Baseline Source FF-EUI (kWh/m2/yr)","Baseline Site Energy (kWh/m2)","Baseline Source Energy (kWh/m2)"))
+        case "ftSQ" => writer.writeRow(List("Building ID","Baseline Score","Baseline Site FF-EUI (kBtu/ft2/yr)","Baseline Source FF-EUI (kBtu/ft2/yr)","Baseline Site Energy (kBtu/ft2)","Baseline Source Energy (kBtu/ft2)"))
+        case _ => writer.writeRow(List("Building ID","Baseline Score","Baseline Site FF-EUI","Baseline Source FF-EUI","Baseline Site Energy","Baseline Source Energy"))
       }
 
 
@@ -137,6 +137,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
             }
           }
       }
+
 
       Source.fromIterator(() => csvList.goodBuildingJsonList.toIterator).map{
         js =>(js,DegreeDays(js))
