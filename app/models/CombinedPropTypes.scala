@@ -250,7 +250,12 @@ case class CombinedPropTypes(params: JsValue) {
               lookupEUI <- computeLookupEUI(targetBuilding)
               lookupTable <- lookupTableGet(targetBuilding)
               targetRatio <- getMedianRatio(lookupTable)
-              targetEUI <- getTargetEUI(targetBuilding, lookupEUI, targetRatio)
+              targetEUI <- {
+                println(targetBuilding)
+                println(lookupEUI)
+                println(targetRatio)
+                getTargetEUI(targetBuilding, lookupEUI, targetRatio)
+              }
             } yield targetEUI
           }
         }
@@ -275,7 +280,7 @@ case class CombinedPropTypes(params: JsValue) {
 
   def getMedianRatio(lookUp:Seq[TableEntry]):Future[Double] = {
     for {
-      targetRatioEntry <- Future(lookUp.filter(_.ES == 50).last.Ratio)
+      targetRatioEntry <- Future(lookUp.filter(_.ES == 51).last.Ratio)
     } yield targetRatioEntry
   }
 

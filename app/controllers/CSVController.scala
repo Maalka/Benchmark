@@ -44,7 +44,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
 
       val sw = new StringWriter
       th.printStackTrace(new PrintWriter(sw))
-      Console.println(sw.toString)
+      //Console.println(sw.toString)
       //Supervision.Resume
       Supervision.Stop
 
@@ -84,14 +84,15 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
   def upload = Action.async(parse.multipartFormData) { implicit request =>
     import java.nio.file.Files
 
-    var tempDir = Files.createTempDirectory("reports")
-    val processedEntries = new File(tempDir + File.separator + "processed.csv")
+    var tempDir = Files.createTempDirectory("Results")
+    val processedEntries = new File(tempDir + File.separator + "Results.csv")
 
     val writer = CSVWriter.open(processedEntries)
 
-    writer.writeRow(List("buildingName","medianZEPI","medianSiteEUI","medianSourceEUI","medianSiteEnergy","medianSourceEnergy"))
 
-    val unprocessedEntries = new File(tempDir + File.separator + "unprocessed.csv")
+
+
+    val unprocessedEntries = new File(tempDir + File.separator + "Errors.csv")
     val error_writer = CSVWriter.open(unprocessedEntries)
 
     request.body.file("attachment").map { upload =>
@@ -102,6 +103,15 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
 
       val csvTemp = CSVlistCompute()
       val csvList = CSVcompute(reader.all)
+
+
+
+      csvList.outputUnits match {
+        case "mSQ" => writer.writeRow(List("Building ID","Baseline Score","Baseline Site FF-EUI (kWh/m2/yr)","Baseline Source FF-EUI (kWh/m2/yr)","Baseline Site Energy (kWh/m2)","Baseline Source Energy (kWh/m2)"))
+        case "ftSQ" => writer.writeRow(List("Building ID","Baseline Score","Baseline Site FF-EUI (kBtu/ft2/yr)","Baseline Source FF-EUI (kBtu/ft2/yr)","Baseline Site Energy (kBtu/ft2)","Baseline Source Energy (kBtu/ft2)"))
+        case _ => writer.writeRow(List("Building ID","Baseline Score","Baseline Site FF-EUI","Baseline Source FF-EUI","Baseline Site Energy","Baseline Source Energy"))
+      }
+
 
       val CSVWriterFlow = Flow[(Try[Int], Try[Int], JsValue, Try[JsValue])].map{
         case (hdd, cdd, js, Success(metrics)) => {
@@ -128,6 +138,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
           }
       }
 
+
       Source.fromIterator(() => csvList.goodBuildingJsonList.toIterator).map{
         js =>(js,DegreeDays(js))
       }.via(calculateDegreeDays).mapAsync(1){
@@ -144,7 +155,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
         )
 
       }.via(CSVWriterFlow).runWith(Sink.ignore).map { r =>
-                error_writer.writeAll(csvList.badEntries)
+                error_writer.writeAll(csvList.badEntriesWithErrors)
         error_writer.close()
         writer.close()
 
@@ -152,7 +163,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
         val enumerator = Enumerator.outputStream { os =>
           val zip = new ZipOutputStream(os)
           Seq(processedEntries, unprocessedEntries, uploadedFile).foreach { f =>
-            zip.putNextEntry(new ZipEntry("result/%s".format(f.getName)))
+            zip.putNextEntry(new ZipEntry("Results/%s".format(f.getName)))
             val in = new BufferedInputStream(new FileInputStream(f))
             var b = in.read()
             while (b > -1) {
@@ -166,7 +177,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
         }
         Ok.stream(enumerator >>> Enumerator.eof).withHeaders(
           "Content-Type"->"application/zip",
-          "Content-Disposition"->"attachment; filename=result.zip"
+          "Content-Disposition"->"attachment; filename=Results.zip"
         )
       }.recover {
         case NonFatal(th) =>
