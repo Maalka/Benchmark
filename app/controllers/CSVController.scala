@@ -101,8 +101,13 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
     val error_writer = CSVWriter.open(unprocessedEntries)
 
     request.body.file("attachment").map {
-      case upload if(upload.filename.takeRight(3)!="csv") =>
-        Future("Failed Not a CSV")
+      case upload if upload.filename.takeRight(3) != "csv" =>
+        Future(BadRequest(
+          Json.obj(
+            "response" -> "Selected file is not a CSV",
+            "status" -> "KO"
+          )
+        ))
       case upload => {
         val filename = upload.filename
         val uploadedFile = upload.ref.moveTo(new File(tempDir + File.separator + filename))
@@ -191,7 +196,12 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
         }.recover {
           case NonFatal(th) =>
             //println(th)
-            Ok("Failed")
+            BadRequest(
+              Json.obj(
+                "response" -> "Failed to parse CSV",
+                "status" -> "KO"
+              )
+            )
         }
       }
     }.getOrElse {

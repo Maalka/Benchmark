@@ -5,7 +5,7 @@
             {{ error.messageType }}
         </div>
         <ul class="list">
-            <li>{{ error.messageDesscription }}</li>
+            <li>{{ error.messageDescription }}</li>
         </ul>
     </div>
     <div class="inline fields">
@@ -15,7 +15,7 @@
                 ng-model="attachment"
                 name="attachment"
                 ngf-max-size="20MB" ng-class="{disabled: loadingFileFiller.attachmentName !== undefined}"
-                ngf-pattern="'text/csv'">
+               >
                     {{ "Select CSV" }}
             </button>
 
