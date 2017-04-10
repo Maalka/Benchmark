@@ -250,12 +250,7 @@ case class CombinedPropTypes(params: JsValue) {
               lookupEUI <- computeLookupEUI(targetBuilding)
               lookupTable <- lookupTableGet(targetBuilding)
               targetRatio <- getMedianRatio(lookupTable)
-              targetEUI <- {
-                println(targetBuilding)
-                println(lookupEUI)
-                println(targetRatio)
-                getTargetEUI(targetBuilding, lookupEUI, targetRatio)
-              }
+              targetEUI <- getTargetEUI(targetBuilding, lookupEUI, targetRatio)
             } yield targetEUI
           }
         }
