@@ -37,6 +37,14 @@ case class BuildingProperties(parameters: JsValue) {
       case _ => throw new Exception("Could not retrieve State")
     }
   }
+
+  val buildingName: String = {
+    parameters.asOpt[ConversionInfo] match {
+      case Some(a) => a.buildingName
+      case _ => throw new Exception("Could not retrieve Building Name")
+    }
+  }
+
   def getBaselineConstant: Future[Int] = Future{
     parameters.asOpt[BaselineConstant] match {
       case Some(a) => a.baselineConstant
@@ -44,10 +52,40 @@ case class BuildingProperties(parameters: JsValue) {
     }
   }
 
-  def getPercentBetterThanMedia:Future[Double] = Future{
+  def getTarget2030Value:Boolean = {
+    parameters.validate[Target2030] match {
+      case JsSuccess(a, _) => a.target2030
+      case JsError(err) => false
+      //throw new Exception("Could not determine target EUI!")
+    }
+  }
+
+  def getPercentBetterThanMedia:Future[Double] = {
+    for {
+      targetToggle <- getTargetToggle
+      baselineConstant <- getBaselineConstant
+      toggleValue <- getToggleValue
+      percentBetterReturn <- Future{
+        targetToggle match {
+          case "zeroScore" => baselineConstant - toggleValue
+          case _ => toggleValue
+        }
+      }
+    } yield percentBetterReturn
+  }
+
+  def getToggleValue:Future[Double] = Future{
     parameters.validate[PercentBetterThanMedian] match {
       case JsSuccess(a, _) => a.target
-      case JsError(err) => throw new Exception("Could not determine target EUI!")
+      case JsError(err) => 20.0 //default to 20
+      //throw new Exception("Could not determine target EUI!")
+    }
+  }
+
+  def getTargetToggle:Future[String] = Future{
+    parameters.validate[TargetToggle] match {
+      case JsSuccess(a, _) => a.targetToggle
+      case JsError(err) => "percentReduction"
     }
   }
 
@@ -58,6 +96,7 @@ case class BuildingProperties(parameters: JsValue) {
       case Some(CountryBuildingType("USA", "WorshipCenter")) => parameters.validate[WorshipCenter]
       case Some(CountryBuildingType("USA", "WastewaterCenter")) => parameters.validate[WastewaterCenter]
       case Some(CountryBuildingType("USA", "Warehouse")) => parameters.validate[Warehouse]
+      case Some(CountryBuildingType("USA", "RefrigeratedWarehouse")) => parameters.validate[RefrigeratedWarehouse]
       case Some(CountryBuildingType("USA", "Supermarket")) => parameters.validate[Supermarket]
       case Some(CountryBuildingType("USA", "SeniorCare")) => parameters.validate[SeniorCare]
       case Some(CountryBuildingType("USA", "Retail")) => parameters.validate[Retail]
@@ -157,6 +196,12 @@ case class PosDouble(value: Double)
 object PosDouble {
   implicit val reads: Reads[PosDouble] = JsPath.read[Double](Reads.min(0.0)).map(new PosDouble(_))
 }
+
+case class Target2030(target2030: Boolean)
+object Target2030 {
+  implicit val Target2030Reads:Reads[Target2030] = Json.format[Target2030]
+}
+
 case class BuildingArea(GFA:PosDouble)
 object BuildingArea {
   implicit val buildingAreaReads: Reads[BuildingArea] = Json.reads[BuildingArea]
@@ -174,6 +219,11 @@ case class PercentBetterThanMedian(target:Double)
 object PercentBetterThanMedian {
   implicit val percentBetterReads: Reads[PercentBetterThanMedian] = (JsPath \ "percentBetterThanMedian").read[Double](
     Reads.min(0.0) andKeep Reads.max(100.0)).map(new PercentBetterThanMedian(_))
+}
+
+case class TargetToggle(targetToggle: String)
+object TargetToggle {
+  implicit val targetToggleRead: Reads[TargetToggle] = Json.reads[TargetToggle]
 }
 
 case class PropParams(propType:String,propSize:Double,propPercent:Double,areaUnits:String)
@@ -263,81 +313,83 @@ case class GenericBuilding (GFA:PosDouble, areaUnits:String, country:String, bui
 
   val printed:String = {
     buildingType match {
-    case "AdultEducation" => "Adult Education"
-    case "College" => "College / University"
-    case "PreSchool" => "Pre-school / DayCare"
-    case "VocationalSchool" => "Vocational School"
-    case "OtherEducation" => "Other Education"
-    case "ConventionCenter" => "Convention Center"
-    case "MovieTheater" => "Movie Theater"
-    case "Museum" => "Museum"
-    case "PerformingArts" => "Performing Arts"
-    case "BowlingAlley" => "Bowling Alley"
-    case "FitnessCenter" => "Fitness Center"
-    case "IceRink" => "Ice / Curling Rink"
-    case "RollerRink" => "Roller Rink"
-    case "SwimmingPool" => "Swimming Pool"
-    case "OtherRecreation" => "Other Recreation"
-    case "Stadium" => "Stadium"
-    case "IndoorArena" => "Indoor Arena"
-    case "RaceTrack" => "Race Track"
-    case "Aquarium" => "Aquarium"
-    case "Bar" => "Bar"
-    case "Nightclub" => "Nightclub"
-    case "Casino" => "Casino"
-    case "Zoo" => "Zoo"
-    case "OtherEntertainment" => "Other Entertainment"
-    case "GasStation" => "Convenience Store with Gas Station"
-    case "ConvenienceStore" => "Convenience Store without Gas Station"
-    case "FastFoodRestaurant" => "Fast Food Restaurant"
-    case "Restaurant" => "Restaurant"
-    case "Supermarket" => "Supermarket"
-    case "WholesaleClub" => "Wholesale Club"
-    case "FoodSales" => "Food Sales"
-    case "FoodService" => "Food Service"
-    case "AmbulatorySurgicalCenter" => "Ambulatory Surgical Center"
-    case "Hospital" => "Hospital"
-    case "SpecialtyHospital" => "Specialty Hospital"
-    case "MedicalOffice" => "Medical Office"
-    case "OutpatientCenter" => "Outpatient Rehabilitation Center"
-    case "PhysicalTherapyCenter" => "Physical Therapy Center"
-    case "SeniorCare" => "Senior Care Community"
-    case "UrgentCareCenter" => "Urgent Care Center"
-    case "Barracks" => "Barracks"
-    case "Hotel" => "Hotel"
-    case "MultiFamily" => "Multifamily Housing"
-    case "Prison" => "Prison / Incarceration"
-    case "ResidenceHall" => "Residence Hall"
-    case "ResidentialLodging" => "Other Residential Lodging"
-    case "MixedUse" => "Mixed Use Property"
-    case "Office" => "Office"
-    case "VeterinaryOffice" => "Veterinary Office"
-    case "Courthouse" => "Courthouse"
-    case "DrinkingWaterTreatment" => "Drinking Water Treatment Center"
-    case "FireStation" => "Fire Station"
-    case "Library" => "Library"
-    case "PostOffice" => "Post Office"
-    case "PoliceStation" => "Police Station"
-    case "MeetingHall" => "Meeting Hall"
-    case "TransportationTerminal" => "Transportation Terminal"
-    case "WastewaterCenter" => "Wastewater Treatment Center"
-    case "OtherPublicServices" => "Other Public Services"
-    case "WorshipCenter" => "Worship Facility"
-    case "AutoDealership" => "Automobile Dealership"
-    case "EnclosedMall" => "Enclosed Mall"
-    case "StripMall" => "Strip Mall"
-    case "Retail" => "Retail Store"
-    case "DataCenter" => "Data Center" //Data Centers behave very different and require custom script
-    case "PersonalServices" => "Personal Services (Health/Beauty, Dry Cleaning, etc.)"
-    case "RepairServices" => "Repair Services (Vehicle, Shoe Locksmith, etc.)"
-    case "OtherServices" => "Other Services"
-    case "PowerStation" => "Energy / Power Station"
-    case "OtherUtility" => "Other Utility Station"
-    case "SelfStorageFacility" => "Self Storage Facility"
-    case "Warehouse" => "Warehouse / Distribution Center"
-    case "SingleFamilyDetached" => "Single Family - Detached"
-    case "SingleFamilyAttached" => "Single Family - Attached"
-    case "MobileHome" => "Mobile Home"
+      case "AdultEducation" => "Adult Education"
+      case "College" => "College / University"
+      case "PreSchool" => "Pre-school / DayCare"
+      case "VocationalSchool" => "Vocational School"
+      case "OtherEducation" => "Other Education"
+      case "ConventionCenter" => "Convention Center"
+      case "MovieTheater" => "Movie Theater"
+      case "Museum" => "Museum"
+      case "PerformingArts" => "Performing Arts"
+      case "BowlingAlley" => "Bowling Alley"
+      case "FitnessCenter" => "Fitness Center"
+      case "IceRink" => "Ice / Curling Rink"
+      case "RollerRink" => "Roller Rink"
+      case "SwimmingPool" => "Swimming Pool"
+      case "OtherRecreation" => "Other Recreation"
+      case "Stadium" => "Stadium"
+      case "IndoorArena" => "Indoor Arena"
+      case "RaceTrack" => "Race Track"
+      case "Aquarium" => "Aquarium"
+      case "Bar" => "Bar"
+      case "Nightclub" => "Nightclub"
+      case "Casino" => "Casino"
+      case "Zoo" => "Zoo"
+      case "OtherEntertainment" => "Other Entertainment"
+      case "GasStation" => "Convenience Store with Gas Station"
+      case "ConvenienceStore" => "Convenience Store without Gas Station"
+      case "FastFoodRestaurant" => "Fast Food Restaurant"
+      case "Restaurant" => "Restaurant"
+      case "Supermarket" => "Supermarket"
+      case "WholesaleClub" => "Wholesale Club"
+      case "FoodSales" => "Food Sales"
+      case "FoodService" => "Food Service"
+      case "AmbulatorySurgicalCenter" => "Ambulatory Surgical Center"
+      case "Hospital" => "Hospital"
+      case "SpecialtyHospital" => "Specialty Hospital"
+      case "MedicalOffice" => "Medical Office"
+      case "OutpatientCenter" => "Outpatient Rehabilitation Center"
+      case "PhysicalTherapyCenter" => "Physical Therapy Center"
+      case "SeniorCare" => "Senior Care Community"
+      case "UrgentCareCenter" => "Urgent Care Center"
+      case "Barracks" => "Barracks"
+      case "Hotel" => "Hotel"
+      case "MultiFamily" => "Multifamily Housing"
+      case "Prison" => "Prison / Incarceration"
+      case "ResidenceHall" => "Residence Hall"
+      case "ResidentialLodging" => "Other Residential Lodging"
+      case "MixedUse" => "Mixed Use Property"
+      case "Office" => "Office"
+      case "VeterinaryOffice" => "Veterinary Office"
+      case "Courthouse" => "Courthouse"
+      case "DrinkingWaterTreatment" => "Drinking Water Treatment Center"
+      case "FireStation" => "Fire Station"
+      case "Library" => "Library"
+      case "PostOffice" => "Post Office"
+      case "PoliceStation" => "Police Station"
+      case "MeetingHall" => "Meeting Hall"
+      case "TransportationTerminal" => "Transportation Terminal"
+      case "WastewaterCenter" => "Wastewater Treatment Center"
+      case "OtherPublicServices" => "Other Public Services"
+      case "WorshipCenter" => "Worship Facility"
+      case "AutoDealership" => "Automobile Dealership"
+      case "EnclosedMall" => "Enclosed Mall"
+      case "StripMall" => "Strip Mall"
+      case "Retail" => "Retail Store"
+      case "DataCenter" => "Data Center" //Data Centers behave very different and require custom script
+      case "PersonalServices" => "Personal Services (Health/Beauty, Dry Cleaning, etc.)"
+      case "RepairServices" => "Repair Services (Vehicle, Shoe Locksmith, etc.)"
+      case "OtherServices" => "Other Services"
+      case "PowerStation" => "Energy / Power Station"
+      case "OtherUtility" => "Other Utility Station"
+      case "SelfStorageFacility" => "Self Storage Facility"
+      case "Warehouse" => "Warehouse / Distribution Center"
+      case "RefrigeratedWarehouse" => "Refrigerated Warehouse"
+      case "SingleFamilyDetached" => "Single Family - Detached"
+      case "SingleFamilyAttached" => "Single Family - Attached"
+      case "MobileHome" => "Mobile Home"
+      case _ => "Other"
     }
   }
 
@@ -574,6 +626,32 @@ case class Warehouse(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDoub
   */
 object Warehouse {
   implicit val warehouseReads: Reads[Warehouse] = Json.reads[Warehouse]
+}
+
+case class RefrigeratedWarehouse(weeklyOperatingHours:PosDouble, numWorkersMainShift:PosDouble, numWalkinRefrUnits:PosDouble,
+                                 isWarehouseRefrigerated:Option[Boolean], percentHeated:PosDouble,
+                                 percentCooled:PosDouble, GFA:PosDouble, areaUnits:String, country:String,
+                                 buildingType:String, postalCode:String) extends BaseLine {
+
+  val printed:String = "RefrigeratedWarehouse"
+  def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
+    RegressionSegment(82.18, 0, 1), // regression constant
+    RegressionSegment(168.6 * isWarehouseRefrigerated, 0, 1),
+    RegressionSegment(13.63, 9.806, log(buildingSize)),
+    RegressionSegment(41.84, 0.5943, numWorkersMainShift.value * 1000 / buildingSize),
+    RegressionSegment(0.3111, 60.93, weeklyOperatingHours.value),
+    RegressionSegment(0.0708 * isWarehouseRefrigerated,1570,CDD),
+    RegressionSegment(0.011 * converseBoolean(isWarehouseRefrigerated),2707,HDD * percentHeated.value / 100),
+    RegressionSegment(.0205 * converseBoolean(isWarehouseRefrigerated), 378.7, CDD * percentCooled.value / 100),
+    RegressionSegment(262.3 * converseBoolean(isWarehouseRefrigerated), 0.0096, numWalkinRefrUnits.value * 1000 / buildingSize )
+  )
+}
+
+/**
+  * Warehouse companion object.  Contains built in JSON validation.
+  */
+object RefrigeratedWarehouse {
+  implicit val refrigeratedWarehouseReads: Reads[RefrigeratedWarehouse] = Json.reads[RefrigeratedWarehouse]
 }
 
 /**
