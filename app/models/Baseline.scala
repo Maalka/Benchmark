@@ -377,30 +377,99 @@ case class EUIMetrics(parameters: JsValue) {
 
 
   def medianTotalEmissions:Future[Double] = {
-    for {
+    val local = for {
+      entries <- energyCalcs.getEnergyList
       tempsourceEnergy <- sourceEnergy
       medianSourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
       actualMedianRatio <- Future(tempsourceEnergy.value / medianSourceEnergy.value)
-      actualEmissions <- buildingEmissions.getTotalEmissions()
+      actualEmissions <- buildingEmissions.getTotalEmissions(entries)
       medianEmissions <- Future(actualEmissions / actualMedianRatio)
     } yield medianEmissions
+
+    local.recoverWith{case NonFatal(th) => defaultMedianTotalEmissions}
   }
 
   def percentBetterTotalEmissions:Future[Double] = {
-    for {
+    val local = for {
+      entries <- energyCalcs.getEnergyList
       sourceEnergy <- sourceEnergy
       percentBetterSourceEnergy <- percentBetterSourceEnergy
       actualPercentBetterRatio <- Future(sourceEnergy.value / percentBetterSourceEnergy.value)
-      actualEmissions <- buildingEmissions.getTotalEmissions()
+      actualEmissions <- buildingEmissions.getTotalEmissions(entries)
       percentBetterEmissions <- Future(actualEmissions / actualPercentBetterRatio)
+    } yield percentBetterEmissions
+
+    local.recoverWith{case NonFatal(th) => defaultPercentBetterTotalEmissions}
+  }
+
+  def defaultMedianTotalEmissions: Future[Double] ={
+    for {
+      propFilter <- combinedPropMetrics.majorProp
+      stateBuildingType <- {
+        propFilter.contains(true) match {
+          case a if a==true => getMajorStateBuildingType(propFilter)
+          case a if a==false => Future(StateBuildingType(buildingProps.state,"Other"))
+        }
+      }
+      statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
+      medianSourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
+      energyList <- getDefaultEnergyTotals(statePropEnergyMix, medianSourceEnergy)
+      medianEmissions <- buildingEmissions.getTotalEmissions(energyList)
+
+    } yield medianEmissions
+  }
+
+  def defaultPercentBetterTotalEmissions: Future[Double] ={
+    for {
+      propFilter <- combinedPropMetrics.majorProp
+      stateBuildingType <- {
+        propFilter.contains(true) match {
+          case a if a==true => getMajorStateBuildingType(propFilter)
+          case a if a==false => Future(StateBuildingType(buildingProps.state,"Other"))
+        }
+      }
+      statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
+      percentBetterSourceEnergyValue <- percentBetterSourceEnergy
+      energyList <- getDefaultEnergyTotals(statePropEnergyMix, percentBetterSourceEnergyValue)
+      percentBetterEmissions <- buildingEmissions.getTotalEmissions(energyList)
+
     } yield percentBetterEmissions
   }
 
-  def getDirectEmissionList(): Future[List[EmissionsTuple]] = buildingEmissions.getDirectEmissionList()
 
-  def getIndirectEmissionList(): Future[List[EmissionsTuple]] = buildingEmissions.getIndirectEmissionList()
+  def getDefaultEnergyTotals(defaultMix:Double, medianSourceEnergy:Energy): Future[EnergyList] = Future{
 
-  def getTotalEmissions(): Future[Double] = buildingEmissions.getTotalEmissions()
+    val energyUnit = buildingProps.country match {
+      case "USA" => "KBtu"
+      case _ => "GJ"
+    }
+
+    EnergyList(
+      List(EnergyMetrics("grid",energyUnit,defaultMix*medianSourceEnergy.value,null),
+        EnergyMetrics("naturalGas",energyUnit,(1-defaultMix)*medianSourceEnergy.value,null))
+    )
+  }
+
+
+  def getTotalEmissions(): Future[Double] = {
+    for {
+      entries <- energyCalcs.getEnergyList
+      totalEmissions <- buildingEmissions.getTotalEmissions(entries)
+    } yield totalEmissions
+  }
+
+  def getDirectEmissionList(): Future[List[EmissionsTuple]] = {
+    for {
+      entries <- energyCalcs.getEnergyList
+      directEmissions <- buildingEmissions.getDirectEmissionList(entries)
+    } yield directEmissions
+  }
+  def getIndirectEmissionList(): Future[List[EmissionsTuple]] = {
+    for {
+      entries <- energyCalcs.getEnergyList
+      indirectEmissions <- buildingEmissions.getIndirectEmissionList(entries)
+    } yield indirectEmissions
+  }
 
 
   def siteToSourceRatio:Future[Double] = {
@@ -451,7 +520,7 @@ case class EUIMetrics(parameters: JsValue) {
 
 
 
-  def computeLookupEUI[T](targetBuilding: T): Future[Double] = Future{
+  def computeLookupEUI(targetBuilding: BaseLine): Future[Double] = {
     targetBuilding match {
       case a: GenericBuilding => throw new Exception("Lookup EUI could not be computed - Generic Building: No Algorithm!")
       case a: BaseLine => a.expectedEnergy
