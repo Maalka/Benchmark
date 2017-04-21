@@ -384,7 +384,7 @@ case class EUIMetrics(parameters: JsValue) {
 
 
 
-  def computeLookupEUI[T](targetBuilding: T): Future[Double] = Future{
+  def computeLookupEUI(targetBuilding: BaseLine): Future[Double] = {
     targetBuilding match {
       case a: GenericBuilding => throw new Exception("Lookup EUI could not be computed - Generic Building: No Algorithm!")
       case a: BaseLine => a.expectedEnergy

@@ -84,23 +84,40 @@ case class CombinedPropTypes(params: JsValue) {
       buildingList <- Future.sequence(propList.map(BuildingProperties(_).getBuilding))
       ratioToEnergyList <- Future.sequence{
         buildingList.map {
-          case a: BaseLine => lookupTableGet(a).map(_.map(b => tableToEnergy(a,b)))
+          case a: BaseLine => {
+            for {
+              lookUp <- lookupTableGet(a)
+              seqTable <- seqTableToEnergy(a,lookUp)
+            } yield seqTable
+          }
+          //lookupTableGet(a).map(seqTableToEnergy(a,_))
+          //_.map(b => tableToEnergy(a,b)))
         }
       }
-      weightedTable <- Future(ratioToEnergyList.transpose.map(_.sum))
+
+      weightedTable <- Future{ratioToEnergyList.transpose.map(_.sum)}
       zippedTable <- Future((ESList,cmPercentList,weightedTable).zipped.toList)
       formattedTable <- convertTabletoEntries(zippedTable)
     } yield formattedTable
   }
 
 
-  def tableToEnergy(targetBuilding: BaseLine, tableEntry:TableEntry): Double = {
-    targetBuilding match {
-      case a: ResidenceHall => exp(tableEntry.Ratio * a.expectedEnergy / 15.717)
-      case a: MedicalOffice => exp(tableEntry.Ratio * a.expectedEnergy / 14.919)
-      case a: DataCenter => tableEntry.Ratio * a.expectedEnergy * a.annualITEnergyKBtu
-      case a: BaseLine => tableEntry.Ratio * a.expectedEnergy * a.buildingSize
-    }
+  def seqTableToEnergy(targetBuilding: BaseLine, table:Seq[TableEntry]): Future[Seq[Double]] = Future.sequence{
+        table.map{b:TableEntry => tableToEnergy(targetBuilding,b)}
+  }
+
+  def tableToEnergy(targetBuilding: BaseLine, tableEntry:TableEntry): Future[Double] = {
+    for {
+      predictedEnergy <- targetBuilding.expectedEnergy
+      table <- Future{
+        targetBuilding match {
+          case a: ResidenceHall => exp(tableEntry.Ratio * predictedEnergy / 15.717)
+          case a: MedicalOffice => exp(tableEntry.Ratio * predictedEnergy / 14.919)
+          case a: DataCenter => tableEntry.Ratio * predictedEnergy * a.annualITEnergyKBtu
+          case a: BaseLine => tableEntry.Ratio * predictedEnergy * a.buildingSize
+        }
+      }
+    } yield table
   }
 
   def convertTabletoEntries(table: List[(Int,Double,Double)]): Future[Seq[TableEntry]] = Future{
@@ -332,22 +349,28 @@ case class CombinedPropTypes(params: JsValue) {
     } yield expectedEnergy
   }
 
-  def computeExpectedEnergy[T](targetBuilding: T,country:String): Future[Energy] = Future{
-    val unitlessEnergy = targetBuilding match {
-      case a: ResidenceHall => exp(a.expectedEnergy)
-      case a: MedicalOffice => exp(a.expectedEnergy)
-      case a: DataCenter => a.expectedEnergy * a.annualITEnergyKBtu
-      case a: GenericBuilding => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
-      case a: BaseLine => a.expectedEnergy * a.buildingSize
-    }
-    country match {
-      case "USA" => KBtus(unitlessEnergy)
-      case "Canada" => Gigajoules(unitlessEnergy)
-      case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
-    }
+
+  def computeExpectedEnergy(targetBuilding:BaseLine, country:String): Future[Energy] = {
+    for {
+      predictedEnergy <- targetBuilding.expectedEnergy
+      unitlessEnergy <- Future{
+        targetBuilding match {
+          case a: ResidenceHall => exp(predictedEnergy)
+          case a: MedicalOffice => exp(predictedEnergy)
+          case a: DataCenter => predictedEnergy * a.annualITEnergyKBtu
+          case a: GenericBuilding => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
+          case a: BaseLine => predictedEnergy * a.buildingSize
+        }
+      }
+      returnEnergy <- Future{
+        country match {
+          case "USA" => KBtus(unitlessEnergy)
+          case "Canada" => Gigajoules(unitlessEnergy)
+          case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
+        }
+      }
+    } yield returnEnergy
   }
-
-
 
 
   def lookupTableGet(building: BaseLine): Future[Seq[TableEntry]] = {
@@ -406,17 +429,25 @@ case class CombinedPropTypes(params: JsValue) {
   }
 
 
-  def computeLookupEUI[T](targetBuilding: T): Future[Energy] = Future{
-    targetBuilding match {
-      case a: GenericBuilding => throw new Exception("Lookup EUI could not be computed - Generic Building: No Algorithm!")
-      case a: BaseLine => {
-        a.country match {
-          case "USA" => KBtus(a.expectedEnergy)
-          case "Canada" => Gigajoules(a.expectedEnergy)
+  def computeLookupEUI(targetBuilding: BaseLine): Future[Energy] = {
+
+    for {
+      predictedEUI <- {
+        targetBuilding match {
+          case a: GenericBuilding => throw new Exception("Lookup EUI could not be computed - Generic Building: No Algorithm!")
+          case a: BaseLine => a.expectedEnergy
         }
       }
-    }
+      convertedEUI <- Future{
+        targetBuilding.country match {
+              case "USA" => KBtus(predictedEUI)
+              case "Canada" => Gigajoules(predictedEUI)
+          }
+        }
+    } yield convertedEUI
   }
+
+
 
   def getDefaultSourceMedianEUI(country:String):Future[Energy] = Future{
     country match {
