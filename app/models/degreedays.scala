@@ -160,78 +160,34 @@ case class PostalDegreeDays(postalCode:String) {
     } yield zipStation
   }
 
-  def getCDD: Future[Int] = {
-    for {
-      lookUpTable <- lookupCDD
-      ddSum <- computeDD("all",lookUpTable)
-    } yield ddSum
-  }
-
-  def getHDD: Future[Int] = {
-    for {
-      lookUpTable <- lookupHDD
-      ddSum <- computeDD("all",lookUpTable)
-    } yield ddSum
-  }
-
-  def lookupCDD: Future[DDmonths] = {
+  def lookupCDD: Future[Int] = {
     for {
       zipStation <- lookupWeatherStation
-      futureTable <- cddStationLookupTable
-      ddMonths <- {
-        Future{
-          (futureTable \ zipStation \ "months").get.validate[DDmonths] match {
-            case JsSuccess(a,_) => a
+      futureTable <- ddStationLookupTable
+      ddMonths <-  Future{
+          (futureTable \ zipStation \ "CDD").toOption match {
+            case Some(a) => a.as[Int]
             case _ => throw new Exception("Could not match Zip Code to Weather Station")
           }
         }
-      }
+
     } yield ddMonths
   }
 
-  def lookupHDD: Future[DDmonths] = {
+  def lookupHDD: Future[Int] = {
     for {
 
       zipStation <- lookupWeatherStation
-      futureTable <- hddStationLookupTable
-      ddMonths <- {
-        Future{
-          (futureTable \ zipStation \ "months").get.validate[DDmonths] match {
-            case JsSuccess(a,_) => a
+      futureTable <- ddStationLookupTable
+      ddMonths <- Future{
+          (futureTable \ zipStation \ "HDD").toOption match {
+            case Some(a) => a.as[Int]
             case _ => throw new Exception("Could not match Zip Code to Weather Station")
           }
         }
-      }
+
     } yield ddMonths
   }
-
-  def computeDD(month:String,table:DDmonths):Future[Int] = Future {
-
-
-    val ddsum = month match {
-      case "JAN" => table.JAN.sum
-      case "FEB" => table.FEB.sum
-      case "MAR" => table.MAR.sum
-      case "APR" => table.APR.sum
-      case "MAY" => table.MAY.sum
-      case "JUN" => table.JUN.sum
-      case "JUL" => table.JUL.sum
-      case "AUG" => table.AUG.sum
-      case "SEP" => table.SEP.sum
-      case "OCT" => table.OCT.sum
-      case "NOV" => table.NOV.sum
-      case "DEC" => table.DEC.sum
-
-      case "all" => {
-        table.JAN.sum + table.FEB.sum + table.MAR.sum + table.APR.sum + table.MAY.sum + table.JUN.sum +
-          table.JUL.sum + table.AUG.sum + table.SEP.sum + table.OCT.sum + table.NOV.sum + table.DEC.sum
-      }
-    }
-    ddsum.toInt
-  }
-
-
-  val monthList:List[String] = List("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC")
 
   /*def getZipCode:Future[String] = Future{
     parameters.validate[ZipCode] match {

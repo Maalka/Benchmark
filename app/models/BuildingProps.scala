@@ -200,8 +200,8 @@ sealed trait BaseLine {
 
   def expectedEnergy:Future[Double] = {
     for {
-      heating <- degreeDays.getHDD
-      cooling <- degreeDays.getCDD
+      heating <- degreeDays.lookupHDD
+      cooling <- degreeDays.lookupCDD
       propSequence <- Future(regressionSegments(heating,cooling))
       predictedEnergy <- Future(propSequence.map(_.reduce).sum)
     } yield predictedEnergy

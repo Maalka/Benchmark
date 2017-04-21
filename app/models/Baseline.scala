@@ -445,8 +445,8 @@ case class EUIMetrics(parameters: JsValue) {
     }
 
     EnergyList(
-      List(EnergyMetrics("grid",energyUnit,defaultMix*medianSourceEnergy.value,null),
-        EnergyMetrics("naturalGas",energyUnit,(1-defaultMix)*medianSourceEnergy.value,null))
+      List(EnergyMetrics("grid","Electric (Grid)",energyUnit,defaultMix*medianSourceEnergy.value,null),
+        EnergyMetrics("naturalGas","Natural Gas",energyUnit,(1-defaultMix)*medianSourceEnergy.value,null))
     )
   }
 
