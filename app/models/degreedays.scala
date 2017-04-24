@@ -45,7 +45,6 @@ object DegreeDays {
 case class DegreeDays(parameters:JsValue) {
   import DegreeDays._
 
-
   def lookupWeatherStation: Future[String] = {
     for {
       zipCode <- getZipCode
@@ -160,13 +159,13 @@ case class PostalDegreeDays(postalCode:String) {
     } yield zipStation
   }
 
-  def lookupCDD: Future[Int] = {
+  def lookupCDD: Future[Double] = {
     for {
       zipStation <- lookupWeatherStation
       futureTable <- ddStationLookupTable
       ddMonths <-  Future{
           (futureTable \ zipStation \ "CDD").toOption match {
-            case Some(a) => a.as[Int]
+            case Some(a) => a.as[Double]
             case _ => throw new Exception("Could not match Zip Code to Weather Station")
           }
         }
@@ -174,14 +173,14 @@ case class PostalDegreeDays(postalCode:String) {
     } yield ddMonths
   }
 
-  def lookupHDD: Future[Int] = {
+  def lookupHDD: Future[Double] = {
     for {
 
       zipStation <- lookupWeatherStation
       futureTable <- ddStationLookupTable
       ddMonths <- Future{
           (futureTable \ zipStation \ "HDD").toOption match {
-            case Some(a) => a.as[Int]
+            case Some(a) => a.as[Double]
             case _ => throw new Exception("Could not match Zip Code to Weather Station")
           }
         }

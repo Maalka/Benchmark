@@ -22,17 +22,33 @@ case class EUICalculator(parameters: JsValue) {
 
   implicit def boolOptToInt(b: Option[Boolean]): Int = if (b.getOrElse(false)) 1 else 0
 
-  val country:String = {
+/*  val country:String = {
     parameters.asOpt[ConversionInfo] match {
       case Some(a) => a.country
       case _ => throw new Exception("Could not retrieve Country")
     }
-  }
+  }*/
 
-  val reportingUnits:String = {
+  def country: String = {
     parameters.asOpt[ConversionInfo] match {
-      case Some(a) => a.reportingUnits
-      case _ => throw new Exception("Could not retrieve Reporting Units")
+      case Some(a) => {
+        a.country match {
+          case Some(country:String) => country
+          case _ => throw new Exception("Could not retrieve Country")
+        }
+      }
+      case _ => throw new Exception("Could not retrieve Country")
+    }
+  }
+  def reportingUnits: String = {
+    parameters.asOpt[ConversionInfo] match {
+      case Some(a) => {
+        a.reportingUnits match {
+          case Some(reportingUnits:String) => reportingUnits
+          case None => "us"
+        }
+      }
+      case _ => throw new Exception("Could not retrieve State")
     }
   }
 
@@ -343,7 +359,7 @@ case class EUICalculator(parameters: JsValue) {
   }
 }
 
-case class  ConversionInfo(country:String, reportingUnits: String, buildingType:String, postalCode:String, state:String, buildingName:String)
+case class  ConversionInfo(country:Option[String], reportingUnits: Option[String], buildingType:Option[String], postalCode:Option[String], state:Option[String], buildingName:Option[String])
 object ConversionInfo {
   implicit val conversionInfoReads: Reads[ConversionInfo] = Json.reads[ConversionInfo]
 }

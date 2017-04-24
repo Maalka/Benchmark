@@ -46,13 +46,11 @@ case class CombinedPropTypes(params: JsValue) {
               case false => getMedianSourceEUI(result)
             }
           }
-          case false => {
-            getDefaultSourceMedianEUI(buildingProps.country)
-            }
-          }
+          case false => getDefaultSourceMedianEUI(buildingProps.country)
         }
-      } yield convertToZeroScale(lookUpSourceMedianEUI)
-    }
+      }
+    } yield convertToZeroScale(lookUpSourceMedianEUI)
+  }
 
   def getMedianSourceEUI(buildingList:List[JsValue]):Future[Energy] = {
     for {
@@ -99,11 +97,8 @@ case class CombinedPropTypes(params: JsValue) {
               seqTable <- seqTableToEnergy(a,lookUp)
             } yield seqTable
           }
-          //lookupTableGet(a).map(seqTableToEnergy(a,_))
-          //_.map(b => tableToEnergy(a,b)))
         }
       }
-
       weightedTable <- Future{ratioToEnergyList.transpose.map(_.sum)}
       zippedTable <- Future((ESList,cmPercentList,weightedTable).zipped.toList)
       formattedTable <- convertTabletoEntries(zippedTable)
@@ -215,6 +210,7 @@ case class CombinedPropTypes(params: JsValue) {
               case ("Canada",_) => Gigajoules(1.68)
 
               case (_,_) => throw new Exception("Lookup Table Not Found")
+              case _ => throw new Exception("Error in getMedianNoGeneric")
             }
           }
         }
@@ -435,6 +431,7 @@ case class CombinedPropTypes(params: JsValue) {
       case ("Canada", "K12School") => Play.current.configuration.getString("baseline.canadaK12School")
       case ("Canada", "Hospital") => Play.current.configuration.getString("baseline.canadaHospital")
       case (_,_) => throw new Exception("Lookup Table Not Found")
+      case _ => throw new Exception("Error in getLookupTable")
     }
     r.getOrElse("Lookup Table Not Found")
   }
@@ -451,10 +448,10 @@ case class CombinedPropTypes(params: JsValue) {
       }
       convertedEUI <- Future{
         targetBuilding.country match {
-              case "USA" => KBtus(predictedEUI)
-              case "Canada" => Gigajoules(predictedEUI)
-          }
+          case "USA" => KBtus(predictedEUI)
+          case "Canada" => Gigajoules(predictedEUI)
         }
+      }
     } yield convertedEUI
   }
 
@@ -652,6 +649,7 @@ case class CombinedPropTypes(params: JsValue) {
         case ("Canada",_) => 1.23
 
         case (_,_) => throw new Exception("Could not find Country and Building Type for Median EUI")
+        case _ => throw new Exception("Error in sourceMedianEUI")
       }
     }
 
@@ -721,7 +719,7 @@ case class CombinedPropTypes(params: JsValue) {
       case "ME" => "Northeast"
 
       //case _ => "Canada"
-      case _ => throw new Exception("Could not find Country and Building Type for Median EUI")
+      case _ => throw new Exception("Could not find State to identify country region")
 
     }
   }

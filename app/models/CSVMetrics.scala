@@ -333,8 +333,7 @@ case class CSVcompute(parameters: List[List[String]]) {
         "numWorkersMainShift" -> JsNumber(roundAt(2)(2.3*building.GFA/1000)),
         "numComputers" -> JsNumber(roundAt(2)(2*building.GFA/1000)),
         "percentHeated" -> JsNumber(100),
-        "percentCooled" -> JsNumber(100),
-        "isSmallBank" -> JsBoolean(true)
+        "percentCooled" -> JsNumber(100)
       ))
       case "ResidenceHall" => JsObject(Map (
         "numBedrooms" -> JsNumber(100),
