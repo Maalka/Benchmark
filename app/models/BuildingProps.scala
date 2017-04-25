@@ -299,10 +299,7 @@ sealed trait BaseLine {
         }
       }
       propSequence <- Future(regressionSegments(heating, cooling))
-      predictedEnergy <- {
-        println(propSequence)
-        Future(propSequence.map(_.reduce).sum)
-      }
+      predictedEnergy <- Future(propSequence.map(_.reduce).sum)
     } yield predictedEnergy
 
   }
@@ -509,7 +506,7 @@ sealed trait BaseLine {
         parameter match {
           case "gymFloorArea" => PosDouble(0.0)
           case "numWorkersMainShift" => PosDouble(roundAt(2)(0.77 * adjustedSize / 1000))
-          case "studentSeatingCapacity" => PosDouble(roundAt(2)(0.77 * adjustedSize / 1000))
+          case "studentSeatingCapacity" => PosDouble(roundAt(2)(10.0 * adjustedSize / 1000))
           case "percentHeated" => PosDouble(100.0)
           case "percentCooled" => PosDouble(100.0)
         }
@@ -524,8 +521,6 @@ sealed trait BaseLine {
       }
       case "CanadaOffice" => {
         val adjustedSize = size * 10.7639
-
-        println(65.0, roundAt(2)(2.3 * adjustedSize / 1000), roundAt(2)(2.0 * adjustedSize / 1000), 0.0, 100.0, 100.0)
         parameter match {
           case "weeklyOperatingHours" => PosDouble(65.0)
           case "numWorkersMainShift" => PosDouble(roundAt(2)(2.3 * adjustedSize / 1000))
@@ -565,16 +560,14 @@ sealed trait BaseLine {
         }
       case "FinancialOffice" =>
         parameter match {
-          case "isSmallBank" => Some(true)
+          case "isSmallBank" => {
+            buildingSize match {
+              case a if a < 5000 => Some(true)
+              case _ => Some(false)
+            }
+          }
         }
-      case "Retail" =>
-        parameter match {
-          case "isSmallBank" => Some(true)
-        }
-      case "SeniorCare" =>
-        parameter match {
-          case "isSmallBank" => Some(true)
-        }
+
       case "Supermarket" =>
         parameter match {
           case "hasCooking" => Some(true)
@@ -800,9 +793,9 @@ case class FinancialOffice(GFA:PosDouble, areaUnits:String, country:String, buil
     RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("FinancialOffice","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
     RegressionSegment(0.0077, 4411, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("FinancialOffice","percentHeated",buildingSize)).value / 100),
     RegressionSegment(0.0144, 1157, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("FinancialOffice","percentCooled",buildingSize)).value / 100),
-    RegressionSegment(-64.83, 9.535, log(buildingSize)),
-    RegressionSegment(34.2, .5616, log(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("FinancialOffice","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
-    RegressionSegment(56.3, 0, 1)
+    RegressionSegment(-64.83*isSmallBank.getOrElse(fillBooleanDefaults("FinancialOffice","isSmallBank").get), 9.535, log(buildingSize)),
+    RegressionSegment(34.2*isSmallBank.getOrElse(fillBooleanDefaults("FinancialOffice","isSmallBank").get), .5616, log(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("FinancialOffice","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
+    RegressionSegment(56.3*isSmallBank.getOrElse(fillBooleanDefaults("FinancialOffice","isSmallBank").get), 0, 1)
   )
 }
 /**
