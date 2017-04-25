@@ -598,7 +598,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"PoliceStation",name:"Police Station"},
                     {id:"MeetingHall",name:"Meeting Hall"},
                     {id:"TransportationTerminal",name:"Transportation Terminal"},
-                    {id:"WastewaterCenter",name:"Wastewater Treatment Center"},
+                    //{id:"WastewaterCenter",name:"Wastewater Treatment Center"},
                     {id:"OtherPublicServices",name:"Other Public Services"},
                     {id:"WorshipCenter",name:"Worship Facility"},
                     {id:"AutoDealership",name:"Automobile Dealership"},
