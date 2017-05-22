@@ -54,27 +54,29 @@ define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angul
                             attachment: file
                         }
                     }).then(function (resp) {
-                        $scope.loading = false;
-                        $scope.attachment  = undefined;
                         var blob = new Blob([resp.data.arrayBuffer], {type: "application/zip;charset=utf-8"});
                         saveAs(blob, "Results.zip");
-                        if (resp.data.status === "OK") {
-                            $timeout(function () { 
-                                $scope.loadingFileFiller = {};
-                            }, 1000);
-                        } else {
-                            errorPopover.errorPopoverEvent("Error uploading attachment",
-                                {
-                                    messageType: "error",
-                                    messageHeader: resp.data.response
-                                });
-                        }
-                    }).catch(function () {
                         $scope.loading = false;
-                        $scope.error = {
-                            'messageType': "Error",
-                            'messageDesscription': "There is a error with the bulk csv that you are uploading.  Please make sure that the file contains all of the fields that are required"
-                        };
+
+                        $timeout(function () {
+                            $scope.loadingFileFiller = {};
+                        }, 1000);
+
+                    }).catch(function (resp) {
+                        $scope.loading = false;
+                        if (resp.status === 400) {
+                            var message = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(resp.data.arrayBuffer)));
+                            $scope.error = {
+                                'messageType': "Error",
+                                'messageDescription': message.response
+                            };
+                        } else {
+                            $scope.error = {
+                                'messageType': "Error",
+                                'messageDescription': "There is an error with the bulk csv that you are uploading.  Please make sure that the file contains all of the fields that are required"
+                            };
+
+                        }
                     });
                  };
             }]

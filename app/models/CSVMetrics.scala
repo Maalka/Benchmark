@@ -250,14 +250,14 @@ case class CSVcompute(parameters: List[List[String]]) {
   val goodBuildingJsonList:Seq[JsValue] =  parameters.collect {
     case List(a, b, c, d, e, f) if {
       states.contains(b.trim) && GFAUnits.contains(f.trim) && (c.trim.length == 5) &&
-      tryFormat(e,"double") && validZipCodes.contains(c.trim)
+      tryFormat(e,"double") && validZipCodes.contains(c.trim) && buildingTypes.contains(d.trim)
     } => getDefaults(GoodJsonBuilding(a.trim, b.trim, c.trim, getBuildingType(d.trim), e.toDouble, convertGFAUnits(f.trim), reportingUnits))
   }
 
   val badEntries = parameters.filterNot {
     case List(a,b,c,d,e,f) if {
       states.contains(b.trim) && GFAUnits.contains(f.trim) &&  (c.trim.length == 5) &&
-        tryFormat(e,"double") && validZipCodes.contains(c.trim)
+        tryFormat(e,"double") && validZipCodes.contains(c.trim) && buildingTypes.contains(d.trim)
     }  => true
     case _ => false
   }
@@ -270,7 +270,7 @@ case class CSVcompute(parameters: List[List[String]]) {
          val unitsEntry = if (GFAUnits.contains(f.trim)){f.trim}else{"ERROR"}
          val postalCodeEntry = if (validZipCodes.contains(c.trim) && c.trim.length == 5 ){c.trim}else{"ERROR"}
          val GFAEntry = if (tryFormat(e,"double")){e.toDouble}else{"ERROR"}
-         val buildingEntry = if (d.trim.length > 0){d.trim}else{"ERROR"}
+         val buildingEntry = if (buildingTypes.contains(d.trim)){d.trim}else{"ERROR"}
          List(a,stateEntry,postalCodeEntry,buildingEntry,GFAEntry,unitsEntry)
        }
     }
