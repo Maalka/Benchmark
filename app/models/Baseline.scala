@@ -412,10 +412,9 @@ case class EUIMetrics(parameters: JsValue) {
         }
       }
       statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
-      medianSourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
-      energyList <- getDefaultEnergyTotals(statePropEnergyMix, medianSourceEnergy)
-      medianEmissions <- buildingEmissions.getTotalEmissions(energyList)
-
+      medianSiteEnergyEmissions <- medianSiteEnergy
+      energyList <- getDefaultEnergyTotals(statePropEnergyMix, medianSiteEnergyEmissions)
+      medianEmissions <-  buildingEmissions.getTotalEmissions(energyList)
     } yield medianEmissions
   }
 
@@ -429,8 +428,8 @@ case class EUIMetrics(parameters: JsValue) {
         }
       }
       statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
-      percentBetterSourceEnergyValue <- percentBetterSourceEnergy
-      energyList <- getDefaultEnergyTotals(statePropEnergyMix, percentBetterSourceEnergyValue)
+      medianSiteEnergyEmissions <- percentBetterSiteEnergy
+      energyList <- getDefaultEnergyTotals(statePropEnergyMix, medianSiteEnergyEmissions)
       percentBetterEmissions <- buildingEmissions.getTotalEmissions(energyList)
 
     } yield percentBetterEmissions
