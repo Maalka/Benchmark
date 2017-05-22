@@ -19,37 +19,32 @@ case class Emissions(parameters:JsValue) {
   val energyCalcs:EUICalculator = EUICalculator(parameters)
   val buildingProps:BuildingProperties = BuildingProperties(parameters)
 
-
-  def getDirectEmissionList(): Future[List[EmissionsTuple]] = {
+  def getTotalEmissions(energyList:EnergyList): Future[Double] = {
 
     for {
-      entries <- energyCalcs.getEnergyList
-      energyTuples <- computeEnergyAndType(entries)
+      direct <- getDirectEmissionList(energyList)
+      indirect <- getIndirectEmissionList(energyList)
+      avoided <- getAvoidedEmissionsSum
+    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum - avoided
+  }
+
+  def getDirectEmissionList(energyList:EnergyList): Future[List[EmissionsTuple]] = {
+
+    for {
+      energyTuples <- computeEnergyAndType(energyList)
       directFactors <- emissionsDirectFactors(energyTuples)
     } yield directFactors
 
   }
 
-  def getIndirectEmissionList(): Future[List[EmissionsTuple]] = {
+  def getIndirectEmissionList(energyList:EnergyList): Future[List[EmissionsTuple]] = {
 
     for {
-      entries <- energyCalcs.getEnergyList
-      energyTuples <- computeEnergyAndType(entries)
+      energyTuples <- computeEnergyAndType(energyList)
       eGridCode <- getEGrid()
       indirectFactors <- emissionsIndirectFactors(energyTuples, eGridCode)
-
     } yield indirectFactors
 
-  }
-
-
-  def getTotalEmissions(): Future[Double] = {
-
-    for {
-      direct <- getDirectEmissionList
-      indirect <- getIndirectEmissionList
-      avoided <- getAvoidedEmissionsSum
-    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum - avoided
   }
 
 
