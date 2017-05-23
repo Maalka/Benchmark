@@ -45,7 +45,7 @@ case class EUIMetrics(parameters: JsValue) {
   def percentBetterActual:Future[Double] = {
     for {
       medianSiteEUI <- medianSiteEUIConverted
-      actualEUI <- siteEUIConverted
+      actualEUI <- siteEUIwOnandOffSiteConverted
     } yield {
       actualEUI match {
         case x if x < medianSiteEUI.value => 100*math.abs((1 - actualEUI / medianSiteEUI.value))
@@ -57,7 +57,7 @@ case class EUIMetrics(parameters: JsValue) {
   def actualGoalReduction:Future[Double] = {
     for {
       percentBetterEUI <- percentBetterSiteEUIConverted
-      actualEUI <- siteEUIConverted
+      actualEUI <- siteEUIwOnandOffSiteConverted
     } yield 100*math.abs((1 - percentBetterEUI.value / actualEUI))
   }
 
@@ -65,7 +65,7 @@ case class EUIMetrics(parameters: JsValue) {
   def actualGoalBetter:Future[Double] = {
     for {
       percentBetterEUI <- percentBetterSiteEUIConverted
-      actualEUI <- siteEUIConverted
+      actualEUI <- siteEUIwOnandOffSiteConverted
     } yield 100*math.abs((1 - actualEUI / percentBetterEUI.value))
   }
 
@@ -97,14 +97,14 @@ case class EUIMetrics(parameters: JsValue) {
     for {
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOnSiteRenewable <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"onSite")
+      totalOnSiteRenewable <- energyCalcs.getRenewableEnergyTotalbyTypeOutput(convertedEnergy,"onSite")
     } yield totalOnSiteRenewable
 
   def offSitePurchasedTotal: Future[Double] =
     for {
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOnSiteRenewable <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"purchased")
+      totalOnSiteRenewable <- energyCalcs.getRenewableEnergyTotalbyTypeOutput(convertedEnergy,"purchased")
     } yield totalOnSiteRenewable
   //this is the total site energy without accounting for renewable generation and/or purchasing
   def siteEnergyALL: Future[Double] =
@@ -133,19 +133,111 @@ case class EUIMetrics(parameters: JsValue) {
       convertedEnergy <- convertEnergyTuple(sourceEnergyList)
     } yield convertedEnergy
 
+  //SOURCE EUI METRICS .............................................................................................//
+
+
   def sourceEUIConverted: Future[Double] =
+    for {
+      sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
+      sourceRenewableEnergy <- energyCalcs.getTotalSourceRenewableEnergy
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
+      convertedEUI <- EUIConversionConstant(sourceEnergy+sourceRenewableEnergy,buildingSize)
+    } yield {
+      //println("SourceEUI",convertedEUI)
+      convertedEUI.value
+    }
+
+  def sourceEUIwOnSiteConverted: Future[Double] =
+    for {
+      sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
+
+      siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
+      convertedEnergy <- convertEnergyTuple(siteRenewableList)
+      totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"purchased")
+      convertedEUI <- EUIConversionConstant(sourceEnergy+totalOffSite,buildingSize)
+    } yield {
+     // println("SourceEUI w OnSite",convertedEUI)
+      convertedEUI.value
+    }
+
+  def sourceEUIwOffSiteConverted: Future[Double] =
+    for {
+      sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
+
+      siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
+      convertedEnergy <- convertEnergyTuple(siteRenewableList)
+      totalOnSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"onSite")
+      convertedEUI <- EUIConversionConstant(sourceEnergy+totalOnSite,buildingSize)
+    } yield {
+      //println("SourceEUI w Offsite",convertedEUI)
+      convertedEUI.value
+    }
+
+  def sourceEUIwOnandOffSiteConverted: Future[Double] =
     for {
       sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
       buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedEUI <- EUIConversionConstant(sourceEnergy,buildingSize)
-    } yield convertedEUI.value
+    } yield {
+      //println("SourceEUI w On and Offsite",convertedEUI)
+      convertedEUI.value
+    }
+
+
+
+
+//SITE EUI METRICS .............................................................................................//
 
   def siteEUIConverted: Future[Double] =
     for {
       siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
+      siteRenewableEnergy <- energyCalcs.getTotalSiteRenewableEnergy
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
+      convertedEUI <- EUIConversionConstant(siteTotalEnergy+siteRenewableEnergy,buildingSize)
+    } yield {
+      //println("SiteEUI...",convertedEUI)
+      convertedEUI.value
+    }
+
+  def siteEUIwOnSiteConverted: Future[Double] =
+    for {
+      siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
+
+      siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
+      convertedEnergy <- convertEnergyTuple(siteRenewableList)
+      totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"purchased")
+      convertedEUI <- EUIConversionConstant(siteTotalEnergy+totalOffSite,buildingSize)
+    } yield {
+      //println("SiteEUI w OnSite",convertedEUI)
+      convertedEUI.value
+    }
+
+  def siteEUIwOffSiteConverted: Future[Double] =
+    for {
+      siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
+
+      siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
+      convertedEnergy <- convertEnergyTuple(siteRenewableList)
+      totalOnSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"onSite")
+      convertedEUI <- EUIConversionConstant(siteTotalEnergy+totalOnSite,buildingSize)
+    } yield {
+      //println("SiteEUI w OffSite",convertedEUI)
+      convertedEUI.value
+    }
+
+  def siteEUIwOnandOffSiteConverted: Future[Double] =
+    for {
+      siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
       buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedEUI <- EUIConversionConstant(siteTotalEnergy,buildingSize)
-    } yield convertedEUI.value
+    } yield {
+      //println("SiteEUI w OnSite and OffSite",convertedEUI)
+      convertedEUI.value
+    }
 
 
   def medianSiteEnergyConverted:Future[Energy] = {

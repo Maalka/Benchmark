@@ -97,8 +97,21 @@ trait BaselineActions {
       Baseline.zepiMedian.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.zepiPercentBetter.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
+
+
       Baseline.siteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.siteEUIwOnSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.siteEUIwOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.siteEUIwOnandOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
       Baseline.sourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.sourceEUIwOnSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.sourceEUIwOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.sourceEUIwOnandOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+
+
+
       //this is the total site energy accounting for renewable generation and/or purchasing
       Baseline.siteEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.siteEnergyListConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -147,7 +160,15 @@ trait BaselineActions {
       "percentBetterZEPI",
 
       "siteEUI",
+      "siteEUIwOnSite",
+      "siteEUIwOffSite",
+      "siteEUIwOnAndOffSite",
+
       "sourceEUI",
+      "sourceEUIwOnSite",
+      "sourceEUIwOffSite",
+      "sourceEUIwOnAndOffSite",
+
       "totalSiteEnergy",
       "siteEnergyList",
       "totalSourceEnergy",

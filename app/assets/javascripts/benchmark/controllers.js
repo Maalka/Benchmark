@@ -16,6 +16,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.propList = [];
     $scope.benchmarkResult = null;
     $scope.lacksDD = false;
+    $scope.hasOnSite = false;
+    $scope.hasOffSite = false;
 
     $scope.propOutputList = [];
     $scope.tableEUIUnits = null;
@@ -241,19 +243,26 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.baselineConstant = $scope.getBaselineConstant();
             $scope.scoreText = "Score";
             $scope.scoreGraph = "Rating";
-            $scope.FFText = $sce.trustAsHtml('Site FF-EUI*');
+            $scope.FFText = $sce.trustAsHtml('Site EUI*');
             $scope.scoreUnits = $scope.isResidential  ? "0-130" : "0-100";
 
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
             $scope.benchmarkResult.city = $scope.auxModel.city;
             $scope.benchmarkResult.state = $scope.auxModel.state;
             $scope.benchmarkResult.postalCode = $scope.auxModel.postalCode;
-            console.log($scope.auxModel.targetToggle);
+            //console.log($scope.benchmarkResult);
             if ($scope.auxModel.targetToggle === "zeroScore") {
                 $scope.benchmarkResult.percentBetterThanMedian = $scope.getBaselineConstant() - $scope.auxModel.percentBetterThanMedian;
             } else {
                 $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
             }
+
+            $scope.hasOnSite = ($scope.getPropResponseField(results,"onSiteRenewableTotal") > 1) ;
+            $scope.hasOffSite = ($scope.getPropResponseField(results,"offSitePurchasedTotal") > 1) ;
+            $scope.hasSiteEnergy = ($scope.getPropResponseField(results,"siteEUI") > 1) ;
+
+
+
 
         });
     };
@@ -311,7 +320,15 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"actualZEPI": $scope.getBaselineConstant() - Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
 
               {"siteEUI": Math.ceil($scope.getPropResponseField(results,"siteEUI"))},
+              {"siteEUIwOnSite": Math.ceil($scope.getPropResponseField(results,"siteEUIwOnSite"))},
+              {"siteEUIwOffSite": Math.ceil($scope.getPropResponseField(results,"siteEUIwOffSite"))},
+              {"siteEUIwOnAndOffSite": Math.ceil($scope.getPropResponseField(results,"siteEUIwOnAndOffSite"))},
+
               {"sourceEUI": Math.ceil($scope.getPropResponseField(results,"sourceEUI"))},
+              {"sourceEUIwOnSite": Math.ceil($scope.getPropResponseField(results,"sourceEUIwOnSite"))},
+              {"sourceEUIwOffSite": Math.ceil($scope.getPropResponseField(results,"sourceEUIwOffSite"))},
+              {"sourceEUIwOnAndOffSite": Math.ceil($scope.getPropResponseField(results,"sourceEUIwOnAndOffSite"))},
+
               {"siteEnergyList": $scope.getPropResponseField(results,"siteEnergyList")},
               {"totalSiteEnergy": Math.ceil($scope.getPropResponseField(results,"totalSiteEnergy"))},
               {"sourceEnergyList": $scope.getPropResponseField(results,"sourceEnergyList")},

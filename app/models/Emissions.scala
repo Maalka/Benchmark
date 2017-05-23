@@ -137,7 +137,6 @@ case class Emissions(parameters:JsValue) {
 
           case (_, _, _) => 0.0
         }
-        println("direct",emissionValue, EmissionsTuple(a._2,emissionValue/1000*a._1.value))
         EmissionsTuple(a._2,emissionValue/1000*a._1.value)
       }
     }
@@ -217,7 +216,6 @@ case class Emissions(parameters:JsValue) {
 
           case (_, _, _, _) => 0.0
         }
-        println("INDIRECT",emissionValue, EmissionsTuple(a._2,emissionValue/1000*a._1.value))
         EmissionsTuple(a._2,emissionValue/1000*a._1.value)
       }
       case _ => throw new Exception("Could not match correct postal code for Emissions Factor")
