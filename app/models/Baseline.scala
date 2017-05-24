@@ -257,7 +257,9 @@ case class EUIMetrics(parameters: JsValue) {
           if(siteRatio.isNaN) {
             convertedEnergy * backupRatio
           }else {
-            convertedEnergy * siteRatio
+            //convertedEnergy * siteRatio, this line will take actual site to source ratio based on actual building fuel use
+            //breakdown, rather than default by fuel mixes from a lookuptable
+            convertedEnergy * backupRatio
           }
         }
       }
@@ -328,7 +330,9 @@ case class EUIMetrics(parameters: JsValue) {
           if(siteRatio.isNaN) {
             convertedEnergy * backupRatio
           }else {
-            convertedEnergy * siteRatio
+            //convertedEnergy * siteRatio, this line will take actual site to source ratio based on actual building fuel use
+            //breakdown, rather than default by fuel mixes from a lookuptable
+            convertedEnergy * backupRatio
           }
         }
       }
@@ -397,7 +401,9 @@ case class EUIMetrics(parameters: JsValue) {
           if(siteRatio.isNaN) {
             sourceEnergy * backupRatio
           }else {
-            sourceEnergy * siteRatio
+            //convertedEnergy * siteRatio, this line will take actual site to source ratio based on actual building fuel use
+            //breakdown, rather than default by fuel mixes from a lookuptable
+            sourceEnergy * backupRatio
           }
         }
       }
@@ -460,7 +466,9 @@ case class EUIMetrics(parameters: JsValue) {
           if(siteRatio.isNaN) {
             sourceEnergy * backupRatio
           }else {
-            sourceEnergy * siteRatio
+            //convertedEnergy * siteRatio, this line will take actual site to source ratio based on actual building fuel use
+            //breakdown, rather than default by fuel mixes from a lookuptable
+            sourceEnergy * backupRatio
           }
         }
       }
@@ -506,7 +514,7 @@ case class EUIMetrics(parameters: JsValue) {
       statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
       medianSiteEnergyEmissions <- medianSiteEnergy
       energyList <- getDefaultEnergyTotals(statePropEnergyMix, medianSiteEnergyEmissions)
-      medianEmissions <-  buildingEmissions.getTotalEmissions(energyList)
+      medianEmissions <-  buildingEmissions.nonActualTotalEmissions(energyList)
     } yield medianEmissions
   }
 
@@ -522,7 +530,7 @@ case class EUIMetrics(parameters: JsValue) {
       statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
       medianSiteEnergyEmissions <- percentBetterSiteEnergy
       energyList <- getDefaultEnergyTotals(statePropEnergyMix, medianSiteEnergyEmissions)
-      percentBetterEmissions <- buildingEmissions.getTotalEmissions(energyList)
+      percentBetterEmissions <- buildingEmissions.nonActualTotalEmissions(energyList)
 
     } yield percentBetterEmissions
   }

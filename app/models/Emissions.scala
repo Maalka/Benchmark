@@ -20,12 +20,19 @@ case class Emissions(parameters:JsValue) {
   val buildingProps:BuildingProperties = BuildingProperties(parameters)
 
   def getTotalEmissions(energyList:EnergyList): Future[Double] = {
-
     for {
       direct <- getDirectEmissionList(energyList)
       indirect <- getIndirectEmissionList(energyList)
       avoided <- getAvoidedEmissionsSum
     } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum - avoided
+  }
+
+  //this does not subtract the avoided emissions due to renewables being present
+  def nonActualTotalEmissions(energyList:EnergyList): Future[Double] = {
+    for {
+      direct <- getDirectEmissionList(energyList)
+      indirect <- getIndirectEmissionList(energyList)
+    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum
   }
 
   def getDirectEmissionList(energyList:EnergyList): Future[List[EmissionsTuple]] = {

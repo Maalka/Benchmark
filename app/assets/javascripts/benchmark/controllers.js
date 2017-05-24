@@ -241,7 +241,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
         $q.resolve($scope.futures).then(function (results) {
             $scope.baselineConstant = $scope.getBaselineConstant();
-            $scope.scoreText = "Score";
+            $scope.scoreText = "Zero Score";
             $scope.scoreGraph = "Rating";
             $scope.FFText = $sce.trustAsHtml('Site EUI*');
             $scope.scoreUnits = $scope.isResidential  ? "0-130" : "0-100";

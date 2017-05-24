@@ -131,8 +131,11 @@ trait BaselineActions {
       Baseline.getDirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.getIndirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.getTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.medianTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      //this uses default state energy mixes for emissions calcs rather than scaling by source energies per TargetFinder
+      //to follow TargetFinder use Baseline.medianTotalEmissions not Baseline.defaultMedianTotalEmissions
+      Baseline.defaultMedianTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      //to follow TargetFinder use Baseline.percentBetterTotalEmissions not Baseline.defaultPercentBetterTotalEmissions
+      Baseline.defaultPercentBetterTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       Baseline.onSiteRenewableTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.offSitePurchasedTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
