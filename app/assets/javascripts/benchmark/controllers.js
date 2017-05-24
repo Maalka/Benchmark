@@ -84,10 +84,16 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     } else {
                         $scope.isResidential = true;
                     }
-                    $scope.propTypes = [];
+                   if ($scope.isResidential === true && v.id !== "MultiFamily"){
+                       $scope.propTypes = [];
+                   }
+
+                   // $scope.propTypes = [];
                     break;
                 }
             }
+
+
 
             for(var j = 0; j < $scope.propTypes.length; j++ ) {
                 for(var k = 0; k < $scope.buildingProperties.buildingType.residential.length; k++ ) {
@@ -257,9 +263,9 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 $scope.benchmarkResult.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
             }
 
-            $scope.hasOnSite = ($scope.getPropResponseField(results,"onSiteRenewableTotal") > 1) ;
-            $scope.hasOffSite = ($scope.getPropResponseField(results,"offSitePurchasedTotal") > 1) ;
-            $scope.hasSiteEnergy = ($scope.getPropResponseField(results,"siteEUI") > 1) ;
+            $scope.hasOnSite = ($scope.getPropResponseField(results,"onSiteRenewableTotal") > 0.01) ;
+            $scope.hasOffSite = ($scope.getPropResponseField(results,"offSitePurchasedTotal") > 0.01) ;
+            $scope.hasSiteEnergy = ($scope.getPropResponseField(results,"siteEUI") > 0.01) ;
 
 
 
@@ -316,8 +322,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"actualGoalBetter": Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"))},
 
               {"medianZEPI": $scope.getBaselineConstant()},
-              {"percentBetterZEPI": Math.ceil($scope.getPropResponseField(results,"percentBetterZEPI"))},
-              {"actualZEPI": $scope.getBaselineConstant() - Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
+              {"percentBetterZEPI": Math.floor($scope.getPropResponseField(results,"percentBetterZEPI"))},
+              {"actualZEPI": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActual"))},
 
               {"siteEUI": Math.ceil($scope.getPropResponseField(results,"siteEUI"))},
               {"siteEUIwOnSite": Math.ceil($scope.getPropResponseField(results,"siteEUIwOnSite"))},

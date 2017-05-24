@@ -83,9 +83,9 @@ trait BaselineActions {
 
       Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
-      Baseline.getESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.getTargetESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.getMedianESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+     // Baseline.getESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+     // Baseline.getTargetESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+     // Baseline.getMedianESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       Baseline.percentBetterMedian.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.percentBetterTarget.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -148,9 +148,9 @@ trait BaselineActions {
 
       "propOutputList",
 
-      "actualES",
-      "targetES",
-      "medianES",
+      //"actualES",
+      //"targetES",
+      //"medianES",
 
       "percentBetterMedian",
       "percentBetterTarget",

@@ -371,18 +371,19 @@ define(['angular','./main'], function(angular) {
                         }
                     ],
                     MultiFamily: [
-                        {
-                            name: "numFloors",
-                            default: 3.0,
-                            type: "number",
-                            title: "Number of Floors",
-                            required: "USA"
-                        },
+
                         {
                             name: "numRezUnits",
                             default: $scope.round(1.2*GFA/1000,2),
                             type: "number",
                             title: "Number of Residential Units",
+                            required: "USA"
+                        },
+                        {
+                            name: "numUnitsLowRise1to4",
+                            default: $scope.round(1.2*GFA/1000,2),
+                            type: "number",
+                            title: "Number of Residential Units on Floors 1-4",
                             required: "USA"
                         },
                       /*{

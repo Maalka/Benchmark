@@ -41,7 +41,7 @@ define(['angular','./main'], function(angular) {
                 if(key === "blank"){
                     returnValue = {
                     'ok': false,
-                    'value': ""
+                    'value': "-"
                     };
                 }else {
                     returnValue = {
@@ -61,7 +61,7 @@ define(['angular','./main'], function(angular) {
             if(key === "blank"){
                 returnValue = {
                 'ok': false,
-                'value': ""
+                'value': "-"
                 };
             }else {
                 returnValue = {
