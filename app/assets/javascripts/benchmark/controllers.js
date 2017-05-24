@@ -430,7 +430,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.country = $scope.auxModel.country;
                     $scope.propTypes[i].propertyModel.targetToggle = $scope.auxModel.targetToggle;
                     $scope.propTypes[i].propertyModel.city = $scope.auxModel.city;
-                    $scope.propTypes[i].propertyModel.buildingName = $scope.auxModel.buildingName;
+                    $scope.propTypes[i].propertyModel.buildingName = ($scope.auxModel.buildingName) ? $scope.auxModel.buildingName : "Anonymous";
                     $scope.propTypes[i].propertyModel.postalCode = $scope.auxModel.postalCode;
                     $scope.propTypes[i].propertyModel.state = $scope.auxModel.state;
                     $scope.propTypes[i].propertyModel.HDD = $scope.auxModel.HDD;

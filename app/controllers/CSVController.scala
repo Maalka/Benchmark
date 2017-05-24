@@ -119,9 +119,9 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
 
 
         csvList.outputUnits match {
-          case "sq.m" => writer.writeRow(List("Building ID", "Baseline Score", "Baseline Site FF-EUI (kWh/m2/yr)", "Baseline Source FF-EUI (kWh/m2/yr)", "Baseline Site Energy (kWh/m2)", "Baseline Source Energy (kWh/m2)"))
-          case "sq.ft" => writer.writeRow(List("Building ID", "Baseline Score", "Baseline Site FF-EUI (kBtu/ft2/yr)", "Baseline Source FF-EUI (kBtu/ft2/yr)", "Baseline Site Energy (kBtu/ft2)", "Baseline Source Energy (kBtu/ft2)"))
-          case _ => writer.writeRow(List("Building ID", "Baseline Score", "Baseline Site FF-EUI", "Baseline Source FF-EUI", "Baseline Site Energy", "Baseline Source Energy"))
+          case "sq.m" => writer.writeRow(List("Building ID", "Baseline Score", "Baseline Site EUI (kWh/m2/yr)", "Baseline Source EUI (kWh/m2/yr)"))//, "Baseline Site Energy (kWh/m2)", "Baseline Source Energy (kWh/m2)"))
+          case "sq.ft" => writer.writeRow(List("Building ID", "Baseline Score", "Baseline Site EUI (kBtu/ft2/yr)", "Baseline Source EUI (kBtu/ft2/yr)"))//, "Baseline Site Energy (kBtu/ft2)", "Baseline Source Energy (kBtu/ft2)"))
+          case _ => writer.writeRow(List("Building ID", "Baseline Score", "Baseline Site EUI", "Baseline Source EUI"))//, "Baseline Site Energy", "Baseline Source Energy"))
         }
 
 
@@ -133,14 +133,11 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
               metrics \ "values" \\ "buildingName",
               metrics \ "values" \\ "medianZEPI",
               metrics \ "values" \\ "medianSiteEUI",
-              metrics \ "values" \\ "medianSourceEUI",
-              metrics \ "values" \\ "medianSiteEnergy",
-              metrics \ "values" \\ "medianSourceEnergy"
+              metrics \ "values" \\ "medianSourceEUI"
+              //metrics \ "values" \\ "medianSiteEnergy",
+              //metrics \ "values" \\ "medianSourceEnergy"
             ).flatten
-
-
             writer.writeRow(metricsList)
-            //println(metricsList)
           }
 
           case (_, _, _, Failure(metrics)) =>

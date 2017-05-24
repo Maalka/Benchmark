@@ -23,7 +23,7 @@ define(['angular','./main'], function(angular) {
             controller: ["$scope", function ($scope) {
 
 
-                $scope.buildingName =  $scope.model.name;
+                $scope.buildingName =  ($scope.model.name) ? $scope.model.name : "Anonymous";
                 
                 $scope.benchmark = $scope.$parent;
                 $scope.propFieldsRequired = false;

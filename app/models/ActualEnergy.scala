@@ -355,7 +355,7 @@ case class EUICalculator(parameters: JsValue) {
   }
 }
 
-case class  ConversionInfo(country:String, reportingUnits: String, buildingType:String, postalCode:String, state:String, buildingName:String)
+case class  ConversionInfo(country:String, reportingUnits: String, buildingType:String, postalCode:String, state:String, buildingName:Option[String])
 object ConversionInfo {
   implicit val conversionInfoReads: Reads[ConversionInfo] = Json.reads[ConversionInfo]
 }
