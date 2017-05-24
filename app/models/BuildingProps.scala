@@ -866,19 +866,20 @@ object ResidenceHall {
   * @param areaUnits
   */
 
-case class MultiFamily(numRezUnits:PosDouble, numBedrooms:PosDouble,
-                       numUnitsLowRise1to4: PosDouble, numUnitsMidRise5to9:PosDouble, numUnitsHighRise10plus: PosDouble,
+case class MultiFamily(numRezUnits:PosDouble, numBedrooms:PosDouble, numFloors:PosDouble,
+                       //numUnitsLowRise1to4: PosDouble, numUnitsMidRise5to9:PosDouble, numUnitsHighRise10plus: PosDouble,
                        HDD:PosDouble, CDD:PosDouble, GFA:PosDouble, areaUnits:String, country:String, buildingType:String) extends BaseLine {
 
 
+  val isLowRise:Double = if (numFloors.value < 5.0) 1 else 0
 
   val printed:String = "MultiFamily Building"
   val regressionSegments = Seq[RegressionSegment] (
     RegressionSegment(140.8, 0, 1), // regression constant
     RegressionSegment(52.57, 1.215, numRezUnits.value * 1000 / buildingSize),
     RegressionSegment(24.45, 1.238, numBedrooms.value/numRezUnits.value),
-    RegressionSegment(-18.76, 0, numUnitsLowRise1to4.value/(numUnitsLowRise1to4.value + numUnitsMidRise5to9.value
-      + numUnitsHighRise10plus.value)),
+    RegressionSegment(-18.76, 0, isLowRise),
+    //RegressionSegment(-18.76, 0, numUnitsLowRise1to4.value/(numUnitsLowRise1to4.value + numUnitsMidRise5to9.value + numUnitsHighRise10plus.value)),
     RegressionSegment(0.009617, 4233, HDD.value),
     RegressionSegment(0.01617, 1364, CDD.value)
 
