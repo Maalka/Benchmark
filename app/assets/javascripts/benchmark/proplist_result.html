@@ -2,6 +2,7 @@
 <div class="ui hidden divider"></div>
 <b style="padding-left: 0.5em;">BUILDING SUMMARY</b>
 <table class="ui basic inverted white table unstackable">
+
     <tbody>
         <tr>
             <td class="five wide">LOCATION</td>
@@ -30,27 +31,47 @@
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
             columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']"></tr>
 
+
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
             columns="['medianSiteEUI', 'percentBetterSiteEUI', 'siteEUI']"></tr>
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Source FF-EUI'" units="tableEUIUnits"
+        <tr ng-show="hasOnSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ On-Site RE'"
+            columns="['blank', 'blank', 'siteEUIwOnSite']"></tr>
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ On & Off-Site RE'"
+            columns="['blank', 'blank', 'siteEUIwOnAndOffSite']"></tr>
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ Off-Site RE'"
+            columns="['blank', 'blank', 'siteEUIwOffSite']"></tr>
+
+
+
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
             columns="['medianSourceEUI', 'percentBetterSourceEUI', 'sourceEUI']"></tr>
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Site Energy Use'" units="tableEnergyUnits"
+        <tr ng-show="hasOnSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ On-Site RE'"
+            columns="['blank', 'blank', 'sourceEUIwOnSite']"></tr>
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ On & Off-Site RE'"
+            columns="['blank', 'blank', 'sourceEUIwOnAndOffSite']"></tr>
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ Off-Site RE'"
+            columns="['blank', 'blank', 'sourceEUIwOffSite']"></tr>
+
+<!--        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Site Energy Use'" units="tableEnergyUnits"
             columns="['medianSiteEnergy', 'percentBetterSiteEnergy', 'totalSiteEnergy']"></tr>
 
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Source Energy Use'" units="tableEnergyUnits"
-            columns="['medianSourceEnergy', 'percentBetterSourceEnergy', 'totalSourceEnergy']"></tr>
+            columns="['medianSourceEnergy', 'percentBetterSourceEnergy', 'totalSourceEnergy']"></tr>-->
 
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Total GHG Emissions'" units="'Annual Metric Tons CO2e'"
             columns="['medianEmissions', 'percentBetterEmissions', 'totalEmissions']"></tr>
-        <tr>
+<!--        <tr>
             <td colspan=4>
                 <div style="font-size: smaller"><i>
                     <sup>*</sup> For the purpose of these calculations, all utility-provided energy consumption data is considered fossil fuel-based, unless a project-specific contract for green power procurement is in place.
                 </i></div>
             </td>
-        </tr>
+        </tr>-->
     </tbody>
 </table>
-

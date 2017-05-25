@@ -19,37 +19,39 @@ case class Emissions(parameters:JsValue) {
   val energyCalcs:EUICalculator = EUICalculator(parameters)
   val buildingProps:BuildingProperties = BuildingProperties(parameters)
 
+  def getTotalEmissions(energyList:EnergyList): Future[Double] = {
+    for {
+      direct <- getDirectEmissionList(energyList)
+      indirect <- getIndirectEmissionList(energyList)
+      avoided <- getAvoidedEmissionsSum
+    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum - avoided
+  }
 
-  def getDirectEmissionList(): Future[List[EmissionsTuple]] = {
+  //this does not subtract the avoided emissions due to renewables being present
+  def nonActualTotalEmissions(energyList:EnergyList): Future[Double] = {
+    for {
+      direct <- getDirectEmissionList(energyList)
+      indirect <- getIndirectEmissionList(energyList)
+    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum
+  }
+
+  def getDirectEmissionList(energyList:EnergyList): Future[List[EmissionsTuple]] = {
 
     for {
-      entries <- energyCalcs.getEnergyList
-      energyTuples <- computeEnergyAndType(entries)
+      energyTuples <- computeEnergyAndType(energyList)
       directFactors <- emissionsDirectFactors(energyTuples)
     } yield directFactors
 
   }
 
-  def getIndirectEmissionList(): Future[List[EmissionsTuple]] = {
+  def getIndirectEmissionList(energyList:EnergyList): Future[List[EmissionsTuple]] = {
 
     for {
-      entries <- energyCalcs.getEnergyList
-      energyTuples <- computeEnergyAndType(entries)
+      energyTuples <- computeEnergyAndType(energyList)
       eGridCode <- getEGrid()
       indirectFactors <- emissionsIndirectFactors(energyTuples, eGridCode)
-
     } yield indirectFactors
 
-  }
-
-
-  def getTotalEmissions(): Future[Double] = {
-
-    for {
-      direct <- getDirectEmissionList
-      indirect <- getIndirectEmissionList
-      avoided <- getAvoidedEmissionsSum
-    } yield direct.map(_.eValue).sum + indirect.map(_.eValue).sum - avoided
   }
 
 
@@ -99,6 +101,7 @@ case class Emissions(parameters:JsValue) {
     energyEntry.map {
       case a: (Energy, String) => {
         val emissionValue:Double = (a._2, buildingProps.country, buildingProps.state) match {
+
 
           //Direct Emissions USA
           case ("naturalGas", "USA", _) => 53.11
