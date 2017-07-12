@@ -11,29 +11,52 @@ import play.api.libs.functional.syntax._
 
 case class BuildingProperties(parameters: JsValue) {
 
-  val country:String = {
+  def country:String = {
     parameters.asOpt[ConversionInfo] match {
-      case Some(a) => a.country
+      case Some(a) => {
+        a.country match {
+          case Some(country:String) => country
+          case _ => throw new Exception("Could not retrieve Country")
+        }
+      }
+
       case _ => throw new Exception("Could not retrieve Country")
     }
   }
 
-  val reportingUnits:String = {
+  def reportingUnits:String = {
     parameters.asOpt[ConversionInfo] match {
-      case Some(a) => a.reportingUnits
+      case Some(a) => {
+        a.reportingUnits match {
+          case Some(reportingUnits:String) => reportingUnits
+          case None => "us"
+        }
+      }
+
       case _ => throw new Exception("Could not retrieve Reporting Units")
     }
   }
 
-  val postalCode: String = {
+  def postalCode: String = {
     parameters.asOpt[ConversionInfo] match {
-      case Some(a) => a.postalCode
-      case _ => throw new Exception("Could not retrieve PostalCode")
+      case Some(a) => {
+        a.postalCode match {
+          case Some(postalCode:String) => postalCode
+          case _ => throw new Exception("Could not retrieve Postal Code")
+        }
+      }
+      case _ => throw new Exception("Could not retrieve Postal Code")
+
     }
   }
-  val state: String = {
+  def state: String = {
     parameters.asOpt[ConversionInfo] match {
-      case Some(a) => a.state
+      case Some(a) => {
+        a.state match {
+          case Some(state:String) => state
+          case None => throw new Exception("Could not retrieve State")
+        }
+      }
       case _ => throw new Exception("Could not retrieve State")
     }
   }
@@ -187,7 +210,8 @@ case class BuildingProperties(parameters: JsValue) {
       case Some(StateBuildingType("ME", _)) => "Northeast"
 
       case Some(StateBuildingType(_, _)) => "Canada"
-      case _ => throw new Exception("Could not find Country and Building Type for Median EUI")
+      case _ => throw new Exception("Could not find State to identify country region")
+
 
     }
   }
