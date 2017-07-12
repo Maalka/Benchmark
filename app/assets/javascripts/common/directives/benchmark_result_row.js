@@ -19,6 +19,7 @@ define(['angular','./main'], function(angular) {
       }
       return returnValue;
     };
+
     return {
       restrict: 'A',
       scope: {
@@ -37,10 +38,17 @@ define(['angular','./main'], function(angular) {
           var returnValue;
           if(value !== undefined) {
               if(isNaN(value)) {
-                returnValue = {
-                'ok': false,
-                'value': "N/A"
-                };
+                if(key === "blank"){
+                    returnValue = {
+                    'ok': false,
+                    'value': "-"
+                    };
+                }else {
+                    returnValue = {
+                    'ok': false,
+                    'value': "N/A"
+                    };
+                }
               }else{
                 returnValue = {
                 'ok': true,
@@ -50,10 +58,17 @@ define(['angular','./main'], function(angular) {
 
           } else {
             $log.debug("Failed to fetch value (" + key + "): " + value);
-            returnValue = {
-              'ok': false,
-              'value': "N/A"
-            };
+            if(key === "blank"){
+                returnValue = {
+                'ok': false,
+                'value': "-"
+                };
+            }else {
+                returnValue = {
+                'ok': false,
+                'value': "N/A"
+                };
+            }
           }
           return returnValue;
         };

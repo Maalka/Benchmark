@@ -5,9 +5,12 @@
 <td ng-if="resultColumns[0].value === 'N/A'" class = "center aligned">{{ resultColumns[0].value}}</td>
 <td ng-if="resultColumns[0].value !== 'N/A'" class = "center aligned">{{ resultColumns[0].value | number: 0}}{{ append || ""}}</td>
 
+
 <td ng-if="resultColumns[1].value === 'N/A'" class = "center aligned">{{ resultColumns[1].value}}</td>
 <td ng-if="resultColumns[1].value !== 'N/A'" class = "center aligned">{{ resultColumns[1].value | number: 0}}{{ append || ""}}</td>
 
+
 <td ng-if="resultColumns[2].value === 'N/A'" class="ui yellow center aligned">{{ resultColumns[2].value}}</td>
 <td ng-if="resultColumns[2].value !== 'N/A'" class="ui yellow center aligned">{{ resultColumns[2].value | number: 0}}{{ append || ""}}</td>
+
 
