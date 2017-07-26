@@ -11,7 +11,8 @@ import play.api.libs.functional.syntax._
 
 case class BuildingProperties(parameters: JsValue) {
 
-  def country: String = {
+
+  def country:String = {
     parameters.asOpt[ConversionInfo] match {
       case Some(a) => {
         a.country match {
@@ -19,11 +20,13 @@ case class BuildingProperties(parameters: JsValue) {
           case _ => throw new Exception("Could not retrieve Country")
         }
       }
+
       case _ => throw new Exception("Could not retrieve Country")
     }
   }
 
-  def reportingUnits: String = {
+
+  def reportingUnits:String = {
     parameters.asOpt[ConversionInfo] match {
       case Some(a) => {
         a.reportingUnits match {
@@ -45,9 +48,9 @@ case class BuildingProperties(parameters: JsValue) {
         }
       }
       case _ => throw new Exception("Could not retrieve Postal Code")
+
     }
   }
-
 
   def state: String = {
     parameters.asOpt[ConversionInfo] match {
@@ -67,6 +70,7 @@ case class BuildingProperties(parameters: JsValue) {
         a.buildingName match {
           case Some(name:String) => name
           case None => "Building Name BLANK"
+          case None => "Anonymous"
         }
       }
       case _ => throw new Exception("Could not retrieve Building Name")
@@ -213,7 +217,6 @@ case class BuildingProperties(parameters: JsValue) {
 
       case Some(StateBuildingType(_, _)) => "Canada"
       case _ => throw new Exception("Could not find State to identify country region")
-
     }
   }
 }
@@ -391,8 +394,7 @@ sealed trait BaseLine {
         parameter match {
           case "numRezUnits" => PosDouble(roundAt(2)(1.2 * size / 1000))
           case "numUnitsLowRise1to4" => PosDouble(roundAt(2)(1.2 * size / 1000))
-          case "numUnitsMidRise5to9" => PosDouble(0.0)
-          case "numUnitsHighRise10plus" => PosDouble(0.0)
+          case "numRezUnits" => PosDouble(roundAt(2)(1.2 * size / 1000))
           case "numBedrooms" => PosDouble(roundAt(2)(1.4 * size / 1000))
         }
       }
@@ -1240,20 +1242,19 @@ object ResidenceHall {
   * @param numRezUnits
   * @param numBedrooms
   * @param numUnitsLowRise1to4
-  * @param numUnitsMidRise5to9
-  * @param numUnitsHighRise10plus
+  * @param numRezUnits
+  * @param HDD
+  * @param CDD
   * @param GFA
   * @param areaUnits
   */
+
 
 case class MultiFamily(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
                        HDD: Option[Double], CDD: Option[Double],
                        numRezUnits:Option[PosDouble],
                        numBedrooms:Option[PosDouble],
-                       numUnitsLowRise1to4: Option[PosDouble],
-                       numUnitsMidRise5to9:Option[PosDouble],
-                       numUnitsHighRise10plus: Option[PosDouble]) extends BaseLine {
-
+                       numUnitsLowRise1to4: Option[PosDouble]) extends BaseLine {
 
 
   val printed:String = "MultiFamily Building"
@@ -1261,11 +1262,9 @@ case class MultiFamily(GFA:PosDouble, areaUnits:String, country:String, building
     RegressionSegment(140.8, 0, 1), // regression constant
     RegressionSegment(52.57, 1.215, numRezUnits.getOrElse(fillPosDoubleDefaults("MultiFamily","numRezUnits",buildingSize)).value * 1000 / buildingSize),
     RegressionSegment(24.45, 1.238, numBedrooms.getOrElse(fillPosDoubleDefaults("MultiFamily","numBedrooms",buildingSize)).value/numRezUnits.getOrElse(fillPosDoubleDefaults("MultiFamily","numRezUnits",buildingSize)).value),
-    RegressionSegment(-18.76, 0, numUnitsLowRise1to4.getOrElse(fillPosDoubleDefaults("MultiFamily","numUnitsLowRise1to4",buildingSize)).value/(numUnitsLowRise1to4.getOrElse(fillPosDoubleDefaults("MultiFamily","numUnitsLowRise1to4",buildingSize)).value + numUnitsMidRise5to9.getOrElse(fillPosDoubleDefaults("MultiFamily","numUnitsMidRise5to9",buildingSize)).value
-      + numUnitsHighRise10plus.getOrElse(fillPosDoubleDefaults("MultiFamily","numUnitsHighRise10plus",buildingSize)).value)),
+    RegressionSegment(-18.76, 0, numUnitsLowRise1to4.getOrElse(fillPosDoubleDefaults("MultiFamily","numUnitsLowRise1to4",buildingSize)).value/numRezUnits.getOrElse(fillPosDoubleDefaults("MultiFamily","numRezUnits",buildingSize)).value),
     RegressionSegment(0.009617, 4233, HDD),
     RegressionSegment(0.01617, 1364, CDD)
-
   )
 }
 /**

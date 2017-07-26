@@ -7,13 +7,15 @@ package models
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import squants.energy.{Gigajoules, KBtus}
-import squants.space.{SquareMeters, SquareFeet, Area}
+import squants.space.{Area, SquareFeet, SquareMeters}
+
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 import play.api.libs.functional.syntax._
 import squants.energy._
 import EnergyConversions.EnergyNumeric
+import squants.energy
 
 import scala.util._
 import scala.util.control.NonFatal
@@ -21,13 +23,6 @@ import scala.util.control.NonFatal
 case class EUICalculator(parameters: JsValue) {
 
   implicit def boolOptToInt(b: Option[Boolean]): Int = if (b.getOrElse(false)) 1 else 0
-
-/*  val country:String = {
-    parameters.asOpt[ConversionInfo] match {
-      case Some(a) => a.country
-      case _ => throw new Exception("Could not retrieve Country")
-    }
-  }*/
 
   def country: String = {
     parameters.asOpt[ConversionInfo] match {
@@ -48,7 +43,7 @@ case class EUICalculator(parameters: JsValue) {
           case None => "us"
         }
       }
-      case _ => throw new Exception("Could not retrieve State")
+      case _ => throw new Exception("Could not retrieve Reporting Units")
     }
   }
 
@@ -84,7 +79,17 @@ case class EUICalculator(parameters: JsValue) {
     } yield siteRenewableEnergyList
   }
 
-  def getRenewableEnergyTotalbyType(entryList:List[EnergyTuple],entryType:String): Future[Double] = Future {
+  def getRenewableEnergyTotalbyType(entryList:List[EnergyTuple],entryType:String): Future[Energy] = Future {
+    entryType match {
+      case "onSite" => entryList.filterNot(_.energyName == "Off-Site Purchased").map(_.energyValue).sum
+      case "purchased" => entryList.filter(_.energyName == "Off-Site Purchased").map(_.energyValue).sum
+      case _ => entryList.map(_.energyValue).sum
+    }
+  }
+
+  //this function will output in double in expected units, while the function above will output in watt-hours
+  //in order to be used in downstreams arithmetic operations
+  def getRenewableEnergyTotalbyTypeOutput(entryList:List[EnergyTuple],entryType:String): Future[Double] = Future {
     entryType match {
       case "onSite" => entryList.filterNot(_.energyName == "Off-Site Purchased").map(_.energyValue.value).sum
       case "purchased" => entryList.filter(_.energyName == "Off-Site Purchased").map(_.energyValue.value).sum

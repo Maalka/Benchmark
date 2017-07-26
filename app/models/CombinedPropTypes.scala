@@ -149,7 +149,7 @@ case class CombinedPropTypes(params: JsValue) {
     }
   }
 
-
+/*
   def getGenericSourceEUI:Future[Energy] = {
     for {
       buildingList <- getBuildingList
@@ -164,6 +164,29 @@ case class CombinedPropTypes(params: JsValue) {
             }
           }
     } yield sourceEUI
+  }*/
+
+  def getGenericSourceEUI:Future[Energy] = {
+
+      for {
+        buildingList <- getBuildingList
+        areaWeights <- getAreaWeights
+        sourceEUIList <- Future.sequence{
+          buildingList.map{
+            case a: BaseLine => singlePropMedianSourceEUI(a)
+          }
+        }
+        weightedSourceEUI <- Future{(sourceEUIList,areaWeights).zipped.map {
+          case (a:Energy,b:Double) => a * b
+        }.sum}
+    } yield {
+        buildingProps.country match {
+          case "USA" => weightedSourceEUI in KBtus
+          case "Canada" => weightedSourceEUI in Gigajoules
+          case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
+        }
+      }
+
   }
 
   def getMedianNoGeneric(majorPropType:BaseLine):Future[Energy] =  {
@@ -321,6 +344,16 @@ case class CombinedPropTypes(params: JsValue) {
       buildingSizeRatios <- Future(buildingSizeList.map{_/buildingSizeSum})
       majorPropType <-  Future(buildingSizeRatios.map{ case a => a > 0.5 })
     } yield majorPropType
+  }
+
+  def getAreaWeights:Future[List[Double]] = {
+    for {
+      buildingSizeList <- Future.sequence(result.map(BuildingProperties(_).getBuilding).map(_.map{
+        case a:BaseLine => a.buildingSize}
+      ))
+      buildingSizeSum:Double <- Future(buildingSizeList.sum)
+      buildingSizeRatios <- Future(buildingSizeList.map{_/buildingSizeSum})
+    } yield buildingSizeRatios
   }
 
 

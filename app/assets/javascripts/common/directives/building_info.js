@@ -23,7 +23,7 @@ define(['angular','./main'], function(angular) {
             controller: ["$scope", function ($scope) {
 
 
-                $scope.buildingName =  $scope.model.name;
+                $scope.buildingName =  ($scope.model.name) ? $scope.model.name : "Anonymous";
                 
                 $scope.benchmark = $scope.$parent;
                 $scope.propFieldsRequired = false;
@@ -371,6 +371,7 @@ define(['angular','./main'], function(angular) {
                         }
                     ],
                     MultiFamily: [
+
                         {
                             name: "numRezUnits",
                             default: $scope.round(1.2*GFA/1000,2),
@@ -382,6 +383,13 @@ define(['angular','./main'], function(angular) {
                             name: "numUnitsLowRise1to4",
                             default: $scope.round(1.2*GFA/1000,2),
                             type: "number",
+                            title: "Number of Residential Units on Floors 1-4",
+                            required: "USA"
+                        },
+                      /*{
+                            name: "numUnitsLowRise1to4",
+                            default: $scope.round(1.2*GFA/1000,2),
+                            type: "number",
                             title: "Number of Low Rise (Floors 1-4) Units",
                             required: "USA"
                         },
@@ -389,7 +397,7 @@ define(['angular','./main'], function(angular) {
                             name: "numUnitsMidRise5to9",
                             default: 0.0,
                             type: "number",
-                            title: "Number of Low Rise (Floors 5-9) Units",
+                            title: "Number of Mid Rise (Floors 5-9) Units",
                             required: "USA"
                         },
                         {
@@ -398,7 +406,7 @@ define(['angular','./main'], function(angular) {
                             type: "number",
                             title: "Number of High Rise (Floors above 10) Units",
                             required: "USA"
-                        },
+                        },*/
                         {
                             name: "numBedrooms",
                             default: $scope.round(1.4*GFA/1000,2),
