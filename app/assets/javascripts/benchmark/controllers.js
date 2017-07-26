@@ -249,7 +249,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.baselineConstant = $scope.getBaselineConstant();
             $scope.scoreText = "Zero Score";
             $scope.scoreGraph = "Rating";
-            $scope.FFText = $sce.trustAsHtml('Site EUI*');
+            $scope.FFText = $sce.trustAsHtml('Site EUI');
             $scope.scoreUnits = $scope.isResidential  ? "0-130" : "0-100";
 
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
@@ -344,7 +344,9 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"medianEmissions": Math.ceil($scope.getPropResponseField(results,"medianEmissions"))},
 
               {"onSiteRenewableTotal": $scope.getPropResponseField(results,"onSiteRenewableTotal")},
-              {"offSitePurchasedTotal": $scope.getPropResponseField(results,"offSitePurchasedTotal")}
+              {"offSitePurchasedTotal": $scope.getPropResponseField(results,"offSitePurchasedTotal")},
+              {"siteEnergyALL": $scope.getPropResponseField(results,"siteEnergyALL")}
+
 
         ];
         return metricsTable;
