@@ -61,18 +61,18 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             var getTempZEPI = function() {
 
                 if(getBRByKey("siteEnergyALL")) {
-                    return getBRByKey("actualZEPI") ? getBRByKey("actualZEPI") : 0;
+                    return getBRByKey("actualZEPIwOnAndOffSite") ? getBRByKey("actualZEPIwOnAndOffSite") : 0;
                 }else{
-                    return getBRByKey("actualZEPI") ? getBRByKey("actualZEPI") : undefined;
+                    return getBRByKey("actualZEPIwOnAndOffSite") ? getBRByKey("actualZEPIwOnAndOffSite") : undefined;
                 }
             };
 
             var checkSiteEUI = function() {
 
                 if (getTempZEPI() !== undefined) {
-                    return getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : 0;
+                    return getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : 0;
                 }else {
-                    return getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : undefined;
+                    return getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : undefined;
                 }
             };
 
