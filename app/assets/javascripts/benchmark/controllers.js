@@ -314,12 +314,20 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"percentBetterMedian": Math.ceil($scope.getPropResponseField(results,"percentBetterMedian"))},
               {"percentBetterTarget": Math.ceil($scope.getPropResponseField(results,"percentBetterTarget"))},
               {"percentBetterActual": Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
+              {"percentBetterActualwOnSite": Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOnSite"))},
+              {"percentBetterActualwOffSite": Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOffSite"))},
+              {"percentBetterActualwOnandOffSite": Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOnandOffSite"))},
+
+
               {"percentBetterActualtoGoal": Math.ceil($scope.getPropResponseField(results,"percentBetterActualtoGoal"))},
               {"actualGoalBetter": Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"))},
 
               {"medianZEPI": $scope.getBaselineConstant()},
               {"percentBetterZEPI": Math.floor($scope.getPropResponseField(results,"percentBetterZEPI"))},
               {"actualZEPI": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActual"))},
+              {"actualZEPIwOnSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOnSite"))},
+              {"actualZEPIwOffSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOffSite"))},
+              {"actualZEPIwOnAndOffSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOnandOffSite"))},
 
               {"siteEUI": Math.ceil($scope.getPropResponseField(results,"siteEUI"))},
               {"siteEUIwOnSite": Math.ceil($scope.getPropResponseField(results,"siteEUIwOnSite"))},
