@@ -86,6 +86,12 @@ trait BaselineActions {
       Baseline.percentBetterMedian.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.percentBetterTarget.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.percentBetterActual.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.percentBetterActualwOnSite.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.percentBetterActualwOffSite.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.percentBetterActualwOnandOffSite.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+
+
       Baseline.actualGoalReduction.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.actualGoalBetter.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
@@ -133,6 +139,11 @@ trait BaselineActions {
       "percentBetterMedian",
       "percentBetterTarget",
       "percentBetterActual",
+      "percentBetterActualwOnSite",
+      "percentBetterActualwOffSite",
+      "percentBetterActualwOnandOffSite",
+
+
       "percentBetterActualtoGoal",
       "actualGoalBetter",
 
