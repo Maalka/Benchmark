@@ -76,6 +76,44 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 }
             };
 
+            var getEUIMetrics = function() {
+                if (getTempZEPI() !== undefined) {
+                    $scope.EE = getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : 0;
+                    $scope.OnSite = getBRByKey("siteEUIwOnSite") ? Math.ceil(getBRByKey("siteEUIwOnSite")) : 0;
+                    $scope.OffSite = getBRByKey("siteEUIwOffSite") ? Math.ceil(getBRByKey("siteEUIwOffSite")) : 0;
+                    $scope.OnAndOffSite = getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : 0;
+
+                    $scope.ZepiEE = getBRByKey("actualZEPI") ? Math.ceil(getBRByKey("actualZEPI")) : 0;
+                    $scope.ZepiOnSite = getBRByKey("actualZEPIwOnSite") ? Math.ceil(getBRByKey("actualZEPIwOnSite")) : 0;
+                    $scope.ZepiOffSite = getBRByKey("actualZEPIwOffSite") ? Math.ceil(getBRByKey("actualZEPIwOffSite")) : 0;
+                    $scope.ZepiOnAndOffSite = getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : 0;
+
+                }else {
+                    $scope.EE = getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : undefined;
+                    $scope.OnSite = getBRByKey("siteEUIwOnSite") ? Math.ceil(getBRByKey("siteEUIwOnSite")) : undefined;
+                    $scope.OffSite = getBRByKey("siteEUIwOffSite") ? Math.ceil(getBRByKey("siteEUIwOffSite")) : undefined;
+                    $scope.OnAndOffSite = getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : undefined;
+
+                    $scope.ZepiEE = getBRByKey("actualZEPI") ? Math.ceil(getBRByKey("actualZEPI")) : undefined;
+                    $scope.ZepiOnSite = getBRByKey("actualZEPIwOnSite") ? Math.ceil(getBRByKey("actualZEPIwOnSite")) : undefined;
+                    $scope.ZepiOffSite = getBRByKey("actualZEPIwOffSite") ? Math.ceil(getBRByKey("actualZEPIwOffSite")) : undefined;
+                    $scope.ZepiOnAndOffSite = getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : undefined;
+                }
+                return {
+                    EE:$scope.EE,
+                    OnSite:$scope.OnSite,
+                    OffSite:$scope.OffSite,
+                    OnAndOffSite:$scope.OnAndOffSite,
+
+                    ZepiEE:$scope.ZepiEE,
+                    ZepiOnSite:$scope.ZepiOnSite,
+                    ZepiOffSite:$scope.ZepiOffSite,
+                    ZepiOnAndOffSite:$scope.ZepiOnAndOffSite
+                };
+            };
+
+
+
             var percentBetter = function() {
                 if (getTempZEPI() !== undefined) {
                     return (checkSiteEUI() !== undefined) ? getPercentBetter(Math.ceil(checkSiteEUI())) : 0;
@@ -792,6 +830,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 if (br !== undefined) {
                   getHeight();
                   loadSeries(chart);
+                  console.log(getEUIMetrics());
                 }
               }
             });
