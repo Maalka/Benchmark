@@ -167,6 +167,12 @@
                         </select>
                     </div>
                 </div>
+                <div ng-if="propTypes.length > 0">
+                    <div class="ui divider "></div>
+                    <div class="field">
+                        <label >Selected Use Types(s):</label>
+                    </div>
+                </div>
                 <div class="field" ng-repeat="prop in propTypes">
                     <div class="inline fields" ng-if="!(propTypes.length > 0 && propTypes[0].buildingZone === 'residential' && auxModel.buildingZone == 'residential')">
                         <div class="sixteen wide field">
