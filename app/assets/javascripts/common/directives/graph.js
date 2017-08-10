@@ -70,9 +70,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             var checkSiteEUI = function() {
 
                 if (getTempZEPI() !== undefined) {
-                    return getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : 0;
+                    return getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : 0;
                 }else {
-                    return getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : undefined;
+                    return getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : undefined;
                 }
             };
 
@@ -285,8 +285,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 showInLegend: false
               });
 
-               var yOffset = 0;
-              if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 25) { 
+              var yOffset = 0;
+              if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 10) {
+                yOffset = 40;
+              }
+              else if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) >= 10 && round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 20) {
                 yOffset = 30;
               }
               var markers = createMarker("BASELINE", -40 - yOffset, $scope.baselineConstant, "maalkaFlag", "black", 'zepi', false)
@@ -335,7 +338,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
 
                 updateOrAddSeries(chart,
-                    createMarker("YOUR BUILDING", 17, getTempZEPI(),
+                    createMarker("YOUR BUILDING", 60, getTempZEPI(),
                       gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
                       "black", "axisLine", false)[0],false
                 );
@@ -346,6 +349,10 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     better ? green : red, "axisLine", true)[0], false
                 );*/
               }
+
+              updateOrAddSeries(chart,
+                  createMarker("euiScore", 160, $scope.baselineConstant, "maalkaFlag", "transparent", 'zepi',false)[0], false
+              );
             };
 
             var createGreenChartFeatures = function (remove) {
@@ -353,6 +360,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               if (remove) {
                 updateOrAddSeries(chart, {id: "componentLineLeft", remove: true}, false);
                 updateOrAddSeries(chart, {id: "componentLineRight", remove: true}, false);
+                //middle lines
+                updateOrAddSeries(chart, {id: "coomponentLineLowerBound", remove: true}, false);
+                updateOrAddSeries(chart, {id: "coomponentLineUpperBound", remove: true}, false);
                 updateOrAddSeries(chart, {id: "energyEfficiency", remove: true}, false);
                 updateOrAddSeries(chart, {id: "onsiteRenewable", remove: true}, false);
                 updateOrAddSeries(chart, {id: "greenPower", remove: true}, false);
@@ -392,7 +402,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     },
                     {
                       x: fixX($scope.baselineConstant),
-                      y: -75,
+                      y: -41,
                       marker: {
                         enabled: false
                       }
@@ -426,7 +436,62 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     }
                   ]),
                   animation: false,
-                  color: "#77aad4",
+                  color: "#transparent",
+                  arrow: true,
+                  showInLegend: false,
+                  enableMouseTracking: false
+                });
+
+                updateOrAddSeries(chart, { type: 'line',
+                  name: "componentLineLowerBound",
+                  id: 'componentLineLowerBound',
+                  data: sortData([
+                    {
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
+                              gap * (onsiteRenewable / total)),
+                      y: -40,
+                      marker: {
+                        enabled: false
+                      }
+                    },
+                    {
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
+                               gap * (onsiteRenewable / total)),
+                      y: -75,
+                      marker: {
+                        enabled: false
+                      }
+                    }
+                  ]),
+                  animation: false,
+                  color: "#595959 ",
+                  arrow: true,
+                  dashStyle: "ShortDot",
+                  showInLegend: false,
+                  enableMouseTracking: false
+                });
+
+               updateOrAddSeries(chart, { type: 'line',
+                  name: "componentLineUpperBound",
+                  id: 'componentLineUpperBound',
+                  data: sortData([
+                    {
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
+                      y: -40,
+                      marker: {
+                        enabled: false
+                      }
+                    },
+                    {
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
+                      y: -75,
+                      marker: {
+                        enabled: false
+                      }
+                    }
+                  ]),
+                  animation: false,
+                  color: "#595959 ",
                   arrow: true,
                   dashStyle: "ShortDot",
                   showInLegend: false,
@@ -441,14 +506,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   data: sortData([
                     {
                       x: fixX($scope.baselineConstant),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
                     },
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
@@ -468,7 +533,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   data: sortData([
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
@@ -476,7 +541,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total)),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
@@ -497,7 +562,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total)),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
@@ -506,7 +571,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total) -
                         gap * (greenPower / total)),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
@@ -527,7 +592,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               if (x !== undefined && !isNaN(x) && title !== undefined) {
                 var text = "";
                 if (title === "YOUR BUILDING") {
-                  text = "Score <b>" + round(x) + "</b><br>FF-EUI <b>" + checkSiteEUI() + "</b><br><b>"+title + "</b>";
+                  text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b>" + title + "</b>";
+                } else if (title === "euiScore") {
+                  text = "EUI <br> Zero Score ";
                 } else if (title === "BASELINE") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("medianSiteEUI")) + "</b> FF-EUI" + "<br><b>" + $scope.baselineConstant + "</b> Score";
                 } else if (title === "PROGRESS PERCENT") {

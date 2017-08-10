@@ -38,7 +38,7 @@
                                         ng-options="item.id as item.name for item in geographicProperties.country"
                                         required
                                         name="country">
-                                        <option value="">Select</option>
+                                    <option value="">Select</option>
                                 </select>
                             </div>
                         </div>
@@ -50,14 +50,14 @@
                         <div class="inline fields required">
                             <div class="nine wide field">
                                 <input type="text" ng-model="auxModel.city"
-                                     required name="city" placeholder="City">
+                                       required name="city" placeholder="City">
                             </div>
                             <div class="seven wide field">
                                 <select class="ui dropdown search"
-                                    ng-model="auxModel.state"
-                                    ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: auxModel.country}"
-                                    required
-                                    name="state">
+                                        ng-model="auxModel.state"
+                                        ng-options="item.id as item.name for item in geographicProperties.state | filter: {filter_id: auxModel.country}"
+                                        required
+                                        name="state">
                                     <option value="">Select</option>
                                 </select>
                             </div>
@@ -70,7 +70,7 @@
                         <div class="inline fields">
                             <div class="sixteen wide field required">
                                 <input type="text" ng-model="auxModel.postalCode" ng-blur="postalCodeCheck()"
-                                     required name="postalCode" placeholder="Postal Code">
+                                       required name="postalCode" placeholder="Postal Code">
                             </div>
                         </div>
                     </div>
@@ -93,10 +93,10 @@
                             </div>
                             <div class="two wide field">
                                 <label>CDD</label>
-                            </div>                    
+                            </div>
                             <div class="four wide field required">
                                 <input type="number" ng-model="auxModel.CDD"
-                               required name="CDD" min="0">
+                                       required name="CDD" min="0">
                             </div>
                         </div>
                     </div>
@@ -108,14 +108,14 @@
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" id="project-cb-new" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"
-                               ng-value='true'>
+                                   ng-value='true'>
                             <label for='project-cb-new'>New construction</label>
                         </div>
                     </div>
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" id="project-cb-existing" ng-model="auxModel.newConstruction" ng-init="auxModel.newConstruction=false"
-                               ng-value='false'>
+                                   ng-value='false'>
                             <label for="project-cb-existing">Existing Building</label>
                         </div>
                     </div>
@@ -160,6 +160,7 @@
                         <label>{{propText}}</label>
                         <select class="ui dropdown search"
                                 dropdown
+                                reset = "auxModel.resetBuildingType"
                                 ng-model="auxModel.buildingType"
                                 ng-options="item as item.name for item in buildingProperties.buildingType[auxModel.buildingZone] | orderBy : 'name'"
                                 name="buildingType">
@@ -167,19 +168,14 @@
                         </select>
                     </div>
                 </div>
-                <div class="field" ng-repeat="prop in propTypes">
-                    <div class="inline fields" ng-if="!(propTypes.length > 0 && propTypes[0].buildingZone === 'residential' && auxModel.buildingZone == 'residential')">
-                        <div class="sixteen wide field">
-                            <label>{{propText}}</label>
-                            <select class="ui dropdown search"
-                                    dropdown
-                                    ng-model="auxModel.buildingType"
-                                    ng-options="item as item.name for item in buildingProperties.buildingType[auxModel.buildingZone] | orderBy : 'name'"
-                                    name="buildingType">
-                                <option value="">Select</option>
-                            </select>
-                        </div>
+                <div ng-if="propTypes.length > 0">
+                    <div class="ui divider "></div>
+                    <div class="field">
+                        <label >Selected Use Types(s):</label>
                     </div>
+                </div>
+                <div class="field" ng-repeat="prop in propTypes">
+                    <h3 class="ui header">{{prop.name}}</h3>
                 </div>
             </div>
             <div ng-repeat="prop in propTypes" ng-class="{'page-break-after': ($index + 1) % 3 == 0}">
@@ -324,11 +320,11 @@
                     sourced from off-site, either through a direct
                     connection to a utility or through transportation to the
                     site.
-                <div class="tooltip">
-                    <sup><i class="blue circle info icon"></i></sup>
-                    <span class="tooltiptext">For the purposes of this calculation, all utility-provided energy consumption data should be considered fossil fuel-based, unless a project-specific contract for green power procurement is in place.</span>
+                    <div class="tooltip">
+                        <sup><i class="blue circle info icon"></i></sup>
+                        <span class="tooltiptext">For the purposes of this calculation, all utility-provided energy consumption data should be considered fossil fuel-based, unless a project-specific contract for green power procurement is in place.</span>
+                    </div>
                 </div>
-            </div>
                 </p>
                 <div>
                     <div class="ui grid">
@@ -357,18 +353,18 @@
                         </div>
                         <div ng-repeat-start="energyEntry in energies" class="five wide column">
                             <div class="field">
-                                 <select class="ui dropdown"
-                                    ng-model="energyEntry.energyType"
-                                    ng-options="item as item.name for item in energyProperties.energyType track by item.name">
+                                <select class="ui dropdown"
+                                        ng-model="energyEntry.energyType"
+                                        ng-options="item as item.name for item in energyProperties.energyType track by item.name">
                                     <option value="">Select</option>
                                 </select>
                             </div>
                         </div>
                         <div class="five wide column">
                             <div class="field">
-                                 <select class="ui dropdown"
-                                    ng-model="energyEntry.energyUnits"
-                                    ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: energyEntry.energyType.id}">
+                                <select class="ui dropdown"
+                                        ng-model="energyEntry.energyUnits"
+                                        ng-options="item.id as item.name for item in energyProperties.energyUnits | filter: {filter_id: energyEntry.energyType.id}">
                                     <option value="">Select</option>
                                 </select>
                             </div>
@@ -379,15 +375,15 @@
                             </div>
                         </div>
                         <div ng-repeat-end class="one wide column">
-                            <div class="ui large labeled button" 
-                                ng-click="removeRow($index)" 
-                                style="margin-top:.4em;">
+                            <div class="ui large labeled button"
+                                 ng-click="removeRow($index)"
+                                 style="margin-top:.4em;">
                                 <i class="minus red circle icon"></i>
                             </div>
                         </div>
 
                         <div class="ui fifteen wide column right aligned">
-                           <label class="design-label">add another entry</label>
+                            <label class="design-label">add another entry</label>
                         </div>
                         <div class="one wide column">
                             <div class="ui large labeled button" ng-click="addEnergiesRow()" style="margin-top:.4em;">
@@ -399,7 +395,7 @@
             </div>
 
             <h3 class="ui header" ng-if="auxModel.newConstruction === false"><i class="fa fa-sun-o icon" aria-hidden="true">
-                </i>Annual Energy Generation</h3>
+            </i>Annual Energy Generation</h3>
             <div class="ui segment energy-entry" ng-if="auxModel.newConstruction === false">
                 <p>
                     Enter the annual energy generation for your building
