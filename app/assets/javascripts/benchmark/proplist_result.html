@@ -24,48 +24,237 @@
             <td class="ui yellow center aligned three wide"><b>Your Building</b></td>
         </tr>
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
-            append = "'%'" units=""
-            columns="['percentBetterMedian', 'percentBetterTarget', 'percentBetterActual']"></tr>
+        <!--    <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
+                append = "'%'" units=""
+                columns="['percentBetterMedian', 'percentBetterTarget', 'percentBetterActual']" bolding="true"></tr>
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
-            columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']"></tr>
-
-
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
-            columns="['medianSiteEUI', 'percentBetterSiteEUI', 'siteEUI']"></tr>
-
-        <tr ng-show="hasOnSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ On-Site RE'"
-            columns="['blank', 'blank', 'siteEUIwOnSite']"></tr>
-
-        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ On & Off-Site RE'"
-            columns="['blank', 'blank', 'siteEUIwOnAndOffSite']"></tr>
-
-        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ Off-Site RE'"
-            columns="['blank', 'blank', 'siteEUIwOffSite']"></tr>
+            <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
+                columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']" bolding="true"></tr>-->
 
 
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
-            columns="['medianSourceEUI', 'percentBetterSourceEUI', 'sourceEUI']"></tr>
+        <!--EUI % Reduction from Baseline 4 combinations for bolding -->
 
-        <tr ng-show="hasOnSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ On-Site RE'"
-            columns="['blank', 'blank', 'sourceEUIwOnSite']"></tr>
+        <!--ONLY EUI % Reduction from Baseline: True Bold for EUI % Reduction from Baseline-->
 
-        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ On & Off-Site RE'"
-            columns="['blank', 'blank', 'sourceEUIwOnAndOffSite']"></tr>
+        <tr ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
+            append = "'%'" units="" columns="['percentBetterMedian', 'percentBetterTarget', 'percentBetterActual']" bolding="true"></tr>
 
-        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'w/ Off-Site RE'"
-            columns="['blank', 'blank', 'sourceEUIwOffSite']"></tr>
+        <!--HAS RENEWABLES NO OFFSITE: True Bold for RENEWABLES -->
 
-<!--        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Site Energy Use'" units="tableEnergyUnits"
-            columns="['medianSiteEnergy', 'percentBetterSiteEnergy', 'totalSiteEnergy']"></tr>
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
+            append = "'%'" units="" columns="['percentBetterMedian', 'percentBetterTarget', 'blank']" bolding="false"></tr>
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Source Energy Use'" units="tableEnergyUnits"
-            columns="['medianSourceEnergy', 'percentBetterSourceEnergy', 'totalSourceEnergy']"></tr>-->
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'percentBetterActual']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+            columns="['blank', 'blank', 'percentBetterActualwOnSite']" bolding="true"></tr>
+
+        <!--HAS RENEWABLES NO ON-SITE: True Bold for OFFSITE-->
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
+            append = "'%'" units="" columns="['percentBetterMedian', 'percentBetterTarget', 'blank']" bolding="false"></tr>
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'percentBetterActual']" bolding="false"></tr>
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
+            columns="['blank', 'blank', 'percentBetterActualwOffSite']" bolding="true"></tr>
+
+        <!--HAS RENEWABLES AND ON-SITE: True Bold for ON & OFF-SITE-->
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
+            append = "'%'" units="" columns="['percentBetterMedian', 'percentBetterTarget', 'blank']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'percentBetterActual']" bolding="false"></tr>
+
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+            columns="['blank', 'blank', 'percentBetterActualwOnSite']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
+            columns="['blank', 'blank', 'percentBetterActualwOnandOffSite']" bolding="true"></tr>
+
+
+
+
+
+
+
+
+
+
+
+
+         <!--ZERO SCORE 4 combinations for bolding -->
+
+         <!--ONLY ZERO SCORE: True Bold for Zero Score-->
+
+        <tr ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
+            columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']" bolding="true"></tr>
+
+        <!--HAS RENEWABLES NO OFFSITE: True Bold for RENEWABLES-->
+
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
+            columns="['medianZEPI', 'percentBetterZEPI', 'blank']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'actualZEPI']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+            columns="['blank', 'blank', 'actualZEPIwOnSite']" bolding="true"></tr>
+
+        <!--HAS RENEWABLES NO ON-SITE: True Bold for OFFSITE -->
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
+            columns="['medianZEPI', 'percentBetterZEPI', 'blank']" bolding="false"></tr>
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'actualZEPI']" bolding="false"></tr>
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
+            columns="['blank', 'blank', 'actualZEPIwOffSite']" bolding="true"></tr>
+
+       <!--HAS RENEWABLES AND ON-SITE: True Bold for ON & OFF-SITE -->
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
+            columns="['medianZEPI', 'percentBetterZEPI', 'blank']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'actualZEPI']" bolding="false"></tr>
+
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+            columns="['blank', 'blank', 'actualZEPIwOnSite']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
+            columns="['blank', 'blank', 'actualZEPIwOnAndOffSite']" bolding="true"></tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- SITE EUI 4 combinations for bolding -->
+
+        <!-- ONLY SITE EUI: True Bold for SITE EUI-->
+
+        <tr ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
+            columns="['medianSiteEUI', 'percentBetterSiteEUI', 'siteEUI']" bolding="true"></tr>
+
+        <!-- HAS RENEWABLES NO OFFSITE: True Bold for RENEWABLES -->
+
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
+            columns="['medianSiteEUI', 'percentBetterSiteEUI', 'blank']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'siteEUI']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+            columns="['blank', 'blank', 'siteEUIwOnSite']" bolding="true"></tr>
+
+        <!-- HAS RENEWABLES NO ON-SITE: True Bold for OFFSITE -->
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
+            columns="['medianSiteEUI', 'percentBetterSiteEUI', 'blank']" bolding="false"></tr>
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'siteEUI']" bolding="false"></tr>
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
+            columns="['blank', 'blank', 'siteEUIwOffSite']" bolding="true"></tr>
+
+        <!-- HAS RENEWABLES AND ON-SITE: True Bold for ON & OFF-SITE -->
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
+            columns="['medianSiteEUI', 'percentBetterSiteEUI', 'blank']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'siteEUI']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+            columns="['blank', 'blank', 'siteEUIwOnSite']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
+            columns="['blank', 'blank', 'siteEUIwOnAndOffSite']" bolding="true"></tr>
+
+
+
+
+        <!-- SOURCE EUI 4 combinations for bolding -->
+
+        <!-- ONLY SOURCE EUI: True Bold for SOURCE EUI-->
+
+        <tr ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
+            columns="['medianSourceEUI', 'percentBetterSourceEUI', 'sourceEUI']" bolding="true"></tr>
+
+        <!-- HAS RENEWABLES NO OFFSITE: True Bold for RENEWABLES -->
+
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
+            columns="['medianSourceEUI', 'percentBetterSourceEUI', 'blank']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'sourceEUI']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+            columns="['blank', 'blank', 'sourceEUIwOnSite']" bolding="true"></tr>
+
+        <!-- HAS RENEWABLES NO ON-SITE: True Bold for OFFSITE -->
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
+            columns="['medianSourceEUI', 'percentBetterSourceEUI', 'blank']" bolding="false"></tr>
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'sourceEUI']" bolding="false"></tr>
+
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
+            columns="['blank', 'blank', 'sourceEUIwOffSite']" bolding="true"></tr>
+
+        <!-- HAS RENEWABLES AND ON-SITE: True Bold for ON & OFF-SITE -->
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
+            columns="['medianSourceEUI', 'percentBetterSourceEUI', 'blank']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+            columns="['blank', 'blank', 'sourceEUI']" bolding="false"></tr>
+
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+            columns="['blank', 'blank', 'sourceEUIwOnSite']" bolding="false"></tr>
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
+            columns="['blank', 'blank', 'sourceEUIwOnAndOffSite']" bolding="true"></tr>
+
+
+
+
 
         <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Total GHG Emissions'" units="'Annual Metric Tons CO2e'"
-            columns="['medianEmissions', 'percentBetterEmissions', 'totalEmissions']"></tr>
+            columns="['medianEmissions', 'percentBetterEmissions', 'totalEmissions']" bolding="true"></tr>
 <!--        <tr>
             <td colspan=4>
                 <div style="font-size: smaller"><i>

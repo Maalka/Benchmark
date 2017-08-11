@@ -61,20 +61,78 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             var getTempZEPI = function() {
 
                 if(getBRByKey("siteEnergyALL")) {
-                    return getBRByKey("actualZEPI") ? getBRByKey("actualZEPI") : 0;
+                    return getBRByKey("actualZEPIwOnAndOffSite") ? getBRByKey("actualZEPIwOnAndOffSite") : 0;
                 }else{
-                    return getBRByKey("actualZEPI") ? getBRByKey("actualZEPI") : undefined;
+                    return getBRByKey("actualZEPIwOnAndOffSite") ? getBRByKey("actualZEPIwOnAndOffSite") : undefined;
                 }
             };
 
             var checkSiteEUI = function() {
 
                 if (getTempZEPI() !== undefined) {
-                    return getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : 0;
+                    return getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : 0;
                 }else {
-                    return getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : undefined;
+                    return getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : undefined;
                 }
             };
+
+            var getEUIMetrics = function() {
+                if (getTempZEPI() !== undefined) {
+                    $scope.EE = getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : 0;
+                    $scope.OnSite = getBRByKey("siteEUIwOnSite") ? Math.ceil(getBRByKey("siteEUIwOnSite")) : 0;
+                    $scope.OffSite = getBRByKey("siteEUIwOffSite") ? Math.ceil(getBRByKey("siteEUIwOffSite")) : 0;
+                    $scope.OnAndOffSite = getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : 0;
+
+                    $scope.ZepiEE = getBRByKey("actualZEPI") ? Math.ceil(getBRByKey("actualZEPI")) : 0;
+                    $scope.ZepiOnSite = getBRByKey("actualZEPIwOnSite") ? Math.ceil(getBRByKey("actualZEPIwOnSite")) : 0;
+                    $scope.ZepiOffSite = getBRByKey("actualZEPIwOffSite") ? Math.ceil(getBRByKey("actualZEPIwOffSite")) : 0;
+                    $scope.ZepiOnAndOffSite = getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : 0;
+
+                }else {
+                    $scope.EE = getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : undefined;
+                    $scope.OnSite = getBRByKey("siteEUIwOnSite") ? Math.ceil(getBRByKey("siteEUIwOnSite")) : undefined;
+                    $scope.OffSite = getBRByKey("siteEUIwOffSite") ? Math.ceil(getBRByKey("siteEUIwOffSite")) : undefined;
+                    $scope.OnAndOffSite = getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : undefined;
+
+                    $scope.ZepiEE = getBRByKey("actualZEPI") ? Math.ceil(getBRByKey("actualZEPI")) : undefined;
+                    $scope.ZepiOnSite = getBRByKey("actualZEPIwOnSite") ? Math.ceil(getBRByKey("actualZEPIwOnSite")) : undefined;
+                    $scope.ZepiOffSite = getBRByKey("actualZEPIwOffSite") ? Math.ceil(getBRByKey("actualZEPIwOffSite")) : undefined;
+                    $scope.ZepiOnAndOffSite = getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : undefined;
+                }
+                return {
+                    EE:$scope.EE,
+                    OnSite:$scope.OnSite,
+                    OffSite:$scope.OffSite,
+                    OnAndOffSite:$scope.OnAndOffSite,
+
+                    ZepiEE:$scope.ZepiEE,
+                    ZepiOnSite:$scope.ZepiOnSite,
+                    ZepiOffSite:$scope.ZepiOffSite,
+                    ZepiOnAndOffSite:$scope.ZepiOnAndOffSite
+                };
+            };
+
+            var getEEMarkerX = function() {
+               var EEgap = $scope.baselineConstant - getTempZEPI();
+
+               var totalPercentReduction = getBRByKey("percentBetterActual");
+
+               var totalSiteEnergy = getBRByKey("siteEnergyALL")? getBRByKey("siteEnergyALL") : 0;
+               var onsite = getBRByKey("onSiteRenewableTotal") ? getBRByKey("onSiteRenewableTotal") : 0;
+               var purchased = getBRByKey("offSitePurchasedTotal") ? getBRByKey("offSitePurchasedTotal") : 0;
+               var totalCombinedEnergy = totalSiteEnergy + onsite + purchased;
+
+               var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
+
+               var total = totalPercentReduction;
+               var EEx = $scope.baselineConstant - EEgap * (energyEfficiency/total);
+               var ONx = $scope.baselineConstant - EEgap * (energyEfficiency/total) - EEgap * ((total * onsite / totalCombinedEnergy) / total);
+
+               return {
+                 EEx: EEx,
+                 ONx: ONx
+               };
+           };
 
             var percentBetter = function() {
                 if (getTempZEPI() !== undefined) {
@@ -182,6 +240,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   showInLegend: false
                 }, false);
 
+
               updateOrAddSeries(chart, { type: 'column',
                   id: 'lines',
                   name: 'lines',
@@ -285,8 +344,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 showInLegend: false
               });
 
-               var yOffset = 0;
-              if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 25) { 
+              var yOffset = 0;
+              if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 10) {
+                yOffset = 40;
+              }
+              else if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) >= 10 && round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 20) {
                 yOffset = 30;
               }
               var markers = createMarker("BASELINE", -40 - yOffset, $scope.baselineConstant, "maalkaFlag", "black", 'zepi', false)
@@ -331,14 +393,32 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   enableMouseTracking: false
                 });*/
 
-                var gap = (getTempZEPI() !== undefined) ? $scope.baselineConstant - getTempZEPI() : 0;
+               //var gap = (getTempZEPI() !== undefined) ? $scope.baselineConstant - getTempZEPI() : 0;
+               var gap = (getTempZEPI() !== undefined) ? getEEMarkerX().ONx - getTempZEPI() : 0;
+               var cont = $scope.baselineConstant - getTempZEPI();
+               var on = getEEMarkerX().ONx - getTempZEPI();
+                console.log("Scope - ZEPI " + cont);
+                console.log("ONX - ZEPI" + on);
+//                var gap;
+//                if (getTempZEPI() !== undefined) {
+//                    gap = getEEMarkerX().ONx - getTempZEPI();
+//                } else if (getTempZEPI() !== undefined && getEEMarkerX().ONx === undefined) {
+//                    gap = getEEMarkerX().EEx-getTempZEPI();
+//                } else {
+//                    gap = 0;
+//                }
+
 
 
                 updateOrAddSeries(chart,
-                    createMarker("YOUR BUILDING", 17, getTempZEPI(),
-                      gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
+                    createMarker( "YOUR BUILDING", 60, getTempZEPI(),
+                      gap > 10 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
                       "black", "axisLine", false)[0],false
                 );
+
+                //createMarker(gap > 5 ? "YOUR BUILDING": "YB", 60, getTempZEPI(),
+
+
                 /*var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getTempZEPI());
                 updateOrAddSeries(chart,
                     createMarker("PROGRESS PERCENT", 17, getBRByKey("percentBetterZEPI"),
@@ -346,13 +426,52 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     better ? green : red, "axisLine", true)[0], false
                 );*/
               }
+
+              //Your Building Scores marker
+//              updateOrAddSeries(chart,
+//                  createMarker("YourScores", 60, getTempZEPI(), "maalkaFlag", "transparent", 'axisLine',false)[0], false
+//              );
+
+
+              var endGap = (getEEMarkerX().EEx !== undefined && getEEMarkerX().ONx !== undefined) ? $scope.baselineConstant - getEEMarkerX().EEx : 0;
+
+              //Score text marker
+              updateOrAddSeries(chart,
+                  createMarker("scoreText", 160, $scope.baselineConstant, endGap < 5 ? "maalkaFlagLeftBottom": "maalkaFlag", "transparent", 'zepi',false)[0], false
+              );
+
+
+//              var gap = 0;
+//              if (getEEMarkerX().ONx !== undefined) {
+//
+//                    gap = $scope.baselineConstant - getEEMarkerX().EEx
+//
+//              }
+
+              var componentsGap = (getEEMarkerX().EEx !== undefined && getEEMarkerX().ONx !== undefined) ? getEEMarkerX().EEx - getEEMarkerX().ONx : 0;
+//              var eoGap = getEEMarkerX().EEx - getEEMarkerX().ONx;
+//              console.log ("e o gap " + eoGap);
+
+              updateOrAddSeries(chart,
+                  createMarker("EEscores", 60, getEEMarkerX().EEx, "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
+              );
+
+
+              updateOrAddSeries(chart,
+                  createMarker("ONScores", 60, getEEMarkerX().ONx, componentsGap < 5 ? "maalkaFlagBottom": "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
+              );
+
             };
+
+
 
             var createGreenChartFeatures = function (remove) {
 
               if (remove) {
                 updateOrAddSeries(chart, {id: "componentLineLeft", remove: true}, false);
                 updateOrAddSeries(chart, {id: "componentLineRight", remove: true}, false);
+                updateOrAddSeries(chart, {id: "ONcomponentLine", remove: true}, false);
+                updateOrAddSeries(chart, {id: "EEcomponentLine", remove: true}, false);
                 updateOrAddSeries(chart, {id: "energyEfficiency", remove: true}, false);
                 updateOrAddSeries(chart, {id: "onsiteRenewable", remove: true}, false);
                 updateOrAddSeries(chart, {id: "greenPower", remove: true}, false);
@@ -392,7 +511,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     },
                     {
                       x: fixX($scope.baselineConstant),
-                      y: -75,
+                      y: -41,
                       marker: {
                         enabled: false
                       }
@@ -426,7 +545,65 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     }
                   ]),
                   animation: false,
-                  color: "#77aad4",
+                  color: "#transparent",
+                  arrow: true,
+                  showInLegend: false,
+                  enableMouseTracking: false
+                });
+
+                updateOrAddSeries(chart, { type: 'line',
+                  name: "ONcomponentLine",
+                  id: 'ONcomponentLine',
+                  data: sortData([
+
+                    {
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
+                               gap * (onsiteRenewable / total)),
+                      y: -40,
+                      marker: {
+                        enabled: false
+                      }
+                    },
+                    {
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
+                               gap * (onsiteRenewable / total)),
+                      y: -75,
+                      marker: {
+                        enabled: false
+                      }
+                    }
+
+                  ]),
+                  animation: false,
+                  color: "#595959 ",
+                  arrow: true,
+                  dashStyle: "ShortDot",
+                  showInLegend: false,
+                  enableMouseTracking: false
+                });
+
+               updateOrAddSeries(chart, { type: 'line',
+                  name: "EEcomponentLine",
+                  id: 'EEcomponentLine',
+                  data: sortData([
+                    {
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
+                      y: -40,
+
+                      marker: {
+                        enabled: false
+                      }
+                    },
+                    {
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
+                      y: -75,
+                      marker: {
+                        enabled: false
+                      }
+                    }
+                  ]),
+                  animation: false,
+                  color: "#595959 ",
                   arrow: true,
                   dashStyle: "ShortDot",
                   showInLegend: false,
@@ -441,14 +618,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   data: sortData([
                     {
                       x: fixX($scope.baselineConstant),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
                     },
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
@@ -468,7 +645,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   data: sortData([
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
@@ -476,7 +653,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total)),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
@@ -497,7 +674,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total)),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
@@ -506,7 +683,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
                         gap * (onsiteRenewable / total) -
                         gap * (greenPower / total)),
-                      y: -65,
+                      y: -30,
                       marker: {
                         enabled: false
                       }
@@ -527,13 +704,22 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               if (x !== undefined && !isNaN(x) && title !== undefined) {
                 var text = "";
                 if (title === "YOUR BUILDING") {
-                  text = "Score <b>" + round(x) + "</b><br>FF-EUI <b>" + checkSiteEUI() + "</b><br><b>"+title + "</b>";
+                  text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b>" + title + "</b>";
+
+//                else if (title === "YourScores") {
+//                  text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b>";
+                } else if (title === "scoreText") {
+                  text = "EUI <br> Zero Score ";
                 } else if (title === "BASELINE") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("medianSiteEUI")) + "</b> FF-EUI" + "<br><b>" + $scope.baselineConstant + "</b> Score";
                 } else if (title === "PROGRESS PERCENT") {
                   text = round(percentBetter()) + "%";
-                } if (title === "TARGET") {
+                } else if (title === "TARGET") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> FF-EUI" + "<br><b>" + round(x) + "</b> Score";
+                } else if (title === "EEscores") {
+                  text = "<b>" + getEUIMetrics().EE + "</b><br><b>" + getEUIMetrics().ZepiEE + "</b><br><br><b>";
+                } else if (title === "ONScores") {
+                  text = "<b>" + getEUIMetrics().OnSite + "</b><br><b>" + getEUIMetrics().ZepiOnSite + "</b><br><br><b>";
                 }
                 var textColor;
                 if (onlyTitle) {
@@ -792,6 +978,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 if (br !== undefined) {
                   getHeight();
                   loadSeries(chart);
+                  console.log(getEUIMetrics());
                 }
               }
             });
