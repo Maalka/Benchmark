@@ -360,6 +360,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
             };
 
+
             var createExtendedChartFeatures = function (remove) {
               if (remove) {
                 //updateOrAddSeries(chart, { "id": "progressLine", "remove": true}, false);
@@ -395,28 +396,12 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
                //var gap = (getTempZEPI() !== undefined) ? $scope.baselineConstant - getTempZEPI() : 0;
                var gap = (getTempZEPI() !== undefined) ? getEEMarkerX().ONx - getTempZEPI() : 0;
-               var cont = $scope.baselineConstant - getTempZEPI();
-               var on = getEEMarkerX().ONx - getTempZEPI();
-                console.log("Scope - ZEPI " + cont);
-                console.log("ONX - ZEPI" + on);
-//                var gap;
-//                if (getTempZEPI() !== undefined) {
-//                    gap = getEEMarkerX().ONx - getTempZEPI();
-//                } else if (getTempZEPI() !== undefined && getEEMarkerX().ONx === undefined) {
-//                    gap = getEEMarkerX().EEx-getTempZEPI();
-//                } else {
-//                    gap = 0;
-//                }
-
-
 
                 updateOrAddSeries(chart,
                     createMarker( "YOUR BUILDING", 60, getTempZEPI(),
                       gap > 10 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
                       "black", "axisLine", false)[0],false
                 );
-
-                //createMarker(gap > 5 ? "YOUR BUILDING": "YB", 60, getTempZEPI(),
 
 
                 /*var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getTempZEPI());
@@ -427,12 +412,6 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 );*/
               }
 
-              //Your Building Scores marker
-//              updateOrAddSeries(chart,
-//                  createMarker("YourScores", 60, getTempZEPI(), "maalkaFlag", "transparent", 'axisLine',false)[0], false
-//              );
-
-
               var endGap = (getEEMarkerX().EEx !== undefined && getEEMarkerX().ONx !== undefined) ? $scope.baselineConstant - getEEMarkerX().EEx : 0;
 
               //Score text marker
@@ -441,16 +420,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               );
 
 
-//              var gap = 0;
-//              if (getEEMarkerX().ONx !== undefined) {
-//
-//                    gap = $scope.baselineConstant - getEEMarkerX().EEx
-//
-//              }
-
               var componentsGap = (getEEMarkerX().EEx !== undefined && getEEMarkerX().ONx !== undefined) ? getEEMarkerX().EEx - getEEMarkerX().ONx : 0;
-//              var eoGap = getEEMarkerX().EEx - getEEMarkerX().ONx;
-//              console.log ("e o gap " + eoGap);
+
 
               updateOrAddSeries(chart,
                   createMarker("EEscores", 60, getEEMarkerX().EEx, "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
@@ -704,11 +675,13 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               if (x !== undefined && !isNaN(x) && title !== undefined) {
                 var text = "";
                 if (title === "YOUR BUILDING") {
-                  text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b>" + title + "</b>";
-
-//                else if (title === "YourScores") {
-//                  text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b>";
-                } else if (title === "scoreText") {
+                   if (shape === "maalkaFlagLeftBottom") {
+                      text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b>" + title + "</b>";
+                   } else {
+                       text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b> YOUR BLDG </b>";
+                   }
+                }
+                 else if (title === "scoreText") {
                   text = "EUI <br> Zero Score ";
                 } else if (title === "BASELINE") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("medianSiteEUI")) + "</b> FF-EUI" + "<br><b>" + $scope.baselineConstant + "</b> Score";
