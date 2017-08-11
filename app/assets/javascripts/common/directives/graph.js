@@ -113,7 +113,6 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             };
 
 
-
             var percentBetter = function() {
                 if (getTempZEPI() !== undefined) {
                     return (checkSiteEUI() !== undefined) ? getPercentBetter(Math.ceil(checkSiteEUI())) : 0;
@@ -219,6 +218,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   },
                   showInLegend: false
                 }, false);
+
 
               updateOrAddSeries(chart, { type: 'column',
                   id: 'lines',
@@ -389,18 +389,50 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               }
 
               updateOrAddSeries(chart,
-                  createMarker("euiScore", 160, $scope.baselineConstant, "maalkaFlag", "transparent", 'zepi',false)[0], false
+                  createMarker("scoreText", 160, $scope.baselineConstant, "maalkaFlag", "transparent", 'zepi',false)[0], false
               );
+
+              var getEEMarkerX = function() {
+                  var EEgap = $scope.baselineConstant - getTempZEPI();
+
+                  var totalPercentReduction = getBRByKey("percentBetterActual");
+
+                  var totalSiteEnergy = getBRByKey("siteEnergyALL")? getBRByKey("siteEnergyALL") : 0;
+                  var onsite = getBRByKey("onSiteRenewableTotal") ? getBRByKey("onSiteRenewableTotal") : 0;
+                  var purchased = getBRByKey("offSitePurchasedTotal") ? getBRByKey("offSitePurchasedTotal") : 0;
+                  var totalCombinedEnergy = totalSiteEnergy + onsite + purchased;
+
+                  //var onsiteRenewable = totalPercentReduction * onsite / totalCombinedEnergy;
+                  var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
+
+                  var total = totalPercentReduction;
+                  var EEx = $scope.baselineConstant - EEgap * (energyEfficiency/total);
+                  var ONx = $scope.baselineConstant - EEgap * (energyEfficiency/total) - EEgap * ((total * onsite / totalCombinedEnergy) / total);
+
+                  return {
+                    EEx: EEx,
+                    ONx: ONx
+                  };
+              };
+
+              updateOrAddSeries(chart,
+                  createMarker("EEscores", 60, getEEMarkerX().EEx, "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
+              );
+              updateOrAddSeries(chart,
+                  createMarker("ONScores", 60, getEEMarkerX().ONx, "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
+              );
+
             };
+
+
 
             var createGreenChartFeatures = function (remove) {
 
               if (remove) {
                 updateOrAddSeries(chart, {id: "componentLineLeft", remove: true}, false);
                 updateOrAddSeries(chart, {id: "componentLineRight", remove: true}, false);
-                //middle lines
-                updateOrAddSeries(chart, {id: "coomponentLineLowerBound", remove: true}, false);
-                updateOrAddSeries(chart, {id: "coomponentLineUpperBound", remove: true}, false);
+                updateOrAddSeries(chart, {id: "ONcomponentLine", remove: true}, false);
+                updateOrAddSeries(chart, {id: "EEcomponentLine", remove: true}, false);
                 updateOrAddSeries(chart, {id: "energyEfficiency", remove: true}, false);
                 updateOrAddSeries(chart, {id: "onsiteRenewable", remove: true}, false);
                 updateOrAddSeries(chart, {id: "greenPower", remove: true}, false);
@@ -481,12 +513,13 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 });
 
                 updateOrAddSeries(chart, { type: 'line',
-                  name: "componentLineLowerBound",
-                  id: 'componentLineLowerBound',
+                  name: "ONcomponentLine",
+                  id: 'ONcomponentLine',
                   data: sortData([
+
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
-                              gap * (onsiteRenewable / total)),
+                               gap * (onsiteRenewable / total)),
                       y: -40,
                       marker: {
                         enabled: false
@@ -500,6 +533,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                         enabled: false
                       }
                     }
+
                   ]),
                   animation: false,
                   color: "#595959 ",
@@ -510,12 +544,13 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 });
 
                updateOrAddSeries(chart, { type: 'line',
-                  name: "componentLineUpperBound",
-                  id: 'componentLineUpperBound',
+                  name: "EEcomponentLine",
+                  id: 'EEcomponentLine',
                   data: sortData([
                     {
                       x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
                       y: -40,
+
                       marker: {
                         enabled: false
                       }
@@ -631,14 +666,18 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 var text = "";
                 if (title === "YOUR BUILDING") {
                   text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b>" + title + "</b>";
-                } else if (title === "euiScore") {
+                } else if (title === "scoreText") {
                   text = "EUI <br> Zero Score ";
                 } else if (title === "BASELINE") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("medianSiteEUI")) + "</b> FF-EUI" + "<br><b>" + $scope.baselineConstant + "</b> Score";
                 } else if (title === "PROGRESS PERCENT") {
                   text = round(percentBetter()) + "%";
-                } if (title === "TARGET") {
+                } else if (title === "TARGET") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> FF-EUI" + "<br><b>" + round(x) + "</b> Score";
+                } else if (title === "EEscores") {
+                  text = "<b>" + getEUIMetrics().EE + "</b><br><b>" + getEUIMetrics().ZepiEE + "</b><br><br><b>";
+                } else if (title === "ONScores") {
+                  text = "<b>" + getEUIMetrics().OnSite + "</b><br><b>" + getEUIMetrics().ZepiOnSite + "</b><br><br><b>";
                 }
                 var textColor;
                 if (onlyTitle) {
