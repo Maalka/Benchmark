@@ -112,6 +112,27 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 };
             };
 
+            var getEEMarkerX = function() {
+               var EEgap = $scope.baselineConstant - getTempZEPI();
+
+               var totalPercentReduction = getBRByKey("percentBetterActual");
+
+               var totalSiteEnergy = getBRByKey("siteEnergyALL")? getBRByKey("siteEnergyALL") : 0;
+               var onsite = getBRByKey("onSiteRenewableTotal") ? getBRByKey("onSiteRenewableTotal") : 0;
+               var purchased = getBRByKey("offSitePurchasedTotal") ? getBRByKey("offSitePurchasedTotal") : 0;
+               var totalCombinedEnergy = totalSiteEnergy + onsite + purchased;
+
+               var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
+
+               var total = totalPercentReduction;
+               var EEx = $scope.baselineConstant - EEgap * (energyEfficiency/total);
+               var ONx = $scope.baselineConstant - EEgap * (energyEfficiency/total) - EEgap * ((total * onsite / totalCombinedEnergy) / total);
+
+               return {
+                 EEx: EEx,
+                 ONx: ONx
+               };
+           };
 
             var percentBetter = function() {
                 if (getTempZEPI() !== undefined) {
@@ -372,14 +393,32 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   enableMouseTracking: false
                 });*/
 
-                var gap = (getTempZEPI() !== undefined) ? $scope.baselineConstant - getTempZEPI() : 0;
+               //var gap = (getTempZEPI() !== undefined) ? $scope.baselineConstant - getTempZEPI() : 0;
+               var gap = (getTempZEPI() !== undefined) ? getEEMarkerX().ONx - getTempZEPI() : 0;
+               var cont = $scope.baselineConstant - getTempZEPI();
+               var on = getEEMarkerX().ONx - getTempZEPI();
+                console.log("Scope - ZEPI " + cont);
+                console.log("ONX - ZEPI" + on);
+//                var gap;
+//                if (getTempZEPI() !== undefined) {
+//                    gap = getEEMarkerX().ONx - getTempZEPI();
+//                } else if (getTempZEPI() !== undefined && getEEMarkerX().ONx === undefined) {
+//                    gap = getEEMarkerX().EEx-getTempZEPI();
+//                } else {
+//                    gap = 0;
+//                }
+
 
 
                 updateOrAddSeries(chart,
-                    createMarker("YOUR BUILDING", 60, getTempZEPI(),
-                      gap > 30 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
+                    createMarker( "YOUR BUILDING", 60, getTempZEPI(),
+                      gap > 10 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
                       "black", "axisLine", false)[0],false
                 );
+
+                //createMarker(gap > 5 ? "YOUR BUILDING": "YB", 60, getTempZEPI(),
+
+
                 /*var better = fixX(getBRByKey("percentBetterZEPI")) < fixX(getTempZEPI());
                 updateOrAddSeries(chart,
                     createMarker("PROGRESS PERCENT", 17, getBRByKey("percentBetterZEPI"),
@@ -388,38 +427,33 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 );*/
               }
 
+              //Your Building Scores marker
+//              updateOrAddSeries(chart,
+//                  createMarker("YourScores", 60, getTempZEPI(), "maalkaFlag", "transparent", 'axisLine',false)[0], false
+//              );
+
+              //Score text marker
               updateOrAddSeries(chart,
                   createMarker("scoreText", 160, $scope.baselineConstant, "maalkaFlag", "transparent", 'zepi',false)[0], false
               );
 
-              var getEEMarkerX = function() {
-                  var EEgap = $scope.baselineConstant - getTempZEPI();
 
-                  var totalPercentReduction = getBRByKey("percentBetterActual");
+//              var gap = 0;
+//              if (getEEMarkerX().ONx !== undefined) {
+//
+//                    gap = $scope.baselineConstant - getEEMarkerX().EEx
+//
+//              }
 
-                  var totalSiteEnergy = getBRByKey("siteEnergyALL")? getBRByKey("siteEnergyALL") : 0;
-                  var onsite = getBRByKey("onSiteRenewableTotal") ? getBRByKey("onSiteRenewableTotal") : 0;
-                  var purchased = getBRByKey("offSitePurchasedTotal") ? getBRByKey("offSitePurchasedTotal") : 0;
-                  var totalCombinedEnergy = totalSiteEnergy + onsite + purchased;
-
-                  //var onsiteRenewable = totalPercentReduction * onsite / totalCombinedEnergy;
-                  var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
-
-                  var total = totalPercentReduction;
-                  var EEx = $scope.baselineConstant - EEgap * (energyEfficiency/total);
-                  var ONx = $scope.baselineConstant - EEgap * (energyEfficiency/total) - EEgap * ((total * onsite / totalCombinedEnergy) / total);
-
-                  return {
-                    EEx: EEx,
-                    ONx: ONx
-                  };
-              };
+              var componentsGap = (getEEMarkerX().EEx !== undefined && getEEMarkerX().ONx !== undefined) ? getEEMarkerX().EEx - getEEMarkerX().ONx : 0;
+              var eoGap = getEEMarkerX().EEx - getEEMarkerX().ONx;
+              console.log ("e o gap " + eoGap);
 
               updateOrAddSeries(chart,
                   createMarker("EEscores", 60, getEEMarkerX().EEx, "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
               );
               updateOrAddSeries(chart,
-                  createMarker("ONScores", 60, getEEMarkerX().ONx, "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
+                  createMarker("ONScores", 60, getEEMarkerX().ONx, componentsGap < 5 ? "maalkaFlagBottom": "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
               );
 
             };
@@ -666,6 +700,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 var text = "";
                 if (title === "YOUR BUILDING") {
                   text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b>" + title + "</b>";
+
+//                else if (title === "YourScores") {
+//                  text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b>";
                 } else if (title === "scoreText") {
                   text = "EUI <br> Zero Score ";
                 } else if (title === "BASELINE") {
