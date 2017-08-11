@@ -432,9 +432,12 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 //                  createMarker("YourScores", 60, getTempZEPI(), "maalkaFlag", "transparent", 'axisLine',false)[0], false
 //              );
 
+
+              var endGap = (getEEMarkerX().EEx !== undefined && getEEMarkerX().ONx !== undefined) ? $scope.baselineConstant - getEEMarkerX().EEx : 0;
+
               //Score text marker
               updateOrAddSeries(chart,
-                  createMarker("scoreText", 160, $scope.baselineConstant, "maalkaFlag", "transparent", 'zepi',false)[0], false
+                  createMarker("scoreText", 160, $scope.baselineConstant, endGap < 5 ? "maalkaFlagLeftBottom": "maalkaFlag", "transparent", 'zepi',false)[0], false
               );
 
 
@@ -446,12 +449,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 //              }
 
               var componentsGap = (getEEMarkerX().EEx !== undefined && getEEMarkerX().ONx !== undefined) ? getEEMarkerX().EEx - getEEMarkerX().ONx : 0;
-              var eoGap = getEEMarkerX().EEx - getEEMarkerX().ONx;
-              console.log ("e o gap " + eoGap);
+//              var eoGap = getEEMarkerX().EEx - getEEMarkerX().ONx;
+//              console.log ("e o gap " + eoGap);
 
               updateOrAddSeries(chart,
                   createMarker("EEscores", 60, getEEMarkerX().EEx, "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
               );
+
+
               updateOrAddSeries(chart,
                   createMarker("ONScores", 60, getEEMarkerX().ONx, componentsGap < 5 ? "maalkaFlagBottom": "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
               );
