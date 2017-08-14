@@ -112,9 +112,6 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 };
             };
 
-            console.log(getEUIMetrics().EE);
-            console.log(getEUIMetrics().OnSite);
-
             var getEEMarkerX = function() {
                var EEgap = $scope.baselineConstant - getTempZEPI();
 
@@ -407,7 +404,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
                 updateOrAddSeries(chart,
                     createMarker( "YOUR BUILDING", 60, getTempZEPI(),
-                      ONgap > 10 || EEgap > 10 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
+                      ONgap > 15 || EEgap > 10 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
                       "black", "axisLine", false)[0],false
                 );
 
@@ -425,6 +422,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               //Gap between onsite scores and score text
               var ONendGap = (getEEMarkerX().ONx !== undefined) ? $scope.baselineConstant - getEEMarkerX().ONx : 0;
+
+
 
               //Score text marker
               updateOrAddSeries(chart,
@@ -557,7 +556,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
                   ]),
                   animation: false,
-                  color: "#595959 ",
+                  color: ($scope.baselineConstant - gap * (energyEfficiency / total) - gap * (onsiteRenewable / total)) - getTempZEPI() > 5 ? "#595959 ": "transparent",
                   arrow: true,
                   dashStyle: "ShortDot",
                   showInLegend: false,
@@ -681,6 +680,13 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               }
             };
 
+//            var showMetricsFlag = function() {
+//                if (getEUIMetrics().EE -  getEUIMetrics().OnSite === 0) {
+//                    return true;
+//                }
+//                return false;
+//            };
+
             /*** Flag Definition for the Markers  ***/
             var createMarker = function(title, yOff, x, shape, color, series, onlyTitle) {
               if (x !== undefined && !isNaN(x) && title !== undefined) {
@@ -692,7 +698,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                        text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b> YOUR BLDG </b>";
                    }
                 }
-                 else if (title === "scoreText") {
+                else if (title === "scoreText") {
                     if (shape === "maalkaFlagLeftBottom") {
                         text = "EUI <br> Score ";
                     } else {
@@ -705,9 +711,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 } else if (title === "TARGET") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> FF-EUI" + "<br><b>" + round(x) + "</b> Score";
                 } else if (title === "EEscores") {
-                    text = "<b>" + getEUIMetrics().EE + "</b><br><b>" + getEUIMetrics().ZepiEE + "</b><br><br><b>";
+                      text = "<b>" + getEUIMetrics().EE + "</b><br><b>" + getEUIMetrics().ZepiEE + "</b><br><br><b>";
                 } else if (title === "ONScores") {
-                  text = "<b>" + getEUIMetrics().OnSite + "</b><br><b>" + getEUIMetrics().ZepiOnSite + "</b><br><br><b>";
+                    if(getEUIMetrics().EE - getEUIMetrics().OnSite === 0 || getEEMarkerX().ONx - getTempZEPI() <= 5) {
+                        text = " ";
+                    }
+                    else {
+                        text = "<b>" + getEUIMetrics().OnSite + "</b><br><b>" + getEUIMetrics().ZepiOnSite + "</b><br><br><b>";
+                    }
                 }
                 var textColor;
                 if (onlyTitle) {
@@ -743,6 +754,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   ];
                 }
             };
+
             // flags don't seem to work on series where the axis is reversed
 
             //var labels = {};
@@ -967,6 +979,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   getHeight();
                   loadSeries(chart);
                   console.log(getEUIMetrics());
+
                 }
               }
             });
