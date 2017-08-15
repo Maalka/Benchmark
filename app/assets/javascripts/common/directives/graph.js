@@ -401,10 +401,16 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                //Gap between energy efficiency(EE) and YOUR BUILDING flag
                var EEgap = (getTempZEPI() !== undefined) ? getEEMarkerX().EEx - getTempZEPI() : 0;
 
+//               var noRenewable = function() {
+//                   if (getEUIMetrics().OnSite === 0 && getEUIMetrics().OnAndOffSite === 0) {
+//                      return true;
+//                   }
+//                   return false;
+//                };
 
                 updateOrAddSeries(chart,
                     createMarker( "YOUR BUILDING", 60, getTempZEPI(),
-                      ONgap > 15 || EEgap > 10 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
+                      ONgap > 15 || EEgap > 10 || getEUIMetrics().OnSite === 0 && getEUIMetrics().OffSite === 0 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
                       "black", "axisLine", false)[0],false
                 );
 
@@ -584,7 +590,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     }
                   ]),
                   animation: false,
-                  color: "#595959 ",
+                  color: getEUIMetrics().OnSite !== 0 && getEUIMetrics().OffSite !== 0 ? "#595959" : "transparent",
                   arrow: true,
                   dashStyle: "ShortDot",
                   showInLegend: false,
@@ -711,7 +717,12 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 } else if (title === "TARGET") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> FF-EUI" + "<br><b>" + round(x) + "</b> Score";
                 } else if (title === "EEscores") {
-                      text = "<b>" + getEUIMetrics().EE + "</b><br><b>" + getEUIMetrics().ZepiEE + "</b><br><br><b>";
+                      if (getEUIMetrics().OnSite === 0 && getEUIMetrics().OffSite === 0) {
+                          text = " ";
+                      }
+                      else {
+                          text = "<b>" + getEUIMetrics().EE + "</b><br><b>" + getEUIMetrics().ZepiEE + "</b><br><br><b>";
+                  }
                 } else if (title === "ONScores") {
                     if(getEUIMetrics().EE - getEUIMetrics().OnSite === 0 || getEEMarkerX().ONx - getTempZEPI() <= 5) {
                         text = " ";
