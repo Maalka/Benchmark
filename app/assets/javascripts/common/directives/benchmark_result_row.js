@@ -24,6 +24,7 @@ define(['angular','./main'], function(angular) {
       restrict: 'A',
       scope: {
         'result': "=",
+        'bolding': "=",
         'field': "=",
         'units': "=",
         'append': "=",
@@ -86,6 +87,7 @@ define(['angular','./main'], function(angular) {
           scope.resultColumns = columns;
           scope.title = scope.field;
           scope.subTitle =  scope.units;
+          scope.toBold =  scope.bolding;
         });
       }
     };
