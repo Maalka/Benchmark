@@ -409,8 +409,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 //                };
 
                 updateOrAddSeries(chart,
-                    createMarker( "YOUR BUILDING", 60, getTempZEPI(),
-                      ONgap > 15 || EEgap > 10 || getEUIMetrics().OnSite === 0 && getEUIMetrics().OffSite === 0 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
+                    createMarker( "YOUR BUILDING", getEUIMetrics().ZepiEE > 100 ? 30 : 60, getTempZEPI(),
+                      (ONgap > 15 || EEgap > 10 || getEUIMetrics().OnSite === 0 && getEUIMetrics().OffSite === 0) && getEUIMetrics().ZepiEE <= 100 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
                       "black", "axisLine", false)[0],false
                 );
 
@@ -429,11 +429,16 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               //Gap between onsite scores and score text
               var ONendGap = (getEEMarkerX().ONx !== undefined) ? $scope.baselineConstant - getEEMarkerX().ONx : 0;
 
+               console.log("EE Marker ");
+               console.log("OnSite Marker" + getEEMarkerX().ONx);
+               console.log("EE-Score Gap " + EEendGap);
+               console.log("ONsite-Score Gap " + (getEEMarkerX().ONx- $scope.baselineConstant));
+
 
 
               //Score text marker
               updateOrAddSeries(chart,
-                  createMarker("scoreText", 160, $scope.baselineConstant, EEendGap < 10 || ONendGap < 10 ? "maalkaFlagLeftBottom": "maalkaFlag", "transparent", 'zepi',false)[0], false
+                  createMarker("scoreText", 60, $scope.baselineConstant, EEendGap < 20 || ONendGap < 10 ? "maalkaFlagLeftBottom": "maalkaFlag", "transparent", 'axisLine',false)[0], false
               );
 
               //Gap between onsite and EE scores.
@@ -562,7 +567,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
                   ]),
                   animation: false,
-                  color: ($scope.baselineConstant - gap * (energyEfficiency / total) - gap * (onsiteRenewable / total)) - getTempZEPI() > 5 ? "#595959 ": "transparent",
+                  color: getEEMarkerX().ONx - getTempZEPI() <= 5 ? "transparent": "#595959 ",
                   arrow: true,
                   dashStyle: "ShortDot",
                   showInLegend: false,
@@ -590,7 +595,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     }
                   ]),
                   animation: false,
-                  color: getEUIMetrics().OnSite !== 0 && getEUIMetrics().OffSite !== 0 ? "#595959" : "transparent",
+                  color: (getEUIMetrics().OnSite === 0 && getEUIMetrics().OffSite === 0) ? "transparent" : "#595959",
                   arrow: true,
                   dashStyle: "ShortDot",
                   showInLegend: false,
@@ -698,14 +703,18 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               if (x !== undefined && !isNaN(x) && title !== undefined) {
                 var text = "";
                 if (title === "YOUR BUILDING") {
-                   if (shape === "maalkaFlagLeftBottom") {
-                      text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b>" + title + "</b>";
+                   if (getEUIMetrics().ZepiEE >= 100) {
+                      text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                   } else if (shape === "maalkaFlagLeftBottom") {
+                   text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else {
-                       text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><br><b> YOUR BLDG </b>";
+                       text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
                    }
                 }
                 else if (title === "scoreText") {
-                    if (shape === "maalkaFlagLeftBottom") {
+                    if(getEUIMetrics().ZepiEE > 100) {
+                       text = " ";
+                    } else if (shape === "maalkaFlagLeftBottom") {
                         text = "EUI <br> Score ";
                     } else {
                         text = "EUI <br> Zero Score ";
@@ -721,14 +730,17 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                           text = " ";
                       }
                       else {
-                          text = "<b>" + getEUIMetrics().EE + "</b><br><b>" + getEUIMetrics().ZepiEE + "</b><br><br><b>";
+                          text =  + getEUIMetrics().EE + "<br>" + getEUIMetrics().ZepiEE;
                   }
                 } else if (title === "ONScores") {
+                    console.log("On x " + getEEMarkerX().ONx);
+                    console.log("temp zepi z " + getTempZEPI());
+                    console.log("ON-TempZEPI marker " +   (getEEMarkerX().ONx - getTempZEPI()));
                     if(getEUIMetrics().EE - getEUIMetrics().OnSite === 0 || getEEMarkerX().ONx - getTempZEPI() <= 5) {
                         text = " ";
                     }
                     else {
-                        text = "<b>" + getEUIMetrics().OnSite + "</b><br><b>" + getEUIMetrics().ZepiOnSite + "</b><br><br><b>";
+                        text = getEUIMetrics().OnSite + "<br>" + getEUIMetrics().ZepiOnSite;
                     }
                 }
                 var textColor;
@@ -758,12 +770,12 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                         useHtml: true,
                         onSeries: series,
                         showInLegend: false
-                    }];
-                } else {
+                }];
+              } else {
                   return [
-                    {id: onlyTitle ? series + "marker" : title + "0", remove: true}
+                      {id: onlyTitle ? series + "marker" : title + "0", remove: true}
                   ];
-                }
+              }
             };
 
             // flags don't seem to work on series where the axis is reversed
