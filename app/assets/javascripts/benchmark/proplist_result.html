@@ -1,19 +1,6 @@
-<style>
-    tr.headers {
-        font-family: 'Open Sans', sans-serif;
-        font-size: 11.33px;
-        font-weight: normal;
-    }
-
-    tr.element {
-        font-family: 'Open Sans', sans-serif;
-        color: '#000000';
-        font-size: 11.33px;
-    }
-</style>
 <div class="ui hidden divider"></div>
 <b style="padding-left: 0.5em;">BUILDING SUMMARY</b>
-<table class="ui basic inverted white table unstackable">
+<table class="ui basic inverted white table unstackable" style="padding: 0em">
 
     <tbody>
         <tr>
@@ -28,13 +15,15 @@
         </tr>
         <tr><td colspan="4">
             <hr></td></tr>
-
-        <tr class="bottom aligned" style="font-family: 'Open Sans', sans-serif; font-size: 12px; font-weight: bold">
-            <td>RESULTS</th>
+    </tbody>
+    <tbody style="font-family: 'Open Sans', sans-serif; font-size: 11.33px;">
+        <tr class="bottom aligned" style="font-size: 12px;">
+            <td><b>RESULTS</b></td>
             <td class = "center aligned"><b>BASELINE</b></td>
             <td class = "center aligned three wide"><b>TARGET</b></td>
             <td class="ui yellow center aligned three wide"><b>Your Building</b></td>
         </tr>
+
 
         <!--    <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
                 append = "'%'" units=""
@@ -49,46 +38,46 @@
 
         <!--ONLY EUI % Reduction from Baseline: True Bold for EUI % Reduction from Baseline-->
 
-        <tr class="headers" ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
+        <tr ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
             append = "'%'" units="" columns="['percentBetterMedian', 'percentBetterTarget', 'percentBetterActual']" bolding="true"></tr>
 
         <!--HAS RENEWABLES NO OFFSITE: True Bold for RENEWABLES -->
 
-        <tr class="headers" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
             append = "'%'" units="" columns="['percentBetterMedian', 'percentBetterTarget', 'blank']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'percentBetterActual']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
             columns="['blank', 'blank', 'percentBetterActualwOnSite']" bolding="true"></tr>
 
         <!--HAS RENEWABLES NO ON-SITE: True Bold for OFFSITE-->
 
-        <tr class="headers" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
-            append = "'%'" units="" columns="['percentBetterMedian', 'percentBetterTarget', 'blank']" bolding="false"></tr>
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
+            append = "'%'" units="" columns="['percentBetterMedian', 'percentBetterTarget', 'blank']" bolding="false" ></tr>
 
-        <tr class="element" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'percentBetterActual']" bolding="false"></tr>
 
-        <tr class="element" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
             columns="['blank', 'blank', 'percentBetterActualwOffSite']" bolding="true"></tr>
 
         <!--HAS RENEWABLES AND ON-SITE: True Bold for ON & OFF-SITE-->
 
-        <tr class="headers" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
             append = "'%'" units="" columns="['percentBetterMedian', 'percentBetterTarget', 'blank']" bolding="false" ></tr>
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'percentBetterActual']" bolding="false"></tr>
 
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
             columns="['blank', 'blank', 'percentBetterActualwOnSite']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
             columns="['blank', 'blank', 'percentBetterActualwOnandOffSite']" bolding="true"></tr>
-
 
 
 
@@ -98,44 +87,44 @@
 
          <!--ONLY ZERO SCORE: True Bold for Zero Score-->
 
-        <tr class="headers" ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
+        <tr ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
             columns="['medianZEPI', 'percentBetterZEPI', 'actualZEPI']" bolding="true"></tr>
 
         <!--HAS RENEWABLES NO OFFSITE: True Bold for RENEWABLES-->
 
-        <tr class="headers" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
             columns="['medianZEPI', 'percentBetterZEPI', 'blank']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'actualZEPI']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
             columns="['blank', 'blank', 'actualZEPIwOnSite']" bolding="true"></tr>
 
         <!--HAS RENEWABLES NO ON-SITE: True Bold for OFFSITE -->
 
-        <tr class="headers" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
             columns="['medianZEPI', 'percentBetterZEPI', 'blank']" bolding="false"></tr>
 
-        <tr class="element" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'actualZEPI']" bolding="false"></tr>
 
-        <tr class="element" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
             columns="['blank', 'blank', 'actualZEPIwOffSite']" bolding="true"></tr>
 
        <!--HAS RENEWABLES AND ON-SITE: True Bold for ON & OFF-SITE -->
 
-        <tr class="headers" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="scoreText" units=""
             columns="['medianZEPI', 'percentBetterZEPI', 'blank']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'actualZEPI']" bolding="false"></tr>
 
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
             columns="['blank', 'blank', 'actualZEPIwOnSite']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
             columns="['blank', 'blank', 'actualZEPIwOnAndOffSite']" bolding="true"></tr>
 
 
@@ -147,44 +136,44 @@
 
         <!-- ONLY SITE EUI: True Bold for SITE EUI-->
 
-        <tr class="headers" ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
+        <tr ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
             columns="['medianSiteEUI', 'percentBetterSiteEUI', 'siteEUI']" bolding="true"></tr>
 
         <!-- HAS RENEWABLES NO OFFSITE: True Bold for RENEWABLES -->
 
-        <tr class="headers" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
             columns="['medianSiteEUI', 'percentBetterSiteEUI', 'blank']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'siteEUI']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
             columns="['blank', 'blank', 'siteEUIwOnSite']" bolding="true"></tr>
 
         <!-- HAS RENEWABLES NO ON-SITE: True Bold for OFFSITE -->
 
-        <tr class="headers" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
             columns="['medianSiteEUI', 'percentBetterSiteEUI', 'blank']" bolding="false"></tr>
 
-        <tr class="element" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'siteEUI']" bolding="false"></tr>
 
-        <tr class="element" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
             columns="['blank', 'blank', 'siteEUIwOffSite']" bolding="true"></tr>
 
         <!-- HAS RENEWABLES AND ON-SITE: True Bold for ON & OFF-SITE -->
 
-        <tr class="headers" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="FFText" units="tableEUIUnits"
             columns="['medianSiteEUI', 'percentBetterSiteEUI', 'blank']" bolding="false"></tr>
 
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'siteEUI']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
             columns="['blank', 'blank', 'siteEUIwOnSite']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
             columns="['blank', 'blank', 'siteEUIwOnAndOffSite']" bolding="true"></tr>
 
 
@@ -194,55 +183,55 @@
 
         <!-- ONLY SOURCE EUI: True Bold for SOURCE EUI-->
 
-        <tr class="headers" ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
+        <tr ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
             columns="['medianSourceEUI', 'percentBetterSourceEUI', 'sourceEUI']" bolding="true"></tr>
 
         <!-- HAS RENEWABLES NO OFFSITE: True Bold for RENEWABLES -->
 
-        <tr class="headers" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
             columns="['medianSourceEUI', 'percentBetterSourceEUI', 'blank']" bolding="false"></tr>
 
 
-        <tr class="element" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'sourceEUI']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+        <tr ng-show="hasOnSite && !hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
             columns="['blank', 'blank', 'sourceEUIwOnSite']" bolding="true"></tr>
 
 
         <!-- HAS RENEWABLES NO ON-SITE: True Bold for OFFSITE -->
 
-        <tr class="headers" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
             columns="['medianSourceEUI', 'percentBetterSourceEUI', 'blank']" bolding="false"></tr>
 
 
-        <tr class="element" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'sourceEUI']" bolding="false"></tr>
 
-        <tr class="element" ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
+        <tr ng-show="!hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ Off-Site RE'"
             columns="['blank', 'blank', 'sourceEUIwOffSite']" bolding="true"></tr>
 
 
         <!-- HAS RENEWABLES AND ON-SITE: True Bold for ON & OFF-SITE -->
 
-        <tr class="headers" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'Source EUI'" units="tableEUIUnits"
             columns="['medianSourceEUI', 'percentBetterSourceEUI', 'blank']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE'"
             columns="['blank', 'blank', 'sourceEUI']" bolding="false"></tr>
 
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On-Site RE'"
             columns="['blank', 'blank', 'sourceEUIwOnSite']" bolding="false"></tr>
 
-        <tr class="element" ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
+        <tr ng-show="hasOnSite && hasOffSite && hasSiteEnergy" benchmark-result-row result="benchmarkResult" field="'EE w/ On & Off-Site RE'"
             columns="['blank', 'blank', 'sourceEUIwOnAndOffSite']" bolding="true"></tr>
         
 
 
 
 
-        <tr class="headers" ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Total GHG Emissions'" units="'Annual Metric Tons CO2e'"
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Total GHG Emissions'" units="'Annual Metric Tons CO2e'"
             columns="['medianEmissions', 'percentBetterEmissions', 'totalEmissions']" bolding="true"></tr>
 <!--        <tr>
             <td colspan=4>
