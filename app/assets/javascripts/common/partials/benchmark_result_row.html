@@ -1,26 +1,28 @@
 
-<td ng-if="title !== 'EE w/ On-Site RE' && title !== 'EE w/ Off-Site RE' && title !== 'EE 	w/ On & Off-Site RE' && title !== 'EE'">
+<td style="padding-bottom:0.5em; padding-top: 0.5em" ng-if="title !== 'EE w/ On-Site RE' && title !== 'EE w/ Off-Site RE' && title !== 'EE 	w/ On & Off-Site RE' && title !== 'EE'">
 	<B>{{ title }}</B>
 	<div style="font-size: 11px; color: #c2e0e9">{{ subTitle }}</div>
 </td>
 
-<td ng-if="title === 'EE w/ On-Site RE' || title === 'EE w/ Off-Site RE' || title === 'EE w/ On & Off-Site RE' || title === 'EE'">
+<td style="padding-bottom:0em; padding-top: 0em"  ng-if="title === 'EE w/ On-Site RE' || title === 'EE w/ Off-Site RE' || title === 'EE w/ On & Off-Site RE' || title === 'EE'">
 	<div style="padding-left: 0px; color: #c2e0e9">{{ title }}
 		<div style="font-size: 11px; color: #c2e0e9">{{ subTitle }}</div>
 	</div>
 </td>
 
 
-<td ng-if="resultColumns[0].value === 'N/A'" class = "center aligned"><div style="color: #c2e0e9">{{ resultColumns[0].value}}</div></td>
-<td ng-if="resultColumns[0].value !== 'N/A'" class = "center aligned"><div style="color: #c2e0e9">{{ resultColumns[0].value | number: 0}}{{ append || ""}}</div></td>
+<td ng-if="resultColumns[0].value === 'N/A'" class = "center aligned" style="padding-bottom:0em; padding-top: 0em"><div style="color: #c2e0e9">{{ resultColumns[0].value}}</div></td>
+<td ng-if="resultColumns[0].value !== 'N/A'" class = "center aligned" style="padding-bottom:0em; padding-top: 0em"><div style="color: #c2e0e9">{{ resultColumns[0].value | number: 0}}{{ append || ""}}</div></td>
 
 
-<td ng-if="resultColumns[1].value === 'N/A'" class = "center aligned"><div style="color: #c2e0e9">{{ resultColumns[1].value}}</div></td>
-<td ng-if="resultColumns[1].value !== 'N/A'" class = "center aligned"><div style="color: #c2e0e9">{{ resultColumns[1].value | number: 0}}{{ append || ""}}</div></td>
+<td ng-if="resultColumns[1].value === 'N/A'" class = "center aligned" style="padding-bottom:0em; padding-top: 0em"><div style="color: #c2e0e9">{{ resultColumns[1].value}}</div></td>
+<td ng-if="resultColumns[1].value !== 'N/A'" class = "center aligned" style="padding-bottom:0em; padding-top: 0em"><div style="color: #c2e0e9">{{ resultColumns[1].value | number: 0}}{{ append || ""}}</div></td>
 
 
-<td ng-if="resultColumns[2].value === 'N/A' && toBold" class="ui yellow center aligned"><B>{{ resultColumns[2].value}}</B></td>
-<td ng-if="resultColumns[2].value !== 'N/A' && toBold" class="ui yellow center aligned"><B>{{ resultColumns[2].value | number: 0}}{{ append || ""}}</B></td>
+<td ng-if="resultColumns[2].value === 'N/A' && toBold" class="ui yellow center aligned" style="padding-bottom:0em; padding-top: 0em"><B>{{ resultColumns[2].value}}</B></td>
+<td ng-if="resultColumns[2].value !== 'N/A' && toBold" class="ui yellow center aligned" style="padding-bottom:0em; padding-top: 0em"><B>{{ resultColumns[2].value | number: 0}}{{ append || ""}}</B></td>
 
-<td ng-if="resultColumns[2].value === 'N/A' && !toBold" class="ui yellow center aligned"><div style="color: #D1D100">{{ resultColumns[2].value}}</div></td>
-<td ng-if="resultColumns[2].value !== 'N/A' && !toBold" class="ui yellow center aligned"><div style="color: #D1D100">{{ resultColumns[2].value | number: 0}}{{ append || ""}}</div></td>
+<td ng-if="resultColumns[2].value === 'N/A' && !toBold" class="ui yellow center aligned" style="padding-bottom:0em; padding-top: 0em"><div style="color: #D1D100">{{ resultColumns[2].value}}</div></td>
+<td ng-if="resultColumns[2].value !== 'N/A' && !toBold" class="ui yellow center aligned" style="padding-bottom:0em; padding-top: 0em"><div style="color: #D1D100">{{ resultColumns[2].value | number: 0}}{{ append || ""}}</div></td>
+
+
