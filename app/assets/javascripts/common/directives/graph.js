@@ -130,7 +130,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
                return {
                  EEx: EEx,
-                 ONx: ONx
+                 ONx: ONx,
+                 onSiteRenewableTotal: onsite,
+                 offSitePurchasedTotal: purchased
                };
            };
 
@@ -595,7 +597,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     }
                   ]),
                   animation: false,
-                  color: (getEUIMetrics().OnSite === 0 && getEUIMetrics().OffSite === 0) ? "transparent" : "#595959",
+                  color: (getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0) ? "transparent" : "#595959",
                   arrow: true,
                   dashStyle: "ShortDot",
                   showInLegend: false,
@@ -726,7 +728,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 } else if (title === "TARGET") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> FF-EUI" + "<br><b>" + round(x) + "</b> Score";
                 } else if (title === "EEscores") {
-                      if (getEUIMetrics().OnSite === 0 && getEUIMetrics().OffSite === 0) {
+                      if (getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0) {
                           text = " ";
                       }
                       else {
