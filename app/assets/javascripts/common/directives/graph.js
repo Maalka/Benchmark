@@ -736,7 +736,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     console.log("On x " + getEEMarkerX().ONx);
                     console.log("temp zepi z " + getTempZEPI());
                     console.log("ON-TempZEPI marker " +   (getEEMarkerX().ONx - getTempZEPI()));
-                    if(getEUIMetrics().EE - getEUIMetrics().OnSite === 0 || getEEMarkerX().ONx - getTempZEPI() <= 5) {
+                    if((getEUIMetrics().EE - getEUIMetrics().OnSite === 0 && getEUIMetrics().OffSite > 5)|| getEEMarkerX().ONx - getTempZEPI() <= 5) {
                         text = " ";
                     }
                     else {
