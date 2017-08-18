@@ -76,6 +76,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 }
             };
 
+
             var getEUIMetrics = function() {
                 if (getTempZEPI() !== undefined) {
                     $scope.EE = getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : 0;
@@ -99,6 +100,18 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     $scope.ZepiOffSite = getBRByKey("actualZEPIwOffSite") ? Math.ceil(getBRByKey("actualZEPIwOffSite")) : undefined;
                     $scope.ZepiOnAndOffSite = getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : undefined;
                 }
+
+                if ($scope.OnSite === 0){
+                   $scope.OnAndOffSiteXposition = $scope.ZepiEE - $scope.ZepiOnAndOffSite;
+                } else {
+                   $scope.OnAndOffSiteXposition =  $scope.ZepiOnAndOffSite;
+                }
+                if ($scope.OnSite === 0){
+                   $scope.OnSiteXposition = $scope.ZepiEE - $scope.ZepiOnSite;
+                } else {
+                   $scope.OnSiteXposition =  $scope.ZepiOnSite;
+                }
+
                 return {
                     EE:$scope.EE,
                     OnSite:$scope.OnSite,
@@ -108,7 +121,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     ZepiEE:$scope.ZepiEE,
                     ZepiOnSite:$scope.ZepiOnSite,
                     ZepiOffSite:$scope.ZepiOffSite,
-                    ZepiOnAndOffSite:$scope.ZepiOnAndOffSite
+                    ZepiOnAndOffSite: $scope.ZepiOnAndOffSite,
+                    ZepiOnAndOffSiteXposition: $scope.OnAndOffSiteXposition,
+                    ZepiOnSiteXposition: $scope.OnSiteXposition
                 };
             };
 
@@ -643,7 +658,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       }
                     },
                     {
-                      x: fixX(getEUIMetrics().ZepiOnSite),
+                      x: fixX(getEUIMetrics().ZepiOnSiteXposition),
                       y: -30,
                       marker: {
                         enabled: false
@@ -670,7 +685,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       }
                     },
                     {
-                      x: fixX(getEUIMetrics().ZepiOnAndOffSite),
+                      x: fixX(getEUIMetrics().ZepiOnAndOffSiteXposition),
                       y: -30,
                       marker: {
                         enabled: false
