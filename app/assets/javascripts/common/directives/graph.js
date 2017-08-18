@@ -112,32 +112,27 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 };
             };
 
-            console.log(getEUIMetrics());
+            var getEEMarkerX = function() {
+               var EEgap = $scope.baselineConstant - getTempZEPI();
 
-          var getEEMarkerX = function() {
-             var EEgap = $scope.baselineConstant - getTempZEPI();
+               var totalPercentReduction = getBRByKey("percentBetterActual");
 
-             var totalPercentReduction = getBRByKey("percentBetterActual");
+               var totalSiteEnergy = getBRByKey("siteEnergyALL")? getBRByKey("siteEnergyALL") : 0;
+               var onsite = getBRByKey("onSiteRenewableTotal") ? getBRByKey("onSiteRenewableTotal") : 0;
+               var purchased = getBRByKey("offSitePurchasedTotal") ? getBRByKey("offSitePurchasedTotal") : 0;
+               var totalCombinedEnergy = totalSiteEnergy + onsite + purchased;
 
-             var totalSiteEnergy = getBRByKey("siteEnergyALL")? getBRByKey("siteEnergyALL") : 0;
-             var onsite = getBRByKey("onSiteRenewableTotal") ? getBRByKey("onSiteRenewableTotal") : 0;
-             var purchased = getBRByKey("offSitePurchasedTotal") ? getBRByKey("offSitePurchasedTotal") : 0;
-             var totalCombinedEnergy = totalSiteEnergy + onsite + purchased;
+               var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
 
-             var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
+               var total = totalPercentReduction;
+               var EEx = $scope.baselineConstant - EEgap * (energyEfficiency/total);
+               var ONx = $scope.baselineConstant - EEgap * (energyEfficiency/total) - EEgap * ((total * onsite / totalCombinedEnergy) / total);
 
-             var total = totalPercentReduction;
-             var EEx = $scope.baselineConstant - EEgap * (energyEfficiency/total);
-             var ONx = $scope.baselineConstant - EEgap * (energyEfficiency/total) - EEgap * ((total * onsite / totalCombinedEnergy) / total);
-
-             return {
-              EEx: EEx,
-              ONx: ONx,
-              onSiteRenewableTotal: onsite,
-              offSitePurchasedTotal: purchased
-            };
-          };
-
+               return {
+                 EEx: EEx,
+                 ONx: ONx
+               };
+           };
 
 
             var percentBetter = function() {
@@ -401,19 +396,21 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 });*/
 
                //Gap between onsite scores and YOUR BUILDING flag
-               var ONgap = (getTempZEPI() !== undefined) ? getEUIMetrics().ZepiOnSite - getTempZEPI() : 0;
+               var ONgap = (getTempZEPI() !== undefined) ? getEEMarkerX().ONx - getTempZEPI() : 0;
 
                //Gap between energy efficiency(EE) and YOUR BUILDING flag
-               var EEgap = (getTempZEPI() !== undefined) ? getEUIMetrics().ZepiEE - getTempZEPI() : 0;
-//
-                console.log("Ongap: " + ONgap);
-                console.log("EEgap: " + EEgap);
-                console.log("ZepiEE: " + getEUIMetrics().ZepiEE);
-                console.log("Temp ZEPI: " + getTempZEPI());
+               var EEgap = (getTempZEPI() !== undefined) ? getEEMarkerX().EEx - getTempZEPI() : 0;
+
+//               var noRenewable = function() {
+//                   if (getEUIMetrics().OnSite === 0 && getEUIMetrics().OnAndOffSite === 0) {
+//                      return true;
+//                   }
+//                   return false;
+//                };
 
                 updateOrAddSeries(chart,
                     createMarker( "YOUR BUILDING", getEUIMetrics().ZepiEE > 100 ? 30 : 60, getTempZEPI(),
-                      (ONgap > 2 || EEgap > 5 || getEEMarkerX().onSiteRenewableTotal === 0) && getEUIMetrics().ZepiEE <= 100 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
+                      (ONgap > 15 || EEgap > 10 || getEUIMetrics().OnSite === 0 && getEUIMetrics().OffSite === 0) && getEUIMetrics().ZepiEE <= 100 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
                       "black", "axisLine", false)[0],false
                 );
 
@@ -427,33 +424,34 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               }
 
               //Gap between EEscores and score text
-              var EEendGap = (getEUIMetrics().ZepiEE !== undefined) ? $scope.baselineConstant - getEUIMetrics().ZepiEE : 0;
+              var EEendGap = (getEEMarkerX().EEx !== undefined) ? $scope.baselineConstant - getEEMarkerX().EEx : 0;
 
               //Gap between onsite scores and score text
-              var ONendGap = (getEUIMetrics().OnSite !== undefined) ? $scope.baselineConstant - getEUIMetrics().OnSite : 0;
+              var ONendGap = (getEEMarkerX().ONx !== undefined) ? $scope.baselineConstant - getEEMarkerX().ONx : 0;
 
-               console.log("OnSite Marker: " + getEUIMetrics().OnSite);
-               console.log("EE-Score Gap: " + EEendGap);
-               console.log("ON-Score Gap:" + ONendGap);
+               console.log("EE Marker ");
+               console.log("OnSite Marker" + getEEMarkerX().ONx);
+               console.log("EE-Score Gap " + EEendGap);
+               console.log("ONsite-Score Gap " + (getEEMarkerX().ONx- $scope.baselineConstant));
+
 
 
               //Score text marker
               updateOrAddSeries(chart,
-                  createMarker("scoreText", 60, $scope.baselineConstant, EEendGap < 20 || ONendGap < 10 ? "maalkaFlagLeftBottom": "maalkaFlag", "transparent", 'axisLine',false)[0], false              );
+                  createMarker("scoreText", 60, $scope.baselineConstant, EEendGap < 20 || ONendGap < 10 ? "maalkaFlagLeftBottom": "maalkaFlag", "transparent", 'axisLine',false)[0], false
+              );
 
               //Gap between onsite and EE scores.
-              var componentsGap = (getEUIMetrics().ZepiEE !== undefined && getEUIMetrics().OnSite !== undefined) ? getEUIMetrics().ZepiEE - getEUIMetrics().OnSite : 0;
-
-              console.log("Components Gap: " + componentsGap);
+              var componentsGap = (getEEMarkerX().EEx !== undefined && getEEMarkerX().ONx !== undefined) ? getEEMarkerX().EEx - getEEMarkerX().ONx : 0;
 
               //Energy Efficiency flag
               updateOrAddSeries(chart,
-                  createMarker("EEscores", 60, getEUIMetrics().ZepiEE, "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
+                  createMarker("EEscores", 60, getEEMarkerX().EEx, "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
               );
 
               //Onsite scores flag
               updateOrAddSeries(chart,
-                  createMarker("ONScores", 60, getEUIMetrics().ZepiOnSite, componentsGap < 5 ? "maalkaFlagBottom": "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
+                  createMarker("ONScores", 60, getEEMarkerX().ONx, componentsGap < 5 ? "maalkaFlagBottom": "maalkaFlagLeftBottom", "transparent", 'axisLine',false)[0], false
               );
 
             };
@@ -472,9 +470,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 updateOrAddSeries(chart, {id: "greenPower", remove: true}, false);
                 return;
               } else {
-                //var gap = $scope.baselineConstant - getTempZEPI();
+                var gap = $scope.baselineConstant - getTempZEPI();
 
-                //var totalPercentReduction = getBRByKey("percentBetterActual");
+                var totalPercentReduction = getBRByKey("percentBetterActual");
 
                 var totalSiteEnergy = getBRByKey("siteEnergyALL")? getBRByKey("siteEnergyALL") : 0;
                 var onsite = getBRByKey("onSiteRenewableTotal") ? getBRByKey("onSiteRenewableTotal") : 0;
@@ -486,11 +484,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   return;
                 }
 
-                //var onsiteRenewable = totalPercentReduction * onsite / totalCombinedEnergy;
-                //var greenPower = totalPercentReduction * purchased / totalCombinedEnergy;
-                //var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
+                var onsiteRenewable = totalPercentReduction * onsite / totalCombinedEnergy;
+                var greenPower = totalPercentReduction * purchased / totalCombinedEnergy;
+                var energyEfficiency = totalPercentReduction * totalSiteEnergy / totalCombinedEnergy;
 
-                //var total = totalPercentReduction;
+                var total = totalPercentReduction;
 
                 updateOrAddSeries(chart, { type: 'line',
                   name: "componentLineLeft",
@@ -551,14 +549,16 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   data: sortData([
 
                     {
-                      x: fixX(getEUIMetrics().ZepiOnSite),
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
+                               gap * (onsiteRenewable / total)),
                       y: -40,
                       marker: {
                         enabled: false
                       }
                     },
                     {
-                      x: fixX(getEUIMetrics().ZepiOnSite),
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
+                               gap * (onsiteRenewable / total)),
                       y: -75,
                       marker: {
                         enabled: false
@@ -567,7 +567,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
                   ]),
                   animation: false,
-                  color: (getEEMarkerX().onSiteRenewableTotal === 0|| getEUIMetrics().ZepiOnSite - getTempZEPI() <= 5) ? "transparent": "#595959 ",
+                  color: getEEMarkerX().ONx - getTempZEPI() <= 5 ? "transparent": "#595959 ",
                   arrow: true,
                   dashStyle: "ShortDot",
                   showInLegend: false,
@@ -579,7 +579,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   id: 'EEcomponentLine',
                   data: sortData([
                     {
-                      x: fixX(getEUIMetrics().ZepiEE),
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
                       y: -40,
 
                       marker: {
@@ -587,7 +587,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       }
                     },
                     {
-                      x: fixX(getEUIMetrics().ZepiEE),
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
                       y: -75,
                       marker: {
                         enabled: false
@@ -595,7 +595,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     }
                   ]),
                   animation: false,
-                  color: (getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0 || getEUIMetrics().ZepiEE - getTempZEPI() < 3) ? "transparent" : "#595959",
+                  color: (getEUIMetrics().OnSite === 0 && getEUIMetrics().OffSite === 0) ? "transparent" : "#595959",
                   arrow: true,
                   dashStyle: "ShortDot",
                   showInLegend: false,
@@ -616,7 +616,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       }
                     },
                     {
-                      x: fixX(getEUIMetrics().ZepiEE),
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
                       y: -30,
                       marker: {
                         enabled: false
@@ -636,14 +636,15 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   id: 'onsiteRenewable',
                   data: sortData([
                     {
-                      x: fixX(getEUIMetrics().ZepiEE),
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total)),
                       y: -30,
                       marker: {
                         enabled: false
                       }
                     },
                     {
-                      x: fixX(getEUIMetrics().ZepiOnSite),
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
+                        gap * (onsiteRenewable / total)),
                       y: -30,
                       marker: {
                         enabled: false
@@ -663,14 +664,17 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   id: 'greenPower',
                   data: sortData([
                     {
-                      x: fixX(getEUIMetrics().ZepiOnSite),
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
+                        gap * (onsiteRenewable / total)),
                       y: -30,
                       marker: {
                         enabled: false
                       }
                     },
                     {
-                      x: fixX(getEUIMetrics().ZepiOnAndOffSite),
+                      x: fixX($scope.baselineConstant - gap * (energyEfficiency / total) -
+                        gap * (onsiteRenewable / total) -
+                        gap * (greenPower / total)),
                       y: -30,
                       marker: {
                         enabled: false
@@ -722,15 +726,17 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 } else if (title === "TARGET") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> FF-EUI" + "<br><b>" + round(x) + "</b> Score";
                 } else if (title === "EEscores") {
-                      if (getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0 || getEUIMetrics().ZepiEE > 100 || getEUIMetrics().ZepiEE - getTempZEPI() < 3) {
+                      if (getEUIMetrics().OnSite === 0 && getEUIMetrics().OffSite === 0) {
                           text = " ";
                       }
                       else {
                           text =  + getEUIMetrics().EE + "<br>" + getEUIMetrics().ZepiEE;
                   }
                 } else if (title === "ONScores") {
-//
-                    if(getEEMarkerX().onSiteRenewableTotal === 0|| getEUIMetrics().ZepiOnSite - getTempZEPI() <= 5) {
+                    console.log("On x " + getEEMarkerX().ONx);
+                    console.log("temp zepi z " + getTempZEPI());
+                    console.log("ON-TempZEPI marker " +   (getEEMarkerX().ONx - getTempZEPI()));
+                    if(getEUIMetrics().EE - getEUIMetrics().OnSite === 0 || getEEMarkerX().ONx - getTempZEPI() <= 5) {
                         text = " ";
                     }
                     else {
