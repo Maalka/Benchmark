@@ -28,7 +28,8 @@ define(['angular','./main'], function(angular) {
         'field': "=",
         'units': "=",
         'append': "=",
-        'columns': "="
+        'columns': "=",
+        'head': "="
       },
       templateUrl: 'javascripts/common/partials/benchmark_result_row.html',
       link: function(scope) {
@@ -42,7 +43,7 @@ define(['angular','./main'], function(angular) {
                 if(key === "blank"){
                     returnValue = {
                     'ok': false,
-                    'value': "-"
+                    'value': "blank"
                     };
                 }else {
                     returnValue = {
@@ -62,7 +63,7 @@ define(['angular','./main'], function(angular) {
             if(key === "blank"){
                 returnValue = {
                 'ok': false,
-                'value': "-"
+                'value': "blank"
                 };
             }else {
                 returnValue = {
@@ -88,6 +89,8 @@ define(['angular','./main'], function(angular) {
           scope.title = scope.field;
           scope.subTitle =  scope.units;
           scope.toBold =  scope.bolding;
+          scope.topLevel =  scope.head;
+
         });
       }
     };

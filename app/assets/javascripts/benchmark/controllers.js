@@ -314,12 +314,20 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"percentBetterMedian": Math.ceil($scope.getPropResponseField(results,"percentBetterMedian"))},
               {"percentBetterTarget": Math.ceil($scope.getPropResponseField(results,"percentBetterTarget"))},
               {"percentBetterActual": Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
+              {"percentBetterActualwOnSite": Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOnSite"))},
+              {"percentBetterActualwOffSite": Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOffSite"))},
+              {"percentBetterActualwOnandOffSite": Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOnandOffSite"))},
+
+
               {"percentBetterActualtoGoal": Math.ceil($scope.getPropResponseField(results,"percentBetterActualtoGoal"))},
               {"actualGoalBetter": Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"))},
 
               {"medianZEPI": $scope.getBaselineConstant()},
               {"percentBetterZEPI": Math.floor($scope.getPropResponseField(results,"percentBetterZEPI"))},
               {"actualZEPI": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActual"))},
+              {"actualZEPIwOnSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOnSite"))},
+              {"actualZEPIwOffSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOffSite"))},
+              {"actualZEPIwOnAndOffSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOnandOffSite"))},
 
               {"siteEUI": Math.ceil($scope.getPropResponseField(results,"siteEUI"))},
               {"siteEUIwOnSite": Math.ceil($scope.getPropResponseField(results,"siteEUIwOnSite"))},
@@ -400,11 +408,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.propList = [];
 
         if($scope.auxModel.reportingUnits==="us"){
-            $scope.tableEnergyUnits="KBtu/yr";
-            $scope.tableEUIUnits="KBtu/ft²/yr";
+            $scope.tableEnergyUnits="(kBtu/yr)";
+            $scope.tableEUIUnits="(kBtu/ft²/yr)";
         }else {
-            $scope.tableEnergyUnits="kWh/yr";
-            $scope.tableEUIUnits="kWh/m²/yr";
+            $scope.tableEnergyUnits="(kWh/yr)";
+            $scope.tableEUIUnits="(kWh/m²/yr)";
         }
 
         if($scope.auxModel.CDD === undefined || $scope.auxModel.HDD === undefined ||
@@ -624,7 +632,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"MixedUse",name:"Mixed Use Property"},
                     {id:"Office",name:"Office"},
                     {id:"VeterinaryOffice",name:"Veterinary Office"},
-                    {id:"Office",name:"Courthouse"},
+                    {id:"Courthouse",name:"Courthouse"},
                     {id:"DrinkingWaterTreatment",name:"Drinking Water Treatment Center"},
                     {id:"FireStation",name:"Fire Station"},
                     {id:"Library",name:"Library"},
