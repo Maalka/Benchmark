@@ -612,7 +612,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"MixedUse",name:"Mixed Use Property"},
                     {id:"Office",name:"Office"},
                     {id:"VeterinaryOffice",name:"Veterinary Office"},
-                    {id:"Office",name:"Courthouse"},
+                    {id:"Courthouse",name:"Courthouse"},
                     {id:"DrinkingWaterTreatment",name:"Drinking Water Treatment Center"},
                     {id:"FireStation",name:"Fire Station"},
                     {id:"Library",name:"Library"},

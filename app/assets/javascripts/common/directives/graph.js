@@ -148,7 +148,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 };
             };
 
-            console.log(getEUIMetrics());
+            //console.log(getEUIMetrics());
 
 
             var percentBetter = function() {
@@ -416,11 +416,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
                //Gap between energy efficiency(EE) and YOUR BUILDING flag
                var EEgap = (getTempZEPI() !== undefined) ? getEUIMetrics().ZepiEE - getTempZEPI() : 0;
-//
-                console.log("Ongap: " + ONgap);
-                console.log("EEgap: " + EEgap);
-                console.log("ZepiEE: " + getEUIMetrics().ZepiEE);
-                console.log("Temp ZEPI: " + getTempZEPI());
+
 
                 updateOrAddSeries(chart,
                     createMarker( "YOUR BUILDING", getEUIMetrics().ZepiEE > 100 ? 30 : 60, getTempZEPI(),
@@ -442,11 +438,6 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               //Gap between onsite scores and score text
               var ONendGap = (getEUIMetrics().OnSite !== undefined) ? $scope.baselineConstant - getEUIMetrics().OnSite : 0;
-
-               console.log("OnSite Marker: " + getEUIMetrics().OnSite);
-               console.log("EE-Score Gap: " + EEendGap);
-               console.log("ON-Score Gap:" + ONendGap);
-
 
               //Score text marker
               updateOrAddSeries(chart,
