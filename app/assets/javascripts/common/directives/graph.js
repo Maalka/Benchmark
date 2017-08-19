@@ -124,7 +124,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     $scope.ZepiOnAndOffSite = getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : undefined;
                 }
 
-                if (getEEMarkerX().onSiteRenewableTotal === 0){
+                if (getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0){
                    $scope.OnAndOffSiteXposition = Math.abs($scope.ZepiEE) - Math.abs($scope.ZepiOnAndOffSite);
                    $scope.OnSiteXposition = Math.abs($scope.ZepiEE) - Math.abs($scope.ZepiOnSite);
                 } else {
