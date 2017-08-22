@@ -10,9 +10,5 @@ define(['angular', 'benchmark', 'maalka-templates'], function(angular) {
 
   // We must already declare most dependencies here (except for common), or the submodules' routes
   // will not be resolved
-  return angular.module('app', ['benchmark.dashboard', 'matchmedia-ng', 'maalka-templates']).config(['matchmediaProvider', function (matchmediaProvider) {
-      matchmediaProvider.rules.phone = "(max-width: 768px)";
-      matchmediaProvider.rules.tablet = "(max-width: 1200px)";
-      matchmediaProvider.rules.desktop = "(min-width: 1200px)";
-   }]);
+  return angular.module('app', ['benchmark.dashboard', 'maalka-templates']);
 });

@@ -1,3 +1,4 @@
+
 <div style="background:black;padding-top:14px;margin-bottom:14px">
   <div class="ui stackable grid container">
       <div class="three wide column" ng-if="media === 'print'"> 
@@ -8,7 +9,7 @@
           <img src="/assets/images/2030logo.png" style="position:absolute;left: -10px;z-index:9999">
       </div>
 
-      <div class="two wide column mobile only non printable">
+      <div class="two wide column mobile only non printable" ng-if="media !== 'print'">
           <img src="/assets/images/2030logo.png" class="ui image floated left">
              <h1 class="ui inverted huge header">ZERO ENERGY RATING & TARGET TOOL</h1>
       </div>
@@ -22,7 +23,7 @@
              ZERO ENERGY RATING & TARGET TOOL
           </h1>
       </div>
-       <div class="black five wide column" style="padding-top:0;padding-bottom:0"  ng-if="media !== 'print'">
+       <div class="black five wide column" style="padding-top:0;padding-bottom:0"  ng-if = "media !== 'print'">
           <div class="ui text inverted fluid four item menu">
               <a class="item" href="#/">home</a>
               <a class="item" href="#/bulk">bulk</a>
@@ -41,7 +42,7 @@
              ZERO ENERGY RATING & TARGET TOOL
           </h1>
       </div>
-       <div class="black five wide column" style="padding-top:0;padding-bottom:0"  ng-if="media === 'print'">
+       <div class="black five wide column" style="padding-top:0;padding-bottom:0"  ng-if ="media === 'print'">
           <div class="ui text inverted fluid four item menu">
               <a class="item">home</a>
               <a class="item">bulk</a>

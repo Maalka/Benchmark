@@ -1,10 +1,8 @@
-
 <div>
+    <div ng-if="includeHeader" ng-include src="'javascripts/benchmark/header.html'"></div>
     <div class="ui stackable grid container" style="padding-top:14px">
-
         <!-- setup the response grids *** LARGE SCREEN-->
-
-        <div class="eight wide column" ng-if="media !== 'print'" 
+        <div class="eight wide column"
             ng-class="{'desktop-padding-left': largeScreen}"
             id="data-input">
             <div class="ui hidden divider"></div>
@@ -24,12 +22,12 @@
                 </div>
             </div>
         </div>
-        <div class="eight wide column" ng-if="media !== 'print'"
+        <div class="eight wide column"
             ng-class="{'desktop-padding-right': largeScreen}"
             element="'#data-input'">
             <div class="ui hidden divider"></div>
             <div ng-include src="'javascripts/benchmark/benchmark_result.html'" style="padding-left: 1em;">Not Defined</div>
         </div>
     </div>
+    <div class="ui hidden divider"></div>
 </div>
-<div class="ui hidden divider"></div>
