@@ -106,6 +106,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             }
 
             $scope.propTypes.push({
+                changeTo: v,
                 type: v.id,
                 name: v.name,
                 country:$scope.auxModel.country,
@@ -119,6 +120,18 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.auxModel.buildingType = undefined;
         }
     });
+
+    $scope.updatePropType = function($index) { 
+
+        $scope.propTypes[$index] = {
+            changeTo: $scope.propTypes[$index].changeTo,
+            country: $scope.propTypes[$index].country,
+            buildingZone: $scope.propTypes[$index].buildingZone,
+            toggleTarget: $scope.propTypes[$index].toggleTarget,
+            type: $scope.propTypes[$index].changeTo.id,
+            name: $scope.propTypes[$index].changeTo.name
+        };
+    };
 
     $scope.$watch("auxModel.country", function () {
         $scope.benchmarkResult = null;
