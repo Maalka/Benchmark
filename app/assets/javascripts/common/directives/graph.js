@@ -76,43 +76,6 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 }
             };
 
-            var getEUIMetrics = function() {
-                if (getTempZEPI() !== undefined) {
-                    $scope.EE = getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : 0;
-                    $scope.OnSite = getBRByKey("siteEUIwOnSite") ? Math.ceil(getBRByKey("siteEUIwOnSite")) : 0;
-                    $scope.OffSite = getBRByKey("siteEUIwOffSite") ? Math.ceil(getBRByKey("siteEUIwOffSite")) : 0;
-                    $scope.OnAndOffSite = getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : 0;
-
-                    $scope.ZepiEE = getBRByKey("actualZEPI") ? Math.ceil(getBRByKey("actualZEPI")) : 0;
-                    $scope.ZepiOnSite = getBRByKey("actualZEPIwOnSite") ? Math.ceil(getBRByKey("actualZEPIwOnSite")) : 0;
-                    $scope.ZepiOffSite = getBRByKey("actualZEPIwOffSite") ? Math.ceil(getBRByKey("actualZEPIwOffSite")) : 0;
-                    $scope.ZepiOnAndOffSite = getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : 0;
-
-                }else {
-                    $scope.EE = getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : undefined;
-                    $scope.OnSite = getBRByKey("siteEUIwOnSite") ? Math.ceil(getBRByKey("siteEUIwOnSite")) : undefined;
-                    $scope.OffSite = getBRByKey("siteEUIwOffSite") ? Math.ceil(getBRByKey("siteEUIwOffSite")) : undefined;
-                    $scope.OnAndOffSite = getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : undefined;
-
-                    $scope.ZepiEE = getBRByKey("actualZEPI") ? Math.ceil(getBRByKey("actualZEPI")) : undefined;
-                    $scope.ZepiOnSite = getBRByKey("actualZEPIwOnSite") ? Math.ceil(getBRByKey("actualZEPIwOnSite")) : undefined;
-                    $scope.ZepiOffSite = getBRByKey("actualZEPIwOffSite") ? Math.ceil(getBRByKey("actualZEPIwOffSite")) : undefined;
-                    $scope.ZepiOnAndOffSite = getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : undefined;
-                }
-                return {
-                    EE:$scope.EE,
-                    OnSite:$scope.OnSite,
-                    OffSite:$scope.OffSite,
-                    OnAndOffSite:$scope.OnAndOffSite,
-
-                    ZepiEE:$scope.ZepiEE,
-                    ZepiOnSite:$scope.ZepiOnSite,
-                    ZepiOffSite:$scope.ZepiOffSite,
-                    ZepiOnAndOffSite:$scope.ZepiOnAndOffSite
-                };
-            };
-
-            console.log(getEUIMetrics());
 
           var getEEMarkerX = function() {
              var EEgap = $scope.baselineConstant - getTempZEPI();
@@ -137,7 +100,55 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               offSitePurchasedTotal: purchased
             };
           };
+           var getEUIMetrics = function() {
+                if (getTempZEPI() !== undefined) {
+                    $scope.EE = getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : 0;
+                    $scope.OnSite = getBRByKey("siteEUIwOnSite") ? Math.ceil(getBRByKey("siteEUIwOnSite")) : 0;
+                    $scope.OffSite = getBRByKey("siteEUIwOffSite") ? Math.ceil(getBRByKey("siteEUIwOffSite")) : 0;
+                    $scope.OnAndOffSite = getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : 0;
 
+                    $scope.ZepiEE = getBRByKey("actualZEPI") ? Math.ceil(getBRByKey("actualZEPI")) : 0;
+                    $scope.ZepiOnSite = getBRByKey("actualZEPIwOnSite") ? Math.ceil(getBRByKey("actualZEPIwOnSite")) : 0;
+                    $scope.ZepiOffSite = getBRByKey("actualZEPIwOffSite") ? Math.ceil(getBRByKey("actualZEPIwOffSite")) : 0;
+                    $scope.ZepiOnAndOffSite = getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : 0;
+
+                }else {
+                    $scope.EE = getBRByKey("siteEUI") ? Math.ceil(getBRByKey("siteEUI")) : undefined;
+                    $scope.OnSite = getBRByKey("siteEUIwOnSite") ? Math.ceil(getBRByKey("siteEUIwOnSite")) : undefined;
+                    $scope.OffSite = getBRByKey("siteEUIwOffSite") ? Math.ceil(getBRByKey("siteEUIwOffSite")) : undefined;
+                    $scope.OnAndOffSite = getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : undefined;
+
+                    $scope.ZepiEE = getBRByKey("actualZEPI") ? Math.ceil(getBRByKey("actualZEPI")) : undefined;
+                    $scope.ZepiOnSite = getBRByKey("actualZEPIwOnSite") ? Math.ceil(getBRByKey("actualZEPIwOnSite")) : undefined;
+                    $scope.ZepiOffSite = getBRByKey("actualZEPIwOffSite") ? Math.ceil(getBRByKey("actualZEPIwOffSite")) : undefined;
+                    $scope.ZepiOnAndOffSite = getBRByKey("actualZEPIwOnAndOffSite") ? Math.ceil(getBRByKey("actualZEPIwOnAndOffSite")) : undefined;
+                }
+
+                if (getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0){
+                   $scope.OnAndOffSiteXposition = Math.abs($scope.ZepiEE) - Math.abs($scope.ZepiOnAndOffSite);
+                   $scope.OnSiteXposition = Math.abs($scope.ZepiEE) - Math.abs($scope.ZepiOnSite);
+                } else {
+                   $scope.OnAndOffSiteXposition =  $scope.ZepiOnAndOffSite;
+                   $scope.OnSiteXposition =  $scope.ZepiOnSite;
+                }
+
+
+                return {
+                    EE:$scope.EE,
+                    OnSite:$scope.OnSite,
+                    OffSite:$scope.OffSite,
+                    OnAndOffSite:$scope.OnAndOffSite,
+
+                    ZepiEE:$scope.ZepiEE,
+                    ZepiOnSite:$scope.ZepiOnSite,
+                    ZepiOffSite:$scope.ZepiOffSite,
+                    ZepiOnAndOffSite: $scope.ZepiOnAndOffSite,
+                    ZepiOnAndOffSiteXposition: $scope.OnAndOffSiteXposition,
+                    ZepiOnSiteXposition: $scope.OnSiteXposition
+                };
+            };
+
+            //console.log(getEUIMetrics());
 
 
             var percentBetter = function() {
@@ -405,11 +416,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
                //Gap between energy efficiency(EE) and YOUR BUILDING flag
                var EEgap = (getTempZEPI() !== undefined) ? getEUIMetrics().ZepiEE - getTempZEPI() : 0;
-//
-                console.log("Ongap: " + ONgap);
-                console.log("EEgap: " + EEgap);
-                console.log("ZepiEE: " + getEUIMetrics().ZepiEE);
-                console.log("Temp ZEPI: " + getTempZEPI());
+
 
                 updateOrAddSeries(chart,
                     createMarker( "YOUR BUILDING", getEUIMetrics().ZepiEE > 100 ? 30 : 60, getTempZEPI(),
@@ -431,11 +438,6 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
               //Gap between onsite scores and score text
               var ONendGap = (getEUIMetrics().OnSite !== undefined) ? $scope.baselineConstant - getEUIMetrics().OnSite : 0;
-
-               console.log("OnSite Marker: " + getEUIMetrics().OnSite);
-               console.log("EE-Score Gap: " + EEendGap);
-               console.log("ON-Score Gap:" + ONendGap);
-
 
               //Score text marker
               updateOrAddSeries(chart,
@@ -643,7 +645,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       }
                     },
                     {
-                      x: fixX(getEUIMetrics().ZepiOnSite),
+                      x: fixX(getEUIMetrics().ZepiOnSiteXposition),
                       y: -30,
                       marker: {
                         enabled: false
@@ -670,7 +672,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       }
                     },
                     {
-                      x: fixX(getEUIMetrics().ZepiOnAndOffSite),
+                      x: fixX(getEUIMetrics().ZepiOnAndOffSiteXposition),
                       y: -30,
                       marker: {
                         enabled: false
