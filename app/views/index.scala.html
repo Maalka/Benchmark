@@ -27,11 +27,11 @@
         ga('send', 'pageview');
       </script>
     }
+    <script> 
+      var maalkaIncludeHeader = @includeHeader;
+    </script>
   </head>
   <body id="benchmark" ng-cloak>
-    @if(includeHeader) {
-      @header()
-    }
     <div data-ng-view  ng-cloak>
     </div>
   </body>

@@ -52,6 +52,13 @@ define(['angular','./main'], function(angular) {
                     }
 
                 });
+                // if the building type changes.  then 
+                $scope.$watch('model.propertyModel.buildingType', function (propertyType, lastValue) { 
+                    if (propertyType !== undefined && lastValue !== undefined){
+                        setPropertyModelFields(GFA);
+                    }
+                });
+
                 $scope.removeProp = function() { 
                     $scope.$parent.removeProp(this);
                 };

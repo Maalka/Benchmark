@@ -1,11 +1,15 @@
+/*global
+    maalkaIncludeHeader
+*/
 /**
  * Dashboard controllers.
  */
 //define(["./test/sample_response_test_data"], function(sampleTestData) {
-define(['angular', 'matchmedia-ng'], function(angular) {
+define(['angular'], function() {
   'use strict';
-  var DashboardCtrl = function($rootScope, $scope, $window, $sce, $timeout, $q, $log, matchmedia, benchmarkServices) {
+  var DashboardCtrl = function($rootScope, $scope, $window, $sce, $timeout, $q, $log, benchmarkServices) {
 
+    $rootScope.includeHeader = maalkaIncludeHeader;
     $rootScope.pageTitle = "2030 Baseline";
     //The model that will be submitted for analysis
     $scope.auxModel = {};
@@ -24,53 +28,52 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.tableEnergyUnits = null;
     $scope.forms = {'hasValidated': false};
     $scope.propTypes = [];
-    $scope.matchmedia = matchmedia;
     $scope.mainColumnWidth = "";
     $scope.propText = "Primary Building Use";
     $scope.buildingZone = "commercial";
     $scope.targetToggle = "percentReduction";
     $scope.isResidential = false;
 
-    // check the media to handel the ng-if media statements
-    // it turns out that form elements do not respect "display: none"
-    // and need to be removed from the dom
-    var setMedia = function (){
-        if (matchmedia.isPrint()) {
-            $scope.media = "print";
-            $scope.mainColumnWidth = "eight wide column";
-        } else if (matchmedia.isPhone()) {
-            $scope.media = "phone";
-            $scope.mainColumnWidth = "eight wide column";
-        } else if (matchmedia.isTablet()) {
-            $scope.media = "tablet";
-            $scope.mainColumnWidth = "eight wide column";
-        } else if (matchmedia.isDesktop()) {
-            $scope.media = "desktop";
-            $scope.mainColumnWidth = "eight wide column";
-        } else {
-            $scope.mainColumnWidth = "eight wide column";
-        }
-    };
-    matchmedia.on('only screen and (min-width: 1200px) and (max-width: 1919px)', function(match){
-        $scope.largeScreen = match.matches;
-    });
-    matchmedia.on('only screen and (max-width: 1199px)', function(match){
-        $scope.largeScreen = !match.matches;
-    });
+    if (window.matchMedia) {
 
-    matchmedia.onPrint(setMedia, $scope);
+        var printQueryList = window.matchMedia('print');
+        var phoneQueryList = window.matchMedia('(max-width: 767px)');      
+        var tabletQueryList = window.matchMedia('(min-width: 768px) and (max-width: 1200px)');            
+        var desktopQueryList = window.matchMedia('(min-width: 1200px) and (max-width: 1919px');                  
+        var largeQueryList = window.matchMedia('(min-width: 1919px)');                  
 
-    setMedia();
-    angular.element($window).bind("resize", function () {
-        setMedia();
-        $scope.$apply();
-    });
+        var updateMatchMedia= function () { 
+            if (printQueryList.matches) {
+                $scope.media = "print";                                    
+            } else if (phoneQueryList.matches) {
+                $scope.media = "phone";                        
+            } else if (tabletQueryList.matches) { 
+                $scope.media = "tablet";            
+            } else if (desktopQueryList.matches) { 
+                $scope.media = "desktop";
+            } 
 
+            if (largeQueryList.matches) {
+                $scope.largeScreen = true;
+            } else {
+                $scope.largeScreen = false;
+            }
+            $timeout(function () {
+                $scope.$apply();
+            });
+        };
+        updateMatchMedia();
 
+        printQueryList.addListener(updateMatchMedia);
+
+        $scope.$on("$destroy", function handler() {
+            printQueryList.removeListener(updateMatchMedia);
+        });
+    }
 
     $scope.$watch("auxModel.buildingType", function (v) {
         if (v === undefined || v === null) {
-            return;
+            return; 
         }
 
         if(($scope.auxModel.country) && (v)){
@@ -106,6 +109,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             }
 
             $scope.propTypes.push({
+                changeTo: v,
                 type: v.id,
                 name: v.name,
                 country:$scope.auxModel.country,
@@ -119,6 +123,18 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.auxModel.buildingType = undefined;
         }
     });
+
+    $scope.updatePropType = function($index) { 
+
+        $scope.propTypes[$index] = {
+            changeTo: $scope.propTypes[$index].changeTo,
+            country: $scope.propTypes[$index].country,
+            buildingZone: $scope.propTypes[$index].buildingZone,
+            toggleTarget: $scope.propTypes[$index].toggleTarget,
+            type: $scope.propTypes[$index].changeTo.id,
+            name: $scope.propTypes[$index].changeTo.name
+        };
+    };
 
     $scope.$watch("auxModel.country", function () {
         $scope.benchmarkResult = null;
@@ -860,7 +876,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
 
   };
-  DashboardCtrl.$inject = ['$rootScope', '$scope', '$window','$sce','$timeout', '$q', '$log', 'matchmedia', 'benchmarkServices'];
+  DashboardCtrl.$inject = ['$rootScope', '$scope', '$window','$sce','$timeout', '$q', '$log', 'benchmarkServices'];
   return {
     DashboardCtrl: DashboardCtrl
   };

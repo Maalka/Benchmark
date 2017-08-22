@@ -33,9 +33,6 @@
       'maalka-templates': {
         deps: ['angular']
       },
-      'matchmedia-ng': {
-        deps: ['angular']
-      },
       'highcharts-core': {
         deps: ['jquery']
       },
@@ -65,7 +62,6 @@
       'highcharts-more': '../lib/highstock/highcharts-more',
       'highcharts': './highcharts-theme',
       'maalkaflags': './highcharts/maalkaFlags',
-      'matchmedia-ng': '../lib/matchmedia-ng/matchmedia-ng',
       'semantic': './semantic/semantic.min',
       'jsRoutes': '/jsroutes',
       'semantic-daterangepicker': './semantic-ui-daterangepicker/daterangepicker',
@@ -81,7 +77,7 @@
   // Load the app. This is kept minimal so it doesn't need much updating.
   require(['angular', 'angular-cookies', 'angular-route', 'jquery', 'semantic', './app'],
     function (angular) {
-      angular.bootstrap(document, ['app', 'matchmedia-ng']);
+      angular.bootstrap(document, ['app']);
     }
   );
 })(requirejs);

@@ -171,11 +171,20 @@
                 <div ng-if="propTypes.length > 0">
                     <div class="ui divider "></div>
                     <div class="field">
+                        
+
+
                         <label >Selected Use Types(s):</label>
                     </div>
                 </div>
                 <div class="field" ng-repeat="prop in propTypes">
-                    <h3 class="ui header">{{prop.name}}</h3>
+                    <select class="ui dropdown search"
+                            dropdown
+                            ng-model="prop.changeTo"
+                            ng-change="updatePropType($index)"
+                            ng-options="item as item.name for item in buildingProperties.buildingType[prop.buildingZone] | orderBy : 'name' track by item.id ">
+                        <option value="">Select</option>
+                    </select>
                 </div>
             </div>
             <div ng-repeat="prop in propTypes" ng-class="{'page-break-after': ($index + 1) % 3 == 0}">
