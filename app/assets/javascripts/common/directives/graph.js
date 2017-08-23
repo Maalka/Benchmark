@@ -67,6 +67,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 }
             };
 
+
+
             var checkSiteEUI = function() {
 
                 if (getTempZEPI() !== undefined) {
@@ -418,6 +420,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                var EEgap = (getTempZEPI() !== undefined) ? getEUIMetrics().ZepiEE - getTempZEPI() : 0;
 
 
+
+
                 updateOrAddSeries(chart,
                     createMarker( "YOUR BUILDING", getEUIMetrics().ZepiEE > 100 ? 30 : 60, getTempZEPI(),
                       (ONgap > 2 || EEgap > 5 || getEEMarkerX().onSiteRenewableTotal === 0) && getEUIMetrics().ZepiEE <= 100 ? "maalkaFlagLeftBottom" : "maalkaFlagBottom",
@@ -700,13 +704,15 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             var createMarker = function(title, yOff, x, shape, color, series, onlyTitle) {
               if (x !== undefined && !isNaN(x) && title !== undefined) {
                 var text = "";
+                var EEendGap = (getEUIMetrics().ZepiEE !== undefined) ? $scope.baselineConstant - getEUIMetrics().ZepiEE : 0;
+
                 if (title === "YOUR BUILDING") {
                    if (getEUIMetrics().ZepiEE >= 100) {
                       text = "<b></b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else if (shape === "maalkaFlagLeftBottom") {
                    text = "<b></b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else {
-                       text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
+                       text = "<b></b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
                    }
                 }
                 else if (title === "scoreText") {
@@ -724,7 +730,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 } else if (title === "TARGET") {
                   text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> EUI" + "<br><b>" + round(x) + "</b> Zero Score";
                 } else if (title === "EEscores") {
-                      if (getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0 || getEUIMetrics().ZepiEE > 100 || getEUIMetrics().ZepiEE - getTempZEPI() < 3) {
+                      if (EEendGap < 10 || getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0 || getEUIMetrics().ZepiEE > 100 || getEUIMetrics().ZepiEE - getTempZEPI() < 3) {
                           text = " ";
                       }
                       else {
