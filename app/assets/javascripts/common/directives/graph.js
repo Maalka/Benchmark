@@ -165,6 +165,16 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 return (siteEUI > Math.ceil(getBRByKey("percentBetterSiteEUI"))) ? getBRByKey("percentBetterActualtoGoal") : getBRByKey("actualGoalBetter");
             };
 
+
+            var showBuildingSiteEUI = function() {
+
+                if (getTempZEPI() !== undefined && getEEMarkerX().offSitePurchasedTotal === 0) {
+                    return getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : "";
+                }else {
+                    return "";
+                }
+            };
+
             var showGreenEnergyChart = function () {
               if (goodZEPI()) {
                 return $scope.baselineConstant !== undefined;
@@ -665,7 +675,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 });
 
                 updateOrAddSeries(chart, { type: 'line',
-                  name: "green power purchased",
+                  name: "off-site renewable energy",
                   id: 'greenPower',
                   data: sortData([
                     {
@@ -710,9 +720,9 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                    if (getEUIMetrics().ZepiEE >= 100) {
                       text = "<b></b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else if (shape === "maalkaFlagLeftBottom") {
-                   text = "<b></b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                   text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else {
-                       text = "<b></b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
+                       text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
                    }
                 }
                 else if (title === "scoreText") {
