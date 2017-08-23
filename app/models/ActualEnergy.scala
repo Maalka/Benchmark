@@ -50,13 +50,6 @@ case class EUICalculator(parameters: JsValue) {
     }
   }
 
-  def isNetMetered:Future[Boolean] = Future{
-    parameters.asOpt[NetMetered] match {
-      case Some(a) => a.netMetered
-      case _ => false //default to false (subtract renewables from total)
-      //throw new Exception("Could not tell if Net Metered")
-    }
-  }
 
   def sourceEnergynoPoolnoParking:Future[Energy] = {
     for {
@@ -115,16 +108,10 @@ case class EUICalculator(parameters: JsValue) {
 
   def getTotalSiteRenewableEnergy: Future[Energy] = {
     val local = for {
-      netMetered <- isNetMetered
       entries <- getRenewableEnergyList
       siteRenewableEnergyList <- computeSiteEnergy(entries)
       siteRenewableEnergySum <- getSiteEnergySum(siteRenewableEnergyList)
-    } yield {
-        netMetered match {
-          case true => countryZero
-          case false => siteRenewableEnergySum
-        }
-      }
+    } yield {siteRenewableEnergySum}
     local.recoverWith{
       case NonFatal(th) =>  Future{countryZero}
     }
@@ -185,7 +172,6 @@ case class EUICalculator(parameters: JsValue) {
 
   def getTotalSourceEnergy: Future[Energy] = {
     for {
-      netMetered <- isNetMetered
       entries <- getEnergyList
       sourceEnergyList <- computeSourceEnergy(entries)
       sourceEnergyListConverted <- convertOutputSum(sourceEnergyList)
@@ -196,16 +182,10 @@ case class EUICalculator(parameters: JsValue) {
 
   def getTotalSourceRenewableEnergy: Future[Energy] = {
     val local = for {
-      netMetered <- isNetMetered
       entries <- getRenewableEnergyList
       sourceRenewableEnergyList <- computeSourceEnergy(entries)
       sourceRenewableEnergySum <- convertOutputSum(sourceRenewableEnergyList)
-    } yield {
-        netMetered match {
-          case true => countryZero
-          case false => sourceRenewableEnergySum
-        }
-      }
+    } yield {sourceRenewableEnergySum}
     local.recoverWith{
       case NonFatal(th) =>  Future{countryZero}
     }
@@ -439,7 +419,4 @@ object Parking {
 }
 
 case class EnergyTuple(energyType: String, energyName: String, energyValue: Energy)
-case class NetMetered(netMetered: Boolean)
-object NetMetered {
-  implicit val netMeteredRead: Reads[NetMetered] = Json.reads[NetMetered]
-}
+

@@ -486,7 +486,7 @@ define(['angular'], function() {
                     $scope.propTypes[i].propertyModel.CDD = $scope.auxModel.CDD;
                     $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
                     $scope.propTypes[i].propertyModel.targetScore = null;
-                    $scope.propTypes[i].propertyModel.netMetered = $scope.auxModel.netMetered;
+                    //$scope.propTypes[i].propertyModel.netMetered = $scope.auxModel.netMetered;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
 
@@ -736,8 +736,8 @@ define(['angular'], function() {
                 {id:"coalA",name:"Coal (Anthracite)"},
                 {id:"coalB",name:"Coal (Bituminous) "},
                 {id:"diesel",name:"Diesel"},
-                {id:"other",name:"Other"},
-                {id:"grid",name:"Electric (renewable)"}
+                {id:"grid",name:"Electric (renewable)"},
+                {id:"other",name:"Other"}
             ],
 
             renewableType:[

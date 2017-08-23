@@ -58,17 +58,11 @@ case class Emissions(parameters:JsValue) {
   def getAvoidedEmissionsSum(): Future[Double] = {
 
     val local = for {
-      netMetered <- energyCalcs.isNetMetered
       entries <- energyCalcs.getRenewableEnergyList
       energyTuples <- computeEnergyAndType(entries)
       eGridCode <- getEGrid()
       indirectFactors <- emissionsIndirectFactors(energyTuples, eGridCode)
-    } yield {
-        netMetered match {
-          case true => 0
-          case false => indirectFactors.map(_.eValue).sum
-        }
-      }
+    } yield {indirectFactors.map(_.eValue).sum}
     local.recoverWith{
       case NonFatal(th) =>  Future{0}
     }
