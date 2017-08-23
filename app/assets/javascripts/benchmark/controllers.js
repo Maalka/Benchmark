@@ -7,6 +7,12 @@
 //define(["./test/sample_response_test_data"], function(sampleTestData) {
 define(['angular'], function() {
   'use strict';
+  var RootCtrl = function($rootScope) { 
+    $rootScope.includeHeader = maalkaIncludeHeader;
+  };
+
+  RootCtrl.$inject = ['$rootScope'];
+
   var DashboardCtrl = function($rootScope, $scope, $window, $sce, $timeout, $q, $log, benchmarkServices) {
 
     $rootScope.includeHeader = maalkaIncludeHeader;
@@ -42,7 +48,8 @@ define(['angular'], function() {
         var desktopQueryList = window.matchMedia('(min-width: 1200px) and (max-width: 1919px');                  
         var largeQueryList = window.matchMedia('(min-width: 1919px)');                  
 
-        var updateMatchMedia= function () { 
+        var updateMatchMedia= function (q) { 
+            console.log(q);
             if (printQueryList.matches) {
                 $scope.media = "print";                                    
             } else if (phoneQueryList.matches) {
@@ -58,6 +65,8 @@ define(['angular'], function() {
             } else {
                 $scope.largeScreen = false;
             }
+
+            console.log($scope.media);
             $timeout(function () {
                 $scope.$apply();
             });
@@ -878,6 +887,8 @@ define(['angular'], function() {
   };
   DashboardCtrl.$inject = ['$rootScope', '$scope', '$window','$sce','$timeout', '$q', '$log', 'benchmarkServices'];
   return {
-    DashboardCtrl: DashboardCtrl
+    DashboardCtrl: DashboardCtrl,
+    RootCtrl: RootCtrl    
+
   };
 });

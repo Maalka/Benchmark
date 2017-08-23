@@ -68,3 +68,7 @@ div.entry {
 @media all {
 	.page-break	{ display: none; }
 }
+
+div.only.print {
+    display: none !important;
+}
