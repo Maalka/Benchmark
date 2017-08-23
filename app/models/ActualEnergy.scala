@@ -50,13 +50,6 @@ case class EUICalculator(parameters: JsValue) {
     }
   }
 
-  def isNetMetered:Future[Boolean] = Future{
-    parameters.asOpt[NetMetered] match {
-      case Some(a) => a.netMetered
-      case _ => false //default to false (subtract renewables from total)
-      //throw new Exception("Could not tell if Net Metered")
-    }
-  }
 
   def sourceEnergynoPoolnoParking:Future[Energy] = {
     for {
@@ -84,8 +77,8 @@ case class EUICalculator(parameters: JsValue) {
 
   def getRenewableEnergyTotalbyType(entryList:List[EnergyTuple],entryType:String): Future[Energy] = Future {
     entryType match {
-      case "onSite" => entryList.filterNot(_.energyName == "Off-Site Purchased").map(_.energyValue).sum
-      case "purchased" => entryList.filter(_.energyName == "Off-Site Purchased").map(_.energyValue).sum
+      case "onSite" => entryList.filterNot(_.energyName == "Electric (renewable)").map(_.energyValue).sum
+      case "purchased" => entryList.filter(_.energyName == "Electric (renewable)").map(_.energyValue).sum
       case _ => entryList.map(_.energyValue).sum
     }
   }
@@ -94,8 +87,8 @@ case class EUICalculator(parameters: JsValue) {
   //in order to be used in downstreams arithmetic operations
   def getRenewableEnergyTotalbyTypeOutput(entryList:List[EnergyTuple],entryType:String): Future[Double] = Future {
     entryType match {
-      case "onSite" => entryList.filterNot(_.energyName == "Off-Site Purchased").map(_.energyValue.value).sum
-      case "purchased" => entryList.filter(_.energyName == "Off-Site Purchased").map(_.energyValue.value).sum
+      case "onSite" => entryList.filterNot(_.energyName == "Electric (renewable)").map(_.energyValue.value).sum
+      case "purchased" => entryList.filter(_.energyName == "Electric (renewable)").map(_.energyValue.value).sum
       case _ => 0.0
     }
   }
@@ -115,16 +108,10 @@ case class EUICalculator(parameters: JsValue) {
 
   def getTotalSiteRenewableEnergy: Future[Energy] = {
     val local = for {
-      netMetered <- isNetMetered
       entries <- getRenewableEnergyList
       siteRenewableEnergyList <- computeSiteEnergy(entries)
       siteRenewableEnergySum <- getSiteEnergySum(siteRenewableEnergyList)
-    } yield {
-        netMetered match {
-          case true => countryZero
-          case false => siteRenewableEnergySum
-        }
-      }
+    } yield {siteRenewableEnergySum}
     local.recoverWith{
       case NonFatal(th) =>  Future{countryZero}
     }
@@ -132,11 +119,24 @@ case class EUICalculator(parameters: JsValue) {
 
   def getSiteEnergySum(energies: List[EnergyTuple]): Future[Energy] = {
     val f = country match {
-      case "USA" => energies.map { case a: EnergyTuple => a.energyValue in KBtus }.sum in KBtus
-      case _ => energies.map { case a: EnergyTuple => a.energyValue in Gigajoules }.sum in Gigajoules
+      case "USA" => energies.map {
+        case a: EnergyTuple =>
+          a.energyName match {
+            case "Sold" => a.energyValue*(-1) in KBtus
+            case _ => a.energyValue in KBtus
+          }
+    }.sum in KBtus
+      case _ => energies.map {
+        case a: EnergyTuple =>
+          a.energyName match {
+            case "Sold" => a.energyValue*(-1) in Gigajoules
+            case _ => a.energyValue in Gigajoules
+          }
+      }.sum in Gigajoules
     }
     Future(f)
   }
+
 
   def computeSiteEnergy[T](entries: T): Future[List[EnergyTuple]] = Future {
     entries match {
@@ -172,7 +172,6 @@ case class EUICalculator(parameters: JsValue) {
 
   def getTotalSourceEnergy: Future[Energy] = {
     for {
-      netMetered <- isNetMetered
       entries <- getEnergyList
       sourceEnergyList <- computeSourceEnergy(entries)
       sourceEnergyListConverted <- convertOutputSum(sourceEnergyList)
@@ -183,16 +182,10 @@ case class EUICalculator(parameters: JsValue) {
 
   def getTotalSourceRenewableEnergy: Future[Energy] = {
     val local = for {
-      netMetered <- isNetMetered
       entries <- getRenewableEnergyList
       sourceRenewableEnergyList <- computeSourceEnergy(entries)
       sourceRenewableEnergySum <- convertOutputSum(sourceRenewableEnergyList)
-    } yield {
-        netMetered match {
-          case true => countryZero
-          case false => sourceRenewableEnergySum
-        }
-      }
+    } yield {sourceRenewableEnergySum}
     local.recoverWith{
       case NonFatal(th) =>  Future{countryZero}
     }
@@ -426,7 +419,4 @@ object Parking {
 }
 
 case class EnergyTuple(energyType: String, energyName: String, energyValue: Energy)
-case class NetMetered(netMetered: Boolean)
-object NetMetered {
-  implicit val netMeteredRead: Reads[NetMetered] = Json.reads[NetMetered]
-}
+
