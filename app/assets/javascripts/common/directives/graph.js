@@ -67,6 +67,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 }
             };
 
+
+
             var checkSiteEUI = function() {
 
                 if (getTempZEPI() !== undefined) {
@@ -365,7 +367,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 10) {
                 yOffset = 40;
               }
-              else if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) >= 10 && round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 20) {
+              else if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) >= 10 && round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 30) {
                 yOffset = 30;
               }
               var markers = createMarker("BASELINE", -40 - yOffset, $scope.baselineConstant, "maalkaFlag", "black", 'zepi', false)
@@ -416,6 +418,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
                //Gap between energy efficiency(EE) and YOUR BUILDING flag
                var EEgap = (getTempZEPI() !== undefined) ? getEUIMetrics().ZepiEE - getTempZEPI() : 0;
+
+
 
 
                 updateOrAddSeries(chart,
@@ -700,13 +704,15 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             var createMarker = function(title, yOff, x, shape, color, series, onlyTitle) {
               if (x !== undefined && !isNaN(x) && title !== undefined) {
                 var text = "";
+                var EEendGap = (getEUIMetrics().ZepiEE !== undefined) ? $scope.baselineConstant - getEUIMetrics().ZepiEE : 0;
+
                 if (title === "YOUR BUILDING") {
                    if (getEUIMetrics().ZepiEE >= 100) {
-                      text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                      text = "<b></b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else if (shape === "maalkaFlagLeftBottom") {
-                   text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                   text = "<b></b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else {
-                       text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
+                       text = "<b></b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
                    }
                 }
                 else if (title === "scoreText") {
@@ -718,13 +724,13 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                         text = "EUI <br> Zero Score ";
                   }
                 } else if (title === "BASELINE") {
-                  text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("medianSiteEUI")) + "</b> FF-EUI" + "<br><b>" + $scope.baselineConstant + "</b> Score";
+                  text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("medianSiteEUI")) + "</b> EUI" + "<br><b>" + $scope.baselineConstant + "</b> Zero Score";
                 } else if (title === "PROGRESS PERCENT") {
                   text = round(percentBetter()) + "%";
                 } else if (title === "TARGET") {
-                  text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> FF-EUI" + "<br><b>" + round(x) + "</b> Score";
+                  text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> EUI" + "<br><b>" + round(x) + "</b> Zero Score";
                 } else if (title === "EEscores") {
-                      if (getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0 || getEUIMetrics().ZepiEE > 100 || getEUIMetrics().ZepiEE - getTempZEPI() < 3) {
+                      if (EEendGap < 10 || getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0 || getEUIMetrics().ZepiEE > 100 || getEUIMetrics().ZepiEE - getTempZEPI() < 3) {
                           text = " ";
                       }
                       else {
