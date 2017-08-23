@@ -878,6 +878,17 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               return margin;
             };
 
+            var printUpdate = function () {
+              angular.element($element).highcharts().reflow();
+            };
+
+            if (window.matchMedia) {
+              var mediaQueryList = window.matchMedia('print');
+              mediaQueryList.addListener(function () {
+                printUpdate();
+              });
+            }
+
 
             var plot = function () {
 
@@ -891,6 +902,15 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       events: {
                         'load': function () {
                           loadSeries(chart);
+                        },
+                        beforePrint: function () {
+                            this.oldhasUserSize = this.hasUserSize;
+                            this.resetParams = [this.chartWidth, this.chartHeight, false];
+                            this.setSize(600, 400, false);
+                        },
+                        afterPrint: function () {
+                            this.setSize.apply(this, this.resetParams);
+                            this.hasUserSize = this.oldhasUserSize;
                         }
                       }
                   },
