@@ -8,7 +8,7 @@
             <td class="five wide">{{benchmarkResult.city || "City"}}, {{benchmarkResult.state || "ST"}}</td>
             <td colspan=2>{{benchmarkResult.postalCode || "000000"}}</td>
         </tr>
-        <tr ng-repeat="prop in propOutputList">
+        <tr  class="top aligned" ng-repeat="prop in propOutputList">
             <td ng-if="$first" rowspan="{{propOutputList.length}}">USES</td>
             <td>{{prop.propType}}</td>
             <td colspan=2 >{{prop.propSize | number : 0}} {{prop.areaUnits}} ({{prop.propPercent | number : 1}}%)</td>
