@@ -11,6 +11,8 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.auxModel = {};
     //The table of energy information input by user, default to empty
     $scope.energies = [{}, {}];
+    $scope.sold = [{'renewableType': {id:"grid",name:"Sold"}}];
+
     $scope.renewableEnergies = [{}, {}];
     //For displaying user-input energy entries after having been saved
     $scope.propList = [];
@@ -175,6 +177,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         if ($scope.renewableEnergies.length ===    1) {
             $scope.addRenewableEnergiesRow();
         }
+    };
+
+    $scope.removeSoldRow = function(){
+        $scope.sold.pop();
+        $scope.sold.push({'renewableType': {id:"grid",name:"Sold"}});
     };
 
 
@@ -403,6 +410,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         var validEnergy = function(e) {
             return (e.energyType !== undefined &&
                     e.energyName !== undefined &&
+                    e.energyName !== "Electric (renewable)" &&
                     e.energyUnits !== undefined &&
                     e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
         };
@@ -424,6 +432,26 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 'energyUse': Number(e.energyUse),
                 'energyRate': null
             };
+        };
+
+        var validRenewableFromRegular = function(e) {
+            return (e.energyType !== undefined &&
+                    e.energyName !== undefined &&
+                    e.energyName === "Electric (renewable)" &&
+                    e.energyUnits !== undefined &&
+                    e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
+        };
+
+        var getRenewableEnergyList = function () {
+
+            var renewableEnergyListFromRegular = $scope.energies.map(mapEnergy).filter(validRenewableFromRegular);
+            var renewableEnergyList = $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy);
+            var soldEnergyList = $scope.sold.map(mapRenewableEnergy).filter(validEnergy);
+
+            renewableEnergyListFromRegular.push.apply(renewableEnergyListFromRegular,soldEnergyList);
+            renewableEnergyList.push.apply(renewableEnergyList,renewableEnergyListFromRegular);
+
+            return renewableEnergyList;
         };
 
 
@@ -458,10 +486,12 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                         $scope.propTypes[i].propertyModel.energies = $scope.energies.map(mapEnergy).filter(validEnergy);
                     }
 
-                    if($scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy).length===0){
+                    if($scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy).length===0 &&
+                       $scope.energies.map(mapEnergy).filter(validRenewableFromRegular).length ===0){
                         $scope.propTypes[i].propertyModel.renewableEnergies=null;
                     } else {
-                        $scope.propTypes[i].propertyModel.renewableEnergies = $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy);
+                        console.log($scope.sold);
+                        $scope.propTypes[i].propertyModel.renewableEnergies = getRenewableEnergyList();
                     }
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
@@ -690,14 +720,20 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                 {id:"coalA",name:"Coal (Anthracite)"},
                 {id:"coalB",name:"Coal (Bituminous) "},
                 {id:"diesel",name:"Diesel"},
-                {id:"other",name:"Other"}
+                {id:"other",name:"Other"},
+                {id:"grid",name:"Electric (renewable)"}
             ],
 
             renewableType:[
                 {id:"grid",name:"On-Site Solar"},
                 {id:"grid",name:"On-Site Wind"},
-                {id:"grid",name:"On-Site Other"},
-                {id:"grid",name:"Off-Site Purchased"}
+                {id:"grid",name:"On-Site Other"}
+            ],
+
+            soldType:[
+                {id:"soldGrid",name:"On-Site Solar"},
+                {id:"soldGrid",name:"On-Site Wind"},
+                {id:"soldGrid",name:"On-Site Other"}
             ],
 
             renewableUnits:[
