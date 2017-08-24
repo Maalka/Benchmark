@@ -638,7 +638,7 @@ define(['angular'], function() {
                     {id:"RaceTrack",name:"Race Track"},
                     {id:"Aquarium",name:"Aquarium"},
                     {id:"Bar",name:"Bar"},
-                    {id:"Bar",name:"Nightclub"},
+                    //{id:"Bar",name:"Nightclub"},
                     {id:"Casino",name:"Casino"},
                     {id:"Zoo",name:"Zoo"},
                     {id:"OtherEntertainment",name:"Other Entertainment"},
