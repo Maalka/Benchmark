@@ -940,11 +940,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     enabled: true,
                     margin: 0,
                     padding: 0,
-                    symbolWidth: 6,
-                    symbolHeight: 6,
-                    itemDistance: 10,
+                    symbolWidth: 5,
+                    symbolHeight: 5,
+                    itemDistance: 8,
                     itemStyle: {
-                      fontSize:'10px',
+                      fontSize:'9px',
                     },
                     useHTML: true,
                     labelFormat: "<span style='color: {color};'>{name}</span>"

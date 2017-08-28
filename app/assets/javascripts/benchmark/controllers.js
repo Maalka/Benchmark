@@ -435,7 +435,7 @@ define(['angular'], function() {
         var validEnergy = function(e) {
             return (e.energyType !== undefined &&
                     e.energyName !== undefined &&
-                    e.energyName !== "Electric (renewable)" &&
+                    //e.energyName !== "Electric (renewable)" &&
                     e.energyUnits !== undefined &&
                     e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
         };
@@ -725,6 +725,7 @@ define(['angular'], function() {
 
             energyType:[
                 {id:"grid",name:"Electric (Grid)"},
+                {id:"grid",name:"Electric (renewable)"},
                 //{id:"onSiteElectricity",name:"Electric (Solar)"},
                 //{id:"onSiteElectricity",name:"Electric (Wind)"},
                 {id:"naturalGas",name:"Natural Gas"},
@@ -745,7 +746,6 @@ define(['angular'], function() {
                 {id:"coalA",name:"Coal (Anthracite)"},
                 {id:"coalB",name:"Coal (Bituminous) "},
                 {id:"diesel",name:"Diesel"},
-                {id:"grid",name:"Electric (renewable)"},
                 {id:"other",name:"Other"}
             ],
 
