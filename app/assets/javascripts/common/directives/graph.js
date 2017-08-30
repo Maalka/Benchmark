@@ -171,7 +171,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 if (getTempZEPI() !== undefined && getEEMarkerX().offSitePurchasedTotal === 0) {
                     return getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : "";
                 }else {
-                    return "";
+                    return "<br>  <br>";
                 }
             };
 
@@ -720,7 +720,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                    if (getEUIMetrics().ZepiEE >= 100) {
                       text = "<b></b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else if (shape === "maalkaFlagLeftBottom") {
-                   text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                       text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else {
                        text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
                    }
