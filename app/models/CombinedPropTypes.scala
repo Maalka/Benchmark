@@ -169,12 +169,12 @@ case class CombinedPropTypes(params: JsValue) {
         }.sum}
     } yield {
 
-        println(buildingList)
+        /*println(buildingList)
         println(areaWeights)
         println(sourceEUIList)
         println(weightedSourceEUI)
         println(KBtus(weightedSourceEUI))
-
+*/
         buildingProps.country match {
           case "USA" => weightedSourceEUI in KBtus
           case "Canada" => weightedSourceEUI in Gigajoules

@@ -75,10 +75,11 @@ case class EUICalculator(parameters: JsValue) {
     } yield siteRenewableEnergyList
   }
 
-  def getRenewableEnergyTotalbyType(entryList:List[EnergyTuple],entryType:String): Future[Energy] = Future {
-    entryType match {
-      case "onSite" => entryList.filterNot(_.energyName == "Electric (renewable)").map(_.energyValue).sum
-      case "purchased" => entryList.filter(_.energyName == "Electric (renewable)").map(_.energyValue).sum
+  def getRenewableEnergyTotalbyType(entryList:List[EnergyTuple],entryType:String,balance:Boolean): Future[Energy] = Future {
+    (entryType,balance) match {
+      case ("onSite",true) => entryList.filterNot(_.energyName == "Electric (renewable)").map(_.energyValue).sum
+      case ("onSite",false) => countryZero
+      case ("purchased",_) => entryList.filter(_.energyName == "Electric (renewable)").map(_.energyValue).sum
       case _ => entryList.map(_.energyValue).sum
     }
   }
@@ -100,7 +101,8 @@ case class EUICalculator(parameters: JsValue) {
   def getTotalSiteEnergy: Future[Energy] = {
     for {
       siteEnergyList <- getSiteEnergyList
-      siteEnergySum <- getSiteEnergySum(siteEnergyList)
+      renewableBalance <- getRenewableBalance(siteEnergyList)
+      siteEnergySum <- getSiteEnergySumZeroed(siteEnergyList,renewableBalance)
       siteRenewableSum <- getTotalSiteRenewableEnergy
     } yield siteEnergySum - siteRenewableSum
   }
@@ -110,8 +112,11 @@ case class EUICalculator(parameters: JsValue) {
     val local = for {
       entries <- getRenewableEnergyList
       siteRenewableEnergyList <- computeSiteEnergy(entries)
-      siteRenewableEnergySum <- getSiteEnergySum(siteRenewableEnergyList)
-    } yield {siteRenewableEnergySum}
+      renewableBalance <- getRenewableBalance(siteRenewableEnergyList)
+      siteRenewableEnergySum <- getSiteEnergySumRenewables(siteRenewableEnergyList,renewableBalance)
+    } yield {
+      siteRenewableEnergySum
+      }
     local.recoverWith{
       case NonFatal(th) =>  Future{countryZero}
     }
@@ -137,6 +142,74 @@ case class EUICalculator(parameters: JsValue) {
     Future(f)
   }
 
+  def getSiteEnergySumRenewables(energies: List[EnergyTuple],zero:Boolean): Future[Energy] = {
+    val f = (country,zero) match {
+      case ("USA",true) => energies.map {
+        case a: EnergyTuple =>
+          a.energyName match {
+            case "Sold" => a.energyValue*(-1) in KBtus
+            case _ => a.energyValue in KBtus
+          }
+    }.sum in KBtus
+      case ("USA",false) => KBtus(0)
+      case (_,false) => Gigajoules(0)
+      case (_,true) => energies.map {
+        case a: EnergyTuple =>
+          a.energyName match {
+            case "Sold" => a.energyValue*(-1) in Gigajoules
+            case _ => a.energyValue in Gigajoules
+          }
+      }.sum in Gigajoules
+    }
+    println(f,zero)
+    Future(f)
+  }
+
+  def getSiteEnergySumZeroed(energies: List[EnergyTuple],zero:Boolean): Future[Energy] = {
+    val f = country match {
+      case "USA" => energies.map {
+        case a: EnergyTuple =>
+          (a.energyName, zero) match {
+            case ("Sold",true) => a.energyValue*(-1) in KBtus
+            case ("Sold",false) => KBtus(0)
+            case ("On-Site Solar",false) => KBtus(0)
+            case ("On-Site Wind",false) => KBtus(0)
+            case ("On-Site Other",false) => KBtus(0)
+            case (_,_) => a.energyValue in KBtus
+          }
+    }.sum in KBtus
+      case _ => energies.map {
+        case a: EnergyTuple =>
+          (a.energyName, zero) match {
+            case ("Sold",true) => a.energyValue*(-1) in Gigajoules
+            case ("Sold",false) => Gigajoules(0)
+            case ("On-Site Solar",false) => Gigajoules(0)
+            case ("On-Site Wind",false) => Gigajoules(0)
+            case ("On-Site Other",false) => Gigajoules(0)
+            case (_,_) => a.energyValue in Gigajoules
+          }
+      }.sum in Gigajoules
+    }
+
+    println(f,zero,"sum")
+    Future(f)
+  }
+
+  def getRenewableBalance(energies: List[EnergyTuple]): Future[Boolean] = {
+    energies.map {
+      case a: EnergyTuple =>
+        a.energyName match {
+          case "Sold" => a.energyValue.value * (-1)
+          case "On-Site Solar" => a.energyValue.value
+          case "On-Site Wind" => a.energyValue.value
+          case "On-Site Other" => a.energyValue.value
+          case _ => 0.0
+        }
+    }.sum match {
+      case x if (x < 0.0) => Future(false)
+      case _ => Future(true)
+    }
+  }
 
   def computeSiteEnergy[T](entries: T): Future[List[EnergyTuple]] = Future {
     entries match {

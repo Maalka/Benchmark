@@ -469,26 +469,13 @@ define(['angular'], function() {
                     e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
         };
 
-        var getSoldEnergy = function () {
-            var soldEnergyList = [];
-
-            if($scope.sold.map(mapRenewableEnergy).filter(validEnergy).length !== 0 && $scope.energies.map(mapEnergy).filter(validEnergy).length !== 0 ){
-                if($scope.sold.map(mapRenewableEnergy)[0].energyUse < $scope.renewableEnergies.map(mapRenewableEnergy)[0].energyUse){
-                    soldEnergyList = $scope.sold.map(mapRenewableEnergy).filter(validEnergy);
-                }
-            }
-
-            return soldEnergyList;
-        };
-
-
         var getRenewableEnergyList = function () {
 
             var renewableEnergyListFromRegular = $scope.energies.map(mapEnergy).filter(validRenewableFromRegular);
             var renewableEnergyList = $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy);
 
 
-            renewableEnergyListFromRegular.push.apply(renewableEnergyListFromRegular,getSoldEnergy());
+            renewableEnergyListFromRegular.push.apply(renewableEnergyListFromRegular,$scope.sold.map(mapRenewableEnergy).filter(validEnergy));
             renewableEnergyList.push.apply(renewableEnergyList,renewableEnergyListFromRegular);
 
             return renewableEnergyList;
@@ -500,7 +487,7 @@ define(['angular'], function() {
             var renewableEnergyList = $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy);
             //var soldEnergyList = $scope.sold.map(mapRenewableEnergy).filter(validEnergy);
 
-            renewableEnergyList.push.apply(renewableEnergyList,getSoldEnergy());
+            renewableEnergyList.push.apply(renewableEnergyList,$scope.sold.map(mapRenewableEnergy).filter(validEnergy));
             energyListFromRegular.push.apply(energyListFromRegular,renewableEnergyList);
 
 

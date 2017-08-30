@@ -720,11 +720,17 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                    if (getEUIMetrics().ZepiEE >= 100) {
                       text = "<b></b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else if (shape === "maalkaFlagLeftBottom") {
-                   text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                    if (showBuildingSiteEUI() === ""){
+                        text = "<br>" + "<b>" + "" + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                    }else {
+                        text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                    }
+
                    } else {
                        text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
                    }
                 }
+
                 else if (title === "scoreText") {
                     if(getEUIMetrics().ZepiEE > 100) {
                        text = " ";

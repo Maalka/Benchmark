@@ -228,7 +228,8 @@ case class EUIMetrics(parameters: JsValue) {
 
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"purchased")
+      renewableBalance <- energyCalcs.getRenewableBalance(siteRenewableList)
+      totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"purchased",renewableBalance)
       convertedEUI <- EUIConversionConstant(sourceEnergy+totalOffSite,buildingSize)
     } yield {
      // println("SourceEUI w OnSite",convertedEUI)
@@ -242,7 +243,8 @@ case class EUIMetrics(parameters: JsValue) {
 
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOnSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"onSite")
+      renewableBalance <- energyCalcs.getRenewableBalance(siteRenewableList)
+      totalOnSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"onSite",renewableBalance)
       convertedEUI <- EUIConversionConstant(sourceEnergy+totalOnSite,buildingSize)
     } yield {
       //println("SourceEUI w Offsite",convertedEUI)
@@ -282,7 +284,8 @@ case class EUIMetrics(parameters: JsValue) {
 
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"purchased")
+      renewableBalance <- energyCalcs.getRenewableBalance(siteRenewableList)
+      totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"purchased",renewableBalance)
       convertedEUI <- EUIConversionConstant(siteTotalEnergy+totalOffSite,buildingSize)
     } yield {
       //println("SiteEUI w OnSite",convertedEUI)
@@ -296,7 +299,8 @@ case class EUIMetrics(parameters: JsValue) {
 
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOnSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"onSite")
+      renewableBalance <- energyCalcs.getRenewableBalance(siteRenewableList)
+      totalOnSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"onSite",renewableBalance)
       convertedEUI <- EUIConversionConstant(siteTotalEnergy+totalOnSite,buildingSize)
     } yield {
       //println("SiteEUI w OffSite",convertedEUI)
