@@ -171,7 +171,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 if (getTempZEPI() !== undefined && getEEMarkerX().offSitePurchasedTotal === 0) {
                     return getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : "";
                 }else {
-                    return "";
+                    return "<br>  <br>";
                 }
             };
 
@@ -721,13 +721,6 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       text = "<b></b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else if (shape === "maalkaFlagLeftBottom") {
                        text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
-                              /* would replace the line above with the following conditional
-                               need to have a line break somehow
-                              if (showBuildingSiteEUI() === ""){
-                                  text = "<br>" + "<b>" + "" + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
-                              }else {
-                                  text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
-                              }*/
                    } else {
                        text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
                    }
