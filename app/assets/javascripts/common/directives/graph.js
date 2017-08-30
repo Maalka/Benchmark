@@ -720,7 +720,14 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                    if (getEUIMetrics().ZepiEE >= 100) {
                       text = "<b></b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else if (shape === "maalkaFlagLeftBottom") {
-                   text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                       text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                              /* would replace the line above with the following conditional
+                               need to have a line break somehow
+                              if (showBuildingSiteEUI() === ""){
+                                  text = "<br>" + "<b>" + "" + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                              }else {
+                                  text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                              }*/
                    } else {
                        text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
                    }

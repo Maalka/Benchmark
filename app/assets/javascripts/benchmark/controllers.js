@@ -470,11 +470,28 @@ define(['angular'], function() {
         };
 
         var getSoldEnergy = function () {
-            var soldEnergyList = [];
 
-            if($scope.sold.map(mapRenewableEnergy).filter(validEnergy).length !== 0 && $scope.energies.map(mapEnergy).filter(validEnergy).length !== 0 ){
-                if($scope.sold.map(mapRenewableEnergy)[0].energyUse < $scope.renewableEnergies.map(mapRenewableEnergy)[0].energyUse){
+            var soldEnergyList =[];
+            var soldEnergy = 0.0;
+            var renewableEnergy = 0.0;
+
+            for (var i = 0; i < $scope.sold.map(mapRenewableEnergy).filter(validEnergy).length; i++){
+                soldEnergy = soldEnergy + $scope.sold.map(mapRenewableEnergy).filter(validEnergy)[i].energyUse;
+            }
+            for (var j = 0; j < $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy).length; j++){
+                renewableEnergy = renewableEnergy + $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy)[j].energyUse;
+            }
+
+            if($scope.sold.map(mapRenewableEnergy).filter(validEnergy).length !== 0){
+                if(soldEnergy < renewableEnergy){
                     soldEnergyList = $scope.sold.map(mapRenewableEnergy).filter(validEnergy);
+                }else{
+                    soldEnergyList = [{
+                    'energyType': "grid",
+                    'energyName': "Sold",
+                    'energyUnits': $scope.sold[0].renewableUnits,
+                    'energyUse': renewableEnergy
+                    }];
                 }
             }
 
