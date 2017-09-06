@@ -54,7 +54,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               if (r.length !== 0) {
                 return r[0][key];
               } else {
-                return undefined;
+                if (key === "percentBetterZEPI" || key === "percentBetterSiteEUI") {
+                    return 0;
+                } else {
+                    return undefined;
+                }
               }
             };
     
