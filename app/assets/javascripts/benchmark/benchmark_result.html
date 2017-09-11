@@ -8,7 +8,7 @@
     	    	 based on a {{benchmarkResult.percentBetterThanMedian | number : 0}}% reduction
     	   	</center>
 
-			<center ng-if="showPercentBetterTarget=='decrease'" style="padding-top: 1em;">
+		<!--<center ng-if="showPercentBetterTarget=='decrease'" style="padding-top: 1em;">
 				Decrease current EUI by
 				<font style="font-size:1.5em; position: relative; top:2px; color: #ee1516">{{percentBetterGoal | number : 0}}%</font>
 				more to achieve target
@@ -18,7 +18,7 @@
 				Your building is performing
 				<font style="font-size:1.5em; position: relative; top:2px; color: lightgreen;">{{percentBetterGoal | number : 0}}%</font>
 				better than its target.
-			</center>
+			</center>-->
 		</div>
 	    <div class=" sixteen wide column page-break-after" style="padding:0px" ng-if="benchmarkResult"  >
 	       <div graph benchmark-result="benchmarkResult" baseline-constant="baselineConstant" score-Graph="scoreGraph" style="width: 100%; height:400px'"></div>

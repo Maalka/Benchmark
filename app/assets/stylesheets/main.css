@@ -45,10 +45,6 @@ input.small {
     left: 90%;
 }
 
-div.only.print {
-	display: none !important;
-}
-
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
 }
@@ -62,9 +58,7 @@ div.desktop-padding-right {
 	padding-right: 13% !important;
 //	padding-left: 1em !important;
 }
-div.print-header {
-	padding-left: 2em !important;
-}
+
 div.entry {
 //	height: 750px;
 //	overflow-y: scroll;
@@ -73,4 +67,8 @@ div.entry {
 
 @media all {
 	.page-break	{ display: none; }
+}
+
+div.only.print {
+    display: none !important;
 }

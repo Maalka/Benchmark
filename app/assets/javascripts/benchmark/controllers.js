@@ -1,16 +1,28 @@
+/*global
+    maalkaIncludeHeader
+*/
 /**
  * Dashboard controllers.
  */
 //define(["./test/sample_response_test_data"], function(sampleTestData) {
-define(['angular', 'matchmedia-ng'], function(angular) {
+define(['angular'], function() {
   'use strict';
-  var DashboardCtrl = function($rootScope, $scope, $window, $sce, $timeout, $q, $log, matchmedia, benchmarkServices) {
+  var RootCtrl = function($rootScope) { 
+    $rootScope.includeHeader = maalkaIncludeHeader;
+  };
 
+  RootCtrl.$inject = ['$rootScope'];
+
+  var DashboardCtrl = function($rootScope, $scope, $window, $sce, $timeout, $q, $log, benchmarkServices) {
+
+    $rootScope.includeHeader = maalkaIncludeHeader;
     $rootScope.pageTitle = "2030 Baseline";
     //The model that will be submitted for analysis
     $scope.auxModel = {};
     //The table of energy information input by user, default to empty
     $scope.energies = [{}, {}];
+    $scope.sold = [{'renewableType': {id:"grid",name:"Sold"}}];
+
     $scope.renewableEnergies = [{}, {}];
     //For displaying user-input energy entries after having been saved
     $scope.propList = [];
@@ -24,53 +36,55 @@ define(['angular', 'matchmedia-ng'], function(angular) {
     $scope.tableEnergyUnits = null;
     $scope.forms = {'hasValidated': false};
     $scope.propTypes = [];
-    $scope.matchmedia = matchmedia;
     $scope.mainColumnWidth = "";
     $scope.propText = "Primary Building Use";
     $scope.buildingZone = "commercial";
     $scope.targetToggle = "percentReduction";
     $scope.isResidential = false;
 
-    // check the media to handel the ng-if media statements
-    // it turns out that form elements do not respect "display: none"
-    // and need to be removed from the dom
-    var setMedia = function (){
-        if (matchmedia.isPrint()) {
-            $scope.media = "print";
-            $scope.mainColumnWidth = "eight wide column";
-        } else if (matchmedia.isPhone()) {
-            $scope.media = "phone";
-            $scope.mainColumnWidth = "eight wide column";
-        } else if (matchmedia.isTablet()) {
-            $scope.media = "tablet";
-            $scope.mainColumnWidth = "eight wide column";
-        } else if (matchmedia.isDesktop()) {
-            $scope.media = "desktop";
-            $scope.mainColumnWidth = "eight wide column";
-        } else {
-            $scope.mainColumnWidth = "eight wide column";
-        }
-    };
-    matchmedia.on('only screen and (min-width: 1200px) and (max-width: 1919px)', function(match){
-        $scope.largeScreen = match.matches;
-    });
-    matchmedia.on('only screen and (max-width: 1199px)', function(match){
-        $scope.largeScreen = !match.matches;
-    });
+    if (window.matchMedia) {
 
-    matchmedia.onPrint(setMedia, $scope);
+        var printQueryList = window.matchMedia('print');
+        var phoneQueryList = window.matchMedia('(max-width: 767px)');      
+        var tabletQueryList = window.matchMedia('(min-width: 768px) and (max-width: 1200px)');            
+        var desktopQueryList = window.matchMedia('(min-width: 1200px) and (max-width: 1919px');                  
+        var largeQueryList = window.matchMedia('(min-width: 1919px)');                  
 
-    setMedia();
-    angular.element($window).bind("resize", function () {
-        setMedia();
-        $scope.$apply();
-    });
+        var updateMatchMedia= function (q) { 
+            console.log(q);
+            if (printQueryList.matches) {
+                $scope.media = "print";                                    
+            } else if (phoneQueryList.matches) {
+                $scope.media = "phone";                        
+            } else if (tabletQueryList.matches) { 
+                $scope.media = "tablet";            
+            } else if (desktopQueryList.matches) { 
+                $scope.media = "desktop";
+            } 
 
+            if (largeQueryList.matches) {
+                $scope.largeScreen = true;
+            } else {
+                $scope.largeScreen = false;
+            }
 
+            console.log($scope.media);
+            $timeout(function () {
+                $scope.$apply();
+            });
+        };
+        updateMatchMedia();
+
+        printQueryList.addListener(updateMatchMedia);
+
+        $scope.$on("$destroy", function handler() {
+            printQueryList.removeListener(updateMatchMedia);
+        });
+    }
 
     $scope.$watch("auxModel.buildingType", function (v) {
         if (v === undefined || v === null) {
-            return;
+            return; 
         }
 
         if(($scope.auxModel.country) && (v)){
@@ -106,6 +120,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             }
 
             $scope.propTypes.push({
+                changeTo: v,
                 type: v.id,
                 name: v.name,
                 country:$scope.auxModel.country,
@@ -119,6 +134,18 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.auxModel.buildingType = undefined;
         }
     });
+
+    $scope.updatePropType = function($index) { 
+
+        $scope.propTypes[$index] = {
+            changeTo: $scope.propTypes[$index].changeTo,
+            country: $scope.propTypes[$index].country,
+            buildingZone: $scope.propTypes[$index].buildingZone,
+            toggleTarget: $scope.propTypes[$index].toggleTarget,
+            type: $scope.propTypes[$index].changeTo.id,
+            name: $scope.propTypes[$index].changeTo.name
+        };
+    };
 
     $scope.$watch("auxModel.country", function () {
         $scope.benchmarkResult = null;
@@ -175,6 +202,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         if ($scope.renewableEnergies.length ===    1) {
             $scope.addRenewableEnergiesRow();
         }
+    };
+
+    $scope.removeSoldRow = function(){
+        $scope.sold.pop();
+        $scope.sold.push({'renewableType': {id:"grid",name:"Sold"}});
     };
 
 
@@ -249,7 +281,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.baselineConstant = $scope.getBaselineConstant();
             $scope.scoreText = "Zero Score";
             $scope.scoreGraph = "Rating";
-            $scope.FFText = $sce.trustAsHtml('Site EUI*');
+            $scope.FFText = $sce.trustAsHtml('Site EUI');
             $scope.scoreUnits = $scope.isResidential  ? "0-130" : "0-100";
 
             $scope.benchmarkResult = $scope.computeBenchmarkMix(results);
@@ -314,12 +346,20 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"percentBetterMedian": Math.ceil($scope.getPropResponseField(results,"percentBetterMedian"))},
               {"percentBetterTarget": Math.ceil($scope.getPropResponseField(results,"percentBetterTarget"))},
               {"percentBetterActual": Math.ceil($scope.getPropResponseField(results,"percentBetterActual"))},
+              {"percentBetterActualwOnSite": Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOnSite"))},
+              {"percentBetterActualwOffSite": Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOffSite"))},
+              {"percentBetterActualwOnandOffSite": Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOnandOffSite"))},
+
+
               {"percentBetterActualtoGoal": Math.ceil($scope.getPropResponseField(results,"percentBetterActualtoGoal"))},
               {"actualGoalBetter": Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"))},
 
               {"medianZEPI": $scope.getBaselineConstant()},
               {"percentBetterZEPI": Math.floor($scope.getPropResponseField(results,"percentBetterZEPI"))},
               {"actualZEPI": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActual"))},
+              {"actualZEPIwOnSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOnSite"))},
+              {"actualZEPIwOffSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOffSite"))},
+              {"actualZEPIwOnAndOffSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOnandOffSite"))},
 
               {"siteEUI": Math.ceil($scope.getPropResponseField(results,"siteEUI"))},
               {"siteEUIwOnSite": Math.ceil($scope.getPropResponseField(results,"siteEUIwOnSite"))},
@@ -344,7 +384,9 @@ define(['angular', 'matchmedia-ng'], function(angular) {
               {"medianEmissions": Math.ceil($scope.getPropResponseField(results,"medianEmissions"))},
 
               {"onSiteRenewableTotal": $scope.getPropResponseField(results,"onSiteRenewableTotal")},
-              {"offSitePurchasedTotal": $scope.getPropResponseField(results,"offSitePurchasedTotal")}
+              {"offSitePurchasedTotal": $scope.getPropResponseField(results,"offSitePurchasedTotal")},
+              {"siteEnergyALL": $scope.getPropResponseField(results,"siteEnergyALL")}
+
 
         ];
         return metricsTable;
@@ -378,11 +420,11 @@ define(['angular', 'matchmedia-ng'], function(angular) {
         $scope.propList = [];
 
         if($scope.auxModel.reportingUnits==="us"){
-            $scope.tableEnergyUnits="KBtu/yr";
-            $scope.tableEUIUnits="KBtu/ft²/yr";
+            $scope.tableEnergyUnits="(kBtu/yr)";
+            $scope.tableEUIUnits="(kBtu/ft²/yr)";
         }else {
-            $scope.tableEnergyUnits="kWh/yr";
-            $scope.tableEUIUnits="kWh/m²/yr";
+            $scope.tableEnergyUnits="(kWh/yr)";
+            $scope.tableEUIUnits="(kWh/m²/yr)";
         }
 
         if($scope.auxModel.CDD === undefined || $scope.auxModel.HDD === undefined ||
@@ -390,9 +432,12 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             $scope.lacksDD = true;
         }
 
+
+
         var validEnergy = function(e) {
             return (e.energyType !== undefined &&
                     e.energyName !== undefined &&
+                    //e.energyName !== "Electric (renewable)" &&
                     e.energyUnits !== undefined &&
                     e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
         };
@@ -416,6 +461,69 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             };
         };
 
+        var validRenewableFromRegular = function(e) {
+            return (e.energyType !== undefined &&
+                    e.energyName !== undefined &&
+                    e.energyName === "Electric (renewable)" &&
+                    e.energyUnits !== undefined &&
+                    e.energyUse !== undefined && $scope.auxModel.newConstruction === false);
+        };
+
+        var getSoldEnergy = function () {
+
+            var soldEnergyList =[];
+            var soldEnergy = 0.0;
+            var renewableEnergy = 0.0;
+
+            for (var i = 0; i < $scope.sold.map(mapRenewableEnergy).filter(validEnergy).length; i++){
+                soldEnergy = soldEnergy + $scope.sold.map(mapRenewableEnergy).filter(validEnergy)[i].energyUse;
+            }
+            for (var j = 0; j < $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy).length; j++){
+                renewableEnergy = renewableEnergy + $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy)[j].energyUse;
+            }
+
+            if($scope.sold.map(mapRenewableEnergy).filter(validEnergy).length !== 0){
+                if(soldEnergy < renewableEnergy){
+                    soldEnergyList = $scope.sold.map(mapRenewableEnergy).filter(validEnergy);
+                }else{
+                    soldEnergyList = [{
+                    'energyType': "grid",
+                    'energyName': "Sold",
+                    'energyUnits': $scope.sold[0].renewableUnits,
+                    'energyUse': renewableEnergy
+                    }];
+                }
+            }
+
+            return soldEnergyList;
+        };
+
+
+        var getRenewableEnergyList = function () {
+
+            var renewableEnergyListFromRegular = $scope.energies.map(mapEnergy).filter(validRenewableFromRegular);
+            var renewableEnergyList = $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy);
+
+
+            renewableEnergyListFromRegular.push.apply(renewableEnergyListFromRegular,getSoldEnergy());
+            renewableEnergyList.push.apply(renewableEnergyList,renewableEnergyListFromRegular);
+
+            return renewableEnergyList;
+        };
+
+        var getFullEnergyList = function () {
+
+            var energyListFromRegular = $scope.energies.map(mapEnergy).filter(validEnergy);
+            var renewableEnergyList = $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy);
+            //var soldEnergyList = $scope.sold.map(mapRenewableEnergy).filter(validEnergy);
+
+            renewableEnergyList.push.apply(renewableEnergyList,getSoldEnergy());
+            energyListFromRegular.push.apply(energyListFromRegular,renewableEnergyList);
+
+
+            return energyListFromRegular;
+        };
+
 
         if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){
@@ -432,7 +540,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     $scope.propTypes[i].propertyModel.CDD = $scope.auxModel.CDD;
                     $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
                     $scope.propTypes[i].propertyModel.targetScore = null;
-                    $scope.propTypes[i].propertyModel.netMetered = $scope.auxModel.netMetered;
+                    //$scope.propTypes[i].propertyModel.netMetered = $scope.auxModel.netMetered;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
 
@@ -442,17 +550,20 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                         $scope.propTypes[i].propertyModel.target2030=false;
                     }
 
-                    if($scope.energies.map(mapEnergy).filter(validEnergy).length===0){
+                    if($scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy).length===0 &&
+                       $scope.energies.map(mapEnergy).filter(validEnergy).length===0){
                         $scope.propTypes[i].propertyModel.energies=null;
                     } else {
-                        $scope.propTypes[i].propertyModel.energies = $scope.energies.map(mapEnergy).filter(validEnergy);
+                        $scope.propTypes[i].propertyModel.energies = getFullEnergyList();
                     }
 
-                    if($scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy).length===0){
+                    if($scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy).length===0 &&
+                       $scope.energies.map(mapEnergy).filter(validRenewableFromRegular).length ===0){
                         $scope.propTypes[i].propertyModel.renewableEnergies=null;
                     } else {
-                        $scope.propTypes[i].propertyModel.renewableEnergies = $scope.renewableEnergies.map(mapRenewableEnergy).filter(validEnergy);
+                        $scope.propTypes[i].propertyModel.renewableEnergies = getRenewableEnergyList();
                     }
+
 
                     $scope.propList.push($scope.propTypes[i].propertyModel);
 
@@ -573,7 +684,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"RaceTrack",name:"Race Track"},
                     {id:"Aquarium",name:"Aquarium"},
                     {id:"Bar",name:"Bar"},
-                    {id:"Bar",name:"Nightclub"},
+                    //{id:"Bar",name:"Nightclub"},
                     {id:"Casino",name:"Casino"},
                     {id:"Zoo",name:"Zoo"},
                     {id:"OtherEntertainment",name:"Other Entertainment"},
@@ -602,7 +713,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
                     {id:"MixedUse",name:"Mixed Use Property"},
                     {id:"Office",name:"Office"},
                     {id:"VeterinaryOffice",name:"Veterinary Office"},
-                    {id:"Office",name:"Courthouse"},
+                    {id:"Courthouse",name:"Courthouse"},
                     {id:"DrinkingWaterTreatment",name:"Drinking Water Treatment Center"},
                     {id:"FireStation",name:"Fire Station"},
                     {id:"Library",name:"Library"},
@@ -660,6 +771,7 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
             energyType:[
                 {id:"grid",name:"Electric (Grid)"},
+                {id:"grid",name:"Electric (renewable)"},
                 //{id:"onSiteElectricity",name:"Electric (Solar)"},
                 //{id:"onSiteElectricity",name:"Electric (Wind)"},
                 {id:"naturalGas",name:"Natural Gas"},
@@ -686,8 +798,13 @@ define(['angular', 'matchmedia-ng'], function(angular) {
             renewableType:[
                 {id:"grid",name:"On-Site Solar"},
                 {id:"grid",name:"On-Site Wind"},
-                {id:"grid",name:"On-Site Other"},
-                {id:"grid",name:"Off-Site Purchased"}
+                {id:"grid",name:"On-Site Other"}
+            ],
+
+            soldType:[
+                {id:"soldGrid",name:"On-Site Solar"},
+                {id:"soldGrid",name:"On-Site Wind"},
+                {id:"soldGrid",name:"On-Site Other"}
             ],
 
             renewableUnits:[
@@ -850,8 +967,10 @@ define(['angular', 'matchmedia-ng'], function(angular) {
 
 
   };
-  DashboardCtrl.$inject = ['$rootScope', '$scope', '$window','$sce','$timeout', '$q', '$log', 'matchmedia', 'benchmarkServices'];
+  DashboardCtrl.$inject = ['$rootScope', '$scope', '$window','$sce','$timeout', '$q', '$log', 'benchmarkServices'];
   return {
-    DashboardCtrl: DashboardCtrl
+    DashboardCtrl: DashboardCtrl,
+    RootCtrl: RootCtrl    
+
   };
 });
