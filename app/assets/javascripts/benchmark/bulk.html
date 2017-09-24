@@ -1,4 +1,5 @@
 <div>
+    <div ng-if="includeHeader" ng-include src="'javascripts/benchmark/header.html'"></div>
     <div class="ui stackable grid container" style="padding-top:14px">
         <div class="three wide column computer only tablet only" ng-if="media === 'print'"></div>
         <div class="thirteen wide column" ng-if="media === 'print'">

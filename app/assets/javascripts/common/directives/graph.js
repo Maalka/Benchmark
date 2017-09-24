@@ -54,7 +54,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               if (r.length !== 0) {
                 return r[0][key];
               } else {
-                return undefined;
+                if (key === "percentBetterZEPI" || key === "percentBetterSiteEUI") {
+                    return 0;
+                } else {
+                    return undefined;
+                }
               }
             };
     
@@ -66,6 +70,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     return getBRByKey("actualZEPIwOnAndOffSite") ? getBRByKey("actualZEPIwOnAndOffSite") : undefined;
                 }
             };
+
+
 
             var checkSiteEUI = function() {
 
@@ -161,6 +167,16 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
             var getPercentBetter = function(siteEUI) {
                 return (siteEUI > Math.ceil(getBRByKey("percentBetterSiteEUI"))) ? getBRByKey("percentBetterActualtoGoal") : getBRByKey("actualGoalBetter");
+            };
+
+
+            var showBuildingSiteEUI = function() {
+
+                if (getTempZEPI() !== undefined && getEEMarkerX().offSitePurchasedTotal === 0) {
+                    return getBRByKey("siteEUIwOnAndOffSite") ? Math.ceil(getBRByKey("siteEUIwOnAndOffSite")) : "";
+                }else {
+                    return "<br>  <br>";
+                }
             };
 
             var showGreenEnergyChart = function () {
@@ -365,7 +381,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 10) {
                 yOffset = 40;
               }
-              else if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) >= 10 && round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 20) {
+              else if (round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) >= 10 && round($scope.baselineConstant) - round(getBRByKey("percentBetterZEPI")) < 30) {
                 yOffset = 30;
               }
               var markers = createMarker("BASELINE", -40 - yOffset, $scope.baselineConstant, "maalkaFlag", "black", 'zepi', false)
@@ -416,6 +432,8 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
 
                //Gap between energy efficiency(EE) and YOUR BUILDING flag
                var EEgap = (getTempZEPI() !== undefined) ? getEUIMetrics().ZepiEE - getTempZEPI() : 0;
+
+
 
 
                 updateOrAddSeries(chart,
@@ -661,7 +679,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                 });
 
                 updateOrAddSeries(chart, { type: 'line',
-                  name: "green power purchased",
+                  name: "off-site renewable energy",
                   id: 'greenPower',
                   data: sortData([
                     {
@@ -700,13 +718,15 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
             var createMarker = function(title, yOff, x, shape, color, series, onlyTitle) {
               if (x !== undefined && !isNaN(x) && title !== undefined) {
                 var text = "";
+                var EEendGap = (getEUIMetrics().ZepiEE !== undefined) ? $scope.baselineConstant - getEUIMetrics().ZepiEE : 0;
+
                 if (title === "YOUR BUILDING") {
                    if (getEUIMetrics().ZepiEE >= 100) {
-                      text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                      text = "<b></b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else if (shape === "maalkaFlagLeftBottom") {
-                   text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
+                       text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b>" + title + "</b>";
                    } else {
-                       text = "<b>" + checkSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
+                       text = "<b>" + showBuildingSiteEUI() + "</b><br><b>" + round(x) + "</b><br><b> YOUR BLDG </b>";
                    }
                 }
                 else if (title === "scoreText") {
@@ -718,13 +738,13 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                         text = "EUI <br> Zero Score ";
                   }
                 } else if (title === "BASELINE") {
-                  text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("medianSiteEUI")) + "</b> FF-EUI" + "<br><b>" + $scope.baselineConstant + "</b> Score";
+                  text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("medianSiteEUI")) + "</b> EUI" + "<br><b>" + $scope.baselineConstant + "</b> Zero Score";
                 } else if (title === "PROGRESS PERCENT") {
                   text = round(percentBetter()) + "%";
                 } else if (title === "TARGET") {
-                  text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> FF-EUI" + "<br><b>" + round(x) + "</b> Score";
+                  text = "<b>"+title + "</b><br><b>" + Math.ceil(getBRByKey("percentBetterSiteEUI")) + "</b> EUI" + "<br><b>" + round(x) + "</b> Zero Score";
                 } else if (title === "EEscores") {
-                      if (getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0 || getEUIMetrics().ZepiEE > 100 || getEUIMetrics().ZepiEE - getTempZEPI() < 3) {
+                      if (EEendGap < 10 || getEEMarkerX().onSiteRenewableTotal === 0 && getEEMarkerX().offSitePurchasedTotal === 0 || getEUIMetrics().ZepiEE > 100 || getEUIMetrics().ZepiEE - getTempZEPI() < 3) {
                           text = " ";
                       }
                       else {
@@ -878,6 +898,17 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
               return margin;
             };
 
+            var printUpdate = function () {
+              angular.element($element).highcharts().reflow();
+            };
+
+            if (window.matchMedia) {
+              var mediaQueryList = window.matchMedia('print');
+              mediaQueryList.addListener(function () {
+                printUpdate();
+              });
+            }
+
 
             var plot = function () {
 
@@ -891,6 +922,15 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                       events: {
                         'load': function () {
                           loadSeries(chart);
+                        },
+                        beforePrint: function () {
+                            this.oldhasUserSize = this.hasUserSize;
+                            this.resetParams = [this.chartWidth, this.chartHeight, false];
+                            this.setSize(600, 400, false);
+                        },
+                        afterPrint: function () {
+                            this.setSize.apply(this, this.resetParams);
+                            this.hasUserSize = this.oldhasUserSize;
                         }
                       }
                   },
@@ -904,11 +944,11 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                     enabled: true,
                     margin: 0,
                     padding: 0,
-                    symbolWidth: 6,
-                    symbolHeight: 6,
-                    itemDistance: 10,
+                    symbolWidth: 5,
+                    symbolHeight: 5,
+                    itemDistance: 8,
                     itemStyle: {
-                      fontSize:'10px',
+                      fontSize:'9px',
                     },
                     useHTML: true,
                     labelFormat: "<span style='color: {color};'>{name}</span>"

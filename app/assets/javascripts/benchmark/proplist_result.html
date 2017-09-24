@@ -8,10 +8,10 @@
             <td class="five wide">{{benchmarkResult.city || "City"}}, {{benchmarkResult.state || "ST"}}</td>
             <td colspan=2>{{benchmarkResult.postalCode || "000000"}}</td>
         </tr>
-        <tr ng-repeat="prop in propOutputList">
+        <tr  class="top aligned" ng-repeat="prop in propOutputList">
             <td ng-if="$first" rowspan="{{propOutputList.length}}">USES</td>
             <td>{{prop.propType}}</td>
-            <td colspan=2 >{{prop.propSize | number : 0}} {{prop.areaUnits}} ({{prop.propPercent | number : 1}})%</td>
+            <td colspan=2 >{{prop.propSize | number : 0}} {{prop.areaUnits}} ({{prop.propPercent | number : 1}}%)</td>
         </tr>
         <tr><td colspan="4">
             <hr></td></tr>
@@ -21,7 +21,7 @@
             <td class="six wide"><b>RESULTS</b></td>
             <td class = "center aligned"><b>BASELINE</b></td>
             <td class = "center aligned three wide"><b>TARGET</b></td>
-            <td class="ui yellow center aligned three wide"><b>Your Building</b></td>
+            <td class="ui yellow center aligned three wide"><b>YOUR BUILDING</b></td>
         </tr>
 
 
@@ -38,8 +38,8 @@
 
         <!--ONLY EUI % Reduction from Baseline: True Bold for EUI % Reduction from Baseline-->
 
-        <tr ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="'% Reduction from Baseline'"
-            units="" columns="['percentBetterMedian', 'percentBetterTarget', 'percentBetterActual']" bolding="true" head="'percent'" ></tr>
+        <tr ng-show="benchmarkResult && !hasOnSite && !hasOffSite" benchmark-result-row result="benchmarkResult" field="'EUI % Reduction from Baseline'"
+            append = "'%'" units="" columns="['percentBetterMedian', 'percentBetterTarget', 'percentBetterActual']" bolding="true" head="'percent'" ></tr>
 
         <!--HAS RENEWABLES NO OFFSITE: True Bold for RENEWABLES -->
 
@@ -231,7 +231,7 @@
 
 
 
-        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Total GHG Emissions'" units="'(metric tons CO2e/yr)'"
+        <tr ng-show="benchmarkResult" benchmark-result-row result="benchmarkResult" field="'Total GHG Emissions'" units="'(metric tons CO₂e/yr)'"
             columns="['medianEmissions', 'percentBetterEmissions', 'totalEmissions']" bolding="true" head="'emissions'"></tr>
 <!--        <tr>
             <td colspan=4>
