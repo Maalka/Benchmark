@@ -155,14 +155,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="inline fields" ng-if="!(propTypes.length > 0 && propTypes[0].buildingZone === 'residential' && auxModel.buildingZone == 'residential')">
+                <div class="inline fields" ng-if="!(propTypes.length > 0 && propTypes[0].buildingList === 'residential' && auxModel.buildingZone == 'residential')">
                     <div class="sixteen wide field">
                         <label>{{propText}}</label>
                         <select class="ui dropdown search"
                                 dropdown
                                 reset = "auxModel.resetBuildingType"
                                 ng-model="auxModel.buildingType"
-                                ng-options="item as item.name for item in buildingProperties.buildingType[auxModel.buildingZone] | orderBy : 'name'"
+                                ng-options="item as item.name for item in buildingProperties.buildingType[auxModel.buildingList] | orderBy : 'name'"
                                 name="buildingType">
                             <option value="">Select</option>
                         </select>
@@ -174,7 +174,7 @@
                         
 
 
-                        <label >Selected Use Types(s):</label>
+                        <label >Selected Use Type(s):</label>
                     </div>
                 </div>
                 <div class="field" ng-repeat="prop in propTypes">
@@ -182,7 +182,7 @@
                             dropdown
                             ng-model="prop.changeTo"
                             ng-change="updatePropType($index)"
-                            ng-options="item as item.name for item in buildingProperties.buildingType[prop.buildingZone] | orderBy : 'name' track by item.id ">
+                            ng-options="item as item.name for item in buildingProperties.buildingType[prop.buildingList] | orderBy : 'name' track by item.id ">
                         <option value="">Select</option>
                     </select>
                 </div>
