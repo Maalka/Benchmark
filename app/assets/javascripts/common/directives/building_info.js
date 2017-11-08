@@ -526,6 +526,21 @@ define(['angular','./main'], function(angular) {
                         }
                     ],
                     Parking: [
+/*                        {
+                            name: "areaUnits",
+                            default: null,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaUnits,
+                            title: "Parking Area Units",
+                            required: "all"
+                        },
+                        {
+                            name: "GFA",
+                            default: null,
+                            type: "number",
+                            title: "Gross Floor Area",
+                            required: "all"
+                        },*/
                         {
                             name: "hasParkingHeating",
                             default: false,

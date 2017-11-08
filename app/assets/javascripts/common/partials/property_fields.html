@@ -25,7 +25,7 @@
     </div>
 
     <div class="inline fields">
-        <div class="sixteen wide field">
+        <div class="sixteen wide field"> <!-- ng-if="!(model.propertyModel.buildingType=='Parking')"> -->
             <label style="width: 200px">Gross Floor Area</label>
             <div class="ten wide field required" ng-class="{error: !propertyModel.GFA && forms.hasValidated}">
               <input type="number" ng-model="propertyModel.GFA"
