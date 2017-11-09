@@ -26,6 +26,7 @@ define(['angular'], function() {
     $scope.renewableEnergies = [{}, {}];
     //For displaying user-input energy entries after having been saved
     $scope.propList = [];
+
     $scope.benchmarkResult = null;
     $scope.lacksDD = false;
     $scope.hasOnSite = false;
@@ -326,7 +327,16 @@ define(['angular'], function() {
 
     $scope.computeBenchmarkResult = function(){
 
-        $scope.futures = benchmarkServices.getZEPIMetrics($scope.propList);
+        $scope.propSubmit = [];
+        for (var i = 0; i < $scope.propList.length; i++){
+            if($scope.propList[i].buildingType !== "Parking"){
+                $scope.propSubmit.push($scope.propList[i]);
+            }
+        }
+
+        $log.info($scope.propSubmit);
+
+        $scope.futures = benchmarkServices.getZEPIMetrics($scope.propSubmit);
 
         $q.resolve($scope.futures).then(function (results) {
             $scope.baselineConstant = $scope.getBaselineConstant();
@@ -575,10 +585,42 @@ define(['angular'], function() {
             return energyListFromRegular;
         };
 
+        if($scope.forms.baselineForm.$valid){
+
+            $scope.hasParkingHeating = null;
+            $scope.openParkingArea = null;
+            $scope.partiallyEnclosedParkingArea = null;
+            $scope.fullyEnclosedParkingArea = null;
+            $scope.parkingAreaUnits = null;
+            $scope.totalParkingArea = null;
+
+            for (var j = 0; j < $scope.propTypes.length; j++){
+                if($scope.propTypes[j].valid === true){
+                    if($scope.propTypes[j].propertyModel.buildingType === "Parking"){
+                        console.log("this is a motherfucking parking garage!");
+                        $scope.hasParkingHeating = $scope.propTypes[j].propertyModel.hasParkingHeating ;
+                        $scope.openParkingArea = $scope.propTypes[j].propertyModel.openParkingArea;
+                        $scope.partiallyEnclosedParkingArea = $scope.propTypes[j].propertyModel.partiallyEnclosedParkingArea;
+                        $scope.fullyEnclosedParkingArea = $scope.propTypes[j].propertyModel.fullyEnclosedParkingArea;
+                        $scope.parkingAreaUnits = $scope.propTypes[j].propertyModel.GFA;
+                        $scope.totalParkingArea = $scope.propTypes[j].propertyModel.openParkingArea + $scope.propTypes[j].propertyModel.partiallyEnclosedParkingArea + $scope.propTypes[j].propertyModel.fullyEnclosedParkingArea;
+                    }
+                }
+            }
+        }
+
 
         if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){
                 if($scope.propTypes[i].valid === true){
+
+
+                    $scope.propTypes[i].propertyModel.hasParkingHeating = $scope.hasParkingHeating;
+                    $scope.propTypes[i].propertyModel.openParkingArea = $scope.openParkingArea;
+                    $scope.propTypes[i].propertyModel.partiallyEnclosedParkingArea = $scope.partiallyEnclosedParkingArea;
+                    $scope.propTypes[i].propertyModel.fullyEnclosedParkingArea = $scope.fullyEnclosedParkingArea;
+                    $scope.propTypes[i].propertyModel.parkingAreaUnits = $scope.parkingAreaUnits;
+                    $scope.propTypes[i].propertyModel.totalParkingArea = $scope.totalParkingArea;
 
                     $scope.propTypes[i].propertyModel.baselineConstant = $scope.getBaselineConstant();
                     $scope.propTypes[i].propertyModel.country = $scope.auxModel.country;
@@ -626,7 +668,7 @@ define(['angular'], function() {
             $scope.submitErrors();
         }
 
-        $log.info($scope.propList);
+
 
         if ($scope.propList.length !== 0){
                 $scope.computeBenchmarkResult();

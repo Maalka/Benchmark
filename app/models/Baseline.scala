@@ -421,8 +421,7 @@ case class EUIMetrics(parameters: JsValue) {
 
   def getPropOutputList:Future[List[PropParams]] = {
     for {
-      propTypesFull <- Future.sequence(result.map(BuildingProperties(_).getBuilding))
-      propTypes <- Future(propTypesFull.filterNot(_.buildingType == "Parking"))
+      propTypes <- Future.sequence(result.map(BuildingProperties(_).getBuilding))
       propGFASum <- Future(propTypes.map(_.buildingSize).sum)
       conversionConstant <- GFAConversionConstant
       outputList <- Future{

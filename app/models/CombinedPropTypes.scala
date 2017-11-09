@@ -368,10 +368,8 @@ case class CombinedPropTypes(params: JsValue) {
   }
 
   def getTotalArea(buildingList:List[JsValue]): Future[Double] = {
-    for {       
-      propTypesFull <- Future.sequence(buildingList.map(BuildingProperties(_).getBuilding))
-      propTypes <- Future(propTypesFull.filterNot(_.buildingType == "Parking"))
-
+    for {
+      propTypes <- Future.sequence(buildingList.map(BuildingProperties(_).getBuilding))
       propGFASum <- Future(propTypes.map(_.buildingSize).sum)
     } yield propGFASum
   }
