@@ -446,7 +446,10 @@ define(['angular'], function() {
 
               {"onSiteRenewableTotal": $scope.getPropResponseField(results,"onSiteRenewableTotal")},
               {"offSitePurchasedTotal": $scope.getPropResponseField(results,"offSitePurchasedTotal")},
-              {"siteEnergyALL": $scope.getPropResponseField(results,"siteEnergyALL")}
+              {"siteEnergyALL": $scope.getPropResponseField(results,"siteEnergyALL")},
+
+              {"parkingEnergy": $scope.getPropResponseField(results,"parkingEnergy")},
+              {"parkingArea": $scope.getPropResponseField(results,"parkingArea")}
 
 
         ];

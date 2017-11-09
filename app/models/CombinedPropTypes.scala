@@ -43,10 +43,7 @@ case class CombinedPropTypes(params: JsValue) {
       totalArea <- getTotalArea(result)
       parkingEnergy <- getParkingEnergy(result.head)
       adjustedEUI <- Future((wholeBuildingSourceMedianEUI*totalArea + parkingEnergy) / totalArea)
-    } yield {
-      println(parkingEnergy)
-      adjustedEUI
-    }
+    } yield adjustedEUI
   }
 
     def getWholeBuildingSourceMedianEUInoParking:Future[Energy] = {
@@ -418,7 +415,7 @@ case class CombinedPropTypes(params: JsValue) {
     implicit def boolOptToInt(b:Option[Boolean]):Int = if (b.getOrElse(false)) 1 else 0
 
     parkingJSON.asOpt[Parking] match {
-      case Some(Parking(open,partial,closed,heatingDays,heated,totalArea,units,country)) => {
+      case Some(Parking(open,partial,closed,heatingDays,heated,totalArea,units,country,reportingUnits)) => {
         units match {
           case "ftSQ" => {
             val openArea: Double = open.getOrElse(0.0)
@@ -451,9 +448,30 @@ case class CombinedPropTypes(params: JsValue) {
     }
   }
 
+  def getParkingArea(parkingJSON:JsValue): Future[Double] = Future {
+
+    parkingJSON.asOpt[Parking] match {
+      case Some(Parking(open,partial,closed,heatingDays,heated,total,units,country,reportingUnits)) => {
+        units match {
+          case "ftSQ" => reportingUnits match {
+            case "us" => total.getOrElse(0.0)
+            case "metric" => SquareFeet(total.getOrElse(0.0)) to SquareMeters
+          }
+          case "mSQ" => reportingUnits match {
+            case "us" => SquareMeters(total.getOrElse(0.0)) to SquareFeet
+            case "metric" => total.getOrElse(0.0)
+          }
+        }
+      }
+      case _ => 0.0
+    }
+  }
+
+
+
   case class Parking(openParkingArea:Option[Double],partiallyEnclosedParkingArea:Option[Double],
                      fullyEnclosedParkingArea:Option[Double], HDD:Option[Double], hasParkingHeating:Option[Boolean],
-                     totalParkingArea:Option[Double],parkingAreaUnits:String,country:String)
+                     totalParkingArea:Option[Double],parkingAreaUnits:String,country:String,reportingUnits:String)
   object Parking {
     implicit val parkingRead: Reads[Parking] = Json.reads[Parking]
   }

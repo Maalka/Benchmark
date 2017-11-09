@@ -127,7 +127,10 @@ trait BaselineActions {
       Baseline.onSiteRenewableTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.offSitePurchasedTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       //this is the total site energy without accounting for renewable generation and/or purchasing
-      Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+      Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+      Baseline.getParkingEnergyOnly.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.getParkingAreaOnly.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
 
 
     ))
@@ -172,7 +175,10 @@ trait BaselineActions {
 
       "onSiteRenewableTotal",
       "offSitePurchasedTotal",
-      "siteEnergyALL"
+      "siteEnergyALL",
+
+      "parkingEnergy",
+      "parkingArea"
 
     )
 
