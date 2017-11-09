@@ -8,15 +8,15 @@
             <li>{{ error.messageDescription }}</li>
         </ul>
     </div>
-    <div class="inline fields">
+
         <div class="field">
-            <button class="ui blue button"
+            <button class="ui blue button" 
                 ngf-select
                 ng-model="attachment"
                 name="attachment"
                 ngf-max-size="20MB" ng-class="{disabled: loadingFileFiller.attachmentName !== undefined}"
                >
-                    {{ "Select CSV" }}
+                    {{ "Upload CSV" }}
             </button>
 
         </div>
@@ -24,14 +24,17 @@
             <button ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined" 
                 class="ui green button"
                 ng-class="{loading: loading}"
-                type="submit" ng-click="submitFile()">submit
+                type="submit" ng-click="submitFile()">Submit
             </button>
-            <p ng-if="attachment === undefined && loadingFileFiller.attachmentName === undefined">
+            <!--<p ng-if="attachment === undefined && loadingFileFiller.attachmentName === undefined">
                 << Upload your data here >>
-            </p>
-            <p style="color:red;" ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined">
-                {{attachment.name}}
-            </p>
+            </p> -->
         </div>
+    <div class="field" ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined">
+        <p style="color:black;">
+            {{attachment.name}}
+        </p>
     </div>
+
+
 </form>
