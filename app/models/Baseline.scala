@@ -711,8 +711,6 @@ case class EUIMetrics(parameters: JsValue) {
     }
   }
 
-
-
   def getStateBuildingType(params: JsValue): Future[StateBuildingType] = Future{
     params.asOpt[StateBuildingType] match {
       case Some(a) => a

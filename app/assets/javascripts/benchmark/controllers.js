@@ -597,12 +597,11 @@ define(['angular'], function() {
             for (var j = 0; j < $scope.propTypes.length; j++){
                 if($scope.propTypes[j].valid === true){
                     if($scope.propTypes[j].propertyModel.buildingType === "Parking"){
-                        console.log("this is a motherfucking parking garage!");
                         $scope.hasParkingHeating = $scope.propTypes[j].propertyModel.hasParkingHeating ;
                         $scope.openParkingArea = $scope.propTypes[j].propertyModel.openParkingArea;
                         $scope.partiallyEnclosedParkingArea = $scope.propTypes[j].propertyModel.partiallyEnclosedParkingArea;
                         $scope.fullyEnclosedParkingArea = $scope.propTypes[j].propertyModel.fullyEnclosedParkingArea;
-                        $scope.parkingAreaUnits = $scope.propTypes[j].propertyModel.GFA;
+                        $scope.parkingAreaUnits = $scope.propTypes[j].propertyModel.areaUnits;
                         $scope.totalParkingArea = $scope.propTypes[j].propertyModel.openParkingArea + $scope.propTypes[j].propertyModel.partiallyEnclosedParkingArea + $scope.propTypes[j].propertyModel.fullyEnclosedParkingArea;
                     }
                 }

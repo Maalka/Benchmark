@@ -137,13 +137,13 @@ case class BuildingProperties(parameters: JsValue) {
       case Some(CountryBuildingType("USA", "Hospital")) => parameters.validate[Hospital]
       case Some(CountryBuildingType("USA", "DataCenter")) => parameters.validate[DataCenter]
       case Some(CountryBuildingType("USA", "FinancialOffice")) => parameters.validate[FinancialOffice]
-      case Some(CountryBuildingType("USA", "Parking")) => parameters.validate[Parking]
+      //case Some(CountryBuildingType("USA", "Parking")) => parameters.validate[Parking]
       case Some(CountryBuildingType("Canada", "Office")) => parameters.validate[CanadaOffice]
       case Some(CountryBuildingType("Canada", "Supermarket")) => parameters.validate[CanadaSupermarket]
       case Some(CountryBuildingType("Canada", "MedicalOffice")) => parameters.validate[CanadaMedicalOffice]
       case Some(CountryBuildingType("Canada", "K12School")) => parameters.validate[CanadaK12School]
       case Some(CountryBuildingType("Canada", "Hospital")) => parameters.validate[CanadaHospital]
-      case Some(CountryBuildingType("Canada", "Parking")) => parameters.validate[CanadaParking]
+      //case Some(CountryBuildingType("Canada", "Parking")) => parameters.validate[CanadaParking]
       case Some(_) => parameters.validate[GenericBuilding]
       case None => JsError("Could not find country or buildingType fields with JSON")
     }
@@ -415,15 +415,20 @@ object GenericBuilding {
   implicit val genericBuildingTypeRead: Reads[GenericBuilding] = Json.reads[GenericBuilding]
 }
 
-case class Parking(openParkingArea:PosDouble,partiallyEnclosedParkingArea:PosDouble,
-                   fullyEnclosedParkingArea:PosDouble, HDD:PosDouble, hasParkingHeating:Option[Boolean],
-                   areaUnits:String, country:String, buildingType:String,GFA:PosDouble) extends BaseLine {
+case class Parking(openParkingArea: PosDouble, partiallyEnclosedParkingArea: PosDouble,
+                   fullyEnclosedParkingArea: PosDouble, HDD: PosDouble, hasParkingHeating: Option[Boolean],
+                   areaUnits: String, country: String, buildingType: String, totalParkingArea: PosDouble) {
 
+  implicit def boolOptToInt(b: Option[Boolean]): Int = if (b.getOrElse(false)) 1 else 0
 
   val areaConvert: Double = areaUnits match {
     case "ftSQ" => 1
     case "mSQ" => SquareMeters(1) to SquareFeet
   }
+
+  def energyReduce: Double = regressionSegments.map(_.reduce).sum
+
+  def expectedEnergy = energyReduce
 
   val printed: String = "Parking"
   val regressionSegments = Seq[RegressionSegment](
@@ -438,10 +443,11 @@ object Parking {
   implicit val parkingReads: Reads[Parking] = Json.reads[Parking]
 }
 
-case class CanadaParking(openParkingArea:PosDouble,partiallyEnclosedParkingArea:PosDouble,
-                   fullyEnclosedParkingArea:PosDouble, HDD:PosDouble, hasParkingHeating:Option[Boolean],
-                   areaUnits:String, country:String, buildingType:String,GFA:PosDouble) extends BaseLine {
+case class CanadaParking(openParkingArea: PosDouble, partiallyEnclosedParkingArea: PosDouble,
+                         fullyEnclosedParkingArea: PosDouble, HDD: PosDouble, hasParkingHeating: Option[Boolean],
+                         areaUnits: String, country: String, totalParkingArea: PosDouble) {
 
+  implicit def boolOptToInt(b: Option[Boolean]): Int = if (b.getOrElse(false)) 1 else 0
 
   val areaConvert: Double = areaUnits match {
     case "ftSQ" => 1
@@ -449,13 +455,16 @@ case class CanadaParking(openParkingArea:PosDouble,partiallyEnclosedParkingArea:
   }
   val energyConvert: Double = (KBtus(1) to Gigajoules)
 
+  def energyReduce: Double = regressionSegments.map(_.reduce).sum
+
+  def expectedEnergy = energyReduce
 
   val printed: String = "Parking"
   val regressionSegments = Seq[RegressionSegment](
-    RegressionSegment(6.128, 0, openParkingArea.value * areaConvert*energyConvert),
-    RegressionSegment(18.38, 0, partiallyEnclosedParkingArea.value * areaConvert*energyConvert),
-    RegressionSegment(23.28, 0, fullyEnclosedParkingArea.value * areaConvert*energyConvert),
-    RegressionSegment(0.009451, 0, HDD.value * hasParkingHeating * fullyEnclosedParkingArea.value * areaConvert*energyConvert)
+    RegressionSegment(6.128, 0, openParkingArea.value * areaConvert * energyConvert),
+    RegressionSegment(18.38, 0, partiallyEnclosedParkingArea.value * areaConvert * energyConvert),
+    RegressionSegment(23.28, 0, fullyEnclosedParkingArea.value * areaConvert * energyConvert),
+    RegressionSegment(0.009451, 0, HDD.value * hasParkingHeating * fullyEnclosedParkingArea.value * areaConvert * energyConvert)
   )
 
 }

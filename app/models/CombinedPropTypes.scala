@@ -3,13 +3,17 @@ package models
 
 import squants.energy._
 import squants.energy.EnergyConversions.EnergyNumeric
+
 import scala.concurrent.Future
 import scala.language._
 import scala.math._
 import play.api.libs.json._
 import play.api.Play
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import java.io.{InputStream}
+import java.io.InputStream
+
+import squants.space.{SquareFeet, SquareMeters}
 
 
 case class CombinedPropTypes(params: JsValue) {
@@ -34,6 +38,18 @@ case class CombinedPropTypes(params: JsValue) {
   }
 
   def getWholeBuildingSourceMedianEUI:Future[Energy] = {
+    for {
+      wholeBuildingSourceMedianEUI <- getWholeBuildingSourceMedianEUInoParking
+      totalArea <- getTotalArea(result)
+      parkingEnergy <- getParkingEnergy(result.head)
+      adjustedEUI <- Future((wholeBuildingSourceMedianEUI*totalArea + parkingEnergy) / totalArea)
+    } yield {
+      println(parkingEnergy)
+      adjustedEUI
+    }
+  }
+
+    def getWholeBuildingSourceMedianEUInoParking:Future[Energy] = {
 
     for {
       majorPropType <- majorProp
@@ -396,6 +412,57 @@ case class CombinedPropTypes(params: JsValue) {
       case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
     }
   }
+
+  def getParkingEnergy(parkingJSON:JsValue): Future[Energy] = Future {
+
+    implicit def boolOptToInt(b:Option[Boolean]):Int = if (b.getOrElse(false)) 1 else 0
+
+    parkingJSON.asOpt[Parking] match {
+      case Some(Parking(open,partial,closed,heatingDays,heated,totalArea,units,country)) => {
+        units match {
+          case "ftSQ" => {
+            val openArea: Double = open.getOrElse(0.0)
+            val partiallyEnclosedParkingArea: Double = partial.getOrElse(0.0)
+            val fullyEnclosedParkingArea: Double = closed.getOrElse(0.0)
+
+            country match {
+              case "USA" => KBtus((9.385 * openArea) + (28.16 * partiallyEnclosedParkingArea) + (35.67 * fullyEnclosedParkingArea) +
+                (0.009822 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea)))
+              case "Canada" => KBtus((6.128 * openArea) + (18.38 * partiallyEnclosedParkingArea) + (23.28 * fullyEnclosedParkingArea) +
+                (0.009451 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea))) in Gigajoules
+            }
+          }
+          case "mSQ" => {
+            val openArea: Double = SquareMeters(open.getOrElse(0.0)) to SquareFeet
+            val partiallyEnclosedParkingArea: Double = SquareMeters(partial.getOrElse(0.0)) to SquareFeet
+            val fullyEnclosedParkingArea: Double = SquareMeters(closed.getOrElse(0.0)) to SquareFeet
+
+            country match {
+              case "USA" => KBtus((9.385 * openArea) + (28.16 * partiallyEnclosedParkingArea) + (35.67 * fullyEnclosedParkingArea) +
+                (0.009822 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea)))
+              case "Canada" => KBtus((6.128 * openArea) + (18.38 * partiallyEnclosedParkingArea) + (23.28 * fullyEnclosedParkingArea) +
+                (0.009451 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea))) in Gigajoules
+            }
+          }
+        }
+      }
+      case Some(_) => KBtus(0)
+      case None => KBtus(0)
+    }
+  }
+
+  case class Parking(openParkingArea:Option[Double],partiallyEnclosedParkingArea:Option[Double],
+                     fullyEnclosedParkingArea:Option[Double], HDD:Option[Double], hasParkingHeating:Option[Boolean],
+                     totalParkingArea:Option[Double],parkingAreaUnits:String,country:String)
+  object Parking {
+    implicit val parkingRead: Reads[Parking] = Json.reads[Parking]
+  }
+
+
+
+
+
+
 
 
 
