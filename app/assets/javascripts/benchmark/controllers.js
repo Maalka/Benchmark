@@ -26,6 +26,7 @@ define(['angular'], function() {
     $scope.renewableEnergies = [{}, {}];
     //For displaying user-input energy entries after having been saved
     $scope.propList = [];
+
     $scope.benchmarkResult = null;
     $scope.lacksDD = false;
     $scope.hasOnSite = false;
@@ -39,6 +40,7 @@ define(['angular'], function() {
     $scope.mainColumnWidth = "";
     $scope.propText = "Primary Building Use";
     $scope.buildingZone = "commercial";
+    $scope.auxModel.buildingList = "commercial";
     $scope.targetToggle = "percentReduction";
     $scope.isResidential = false;
 
@@ -82,6 +84,19 @@ define(['angular'], function() {
         });
     }
 
+    $scope.$watch("auxModel.buildingZone", function (v) {
+        if(v === "commercial"){
+            if($scope.propTypes.length !== 0) {
+                $scope.auxModel.buildingList = "parking";
+            }else {
+                $scope.auxModel.buildingList = "commercial";
+            }
+        }else{
+            $scope.auxModel.buildingList = "residential";
+        }
+    });
+
+
     $scope.$watch("auxModel.buildingType", function (v) {
         if (v === undefined || v === null) {
             return; 
@@ -119,14 +134,42 @@ define(['angular'], function() {
                 }
             }
 
+
+
+            if($scope.auxModel.buildingZone === "commercial" || v.id === "MultiFamily"){
+
+                if($scope.auxModel.buildingType.id === "Parking"){
+                    $scope.auxModel.tempList = "parking";
+                }else{
+                    $scope.auxModel.tempList = "commercial";
+                }
+            }else{
+                $scope.auxModel.tempList = "residential";
+            }
+
             $scope.propTypes.push({
                 changeTo: v,
                 type: v.id,
                 name: v.name,
                 country:$scope.auxModel.country,
                 buildingZone: $scope.auxModel.buildingZone,
+                buildingList: $scope.auxModel.tempList,
                 toggleTarget: $scope.auxModel.targetToggle
             });
+
+           if($scope.auxModel.buildingZone === "commercial" || v.id === "MultiFamily"){
+                $scope.auxModel.buildingZone = "commercial";
+                if($scope.propTypes.length !== 0) {
+                    $scope.auxModel.buildingList = "parking";
+                }else{
+                    $scope.auxModel.buildingList = "commercial";
+                }
+            }else{
+                $scope.auxModel.buildingList = "residential";
+            }
+
+
+
 
             $scope.propText="Add Another Use";
             // there seems to be a $digest issue where undefined isn't carried through to the dropdown directive
@@ -141,6 +184,7 @@ define(['angular'], function() {
             changeTo: $scope.propTypes[$index].changeTo,
             country: $scope.propTypes[$index].country,
             buildingZone: $scope.propTypes[$index].buildingZone,
+            buildingList: $scope.propTypes[$index].buildingList,
             toggleTarget: $scope.propTypes[$index].toggleTarget,
             type: $scope.propTypes[$index].changeTo.id,
             name: $scope.propTypes[$index].changeTo.name
@@ -212,6 +256,7 @@ define(['angular'], function() {
 
 
     $scope.removeProp = function(prop){
+
         var index;
         for(var i = 0; i < $scope.propTypes.length; i++ ) {
             if($scope.propTypes[i].name === prop.model.name && $scope.propTypes[i].country === prop.model.country) {
@@ -221,9 +266,16 @@ define(['angular'], function() {
         }
 
         $scope.propTypes.splice(index, 1);
+
         if($scope.propTypes.length === 0){
             $scope.propText="Primary Building Use";
+            if($scope.auxModel.buildingZone === "commercial"){
+                 $scope.auxModel.buildingList = "commercial";
+            }else{
+                $scope.auxModel.buildingList = "residential";
+            }
         }
+
     };
 
     $scope.clearProp = function(prop){
@@ -275,7 +327,16 @@ define(['angular'], function() {
 
     $scope.computeBenchmarkResult = function(){
 
-        $scope.futures = benchmarkServices.getZEPIMetrics($scope.propList);
+        $scope.propSubmit = [];
+        for (var i = 0; i < $scope.propList.length; i++){
+            if($scope.propList[i].buildingType !== "Parking"){
+                $scope.propSubmit.push($scope.propList[i]);
+            }
+        }
+
+        $log.info($scope.propSubmit);
+
+        $scope.futures = benchmarkServices.getZEPIMetrics($scope.propSubmit);
 
         $q.resolve($scope.futures).then(function (results) {
             $scope.baselineConstant = $scope.getBaselineConstant();
@@ -385,7 +446,10 @@ define(['angular'], function() {
 
               {"onSiteRenewableTotal": $scope.getPropResponseField(results,"onSiteRenewableTotal")},
               {"offSitePurchasedTotal": $scope.getPropResponseField(results,"offSitePurchasedTotal")},
-              {"siteEnergyALL": $scope.getPropResponseField(results,"siteEnergyALL")}
+              {"siteEnergyALL": $scope.getPropResponseField(results,"siteEnergyALL")},
+
+              {"parkingEnergy": $scope.getPropResponseField(results,"parkingEnergy")},
+              {"parkingArea": $scope.getPropResponseField(results,"parkingArea")}
 
 
         ];
@@ -524,10 +588,41 @@ define(['angular'], function() {
             return energyListFromRegular;
         };
 
+        if($scope.forms.baselineForm.$valid){
+
+            $scope.hasParkingHeating = null;
+            $scope.openParkingArea = null;
+            $scope.partiallyEnclosedParkingArea = null;
+            $scope.fullyEnclosedParkingArea = null;
+            $scope.parkingAreaUnits = null;
+            $scope.totalParkingArea = null;
+
+            for (var j = 0; j < $scope.propTypes.length; j++){
+                if($scope.propTypes[j].valid === true){
+                    if($scope.propTypes[j].propertyModel.buildingType === "Parking"){
+                        $scope.hasParkingHeating = $scope.propTypes[j].propertyModel.hasParkingHeating ;
+                        $scope.openParkingArea = $scope.propTypes[j].propertyModel.openParkingArea;
+                        $scope.partiallyEnclosedParkingArea = $scope.propTypes[j].propertyModel.partiallyEnclosedParkingArea;
+                        $scope.fullyEnclosedParkingArea = $scope.propTypes[j].propertyModel.fullyEnclosedParkingArea;
+                        $scope.parkingAreaUnits = $scope.propTypes[j].propertyModel.areaUnits;
+                        $scope.totalParkingArea = $scope.propTypes[j].propertyModel.openParkingArea + $scope.propTypes[j].propertyModel.partiallyEnclosedParkingArea + $scope.propTypes[j].propertyModel.fullyEnclosedParkingArea;
+                    }
+                }
+            }
+        }
+
 
         if($scope.forms.baselineForm.$valid){
             for (var i = 0; i < $scope.propTypes.length; i++){
                 if($scope.propTypes[i].valid === true){
+
+
+                    $scope.propTypes[i].propertyModel.hasParkingHeating = $scope.hasParkingHeating;
+                    $scope.propTypes[i].propertyModel.openParkingArea = $scope.openParkingArea;
+                    $scope.propTypes[i].propertyModel.partiallyEnclosedParkingArea = $scope.partiallyEnclosedParkingArea;
+                    $scope.propTypes[i].propertyModel.fullyEnclosedParkingArea = $scope.fullyEnclosedParkingArea;
+                    $scope.propTypes[i].propertyModel.parkingAreaUnits = $scope.parkingAreaUnits;
+                    $scope.propTypes[i].propertyModel.totalParkingArea = $scope.totalParkingArea;
 
                     $scope.propTypes[i].propertyModel.baselineConstant = $scope.getBaselineConstant();
                     $scope.propTypes[i].propertyModel.country = $scope.auxModel.country;
@@ -575,7 +670,7 @@ define(['angular'], function() {
             $scope.submitErrors();
         }
 
-        $log.info($scope.propList);
+
 
         if ($scope.propList.length !== 0){
                 $scope.computeBenchmarkResult();
@@ -737,13 +832,93 @@ define(['angular'], function() {
                     {id:"SelfStorageFacility",name:"Self Storage Facility"},
                     {id:"Warehouse",name:"Warehouse - UnRefrigerated"},
                     {id:"RefrigeratedWarehouse",name:"Warehouse - Refrigerated"},
-                    {id:"Warehouse",name:"Distribution Center"},
+                    {id:"Warehouse",name:"Distribution Center"}
                 ],
                 residential: [
                     {id:"SingleFamilyDetached",name:"Single Family - Detached"},
                     {id:"SingleFamilyAttached",name:"Single Family - Attached"},
                     {id:"MobileHome",name:"Mobile Home"},
                     {id:"MultiFamily",name:"Multifamily Housing"}
+                ],
+                parking: [
+                {id:"FinancialOffice",name:"Bank Branch"},
+                {id:"FinancialOffice",name:"Financial Office"},
+                {id:"AdultEducation",name:"Adult Education"},
+                {id:"College",name:"College / University"},
+                {id:"K12School",name:"K-12 School"},
+                {id:"PreSchool",name:"Pre-school / DayCare"},
+                {id:"VocationalSchool",name:"Vocational School"},
+                {id:"OtherEducation",name:"Other Education"},
+                {id:"ConventionCenter",name:"Convention Center"},
+                {id:"MovieTheater",name:"Movie Theater"},
+                {id:"Museum",name:"Museum"},
+                {id:"PerformingArts",name:"Performing Arts"},
+                {id:"BowlingAlley",name:"Bowling Alley"},
+                {id:"FitnessCenter",name:"Fitness Center"},
+                {id:"IceRink",name:"Ice / Curling Rink"},
+                {id:"RollerRink",name:"Roller Rink"},
+                {id:"SwimmingPool",name:"Swimming Pool"},
+                {id:"OtherRecreation",name:"Other Recreation"},
+                {id:"Stadium",name:"Stadium"},
+                {id:"IndoorArena",name:"Indoor Arena"},
+                {id:"RaceTrack",name:"Race Track"},
+                {id:"Aquarium",name:"Aquarium"},
+                {id:"Bar",name:"Bar"},
+                //{id:"Bar",name:"Nightclub"},
+                {id:"Casino",name:"Casino"},
+                {id:"Zoo",name:"Zoo"},
+                {id:"OtherEntertainment",name:"Other Entertainment"},
+                {id:"GasStation",name:"Convenience Store with Gas Station"},
+                {id:"ConvenienceStore",name:"Convenience Store without Gas Station"},
+                {id:"FastFoodRestaurant",name:"Fast Food Restaurant"},
+                {id:"Restaurant",name:"Restaurant"},
+                {id:"Supermarket",name:"Supermarket"},
+                {id:"Retail",name:"Wholesale Club"},
+                {id:"FoodSales",name:"Food Sales"},
+                {id:"FoodService",name:"Food Service"},
+                {id:"AmbulatorySurgicalCenter",name:"Ambulatory Surgical Center"},
+                {id:"Hospital",name:"Hospital"},
+                {id:"SpecialtyHospital",name:"Specialty Hospital"},
+                {id:"MedicalOffice",name:"Medical Office"},
+                {id:"OutpatientCenter",name:"Outpatient Rehabilitation Center"},
+                {id:"PhysicalTherapyCenter",name:"Physical Therapy Center"},
+                {id:"SeniorCare",name:"Senior Care Community"},
+                {id:"UrgentCareCenter",name:"Urgent Care Center"},
+                {id:"Barracks",name:"Barracks"},
+                {id:"Hotel",name:"Hotel"},
+                {id:"MultiFamily",name:"Multifamily Housing"},
+                {id:"Prison",name:"Prison / Incarceration"},
+                {id:"ResidenceHall",name:"Residence Hall"},
+                {id:"ResidentialLodging",name:"Other Residential Lodging"},
+                {id:"MixedUse",name:"Mixed Use Property"},
+                {id:"Office",name:"Office"},
+                {id:"VeterinaryOffice",name:"Veterinary Office"},
+                {id:"Courthouse",name:"Courthouse"},
+                {id:"DrinkingWaterTreatment",name:"Drinking Water Treatment Center"},
+                {id:"FireStation",name:"Fire Station"},
+                {id:"Library",name:"Library"},
+                {id:"PostOffice",name:"Post Office"},
+                {id:"PoliceStation",name:"Police Station"},
+                {id:"MeetingHall",name:"Meeting Hall"},
+                {id:"TransportationTerminal",name:"Transportation Terminal"},
+                {id:"WastewaterCenter",name:"Wastewater Treatment Center"},
+                {id:"OtherPublicServices",name:"Other Public Services"},
+                {id:"WorshipCenter",name:"Worship Facility"},
+                {id:"AutoDealership",name:"Automobile Dealership"},
+                {id:"EnclosedMall",name:"Enclosed Mall"},
+                {id:"StripMall",name:"Strip Mall"},
+                {id:"Retail",name:"Retail Store"},
+                {id:"DataCenter",name:"Data Center"}, //Data Centers behave very different and require custom script
+                {id:"PersonalServices",name:"Personal Services (Health/Beauty, Dry Cleaning, etc.)"},
+                {id:"RepairServices",name:"Repair Services (Vehicle, Shoe Locksmith, etc.)"},
+                {id:"OtherServices",name:"Other Services"},
+                {id:"PowerStation",name:"Energy / Power Station"},
+                {id:"OtherUtility",name:"Other Utility Station"},
+                {id:"SelfStorageFacility",name:"Self Storage Facility"},
+                {id:"Warehouse",name:"Warehouse - UnRefrigerated"},
+                {id:"RefrigeratedWarehouse",name:"Warehouse - Refrigerated"},
+                {id:"Warehouse",name:"Distribution Center"},
+                {id:"Parking",name:"Parking"}
                 ]
             }
         };
