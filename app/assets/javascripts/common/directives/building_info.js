@@ -540,14 +540,14 @@ define(['angular','./main'], function(angular) {
                             type: "number",
                             title: "Gross Floor Area",
                             required: "all"
-                        },*/
+                        },
                         {
                             name: "hasParkingHeating",
                             default: false,
                             type: "checkbox",
                             title: "Has Heating",
                             required: "all"
-                        },
+                        },*/
                         {
                            name: "openParkingArea",
                            default: null,
