@@ -193,7 +193,7 @@
                             dropdown
                             ng-model="prop.changeTo"
                             ng-change="updatePropType($index)"
-                            ng-options="item as item.name for item in buildingProperties.buildingType[prop.buildingList] | orderBy : 'name' track by item.id ">
+                            ng-options="item as item.name for item in buildingProperties.buildingType[prop.buildingList] | orderBy : 'name' track by item.name ">
                         <option value="">Select</option>
                     </select>
                 </div>
