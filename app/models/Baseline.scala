@@ -160,6 +160,20 @@ case class EUIMetrics(parameters: JsValue) {
     } yield baselineConstant*(1-percentBetter/100)
   }
 
+
+  def getParkingEnergyOnly:Future[Double] = {
+    for {
+      parkingEnergy <- combinedPropMetrics.getParkingEnergy(result.head)
+      convertedEnergy <- energyConversion(parkingEnergy)
+    } yield convertedEnergy.value
+  }
+
+  def getParkingAreaOnly:Future[Double] = {
+    for {
+      parkingArea <- combinedPropMetrics.getParkingArea(result.head)
+    } yield parkingArea
+  }
+
   //last pass conversions to the controller
   def sourceEnergyConverted: Future[Double] =
     for {
@@ -710,8 +724,6 @@ case class EUIMetrics(parameters: JsValue) {
       case a: BaseLine => targetRatio * lookupEUI
     }
   }
-
-
 
   def getStateBuildingType(params: JsValue): Future[StateBuildingType] = Future{
     params.asOpt[StateBuildingType] match {

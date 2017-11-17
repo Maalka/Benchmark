@@ -51,9 +51,9 @@ case class EUICalculator(parameters: JsValue) {
   def sourceEnergynoPoolnoParking:Future[Energy] = {
     for {
       poolEnergy <- getPoolEnergy
-      parkingEnergy <- getParkingEnergy
+      //parkingEnergy <- getParkingEnergy
       sourceTotalEnergy <- getTotalSourceEnergy
-      sourceEnergy <- Future(sourceTotalEnergy - poolEnergy - parkingEnergy)
+      sourceEnergy <- Future(sourceTotalEnergy - poolEnergy)// - parkingEnergy)
     } yield sourceEnergy
   }
 
@@ -193,9 +193,9 @@ case class EUICalculator(parameters: JsValue) {
     for {
       sourceEnergyListConverted <- getTotalSourceEnergy
       poolEnergy <- getPoolEnergy
-      parkingEnergy <- getParkingEnergy
+      //parkingEnergy <- getParkingEnergy
 
-    } yield sourceEnergyListConverted - poolEnergy - parkingEnergy
+    } yield sourceEnergyListConverted - poolEnergy// - parkingEnergy
   }
 
   def computeSourceEnergy[T](entries: T): Future[List[EnergyTuple]] = Future{
@@ -289,7 +289,7 @@ case class EUICalculator(parameters: JsValue) {
     return EnergyTuple(energyType,energyName,sourceEnergyValue)
   }
 
-  def getParkingEnergy: Future[Energy] = Future {
+  /*def getParkingEnergy: Future[Energy] = Future {
     parameters.asOpt[Parking] match {
       case Some(Parking(a, b, c, d, e, units, "USA")) => {
 
@@ -312,7 +312,7 @@ case class EUICalculator(parameters: JsValue) {
       case Some(_) => KBtus(0)
       case None => KBtus(0)
     }
-  }
+  }*/
 
   def countryZero:Energy = {
     country match {
@@ -408,12 +408,12 @@ object Pool {
   implicit val poolRead: Reads[Pool] = Json.reads[Pool]
 }
 
-case class Parking(openParkingArea:Option[Double],partiallyEnclosedParkingArea:Option[Double],
+/*case class Parking(openParkingArea:Option[Double],partiallyEnclosedParkingArea:Option[Double],
                    fullyEnclosedParkingArea:Option[Double], HDD:Option[Double], hasParkingHeating:Option[Boolean],
                    parkingAreaUnits:Option[String],country:String)
 object Parking {
   implicit val parkingRead: Reads[Parking] = Json.reads[Parking]
-}
+}*/
 
 case class EnergyTuple(energyType: String, energyName: String, energyValue: Energy)
 

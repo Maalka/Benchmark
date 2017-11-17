@@ -129,10 +129,11 @@ trait BaselineActions {
       //this is the total site energy without accounting for renewable generation and/or purchasing
       Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
+
       //these are specific to Maalka platform
-      Baseline.getESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+/*      Baseline.getESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.getTargetESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.getMedianESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.getMedianESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},*/
 
       Baseline.siteEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.siteEnergyListConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -146,7 +147,11 @@ trait BaselineActions {
       Baseline.percentBetterSourceEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       Baseline.getDirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.getIndirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+      Baseline.getIndirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+      Baseline.getParkingEnergyOnly.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.getParkingAreaOnly.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+
 
 
     ))
@@ -193,10 +198,10 @@ trait BaselineActions {
       "offSitePurchasedTotal",
       "siteEnergyALL",
 
-      //these are specific to Maalka platform
+/*      //these are specific to Maalka platform
       "actualES",
       "targetES",
-      "medianES",
+      "medianES",*/
 
       "totalSiteEnergy",
       "siteEnergyList",
@@ -210,8 +215,10 @@ trait BaselineActions {
       "medianSourceEnergy",
 
       "directSiteEmissions",
-      "indirectSiteEmissions"
+      "indirectSiteEmissions",
 
+      "parkingEnergy",
+      "parkingArea"
     )
 
     futures.map(fieldNames.zip(_)).map { r =>

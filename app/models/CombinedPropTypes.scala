@@ -3,13 +3,17 @@ package models
 
 import squants.energy._
 import squants.energy.EnergyConversions.EnergyNumeric
+
 import scala.concurrent.Future
 import scala.language._
 import scala.math._
 import play.api.libs.json._
 import play.api.Play
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import java.io.{InputStream}
+import java.io.InputStream
+
+import squants.space.{SquareFeet, SquareMeters}
 
 
 case class CombinedPropTypes(params: JsValue) {
@@ -34,6 +38,15 @@ case class CombinedPropTypes(params: JsValue) {
   }
 
   def getWholeBuildingSourceMedianEUI:Future[Energy] = {
+    for {
+      wholeBuildingSourceMedianEUI <- getWholeBuildingSourceMedianEUInoParking
+      totalArea <- getTotalArea(result)
+      parkingEnergy <- getParkingEnergy(result.head)
+      adjustedEUI <- Future((wholeBuildingSourceMedianEUI*totalArea + parkingEnergy) / totalArea)
+    } yield adjustedEUI
+  }
+
+    def getWholeBuildingSourceMedianEUInoParking:Future[Energy] = {
 
     for {
       majorPropType <- majorProp
@@ -386,6 +399,87 @@ case class CombinedPropTypes(params: JsValue) {
       targetBuilding <- BuildingProperties(parameters).getBuilding
       expectedEnergy <- computeExpectedEnergy(targetBuilding,buildingProps.country)
     } yield expectedEnergy
+  }
+  
+  def computeExpectedEnergy[T](targetBuilding: T,country:String): Future[Energy] = Future{
+    val unitlessEnergy = targetBuilding match {
+      case a: ResidenceHall => exp(a.expectedEnergy)
+      case a: MedicalOffice => exp(a.expectedEnergy)
+      case a: DataCenter => a.expectedEnergy * a.annualITEnergyKBtu
+      case a: GenericBuilding => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
+      case a: BaseLine => a.expectedEnergy * a.buildingSize
+    }
+    country match {
+      case "USA" => KBtus(unitlessEnergy)
+      case "Canada" => Gigajoules(unitlessEnergy)
+      case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
+    }
+  }
+
+  def getParkingEnergy(parkingJSON:JsValue): Future[Energy] = Future {
+
+    implicit def boolOptToInt(b:Option[Boolean]):Int = if (b.getOrElse(false)) 1 else 0
+
+    parkingJSON.asOpt[Parking] match {
+      case Some(Parking(open,partial,closed,heatingDays,heated,totalArea,units,country,reportingUnits)) => {
+        units match {
+          case "ftSQ" => {
+            val openArea: Double = open.getOrElse(0.0)
+            val partiallyEnclosedParkingArea: Double = partial.getOrElse(0.0)
+            val fullyEnclosedParkingArea: Double = closed.getOrElse(0.0)
+
+            country match {
+              case "USA" => KBtus((9.385 * openArea) + (28.16 * partiallyEnclosedParkingArea) + (35.67 * fullyEnclosedParkingArea) +
+                (0.009822 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea)))
+              case "Canada" => KBtus((6.128 * openArea) + (18.38 * partiallyEnclosedParkingArea) + (23.28 * fullyEnclosedParkingArea) +
+                (0.009451 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea))) in Gigajoules
+            }
+          }
+          case "mSQ" => {
+            val openArea: Double = SquareMeters(open.getOrElse(0.0)) to SquareFeet
+            val partiallyEnclosedParkingArea: Double = SquareMeters(partial.getOrElse(0.0)) to SquareFeet
+            val fullyEnclosedParkingArea: Double = SquareMeters(closed.getOrElse(0.0)) to SquareFeet
+
+            country match {
+              case "USA" => KBtus((9.385 * openArea) + (28.16 * partiallyEnclosedParkingArea) + (35.67 * fullyEnclosedParkingArea) +
+                (0.009822 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea)))
+              case "Canada" => KBtus((6.128 * openArea) + (18.38 * partiallyEnclosedParkingArea) + (23.28 * fullyEnclosedParkingArea) +
+                (0.009451 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea))) in Gigajoules
+            }
+          }
+        }
+      }
+      case Some(_) => KBtus(0)
+      case None => KBtus(0)
+    }
+  }
+
+  def getParkingArea(parkingJSON:JsValue): Future[Double] = Future {
+
+    parkingJSON.asOpt[Parking] match {
+      case Some(Parking(open,partial,closed,heatingDays,heated,total,units,country,reportingUnits)) => {
+        units match {
+          case "ftSQ" => reportingUnits match {
+            case "us" => total.getOrElse(0.0)
+            case "metric" => SquareFeet(total.getOrElse(0.0)) to SquareMeters
+          }
+          case "mSQ" => reportingUnits match {
+            case "us" => SquareMeters(total.getOrElse(0.0)) to SquareFeet
+            case "metric" => total.getOrElse(0.0)
+          }
+        }
+      }
+      case _ => 0.0
+    }
+  }
+
+
+
+  case class Parking(openParkingArea:Option[Double],partiallyEnclosedParkingArea:Option[Double],
+                     fullyEnclosedParkingArea:Option[Double], HDD:Option[Double], hasParkingHeating:Option[Boolean],
+                     totalParkingArea:Option[Double],parkingAreaUnits:String,country:String,reportingUnits:String)
+  object Parking {
+    implicit val parkingRead: Reads[Parking] = Json.reads[Parking]
   }
 
 

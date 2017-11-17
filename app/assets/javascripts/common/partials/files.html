@@ -1,37 +1,36 @@
 
 <form name="form" class="ui form"  ng-class="{'error': error !== undefined}">
-    <div class="ui error message">
-        <div class="header">
-            {{ error.messageType }}
-        </div>
-        <ul class="list">
-            <li>{{ error.messageDescription }}</li>
-        </ul>
-    </div>
-    <div class="inline fields">
-        <div class="field">
-            <button class="ui blue button"
-                ngf-select
-                ng-model="attachment"
-                name="attachment"
-                ngf-max-size="20MB" ng-class="{disabled: loadingFileFiller.attachmentName !== undefined}"
-               >
-                    {{ "Select CSV" }}
-            </button>
-
-        </div>
-        <div class="field">
-            <button ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined" 
+    <div class = "ui equal wide center aligned grid">
+        <div class = "ui row">
+            <div class = "column">
+                <button class="ui blue button"
+                        style = "margin-bottom: 2em; padding: 1.1em 2em; background-color: #4061aa"
+                    ngf-select
+                    ng-model="attachment"
+                    name="attachment"
+                    ngf-max-size="20MB" ng-class="{disabled: loadingFileFiller.attachmentName !== undefined}"
+                   >
+                        {{ "Upload CSV" }}
+                </button>
+<br>
+            <button ng-disabled="attachment === undefined"
                 class="ui green button"
+                    style = "margin-bottom: 2em; padding: 1.1em 2em; background-color: #5ba372"
                 ng-class="{loading: loading}"
-                type="submit" ng-click="submitFile()">submit
+                type="submit" ng-click="submitFile()">Submit
             </button>
-            <p ng-if="attachment === undefined && loadingFileFiller.attachmentName === undefined">
+            <!--<p ng-if="attachment === undefined && loadingFileFiller.attachmentName === undefined">
                 << Upload your data here >>
-            </p>
-            <p style="color:red;" ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined">
+            </p> -->
+            </div>
+        </div>
+        <div clasas = "ui row">
+        <div class="field" ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined">
+            <p style="color:black;">
                 {{attachment.name}}
             </p>
         </div>
     </div>
+    </div>
 </form>
+

@@ -193,6 +193,10 @@ case class CSVcompute(parameters: List[List[String]]) {
     "EnergyStation",
     "K12School",
 
+    "SingleFamilyAttached",
+    "SingleFamilyDetached",
+    "MobileHome",
+
     "BankBranch", // FinancialOffice
     "K12School",
     "DistributionCenter", // Warehouse
