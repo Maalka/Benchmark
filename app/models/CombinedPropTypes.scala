@@ -400,21 +400,30 @@ case class CombinedPropTypes(params: JsValue) {
       expectedEnergy <- computeExpectedEnergy(targetBuilding,buildingProps.country)
     } yield expectedEnergy
   }
-  
-  def computeExpectedEnergy[T](targetBuilding: T,country:String): Future[Energy] = Future{
-    val unitlessEnergy = targetBuilding match {
-      case a: ResidenceHall => exp(a.expectedEnergy)
-      case a: MedicalOffice => exp(a.expectedEnergy)
-      case a: DataCenter => a.expectedEnergy * a.annualITEnergyKBtu
-      case a: GenericBuilding => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
-      case a: BaseLine => a.expectedEnergy * a.buildingSize
-    }
-    country match {
-      case "USA" => KBtus(unitlessEnergy)
-      case "Canada" => Gigajoules(unitlessEnergy)
-      case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
-    }
+
+
+  def computeExpectedEnergy(targetBuilding:BaseLine, country:String): Future[Energy] = {
+    for {
+      predictedEnergy <- targetBuilding.expectedEnergy
+      unitlessEnergy <- Future{
+        targetBuilding match {
+          case a: ResidenceHall => exp(predictedEnergy)
+          case a: MedicalOffice => exp(predictedEnergy)
+          case a: DataCenter => predictedEnergy * a.annualITEnergyKBtu
+          case a: GenericBuilding => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
+          case a: BaseLine => predictedEnergy * a.buildingSize
+        }
+      }
+      returnEnergy <- Future{
+        country match {
+          case "USA" => KBtus(unitlessEnergy)
+          case "Canada" => Gigajoules(unitlessEnergy)
+          case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
+        }
+      }
+    } yield returnEnergy
   }
+
 
   def getParkingEnergy(parkingJSON:JsValue): Future[Energy] = Future {
 
@@ -482,28 +491,6 @@ case class CombinedPropTypes(params: JsValue) {
     implicit val parkingRead: Reads[Parking] = Json.reads[Parking]
   }
 
-
-  def computeExpectedEnergy(targetBuilding:BaseLine, country:String): Future[Energy] = {
-    for {
-      predictedEnergy <- targetBuilding.expectedEnergy
-      unitlessEnergy <- Future{
-        targetBuilding match {
-          case a: ResidenceHall => exp(predictedEnergy)
-          case a: MedicalOffice => exp(predictedEnergy)
-          case a: DataCenter => predictedEnergy * a.annualITEnergyKBtu
-          case a: GenericBuilding => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
-          case a: BaseLine => predictedEnergy * a.buildingSize
-        }
-      }
-      returnEnergy <- Future{
-        country match {
-          case "USA" => KBtus(unitlessEnergy)
-          case "Canada" => Gigajoules(unitlessEnergy)
-          case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
-        }
-      }
-    } yield returnEnergy
-  }
 
 
   def lookupTableGet(building: BaseLine): Future[Seq[TableEntry]] = {
