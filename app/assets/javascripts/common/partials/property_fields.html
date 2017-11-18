@@ -23,9 +23,9 @@
 
             <div class="right floated right aligned six wide column" ng-if="propertyModelFields[model.type].length > 0 && model.propertyModel.buildingType=='Parking'">
                 <div checkbox class="ui checkbox checked" ng-if="propertyModelFields[model.type].length > 0" >
-                    <label style="font-size:12px" for="cb-parking">Has Heating</label>
                     <input type="checkbox" id="cb-parking" ng-model="propertyModel.hasParkingHeating" ng-init="propertyModel.hasParkingHeating=false"
                            ng-true-value=true ng-false-value=false>
+                    <label style="font-size:12px" for="cb-parking">Has Heating</label>
                 </div>
             </div>
 
