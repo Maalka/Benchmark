@@ -1,30 +1,46 @@
 <div>
-    <div class="inline fields">
-        <div class="six wide field" ng-if="propertyModelFields[model.type].length > 0">
-            <h3 class="ui header">{{ buildingName }}</h3>
-        </div>
-        <div class="thirteen wide field" ng-if="!propertyModelFields[model.type].length > 0">
-            <h3 class="ui header">{{ buildingName }}</h3>
-        </div>
-        <div class="seven wide field" ng-if="propertyModelFields[model.type].length > 0"
-            ng-class="{'disabled': !propertyModel.GFA || !propertyModel.areaUnits}">
-            <div checkbox class="ui checkbox checked" ng-if="propertyModelFields[model.type].length > 0 && !(model.propertyModel.buildingType=='Parking')" >
-                <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=true"
-                   ng-true-value=true ng-false-value=false>
-                <label for="cb-default">Use Default Values?</label>
+    <div class="ui left aligned grid" style="padding-bottom:5px;">
+
+
+            <div class="five wide field" style="padding-top:5px;" ng-if="propertyModelFields[model.type].length > 0">
+                <h3 class="ui header">{{ buildingName }}</h3>
             </div>
-        </div>
-        <div class="two wide field">
-            delete
-        </div>
-        <div class="one wide field">
-            <div class="ui large labeled button" ng-click="removeProp()" style="margin-top:.1em;">
-                <i class="minus red circle icon"></i>
+            <div class="twelve wide field" style="padding-top:5px;" ng-if="!propertyModelFields[model.type].length > 0">
+                <h3 class="ui header">{{ buildingName }}</h3>
             </div>
-        </div>
+
+
+
+            <div class="right floated right aligned seven wide column" ng-if="propertyModelFields[model.type].length > 0 && !(model.propertyModel.buildingType=='Parking')"
+                ng-class="{'disabled': !propertyModel.GFA || !propertyModel.areaUnits}">
+                <div checkbox class="ui checkbox checked" ng-if="propertyModelFields[model.type].length > 0" >
+                    <input type="checkbox" id="cb-default" ng-model="propertyModel.defaultValues" ng-init="propertyModel.defaultValues=true"
+                       ng-true-value=true ng-false-value=false>
+                    <label for="cb-default">Use Default Values?</label>
+                </div>
+            </div>
+
+
+            <div class="right floated right aligned six wide column" ng-if="propertyModelFields[model.type].length > 0 && model.propertyModel.buildingType=='Parking'">
+                <div checkbox class="ui checkbox checked" ng-if="propertyModelFields[model.type].length > 0" >
+                    <label style="font-size:12px" for="cb-parking">Has Heating</label>
+                    <input type="checkbox" id="cb-parking" ng-model="propertyModel.hasParkingHeating" ng-init="propertyModel.hasParkingHeating=false"
+                           ng-true-value=true ng-false-value=false>
+                </div>
+            </div>
+
+            <div class="right floated right aligned two wide column">
+                delete
+            </div>
+            <div class="right floated left aligned one wide column">
+                <div class="ui large labeled button" ng-click="removeProp()" style="margin-top:.1em;">
+                    <i class="minus red circle icon"></i>
+                </div>
+            </div>
+
     </div>
 
-    <div class="inline fields">
+    <div class="inline fields" ng-if="!(model.propertyModel.buildingType=='Parking')">
         <div class="sixteen wide field"> <!-- ng-if="!(model.propertyModel.buildingType=='Parking')"> -->
             <label style="width: 200px">Gross Floor Area</label>
             <div class="ten wide field required" ng-class="{error: !propertyModel.GFA && forms.hasValidated}">
@@ -84,6 +100,23 @@
             </select>
         </div>
     </div>
+    <div class="inline fields" ng-if="model.propertyModel.buildingType=='Parking'">
+        <div class="sixteen wide field"> <!-- ng-if="!(model.propertyModel.buildingType=='Parking')"> -->
+            <div class="fifteen wide field"></div>
+            <label style="width: 80px;margin-left: 10px">Units</label>
+
+            <div class="six wide field required" ng-class="{error: !propertyModel.areaUnits && forms.hasValidated}">
+                <select class="ui dropdown"
+                        dropdown
+                        ng-model="propertyModel.areaUnits"
+                        ng-options="item.id as item.name for item in buildingProperties.areaUnits"
+                        required>
+                    <option value="">Select</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 
