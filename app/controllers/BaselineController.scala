@@ -46,11 +46,6 @@ trait BaselineActions {
           case a:Energy => energyToJSValue(a)
           case a:EmissionsTuple => JsObject(Seq(a.eType -> Json.toJson(a.eValue)))
           case a:EnergyTuple => JsObject(Seq(a.energyType -> energyToJSValue(a.energyValue)))
-          case a:TableEntry => JsObject(Seq(
-            "ES" -> JsNumber(a.ES),
-            "CmPercent" -> JsNumber(a.CmPercent),
-            "Ratio" -> JsNumber(a.Ratio)
-            ))
           case a:PropParams => JsObject(Seq(
             "propType" -> JsString(a.propType),
             "propSize" -> JsNumber(a.propSize),
@@ -73,8 +68,6 @@ trait BaselineActions {
   }
 
 
-
-
   def getZEPIMetrics() = Action.async(parse.json) { implicit request =>
 
     val Baseline: EUIMetrics = EUIMetrics(request.body)
@@ -82,22 +75,6 @@ trait BaselineActions {
     val futures = Future.sequence(Seq(
 
       Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-      Baseline.percentBetterMedian.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterTarget.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterActual.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterActualwOnSite.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterActualwOffSite.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterActualwOnandOffSite.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-
-
-      Baseline.actualGoalReduction.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.actualGoalBetter.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-      Baseline.zepiActual.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.zepiMedian.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.zepiPercentBetter.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       Baseline.siteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.siteEUIwOnSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -109,50 +86,21 @@ trait BaselineActions {
       Baseline.sourceEUIwOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.sourceEUIwOnandOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
-
-      Baseline.medianSiteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.medianSourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterSiteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.percentBetterSourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-
-
       Baseline.getTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       //this uses default state energy mixes for emissions calcs rather than scaling by source energies per TargetFinder
       //to follow TargetFinder use Baseline.medianTotalEmissions not Baseline.defaultMedianTotalEmissions
-      Baseline.defaultMedianTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      //to follow TargetFinder use Baseline.percentBetterTotalEmissions not Baseline.defaultPercentBetterTotalEmissions
-      Baseline.defaultPercentBetterTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
 
       Baseline.onSiteRenewableTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.offSitePurchasedTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       //this is the total site energy without accounting for renewable generation and/or purchasing
-      Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-      Baseline.getParkingEnergyOnly.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.getParkingAreaOnly.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
-
+      Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
 
     ))
 
     val fieldNames = Seq(
 
       "propOutputList",
-
-      "percentBetterMedian",
-      "percentBetterTarget",
-      "percentBetterActual",
-      "percentBetterActualwOnSite",
-      "percentBetterActualwOffSite",
-      "percentBetterActualwOnandOffSite",
-
-
-      "percentBetterActualtoGoal",
-      "actualGoalBetter",
-
-      "actualZEPI",
-      "medianZEPI",
-      "percentBetterZEPI",
 
       "siteEUI",
       "siteEUIwOnSite",
@@ -164,22 +112,11 @@ trait BaselineActions {
       "sourceEUIwOffSite",
       "sourceEUIwOnAndOffSite",
 
-      "medianSiteEUI",
-      "medianSourceEUI",
-      "percentBetterSiteEUI",
-      "percentBetterSourceEUI",
-
       "totalEmissions",
-      "medianEmissions",
-      "percentBetterEmissions",
 
       "onSiteRenewableTotal",
       "offSitePurchasedTotal",
-      "siteEnergyALL",
-
-      "parkingEnergy",
-      "parkingArea"
-
+      "siteEnergyALL"
     )
 
     futures.map(fieldNames.zip(_)).map { r =>

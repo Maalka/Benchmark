@@ -14,32 +14,6 @@ import scala.concurrent.Future
 
 case class CSVcompute(parameters: List[List[String]]) {
 
-  val validZipCodes:String = {
-    Play.application.resourceAsStream("valid_zipcodes.json") match {
-      case Some(is: InputStream) => {
-        Json.parse(is).toString()
-      }
-      case _ => throw new Exception("Could not open file")
-    }
-  }
-
-  def tryFormat(CSVvalue:String,checkType:String):Boolean = {
-    checkType match {
-      case "int" => {
-        Try{CSVvalue.trim.toInt} match {
-          case Success(a) => true
-          case _ => false
-        }
-      }
-      case "double" => {
-        Try{CSVvalue.trim.toDouble} match {
-          case Success(a) => true
-          case _ => false
-        }
-      }
-    }
-  }
-
   val propTypes:List[String] = List(
     "DataCenter",
     "Hospital",
@@ -61,58 +35,6 @@ case class CSVcompute(parameters: List[List[String]]) {
     "FinancialOffice"
   )
 
-  val states:List[String] = List(
-    "AL",
-    "AK",
-    "AZ",
-    "AR",
-    "CA",
-    "CO",
-    "CT",
-    "DE",
-    "FL",
-    "GA",
-    "HI",
-    "ID",
-    "IL",
-    "IN",
-    "IA",
-    "KS",
-    "KY",
-    "LA",
-    "ME",
-    "MD",
-    "MA",
-    "MI",
-    "MN",
-    "MS",
-    "MO",
-    "MT",
-    "NE",
-    "NV",
-    "NH",
-    "NJ",
-    "NM",
-    "NY",
-    "NC",
-    "ND",
-    "OH",
-    "OK",
-    "OR",
-    "PA",
-    "RI",
-    "SC",
-    "SD",
-    "TN",
-    "TX",
-    "UT",
-    "VT",
-    "VA",
-    "WA",
-    "WV",
-    "WI",
-    "WY"
-  )
 
   val buildingTypes:List[String] = List(
     "AdultEducation",
@@ -207,79 +129,6 @@ case class CSVcompute(parameters: List[List[String]]) {
     "WarehouseUnRefrigerated", // Warehouse
     "Other"
   )
-
-
-  def getBuildingType(bldgType:String):String = {
-      bldgType match {
-        case "BankBranch" => "FinancialOffice"
-        case "DistributionCenter" => "Warehouse"
-        case "ConvenienceStoreWithGas" => "GasStation"
-        case "ConvenienceStoreNoGas" => "ConvenienceStore"
-        case "MixedUseProperty" => "MixedUse"
-        case "WarehouseRefrigerated" => "RefrigeratedWarehouse"
-        case "WarehouseUnRefrigerated" => "Warehouse"
-        case "EnergyStation" => "PowerStation"
-        case _ => bldgType
-    }
-  }
-
-  val GFAUnits:List[String] = List(
-    "sq.m",
-    "sq.ft"
-  )
-
-  val outputUnits:String = {
-    val units = parameters.flatten.dropWhile(!GFAUnits.contains(_)).headOption
-    if (units.isDefined) {
-      units.get
-    } else {
-      "Bad Units"
-    }
-  }
-  val reportingUnits:String = {
-    if (outputUnits == "sq.m") {
-      "metric"
-    } else {
-      "us"
-    }
-  }
-  def convertGFAUnits(CSVUnits:String):String = {
-    if (CSVUnits == "sq.m") {
-      "mSQ"
-    } else {
-      "ftSQ"
-    }
-  }
-
-  val goodBuildingJsonList:Seq[JsValue] =  parameters.collect {
-    case List(a, b, c, d, e, f) if {
-      states.contains(b.trim) && GFAUnits.contains(f.trim) && (c.trim.length == 5) &&
-      tryFormat(e,"double") && validZipCodes.contains(c.trim) && buildingTypes.contains(d.trim)
-    } => getDefaults(GoodJsonBuilding(a.trim, b.trim, c.trim, getBuildingType(d.trim), e.toDouble, convertGFAUnits(f.trim), reportingUnits))
-  }
-
-  val badEntries = parameters.filterNot {
-    case List(a,b,c,d,e,f) if {
-      states.contains(b.trim) && GFAUnits.contains(f.trim) &&  (c.trim.length == 5) &&
-        tryFormat(e,"double") && validZipCodes.contains(c.trim) && buildingTypes.contains(d.trim)
-    }  => true
-    case _ => false
-  }
-
-  val badEntriesWithErrors = badEntries.map{
-     _ match {
-       case List(a,b,c,d,e,f) if (a == "Building ID") => List(a,b,c,d,e,f)
-       case List(a,b,c,d,e,f) => {
-         val stateEntry = if (states.contains(b.trim)){b.trim}else{"ERROR"}
-         val unitsEntry = if (GFAUnits.contains(f.trim)){f.trim}else{"ERROR"}
-         val postalCodeEntry = if (validZipCodes.contains(c.trim) && c.trim.length == 5 ){c.trim}else{"ERROR"}
-         val GFAEntry = if (tryFormat(e,"double")){e.toDouble}else{"ERROR"}
-         val buildingEntry = if (buildingTypes.contains(d.trim)){d.trim}else{"ERROR"}
-         List(a,stateEntry,postalCodeEntry,buildingEntry,GFAEntry,unitsEntry)
-       }
-    }
-  }
-
 
 
   def roundAt(p: Int)(n: Double): Double = { val s = math pow (10, p); (math round n * s) / s }

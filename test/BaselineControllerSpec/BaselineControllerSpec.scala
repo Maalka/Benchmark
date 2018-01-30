@@ -72,7 +72,6 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
   //check response for generic building type that is missing algorithm
   "makeBaseline - adult_education post body" should {
     "be valid" in successfulBaselineTest("/baseline/adult_education/adult_education.json", "/baseline/adult_education/expected/successful_baseline_test.json")
-    "actualES response be invalid" in errorFieldBaselineTest("/baseline/adult_education/adult_education.json", "actualES")
     "totalSiteEnergy response be valid" in {
       successFieldBaselineTest("/baseline/adult_education/adult_education.json", "totalSiteEnergy").as[Double] mustBe 1558616.647128
     }
@@ -82,85 +81,9 @@ class BaselineControllerSpec extends PlaySpec with OneAppPerSuite {
   "makeBaseline - adult_education_no_energy post body" should {
     "be valid" in successfulBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "/baseline/adult_education/expected/successful_baseline_no_energy_test.json")
     "siteEUI be invalid" in errorFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "siteEUI")
-    "percentBetterSourceEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "percentBetterSourceEnergy").as[Double] mustBe 11312000
-    }
-    "medianSourceEUI response be valid" in {
-      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "medianSourceEUI").as[Double] mustBe 141.4
-    }
-    "medianSiteEUI response be valid" in {
-      successFieldBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "medianSiteEUI").as[Double] mustBe 83.07482609513066
-    }
     "siteEUI response not be valid" in {
       errorValueBaselineTest("/baseline/adult_education/adult_education_no_energy.json", "siteEUI")
     }
   }
 
-  //check response for specific building type with algorithm
-  "makeBaseline - office post body" should {
-    "be valid" in successfulBaselineTest("/baseline/office/office.json", "/baseline/office/expected/successful_baseline_test.json")
-    "totalSiteEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/office/office.json", "totalSiteEnergy").as[Double] mustBe 7118295.470290095
-    }
-  }
-
-  //check response for specific canadian building type with algorithm
-  "makeBaseline - canada_k12_school post body" should {
-    "be valid" in successfulBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "/baseline/canada_k12_school/expected/successful_baseline_test.json")
-    "ES errors be invalid" in noErrorFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "ES")
-    "targetES errors be invalid" in noErrorFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "targetES")
-    "totalSiteEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "totalSiteEnergy").as[Double] mustBe 2086166.47128
-    }
-    "percentBetterSourceEUI response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "percentBetterSourceEUI").as[Double] mustBe 243.64933577936975
-    }
-    "medianSourceEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/canada_k12_school/canada_k12_school.json", "medianSourceEnergy").as[Double] mustBe 8488411.495456582
-    }
-  }
-
-  //check response for specific building type with algorithm
-  "makeBaseline - multifamily post body" should {
-    "be valid" in successfulBaselineTest("/baseline/multifamily/multifamily.json", "/baseline/multifamily/expected/successful_baseline_test.json")
-    "totalSourceEnergy response be valid" in {
-      successFieldBaselineTest("/baseline/multifamily/multifamily.json", "totalSourceEnergy").as[Double] mustBe 18171274.263660695
-    }
-    "percentBetterSourceEUI response be valid" in {
-      successFieldBaselineTest("/baseline/multifamily/multifamily.json", "percentBetterSourceEUI").as[Double] mustBe 105.78107078423999
-    }
-  }
-  //check response for specific building type with algorithm
-  "makeBaseline - combo bank hospital adult post body" should {
-    "be valid" in successfulBaselineTest("/baseline/combo_bank_hospital_adult/bank_hospital_adult.json", "/baseline/combo_bank_hospital_adult/expected/successful_baseline_bank_hospital_adult.json")
-  }
-
-  //check response for specific building type with algorithm
-  "makeBaseline - combo hospital bar post body" should {
-    "be valid" in successfulBaselineTest("/baseline/combo_hospital_bar/hospital_bar.json", "/baseline/combo_hospital_bar/expected/successful_baseline_hospital_bar.json")
-  }
-
-  //check response for specific building type with algorithm
-  "makeBaseline - combo hospital bar hotel post body" should {
-    "be valid" in successfulBaselineTest("/baseline/combo_hospital_bar_hotel/hospital_bar_hotel.json", "/baseline/combo_hospital_bar_hotel/expected/successful_baseline_hospital_bar_hotel.json")
-  }
-  //check response for specific building type with algorithm
-  "makeBaseline - combo office k12school post body" should {
-    "be valid" in successfulBaselineTest("/baseline/combo_office_k12/office_k12.json", "/baseline/combo_office_k12/expected/successful_baseline_office_k12.json")
-  }
-
-//check when response comes back empty
-  /*"makeBaseline - empty post body" should  {
-    "throw[JsonException]" in {
-      val controller = new TestController()
-      val fakeRequest = FakeRequest(Helpers.POST, controllers.routes.BaselineController.getZEPIMetrics().url,
-        FakeHeaders(), Json.parse("null"))
-
-      val result: Future[Result] = controller.getZEPIMetrics().apply(fakeRequest)
-
-      result must not be  "ok"
-      //Console.println(bodyTest)
-      //bodyTest mustBe "ok" // need to check the return values
-    }
-  }*/
 }

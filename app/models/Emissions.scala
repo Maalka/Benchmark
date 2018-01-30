@@ -51,7 +51,6 @@ case class Emissions(parameters:JsValue) {
       eGridCode <- getEGrid()
       indirectFactors <- emissionsIndirectFactors(energyTuples, eGridCode)
     } yield indirectFactors
-
   }
 
 

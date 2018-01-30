@@ -53,10 +53,9 @@ case class EUICalculator(parameters: JsValue) {
 
   def sourceEnergynoPoolnoParking:Future[Energy] = {
     for {
-      poolEnergy <- getPoolEnergy
       //parkingEnergy <- getParkingEnergy
       sourceTotalEnergy <- getTotalSourceEnergy
-      sourceEnergy <- Future(sourceTotalEnergy - poolEnergy)// - parkingEnergy)
+      sourceEnergy <- Future(sourceTotalEnergy)// - parkingEnergy)
     } yield sourceEnergy
   }
 
@@ -195,10 +194,9 @@ case class EUICalculator(parameters: JsValue) {
   def getTotalSourceEnergyNoPoolNoParking: Future[Energy] = {
     for {
       sourceEnergyListConverted <- getTotalSourceEnergy
-      poolEnergy <- getPoolEnergy
       //parkingEnergy <- getParkingEnergy
 
-    } yield sourceEnergyListConverted - poolEnergy// - parkingEnergy
+    } yield sourceEnergyListConverted// - parkingEnergy
   }
 
   def computeSourceEnergy[T](entries: T): Future[List[EnergyTuple]] = Future{
@@ -324,40 +322,6 @@ case class EUICalculator(parameters: JsValue) {
     }
   }
 
-  def getPoolEnergy: Future[Energy] = Future {
-
-    parameters.asOpt[Pool] match {
-      case Some(Pool(Some("Indoor"), "USA", "K12School", Some("Recreational"))) => KBtus(1257300)
-      case Some(Pool(Some("Indoor"), "USA", "K12School", Some("ShortCourse"))) => KBtus(2095500)
-      case Some(Pool(Some("Indoor"), "USA", "K12School", Some("Olympic"))) => KBtus(6266009)
-      case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("Recreational"))) => KBtus(1010711)
-      case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("ShortCourse"))) => KBtus(1684518)
-      case Some(Pool(Some("Indoor"), "USA", "Hotel", Some("Olympic"))) => KBtus(5037084)
-      case Some(Pool(Some("Indoor"), "USA", _, Some("Recreational"))) => KBtus(853981)
-      case Some(Pool(Some("Indoor"), "USA", _, Some("ShortCourse"))) => KBtus(1423301)
-      case Some(Pool(Some("Indoor"), "USA", _, Some("Olympic"))) => KBtus(4255987)
-      case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("Recreational"))) => KBtus(1202780) in Gigajoules
-      case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("ShortCourse"))) => KBtus(2004633) in Gigajoules
-      case Some(Pool(Some("Indoor"), "Canada", "K12School", Some("Olympic"))) => KBtus(5993047) in Gigajoules
-      case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("Recreational"))) => KBtus(962982) in Gigajoules
-      case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("ShortCourse"))) => KBtus(1604654) in Gigajoules
-      case Some(Pool(Some("Indoor"), "Canada", "Hotel", Some("Olympic"))) => KBtus(4799745) in Gigajoules
-      case Some(Pool(Some("Indoor"), "Canada", _, Some("Recreational"))) => KBtus(810384) in Gigajoules
-      case Some(Pool(Some("Indoor"), "Canada", _, Some("ShortCourse"))) => KBtus(1351587) in Gigajoules
-      case Some(Pool(Some("Indoor"), "Canada", _, Some("Olympic"))) => KBtus(4040544) in Gigajoules
-
-
-      case Some(Pool(Some("Outdoor"), "USA", _, Some("Recreational"))) => KBtus(119914)
-      case Some(Pool(Some("Outdoor"), "USA", _, Some("ShortCourse"))) => KBtus(199857)
-      case Some(Pool(Some("Outdoor"), "USA", _, Some("Olympic"))) => KBtus(597621)
-      case Some(Pool(Some("Outdoor"), "Canada", _, Some("Recreational"))) => KBtus(112790) in Gigajoules
-      case Some(Pool(Some("Outdoor"), "Canada", _, Some("ShortCourse"))) => KBtus(187668) in Gigajoules
-      case Some(Pool(Some("Outdoor"), "Canada", _, Some("Olympic"))) => KBtus(561108) in Gigajoules
-
-      case Some(Pool(_, _, _, _)) => KBtus(0)
-      case None => KBtus(0)
-    }
-  }
 }
 
 case class  ConversionInfo(country:Option[String], reportingUnits: Option[String], buildingType:Option[String], postalCode:Option[String], state:Option[String], buildingName:Option[String])

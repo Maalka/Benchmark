@@ -22,233 +22,6 @@ case class CombinedPropTypes(params: JsValue) {
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
 
 
-  def convertToZeroScale(value:Energy):Energy = {
-    if(buildingProps.getTarget2030Value == false) {
-      value
-    }else {
-      value * 100 / 130
-    }
-  }
-
-  def getWholeBuildingSourceMedianEnergy:Future[Energy] = {
-    for {
-      wholeBuildingSourceMedianEUI <- getWholeBuildingSourceMedianEUI
-      totalArea <- getTotalArea(result)
-    } yield wholeBuildingSourceMedianEUI*totalArea
-  }
-
-  def getWholeBuildingSourceMedianEUI:Future[Energy] = {
-    for {
-      wholeBuildingSourceMedianEUI <- getWholeBuildingSourceMedianEUInoParking
-      totalArea <- getTotalArea(result)
-      parkingEnergy <- getParkingEnergy(result.head)
-      adjustedEUI <- Future((wholeBuildingSourceMedianEUI*totalArea + parkingEnergy) / totalArea)
-    } yield adjustedEUI
-  }
-
-    def getWholeBuildingSourceMedianEUInoParking:Future[Energy] = {
-
-    for {
-      majorPropType <- majorProp
-      hasGenericBuilding <- checkGenericBuilding
-      lookUpSourceMedianEUI <- {
-        majorPropType.contains(true) match {
-          case true => {
-            hasGenericBuilding match {
-              case true => getGenericSourceEUI
-              case false => getMedianSourceEUI(result)
-            }
-          }
-          case false => {
-            getDefaultSourceMedianEUI(buildingProps.country)
-            }
-          }
-        }
-      } yield convertToZeroScale(lookUpSourceMedianEUI)
-    }
-
-  def getMedianSourceEUI(buildingList:List[JsValue]):Future[Energy] = {
-    for {
-      totalArea <- getTotalArea(buildingList)
-      baselineSourceEnergy <- getMedianSourceEnergy(buildingList)
-    }yield baselineSourceEnergy/totalArea
-
-  }
-
-  def getMedianSourceEnergy(buildingList:List[JsValue]):Future[Energy] = {
-    for {
-      computeSourceEnergy <- {
-        buildingList.length match {
-          case a if a == 1 => singlePropMedianSourceEnergy(buildingList.head)
-          case _ => getWeightedMedianSourceEnergy(buildingList)
-        }
-      }
-    }yield computeSourceEnergy
-  }
-
-  def getWeightedMedianSourceEnergy(buildingList:List[JsValue]):Future[Energy] = {
-    for {
-      weightedTable <- getWeightedTable(buildingList)
-      medianEnergy <- getMedianRatio(weightedTable)
-    }yield {
-      buildingProps.country match {
-        case "USA" => KBtus(medianEnergy)
-        case "Canada" => Gigajoules(medianEnergy)
-        case _ => throw new Exception("Cannot compute Weighted Table Energy")
-      }
-    }
-  }
-
-  def getWeightedTable(propList:List[JsValue]): Future[Seq[TableEntry]] = {
-    val ESList:List[Int] = List.range(1,101,1).sorted(Ordering[Int].reverse)
-    val cmPercentList:List[Double] = List.range(0,100,1).map(_/100.0)
-    for {
-      buildingList <- Future.sequence(propList.map(BuildingProperties(_).getBuilding))
-      ratioToEnergyList <- Future.sequence{
-        buildingList.map {
-          case a: BaseLine => lookupTableGet(a).map(_.map(b => tableToEnergy(a,b)))
-        }
-      }
-      weightedTable <- Future(ratioToEnergyList.transpose.map(_.sum))
-      zippedTable <- Future((ESList,cmPercentList,weightedTable).zipped.toList)
-      formattedTable <- convertTabletoEntries(zippedTable)
-    } yield formattedTable
-  }
-
-
-  def tableToEnergy(targetBuilding: BaseLine, tableEntry:TableEntry): Double = {
-    targetBuilding match {
-      case a: ResidenceHall => exp(tableEntry.Ratio * a.expectedEnergy / 15.717)
-      case a: MedicalOffice => exp(tableEntry.Ratio * a.expectedEnergy / 14.919)
-      case a: DataCenter => tableEntry.Ratio * a.expectedEnergy * a.annualITEnergyKBtu
-      case a: BaseLine => tableEntry.Ratio * a.expectedEnergy * a.buildingSize
-    }
-  }
-
-  def convertTabletoEntries(table: List[(Int,Double,Double)]): Future[Seq[TableEntry]] = Future{
-    table.map { case (a,b,c) =>  TableEntry(a,b,c) }
-  }
-
-
-  def getTargetEUI[T](targetBuilding: T,lookupEUI:Energy,targetRatio:Double):Future[Energy] = Future {
-    targetBuilding match {
-      case a: ResidenceHall => {
-        a.country match {
-          case "USA" => KBtus(exp(targetRatio / 15.717 * lookupEUI.value) / a.buildingSize)
-          case "Canada" => Gigajoules(exp(targetRatio / 15.717 * lookupEUI.value) / a.buildingSize)
-        }
-      }
-      case a: MedicalOffice => {
-        a.country match {
-          case "USA" => KBtus(exp(targetRatio / 14.919 * lookupEUI.value) / a.buildingSize)
-          case "Canada" => Gigajoules(exp(targetRatio / 14.919 * lookupEUI.value) / a.buildingSize)
-        }
-      }
-      case a: DataCenter => targetRatio * lookupEUI * a.annualITEnergyKBtu / a.buildingSize
-      case a: GenericBuilding => throw new Exception("Could not calculate Target EUI - Generic Building: No Algorithm!!")
-      case a: BaseLine => targetRatio * lookupEUI
-    }
-  }
-
-/*
-  def getGenericSourceEUI:Future[Energy] = {
-    for {
-      buildingList <- getBuildingList
-      majorPropFilter <- majorProp
-      mediumPropFilter <- mediumSizeProps(buildingList)
-      majorProp <- getMajorProp(majorPropFilter)
-      majorPropType <- BuildingProperties(majorProp).getBuilding
-      sourceEUI <- {
-            majorPropType match {
-              case c: GenericBuilding => singlePropMedianSourceEUI(majorPropType)
-              case d: BaseLine => getMedianNoGeneric(majorPropType)
-            }
-          }
-    } yield sourceEUI
-  }*/
-
-  def getGenericSourceEUI:Future[Energy] = {
-
-      for {
-        buildingList <- getBuildingList
-        areaWeights <- getAreaWeights
-        sourceEUIList <- Future.sequence{
-          buildingList.map{
-            case a: BaseLine => singlePropMedianSourceEUI(a)
-          }
-        }
-        weightedSourceEUI <- Future{(sourceEUIList,areaWeights).zipped.map {
-          case (a:Energy,b:Double) => a * b
-        }.sum}
-    } yield {
-
-        println(buildingList)
-        println(areaWeights)
-        println(sourceEUIList)
-        println(weightedSourceEUI)
-        println(KBtus(weightedSourceEUI))
-
-        buildingProps.country match {
-          case "USA" => weightedSourceEUI in KBtus
-          case "Canada" => weightedSourceEUI in Gigajoules
-          case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
-        }
-      }
-
-  }
-
-  def getMedianNoGeneric(majorPropType:BaseLine):Future[Energy] =  {
-    for {
-      buildingList <- getBuildingList
-      mediumPropFilter <- mediumSizeProps(buildingList)
-      mediumPropTypesJsValues <- filterPropTypes(mediumPropFilter)
-      mediumPropTypesList <- Future.sequence(mediumPropTypesJsValues.map(BuildingProperties(_).getBuilding))
-      mediumGenericTypes <- getMediumGenericPropTypes(mediumPropTypesList)
-      nonGenericPropFilter <- Future{buildingList.map{
-        case a if a.isInstanceOf[GenericBuilding] == true => false
-        case a if a.isInstanceOf[GenericBuilding] == false => true
-        }
-      }
-      nonGenericPropTypes <- filterPropTypes(nonGenericPropFilter)
-      sourceEUI <- {
-        mediumGenericTypes.isEmpty match {
-          case true => getMedianSourceEUI(nonGenericPropTypes)
-          case false => Future {
-            (buildingProps.country,majorPropType.buildingType) match {
-              case ("USA", "Office") => KBtus(148.1)
-              case ("USA", "FinancialOffice") => KBtus(148.1)
-              case ("USA", "WorshipCenter") => KBtus(70.7)
-              case ("USA", "WastewaterCenter") => KBtus(148.1)
-              case ("USA", "Warehouse") => KBtus(60.0)
-              case ("USA", "RefrigeratedWarehouse") => KBtus(252.6)
-              case ("USA", "Supermarket") => KBtus(480.0)
-              case ("USA", "SeniorCare") => KBtus(243.2)
-              case ("USA", "Retail") => KBtus(114.4)
-              case ("USA", "MultiFamily") => KBtus(127.9)
-              case ("USA", "ResidenceHall") => KBtus(114.9)
-              case ("USA", "MedicalOffice") => KBtus(116.7)
-              case ("USA", "K12School") => KBtus(141.1)
-              case ("USA", "Hotel") => KBtus(162.1)
-              case ("USA", "DataCenter") => KBtus(148.1)
-              case ("USA", "Hospital") => KBtus(389.8)
-              case ("USA",_) => KBtus(148.1)
-
-              case ("Canada", "Office") => Gigajoules(1.31)
-              case ("Canada", "Supermarket") => Gigajoules(1.44)
-              case ("Canada", "MedicalOffice") => Gigajoules(1.46)
-              case ("Canada", "K12School") => Gigajoules(1.03)
-              case ("Canada", "Hospital") => Gigajoules(3.12)
-              case ("Canada",_) => Gigajoules(1.68)
-
-              case (_,_) => throw new Exception("Lookup Table Not Found")
-            }
-          }
-        }
-      }
-    } yield sourceEUI
-  }
-
-
   def mediumSizeProps(buildingList:List[BaseLine]):Future[List[Boolean]] = {
     for {
       buildingSizeList <- Future{buildingList.map(a=>a.buildingSize)}
@@ -275,53 +48,12 @@ case class CombinedPropTypes(params: JsValue) {
     } yield mediumPropList
   }
 
-
-  def getMediumGenericPropTypes(propList:List[BaseLine]):Future[List[BaseLine ]] = Future{
-    propList.flatMap{
-      case a if a.isInstanceOf[GenericBuilding] => Some(a)
-      case _ => None
-    }
-  }
-
-  def singlePropMedianSourceEUI(targetBuilding:BaseLine):Future[Energy] = {
-    for {
-      medianEUI <- {
-        targetBuilding match {
-          case a:GenericBuilding => sourceMedianEUI(targetBuilding)
-          case b:BaseLine => {
-            for {
-              lookupEUI <- computeLookupEUI(targetBuilding)
-              lookupTable <- lookupTableGet(targetBuilding)
-              targetRatio <- getMedianRatio(lookupTable)
-              targetEUI <- getTargetEUI(targetBuilding, lookupEUI, targetRatio)
-            } yield targetEUI
-          }
-        }
-      }
-    } yield medianEUI
-  }
-
-  def singlePropMedianSourceEnergy(targetBuilding:JsValue):Future[Energy] = {
-    for {
-      targetBuilding <- BuildingProperties(targetBuilding).getBuilding
-      totalArea <- Future(targetBuilding.buildingSize)
-      medianEUI <- singlePropMedianSourceEUI(targetBuilding)
-      } yield medianEUI * totalArea
-  }
-
   def sumEnergy(energies:List[Energy]):Future[Energy] = Future{
     buildingProps.country match {
       case "USA" => energies.sum in KBtus
       case "Canada" => energies.sum in Gigajoules
     }
   }
-
-  def getMedianRatio(lookUp:Seq[TableEntry]):Future[Double] = {
-    for {
-      targetRatioEntry <- Future(lookUp.filter(_.ES == 51).last.Ratio)
-    } yield targetRatioEntry
-  }
-
 
   def checkGenericBuilding:Future[Boolean] = {
     for {
@@ -363,23 +95,6 @@ case class CombinedPropTypes(params: JsValue) {
     } yield buildingSizeRatios
   }
 
-
-
-  def getEnergyWeights(buildingList:List[JsValue]): Future[List[Double]] = {
-    for {
-      propEnergies <- Future.sequence(buildingList.map(expectedSourceEnergy))
-      propEnergiesSum <- getTotalPredictedEnergy(buildingList)
-      energyWeights <- Future(propEnergies.map(_.value/propEnergiesSum.value))
-    } yield energyWeights
-  }
-
-  def getTotalPredictedEnergy(buildingList:List[JsValue]): Future[Energy] = {
-    for {
-      propEnergies <- Future.sequence(buildingList.map(expectedSourceEnergy))
-      propEnergiesSum <- sumEnergy(propEnergies)
-    } yield propEnergiesSum
-  }
-
   def getTotalArea(buildingList:List[JsValue]): Future[Double] = {
     for {
       propTypes <- Future.sequence(buildingList.map(BuildingProperties(_).getBuilding))
@@ -388,109 +103,9 @@ case class CombinedPropTypes(params: JsValue) {
   }
 
 
-  def expectedSourceEnergy(parameters:JsValue):Future[Energy] = {
-    for {
-      targetBuilding <- BuildingProperties(parameters).getBuilding
-      expectedEnergy <- computeExpectedEnergy(targetBuilding,buildingProps.country)
-    } yield expectedEnergy
-  }
 
-  def computeExpectedEnergy[T](targetBuilding: T,country:String): Future[Energy] = Future{
-    val unitlessEnergy = targetBuilding match {
-      case a: ResidenceHall => exp(a.expectedEnergy)
-      case a: MedicalOffice => exp(a.expectedEnergy)
-      case a: DataCenter => a.expectedEnergy * a.annualITEnergyKBtu
-      case a: GenericBuilding => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
-      case a: BaseLine => a.expectedEnergy * a.buildingSize
-    }
-    country match {
-      case "USA" => KBtus(unitlessEnergy)
-      case "Canada" => Gigajoules(unitlessEnergy)
-      case _ => throw new Exception("Cannot compute Expected Energy - Generic Building: No Algorithm!")
-    }
-  }
+/*
 
-  def getParkingEnergy(parkingJSON:JsValue): Future[Energy] = Future {
-
-    implicit def boolOptToInt(b:Option[Boolean]):Int = if (b.getOrElse(false)) 1 else 0
-
-    parkingJSON.asOpt[Parking] match {
-      case Some(Parking(open,partial,closed,heatingDays,heated,totalArea,units,country,reportingUnits)) => {
-        units match {
-          case "ftSQ" => {
-            val openArea: Double = open.getOrElse(0.0)
-            val partiallyEnclosedParkingArea: Double = partial.getOrElse(0.0)
-            val fullyEnclosedParkingArea: Double = closed.getOrElse(0.0)
-
-            country match {
-              case "USA" => KBtus((9.385 * openArea) + (28.16 * partiallyEnclosedParkingArea) + (35.67 * fullyEnclosedParkingArea) +
-                (0.009822 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea)))
-              case "Canada" => KBtus((6.128 * openArea) + (18.38 * partiallyEnclosedParkingArea) + (23.28 * fullyEnclosedParkingArea) +
-                (0.009451 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea))) in Gigajoules
-            }
-          }
-          case "mSQ" => {
-            val openArea: Double = SquareMeters(open.getOrElse(0.0)) to SquareFeet
-            val partiallyEnclosedParkingArea: Double = SquareMeters(partial.getOrElse(0.0)) to SquareFeet
-            val fullyEnclosedParkingArea: Double = SquareMeters(closed.getOrElse(0.0)) to SquareFeet
-
-            country match {
-              case "USA" => KBtus((9.385 * openArea) + (28.16 * partiallyEnclosedParkingArea) + (35.67 * fullyEnclosedParkingArea) +
-                (0.009822 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea)))
-              case "Canada" => KBtus((6.128 * openArea) + (18.38 * partiallyEnclosedParkingArea) + (23.28 * fullyEnclosedParkingArea) +
-                (0.009451 * (heatingDays.getOrElse(0.0) * heated * fullyEnclosedParkingArea))) in Gigajoules
-            }
-          }
-        }
-      }
-      case Some(_) => KBtus(0)
-      case None => KBtus(0)
-    }
-  }
-
-  def getParkingArea(parkingJSON:JsValue): Future[Double] = Future {
-
-    parkingJSON.asOpt[Parking] match {
-      case Some(Parking(open,partial,closed,heatingDays,heated,total,units,country,reportingUnits)) => {
-        units match {
-          case "ftSQ" => reportingUnits match {
-            case "us" => total.getOrElse(0.0)
-            case "metric" => SquareFeet(total.getOrElse(0.0)) to SquareMeters
-          }
-          case "mSQ" => reportingUnits match {
-            case "us" => SquareMeters(total.getOrElse(0.0)) to SquareFeet
-            case "metric" => total.getOrElse(0.0)
-          }
-        }
-      }
-      case _ => 0.0
-    }
-  }
-
-
-
-  case class Parking(openParkingArea:Option[Double],partiallyEnclosedParkingArea:Option[Double],
-                     fullyEnclosedParkingArea:Option[Double], HDD:Option[Double], hasParkingHeating:Option[Boolean],
-                     totalParkingArea:Option[Double],parkingAreaUnits:String,country:String,reportingUnits:String)
-  object Parking {
-    implicit val parkingRead: Reads[Parking] = Json.reads[Parking]
-  }
-
-
-
-
-
-
-
-
-
-
-  def lookupTableGet(building: BaseLine): Future[Seq[TableEntry]] = {
-    for {
-      lookUp <- getLookupTable(building)
-      futureTable <- loadLookupTable(lookUp)
-    } yield futureTable
-  }
 
   def loadLookupTable(filename:String): Future[Seq[TableEntry]] = {
     for {
@@ -511,56 +126,8 @@ case class CombinedPropTypes(params: JsValue) {
       }
     } yield obj
   }
+*/
 
-  def getLookupTable(building:BaseLine): Future[String] = Future{
-    
-    val r = (building.country,building.buildingType) match {
-      case ("USA", "Office") => Play.current.configuration.getString("baseline.office")
-      case ("USA", "FinancialOffice") => Play.current.configuration.getString("baseline.office")
-      case ("USA", "WorshipCenter") => Play.current.configuration.getString("baseline.worshipCenter")
-      case ("USA", "WastewaterCenter") => Play.current.configuration.getString("baseline.wastewaterCenter")
-      case ("USA", "Warehouse") => Play.current.configuration.getString("baseline.warehouse")
-      case ("USA", "RefrigeratedWarehouse") => Play.current.configuration.getString("baseline.warehouse")
-      case ("USA", "Supermarket") => Play.current.configuration.getString("baseline.supermarket")
-      case ("USA", "SeniorCare") => Play.current.configuration.getString("baseline.seniorCare")
-      case ("USA", "Retail") => Play.current.configuration.getString("baseline.retail")
-      case ("USA", "MultiFamily") => Play.current.configuration.getString("baseline.multiFamily")
-      case ("USA", "ResidenceHall") => Play.current.configuration.getString("baseline.residenceHall")
-      case ("USA", "MedicalOffice") => Play.current.configuration.getString("baseline.medicalOffice")
-      case ("USA", "K12School") => Play.current.configuration.getString("baseline.K12School")
-      case ("USA", "Hotel") => Play.current.configuration.getString("baseline.hotel")
-      case ("USA", "DataCenter") => Play.current.configuration.getString("baseline.datacenter")
-      case ("USA", "Hospital") => Play.current.configuration.getString("baseline.hospital")
-      case ("Canada", "Office") => Play.current.configuration.getString("baseline.canadaOffice")
-      case ("Canada", "Supermarket") => Play.current.configuration.getString("baseline.canadaSupermarket")
-      case ("Canada", "MedicalOffice") => Play.current.configuration.getString("baseline.canadaMedicalOffice")
-      case ("Canada", "K12School") => Play.current.configuration.getString("baseline.canadaK12School")
-      case ("Canada", "Hospital") => Play.current.configuration.getString("baseline.canadaHospital")
-      case (_,_) => throw new Exception("Lookup Table Not Found")
-    }
-    r.getOrElse("Lookup Table Not Found")
-  }
-
-
-  def computeLookupEUI[T](targetBuilding: T): Future[Energy] = Future{
-    targetBuilding match {
-      case a: GenericBuilding => throw new Exception("Lookup EUI could not be computed - Generic Building: No Algorithm!")
-      case a: BaseLine => {
-        a.country match {
-          case "USA" => KBtus(a.expectedEnergy)
-          case "Canada" => Gigajoules(a.expectedEnergy)
-        }
-      }
-    }
-  }
-
-  def getDefaultSourceMedianEUI(country:String):Future[Energy] = Future{
-    country match {
-      case "USA" => KBtus(123.1)
-      case "Canada" => Gigajoules(1.23)
-      case _ => throw new Exception("Could not find Country and Building Type for Median EUI")
-    }
-  }
 
   def sourceMedianEUI(building:BaseLine):Future[Energy] = Future{
 
@@ -820,11 +387,3 @@ case class CombinedPropTypes(params: JsValue) {
     }
   }
 }
-
-case class TableEntry(ES: Int, CmPercent: Double, Ratio: Double)
-object TableEntry {
-  implicit val tableEntryWrites: Writes[TableEntry] = Json.writes[TableEntry]
-  implicit val tableEntryReads: Reads[TableEntry] = Json.reads[TableEntry]
-}
-
-
