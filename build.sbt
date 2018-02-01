@@ -61,23 +61,24 @@ libraryDependencies ++= Seq(
   "org.webjars" % "highcharts" % "4.2.3",
   "org.webjars" % "highstock" % "4.2.3",
   "org.webjars" % "matchmedia-ng" % "1.0.5",
-  "org.webjars.bower" % "filesaver" % "1.3.3",
-  "com.github.tototoshi" %% "scala-csv" % "1.2.1",
-  "org.webjars.bower" % "ng-file-upload" % "12.0.4",
 
   "com.typesafe.akka" %% "akka-slf4j" % "2.4.8",
   "com.typesafe.akka" %% "akka-stream" % "2.4.8",
   "com.typesafe.play" %% "play-streams-experimental" % "2.4.8",
 
-  "com.eclipsesource" %% "play-json-schema-validator" % "0.9.4"
+  "com.typesafe.play" %% "play-json" % "2.6.0",
+  "com.eclipsesource" %% "play-json-schema-validator" % "0.9.4",
+
+  "com.typesafe.play" %% "play-iteratees" % "2.6.1",
+  "com.typesafe.play" %% "play-iteratees-reactive-streams" % "2.6.1"
 
 )
-
+/*
 dependencyOverrides := Set(
 
   "com.typesafe.play" %% "play-json" % "2.4.6",
   "com.typesafe.play" %% "play-specs2" % "2.4.6" % "test"
-)
+)*/
 
 // Scala Compiler Options
 scalacOptions in ThisBuild ++= Seq(
