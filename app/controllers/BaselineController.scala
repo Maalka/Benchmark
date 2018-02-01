@@ -74,7 +74,8 @@ trait BaselineActions {
 
     val futures = Future.sequence(Seq(
 
-      Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.getPV.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+/*    Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       Baseline.siteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.siteEUIwOnSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -94,13 +95,13 @@ trait BaselineActions {
       Baseline.onSiteRenewableTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.offSitePurchasedTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       //this is the total site energy without accounting for renewable generation and/or purchasing
-      Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+      Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}*/
 
     ))
 
     val fieldNames = Seq(
-
-      "propOutputList",
+      "solar"
+/*    "propOutputList",
 
       "siteEUI",
       "siteEUIwOnSite",
@@ -116,7 +117,7 @@ trait BaselineActions {
 
       "onSiteRenewableTotal",
       "offSitePurchasedTotal",
-      "siteEnergyALL"
+      "siteEnergyALL"*/
     )
 
     futures.map(fieldNames.zip(_)).map { r =>

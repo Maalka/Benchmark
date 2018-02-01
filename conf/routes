@@ -17,8 +17,6 @@ GET           /jsroutes.js         @controllers.Application.jsRoutes()
 # Baselining
 POST          /baseline             @controllers.BaselineController.getZEPIMetrics()
 OPTIONS       /baseline             @controllers.Application.options()
-POST          /degreedays           @controllers.DegreeDaysController.getDDMetrics()
-POST          /csvmetrics           @controllers.CSVController.upload
 POST          /normalize            controllers.ParseController.normalize()
 
 

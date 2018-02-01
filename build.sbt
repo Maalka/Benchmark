@@ -44,6 +44,7 @@ javaOptions in Universal ++= Seq(
 lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
 lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
 
+resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
 
 // Dependencies
 libraryDependencies ++= Seq(
@@ -66,8 +67,16 @@ libraryDependencies ++= Seq(
 
   "com.typesafe.akka" %% "akka-slf4j" % "2.4.8",
   "com.typesafe.akka" %% "akka-stream" % "2.4.8",
-  "com.typesafe.play" %% "play-streams-experimental" % "2.4.8"
+  "com.typesafe.play" %% "play-streams-experimental" % "2.4.8",
 
+  "com.eclipsesource" %% "play-json-schema-validator" % "0.9.4"
+
+)
+
+dependencyOverrides := Set(
+
+  "com.typesafe.play" %% "play-json" % "2.4.6",
+  "com.typesafe.play" %% "play-specs2" % "2.4.6" % "test"
 )
 
 // Scala Compiler Options

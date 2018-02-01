@@ -19,11 +19,15 @@ case class EUIMetrics(parameters: JsValue) {
 
   val result = parameters.as[List[JsValue]]
 
+  val pvSystems:SolarProperties = SolarProperties(result.head)
+  def getPV = pvSystems.setPVDefaults
+
 
   val combinedPropMetrics:CombinedPropTypes = CombinedPropTypes(parameters)
   val energyCalcs:EUICalculator = EUICalculator(result.head)
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
   val buildingEmissions:Emissions = Emissions(result.head)
+
 
 
   def getBuildingName:Future[String] = Future{buildingProps.buildingName}
