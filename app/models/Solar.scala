@@ -15,33 +15,86 @@ import play.api.libs.json.Reads.min
 
 case class SolarProperties(parameters: JsValue) {
 
-  val schema = Json.fromJson[SchemaType](Json.parse(
-    """{
-      "properties": {
-        "id":    { "type": "integer" },
-        "title": { "type": "string" },
-        "body":  { "type": "string" }
-      }
-    }""".stripMargin)).get
 
-  val validator = new SchemaValidator()
-  val result = validator.validate(schema, parameters)
+  def getArrayDefaults(solarList: SolarList, solarResources: ValidatedSolarResources): Future[SolarList] = Future {
+    solarList.pv_data.map(setArrayDefaults(_, solarResources))
+  }
 
+  def setArrayDefaults(metrics: SolarMetrics, solarResources: ValidatedSolarResources):Future[ValidatedSolarMetrics] = Future{
 
+    val default = solarResources.pv_resource
 
-  val validators: Option[SolarResources] = parameters.validate[SolarResources].fold(
-    invalid = {
-      fieldErrors =>
-        fieldErrors.foreach(x => {
-          println("field: " + x._1 + ", errors: " + x._2)
-        })
-        None
-    },
-    valid = {
-      name => Some(name)
+    //Default module_type is 0 - Standard, Others are 1-Premium, 2-Thin Film
+    val module_type = metrics.module_type match {
+      case Some(a: Int) if List(0,1,2).contains(a) => a
+      case Some(_) => throw new Exception("Module Type Must be [0,1,2]! ")
+      case _ if (default==1) => 0
+      case _ => throw new Exception("Module Type Must be [0,1,2]! No Default Set. ")
     }
-  )
+    //Default array_type is 0=Fixed - Open Rack, 1=Fixed - Roof Mounted, 2=1-Axis, 3=1-Axis Backtracking or 4=2-Axis
+    val array_type = metrics.array_type match {
+      case Some(a: Int) if List(0,1,2,3,4).contains(a) => a
+      case Some(_) => throw new Exception("Array Type Must be [0,1,2,3,4]! ")
+      case _ if (default==1) => 0
+      case _ => throw new Exception("Array Type Must be [0,1,2,3,4]! No Default Set. ")
+    }
+    //Default losses
+    val losses = metrics.losses match {
+      case Some(a: Double) if a < 1.0 => a
+      case Some(_) => throw new Exception("Losses are a percentage and must be less that 1! ")
+      case _ if (default==1) => 0.10
+      case _ => throw new Exception("Losses are a percentage and must be less that 1! No Default Set. ")
+    }
+    //Default tilt
+    val tilt = metrics.tilt match {
+      case Some(a: Double) if a < 360.0 => a
+      case Some(_) => throw new Exception("Tilt must be less than 360 Degrees! ")
+      case _ if (default==1) => 10
+      case _ => throw new Exception("Tilt must be less than 360 Degrees! No Default Set. ")
+    }
+    //Default azimuth
+    val azimuth = metrics.azimuth match {
+      case Some(a: Double) if a < 360.0 => a
+      case Some(_) => throw new Exception("Azimuth must be less than 360 Degrees! ")
+      case _ if (default==1) => 180
+      case _ => throw new Exception("Azimuth must be less than 360 Degrees! No Default Set. ")
+    }
+    //Default inveter efficiency
+    val inv_eff = metrics.inv_eff match {
+      case Some(a: Double) if a < 1.0 => a
+      case Some(_) => throw new Exception("Azimuth must be less than 360 Degrees! ")
+      case _ if (default==1) => 0.96
+      case _ => throw new Exception("Azimuth must be less than 360 Degrees! No Default Set. ")
+    }
+    //Default access perimeter
+    val access_perimeter = metrics.access_perimeter match {
+      case Some(a: Double) if a > 0.0 => a
+      case Some(_) => throw new Exception("Access Perimeter must be positive! ")
+      case _ if (default==1) => 2.0
+      case _ => throw new Exception("Access Perimeter must be positive! No Default Set. ")
+    }
+    val w_per_meter2 = metrics.w_per_meter2 match {
+      case Some(a: Double) if a > 0.0 => a
+      case Some(_) => throw new Exception("w_per_meter2 must be positive! ")
+      case _ if (module_type==1) => 150
+      case _ if (module_type==2) => 190
+      case _ if (module_type==3) => 100
+      case _ => throw new Exception("w_per_meter2 must be positive! No Module Type Set. ")
+    }
+    val pv_area:Double = solarResources.floor_area / solarResources.stories - 4*access_perimeter*(math.sqrt(solarResources.floor_area /
+      solarResources.stories) - access_perimeter)
 
+    //Default access perimeter
+    val system_capacity = metrics.system_capacity match {
+      case Some(a: Double) if a > 0.0 => a
+      case Some(_) => throw new Exception("System Capacity must be positive! ")
+      case _ if (default==1) => pv_area*w_per_meter2
+      case _ => throw new Exception("System Capacity must be positive! No Defaults Set. ")
+    }
+
+    ValidatedSolarMetrics(module_type,array_type,losses,tilt,azimuth,inv_eff, system_capacity)
+
+  }
 
   def getSolarResources: Future[SolarResources] = Future {
     parameters.validate[SolarResources] match {
@@ -50,9 +103,18 @@ case class SolarProperties(parameters: JsValue) {
     }
   }
 
-
+  //This sets defaults where needed for lookups and double checks for file references
   def initiateSolarResources(solarResources: SolarResources): Future[ValidatedSolarResources] = Future {
-    val pv_default_resource = solarResources.pv_defaults_resource match {
+
+    val prescriptive_resource_1:List[String] =
+      List("0A", "0B", "1A", "1B", "2A", "2B", "3A", "3B", "3C", "4A", "4B", "4C", "5A", "5B", "5C", "6A", "6B", "7", "8")
+
+    //default resources are always 1
+    val pv_resource = solarResources.pv_resource match {
+      case Some(a: Int) => a
+      case _ => 1
+    }
+    val prescriptive_resource = solarResources.prescriptive_resource match {
       case Some(a: Int) => a
       case _ => 1
     }
@@ -60,16 +122,22 @@ case class SolarProperties(parameters: JsValue) {
       case Some(a: String) => a
       case _ => throw new Exception("No Solar File ID Found! ")
     }
-    val climateZone = solarResources.climate_zone match {
-      case Some(a: String) => a
+    val climateZone = prescriptive_resource match {
+      case 1 => {
+        solarResources.climate_zone match {
+          case Some(a) if prescriptive_resource_1.contains(a) => a
+          case _ => throw new Exception("Not a valid Climate Zone for given Prescriptive Resource! ")
+        }
+      }
       case _ => throw new Exception("No Climate Zone ID Found! ")
     }
+
     val units = solarResources.floor_area_units match {
       case Some("mSQ") => "mSQ"
       case Some("ftSQ") => "ftSQ"
       case _ => throw new Exception("Floor Area Units must be either ftSQ or mSQ")
     }
-    val gfa = solarResources.floor_area match {
+    val floorArea = solarResources.floor_area match {
       case Some(a: Double) if a > 0.0 => {
         units match {
           case "mSQ" => (Area((a, units)).get to SquareMeters)
@@ -87,7 +155,7 @@ case class SolarProperties(parameters: JsValue) {
       case _ => throw new Exception("No Number of Stories Found! ")
     }
 
-    ValidatedSolarResources(pv_default_resource, solarID, climateZone, gfa, stories)
+    ValidatedSolarResources(pv_resource, solarID, climateZone, floorArea, stories)
   }
 
 
@@ -116,13 +184,22 @@ case class SolarProperties(parameters: JsValue) {
     file_id
     inv_eff
 
-    where is w_per_meter2 input or calculated?
-    when module_type = 0:150 W/m2,1:190, 2:100
+
+
+
+    format: JSON
+    api_key
+    system_capacity - calculate
+    file_id
+
+
+
 
     CALCULATE SYSTEM CAPACITY FOR EACH SOLAR ARRAY ENTRY
 
-    [gfa/#floors] -  [sqrt(gfa/#floors)*4*access_perim - 4*acess_perim2 ]
+
     */
+
 
 
   def getSolarList: Future[SolarList] = Future {
@@ -139,29 +216,27 @@ case class SolarProperties(parameters: JsValue) {
   }
 
   case class SolarMetrics(access_perimeter: Option[Double], w_per_meter2: Option[Double], system_capacity: Option[Double],
-                          module_type: Option[Double], losses: Option[Double], array_type: Option[Double], tilt: Option[Double],
+                          module_type: Option[Int], losses: Option[Double], array_type: Option[Int], tilt: Option[Double],
                           azimuth: Option[Double], inv_eff: Option[Double])
 
   object SolarMetrics {
-    implicit val solarMetricsReads: Reads[SolarMetrics] = (
-      (JsPath \ "access_perimeter").readNullable[Double] and
-        (JsPath \ "w_per_meter2").readNullable[Double] and
-        (JsPath \ "system_capacity").readNullable[Double] and
-        (JsPath \ "module_type").readNullable[Double](min(0.0)) and
-        (JsPath \ "losses").readNullable[Double](min(0.0)) and
-        (JsPath \ "array_type").readNullable[Double](min(0.0)) and
-        (JsPath \ "tilt").readNullable[Double](min(0.0)) and
-        (JsPath \ "azimuth").readNullable[Double](min(0.0)) and
-        (JsPath \ "inv_eff").readNullable[Double]
-      ) (SolarMetrics.apply _)
+    implicit val solarMetricsReads: Reads[SolarMetrics] = Json.reads[SolarMetrics]
   }
 
 
-  case class ValidatedSolarResources(pv_defaults_resource: Int, solar_file_id: String, climate_zone: String,
+  case class ValidatedSolarMetrics(module_type: Int, array_type: Int, losses: Double, tilt: Double,
+                          azimuth: Double, inv_eff: Double, system_capacity: Double)
+
+  object ValidatedSolarMetrics {
+    implicit val validatedSolarMetricsReads: Reads[ValidatedSolarMetrics] = Json.reads[ValidatedSolarMetrics]
+  }
+
+
+  case class ValidatedSolarResources(pv_resource: Int, solar_file_id: String, climate_zone: String,
                                      floor_area: Double, stories: Double)
 
 
-  case class SolarResources(pv_defaults_resource: Option[Int], solar_file_id: Option[String], climate_zone: Option[String],
+  case class SolarResources(pv_resource: Option[Int], prescriptive_resource: Option[Int], solar_file_id: Option[String], climate_zone: Option[String],
                             floor_area: Option[Double], floor_area_units: Option[String], stories: Option[Double])
 
   object SolarResources {
@@ -169,18 +244,6 @@ case class SolarProperties(parameters: JsValue) {
   }
 
 }
-/*            (
-            (JsPath \ "pv_defaults_resource").readNullable[Int] and
-              (JsPath \ "solar_file_id").readNullable[String] and
-              (JsPath \ "climate_zone").readNullable[String] and
-              (JsPath \ "floor_area").readNullable[Double](min(0.0)) and
-              (JsPath \ "floor_area_units").readNullable[String] and
-              (JsPath \ "stories").readNullable[Double](min(0.0))
-            )(SolarResources.apply _)
-        }*/
-
-
-
 
 
 
