@@ -525,6 +525,51 @@ define(['angular','./main'], function(angular) {
                              required: "Canada"
                         }
                     ],
+                    Parking: [
+/*                        {
+                            name: "areaUnits",
+                            default: null,
+                            type: "select",
+                            fields: $scope.buildingProperties.areaUnits,
+                            title: "Parking Area Units",
+                            required: "all"
+                        },
+                        {
+                            name: "GFA",
+                            default: null,
+                            type: "number",
+                            title: "Gross Floor Area",
+                            required: "all"
+                        },
+                        {
+                            name: "hasParkingHeating",
+                            default: false,
+                            type: "checkbox",
+                            title: "Has Heating",
+                            required: "all"
+                        },*/
+                        {
+                           name: "openParkingArea",
+                           default: null,
+                           type: "number",
+                           title: "Open Parking Area",
+                           required: "all"
+                        },
+                        {
+                            name: "partiallyEnclosedParkingArea",
+                            default: null,
+                            type: "number",
+                            title: "Partially Enclosed Area",
+                            required: "all"
+                        },
+                        {
+                            name: "fullyEnclosedParkingArea",
+                            default: null,
+                            type: "number",
+                            title: "Fully Enclosed Area",
+                            required: "all"
+                        }
+                    ],
                     ResidenceHall: [
                         {
                            name: "numBedrooms",
