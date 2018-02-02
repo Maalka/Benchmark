@@ -1,6 +1,6 @@
 package models
 
-import com.eclipsesource.schema._
+//import com.eclipsesource.schema._
 import squants.energy.{Energy, Gigajoules, KBtus, TBtus}
 import squants.space._
 
@@ -16,9 +16,9 @@ import play.api.libs.json.Reads.min
 case class SolarProperties(parameters: JsValue) {
 
 
-  def getArrayDefaults(solarList: SolarList, solarResources: ValidatedSolarResources): Future[SolarList] = Future {
-    solarList.pv_data.map(setArrayDefaults(_, solarResources))
-  }
+//  def getArrayDefaults(solarList: SolarList, solarResources: ValidatedSolarResources): Future[SolarList] = Future {
+//    solarList.pv_data.map(setArrayDefaults(_, solarResources))
+//  }
 
   def setArrayDefaults(metrics: SolarMetrics, solarResources: ValidatedSolarResources):Future[ValidatedSolarMetrics] = Future{
 
@@ -46,14 +46,14 @@ case class SolarProperties(parameters: JsValue) {
       case _ => throw new Exception("Losses are a percentage and must be less that 1! No Default Set. ")
     }
     //Default tilt
-    val tilt = metrics.tilt match {
+    val tilt: Double = metrics.tilt match {
       case Some(a: Double) if a < 360.0 => a
       case Some(_) => throw new Exception("Tilt must be less than 360 Degrees! ")
       case _ if (default==1) => 10
       case _ => throw new Exception("Tilt must be less than 360 Degrees! No Default Set. ")
     }
     //Default azimuth
-    val azimuth = metrics.azimuth match {
+    val azimuth: Double = metrics.azimuth match {
       case Some(a: Double) if a < 360.0 => a
       case Some(_) => throw new Exception("Azimuth must be less than 360 Degrees! ")
       case _ if (default==1) => 180
@@ -88,7 +88,9 @@ case class SolarProperties(parameters: JsValue) {
     val system_capacity = metrics.system_capacity match {
       case Some(a: Double) if a > 0.0 => a
       case Some(_) => throw new Exception("System Capacity must be positive! ")
-      case _ if (default==1) => pv_area*w_per_meter2
+        // Tadas: commenting out
+        // case _ if (default==1) => pv_area*w_per_meter2
+      case _ if (default==1) => pv_area
       case _ => throw new Exception("System Capacity must be positive! No Defaults Set. ")
     }
 

@@ -1,6 +1,6 @@
 package controllers
 
-import play.api.cache.CacheApi
+import play.api.cache.{AsyncCacheApi, SyncCacheApi}
 import play.api.libs.json._
 import play.api.mvc._
 
@@ -10,7 +10,7 @@ import play.api.mvc._
  */
 trait Security { self: Controller =>
 
-  val cache: CacheApi
+  val cache: AsyncCacheApi
 
   val AuthTokenHeader = "X-XSRF-TOKEN"
   val AuthTokenCookieKey = "XSRF-TOKEN"
@@ -22,22 +22,22 @@ trait Security { self: Controller =>
     * - either in the header or in the query string,
     * - matches a token already stored in the play cache
     */
-  def HasToken[A](p: BodyParser[A] = parse.anyContent)(
-    f: String => Long => Request[A] => Result): Action[A] =
-    Action(p) { implicit request =>
-      request.cookies.get("XSRF-TOKEN").fold {
-        Unauthorized(Json.obj("message" -> "Invalid XSRF Token cookie"))
-      } { xsrfTokenCookie =>
-        val maybeToken = request.headers.get(AuthTokenHeader).orElse(request.getQueryString(AuthTokenUrlKey))
-        maybeToken flatMap { token =>
-          cache.get[Long](token) map { userId =>
-            if (xsrfTokenCookie.value == token) {
-              f(token)(userId)(request)
-            } else {
-              Unauthorized(Json.obj("message" -> "Invalid Token"))
-            }
-          }
-        } getOrElse Unauthorized(Json.obj("message" -> "No Token"))
-      }
-    }
+//  def HasToken[A](p: BodyParser[A] = playBodyParsers.anyContent)(
+//    f: String => Long => Request[A] => Result): Action[A] =
+//    Action(p) { implicit request =>
+//      request.cookies.get("XSRF-TOKEN").fold {
+//        Unauthorized(Json.obj("message" -> "Invalid XSRF Token cookie"))
+//      } { xsrfTokenCookie =>
+//        val maybeToken = request.headers.get(AuthTokenHeader).orElse(request.getQueryString(AuthTokenUrlKey))
+//        maybeToken flatMap { token =>
+//          cache.get[Long](token) map { userId =>
+//            if (xsrfTokenCookie.value == token) {
+//              f(token)(userId)(request)
+//            } else {
+//              Unauthorized(Json.obj("message" -> "Invalid Token"))
+//            }
+//          }
+//        } getOrElse Unauthorized(Json.obj("message" -> "No Token"))
+//      }
+//    }
 }

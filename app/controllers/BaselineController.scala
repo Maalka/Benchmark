@@ -5,13 +5,13 @@
 
 package controllers
 import models._
-
 import com.google.inject.Inject
-import play.api.cache.CacheApi
+import play.api.cache.{AsyncCacheApi, SyncCacheApi}
 import play.api.libs.json._
 import play.api.mvc._
+
 import scala.concurrent.Future
-import squants.energy.{Energy}
+import squants.energy.Energy
 
 import scala.util.control.NonFatal
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -135,4 +135,4 @@ trait BaselineActions {
 
   }
 }
-class BaselineController @Inject() (val cache: CacheApi) extends Controller with Security with Logging with BaselineActions
+class BaselineController @Inject() (val cache: AsyncCacheApi) extends Controller with Security with Logging with BaselineActions

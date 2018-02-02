@@ -15,9 +15,9 @@ GET           /jsroutes.js         @controllers.Application.jsRoutes()
 # ~~~~
 
 # Baselining
-POST          /baseline             @controllers.BaselineController.getZEPIMetrics()
+#POST          /baseline             @controllers.BaselineController.getZEPIMetrics()
 OPTIONS       /baseline             @controllers.Application.options()
-POST          /normalize            controllers.ParseController.normalize()
+#POST          /normalize            controllers.ParseController.normalize()
 
 
 
