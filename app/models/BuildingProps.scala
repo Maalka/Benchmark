@@ -69,7 +69,6 @@ case class BuildingProperties(parameters: JsValue) {
       case Some(a) => {
         a.buildingName match {
           case Some(name:String) => name
-          case None => "Building Name BLANK"
           case None => "Anonymous"
         }
       }
@@ -262,7 +261,7 @@ object TargetToggle {
   implicit val targetToggleRead: Reads[TargetToggle] = Json.reads[TargetToggle]
 }
 
-case class PropParams(propType:String,propSize:Double,propPercent:Double,areaUnits:String)
+case class PropParams(propType:String,propSize:Double,propPercent:Double,areaUnits:String,propTypeName:String)
 
 case class HeatingCoolingDays(HDD: Option[Double], CDD: Option[Double])
 object HeatingCoolingDays {
@@ -276,6 +275,7 @@ sealed trait BaseLine {
 
   val country: String
   val buildingType: String
+  val propTypeName: Option[String]
   val GFA: PosDouble
   val areaUnits: String
   val printed: String
@@ -396,7 +396,6 @@ sealed trait BaseLine {
         parameter match {
           case "numRezUnits" => PosDouble(roundAt(2)(1.2 * size / 1000))
           case "numUnitsLowRise1to4" => PosDouble(roundAt(2)(1.2 * size / 1000))
-          case "numRezUnits" => PosDouble(roundAt(2)(1.2 * size / 1000))
           case "numBedrooms" => PosDouble(roundAt(2)(1.4 * size / 1000))
         }
       }
@@ -637,7 +636,9 @@ object CountryBuildingType {
   implicit val countryBuildingTypeRead: Reads[CountryBuildingType] = Json.reads[CountryBuildingType]
 }
 
-case class GenericBuilding (GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String, HDD: Option[Double], CDD: Option[Double]) extends BaseLine {
+case class GenericBuilding (GFA:PosDouble, areaUnits:String, country:String, buildingType:String,
+                            propTypeName: Option[String],postalCode:String,
+                            HDD: Option[Double], CDD: Option[Double]) extends BaseLine {
 
   def regressionSegments(HDD:Double,CDD:Double) = Seq[RegressionSegment]()
 
@@ -804,6 +805,7 @@ object CanadaParking {
   */
 
 case class Office(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                  propTypeName: Option[String],
                   HDD: Option[Double], CDD: Option[Double],
                   numComputers:Option[PosDouble],
                   weeklyOperatingHours: Option[PosDouble],
@@ -838,6 +840,7 @@ object Office {
 }
 
 case class FinancialOffice(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                           propTypeName: Option[String],
                            HDD: Option[Double], CDD: Option[Double],
                            numComputers:Option[PosDouble],
                            weeklyOperatingHours: Option[PosDouble],
@@ -880,6 +883,7 @@ object FinancialOffice {
   */
 
 case class CanadaOffice(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                        propTypeName: Option[String],
                         HDD: Option[Double], CDD: Option[Double],
                         weeklyOperatingHours:Option[PosDouble],
                         numWorkersMainShift:Option[PosDouble],
@@ -922,6 +926,7 @@ object CanadaOffice {
   */
 
 case class WorshipCenter(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                         propTypeName: Option[String],
                          HDD: Option[Double], CDD: Option[Double],
                          weeklyOperatingHours:Option[PosDouble],
                          seatingCapacity:Option[PosDouble],
@@ -966,6 +971,7 @@ object WorshipCenter {
   * @param areaUnits
   */
 case class WastewaterCenter(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                            propTypeName: Option[String],
                             HDD: Option[Double], CDD: Option[Double],
                             wastewaterAvgInfluentInflow:Option[PosDouble],
                             wastewaterInfluentBiologicalOxygenDemand:Option[PosDouble],
@@ -1012,6 +1018,7 @@ object WastewaterCenter {
   * @param areaUnits
   */
 case class Warehouse(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                     propTypeName: Option[String],
                      HDD: Option[Double], CDD: Option[Double],
                      weeklyOperatingHours:Option[PosDouble],
                      numWorkersMainShift:Option[PosDouble],
@@ -1045,6 +1052,7 @@ object Warehouse {
 }
 
 case class RefrigeratedWarehouse(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                                 propTypeName: Option[String],
                                  HDD: Option[Double], CDD: Option[Double],
                                  weeklyOperatingHours:Option[PosDouble],
                                  numWorkersMainShift:Option[PosDouble],
@@ -1086,6 +1094,7 @@ object RefrigeratedWarehouse {
   * @param areaUnits
   */
 case class Supermarket(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                       propTypeName: Option[String],
                        HDD: Option[Double], CDD: Option[Double],
                        weeklyOperatingHours:Option[PosDouble],
                        numWorkersMainShift:Option[PosDouble],
@@ -1127,6 +1136,7 @@ object Supermarket {
   */
 
 case class CanadaSupermarket(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                             propTypeName: Option[String],
                              HDD: Option[Double], CDD: Option[Double],
                              weeklyOperatingHours:Option[PosDouble],
                              numWorkersMainShift:Option[PosDouble],
@@ -1173,6 +1183,7 @@ object CanadaSupermarket {
   */
 
 case class SeniorCare(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                      propTypeName: Option[String],
                       HDD: Option[Double], CDD: Option[Double],
                       avgNumResidents:Option[PosDouble],
                       maxNumResidents:Option[PosDouble],
@@ -1227,6 +1238,7 @@ object SeniorCare {
   */
 
 case class Retail(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                  propTypeName: Option[String],
                   HDD: Option[Double], CDD: Option[Double],
                   weeklyOperatingHours:Option[PosDouble],
                   numOpenClosedRefrCases:Option[PosDouble],
@@ -1271,6 +1283,7 @@ object Retail {
   * @param areaUnits
   */
 case class ResidenceHall(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                         propTypeName: Option[String],
                          HDD: Option[Double], CDD: Option[Double],
                          numBedrooms:Option[PosDouble],
                          percentHeated:Option[PosDouble],
@@ -1311,6 +1324,7 @@ object ResidenceHall {
 
 
 case class MultiFamily(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                       propTypeName: Option[String],
                        HDD: Option[Double], CDD: Option[Double],
                        numRezUnits:Option[PosDouble],
                        numBedrooms:Option[PosDouble],
@@ -1343,6 +1357,7 @@ object MultiFamily {
   * @param areaUnits
   */
 case class CanadaMedicalOffice(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                               propTypeName: Option[String],
                                HDD: Option[Double], CDD: Option[Double],
                                weeklyOperatingHours:Option[PosDouble],
                                numWorkersMainShift:Option[PosDouble],
@@ -1381,6 +1396,7 @@ object CanadaMedicalOffice {
   */
 
 case class MedicalOffice(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                         propTypeName: Option[String],
                          HDD: Option[Double], CDD: Option[Double],
                          weeklyOperatingHours:Option[PosDouble],
                          numWorkersMainShift:Option[PosDouble],
@@ -1422,6 +1438,7 @@ object MedicalOffice {
   */
 
 case class CanadaK12School(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                           propTypeName: Option[String],
                            HDD: Option[Double], CDD: Option[Double],
                            numWorkersMainShift:Option[PosDouble],
                            gymFloorArea:Option[PosDouble],
@@ -1461,6 +1478,7 @@ object CanadaK12School {
   * @param areaUnits
   */
 case class K12School(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                     propTypeName: Option[String],
                      HDD: Option[Double], CDD: Option[Double],
                      isOpenWeekends:Option[Boolean],
                      isHighSchool:Option[Boolean],
@@ -1514,6 +1532,7 @@ object K12School {
   */
 
 case class Hotel(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                 propTypeName: Option[String],
                  HDD: Option[Double], CDD: Option[Double],
                  numBedrooms:Option[PosDouble],
                  hasFoodPreparation:Option[Boolean],
@@ -1554,6 +1573,7 @@ object Hotel {
   */
 
 case class Hospital(GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                    propTypeName: Option[String],
                     HDD: Option[Double], CDD: Option[Double],
                     numFTEWorkers:Option[PosDouble],
                     numStaffedBeds:Option[PosDouble],
@@ -1592,6 +1612,7 @@ object Hospital {
   */
 
 case class CanadaHospital( GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+                           propTypeName: Option[String],
                            HDD: Option[Double], CDD: Option[Double],
                            weeklyOperatingHours:Option[PosDouble],
                            numWorkersMainShift:Option[PosDouble],
@@ -1622,7 +1643,8 @@ object CanadaHospital {
 
 
 // Data Centers don't follow the same rules as other buildings, to include them need to expand code with PUE based analysis
-case class DataCenter(reportingUnits:String, GFA:PosDouble, areaUnits:String, country:String, buildingType:String, postalCode:String,
+case class DataCenter(reportingUnits:String, GFA:PosDouble, areaUnits:String, country:String, buildingType:String,
+                      propTypeName: Option[String],postalCode:String,
                       annualITEnergy:PosDouble, HDD: Option[Double], CDD: Option[Double]) extends BaseLine {
 
   val printed:String = "Data Center"

@@ -253,8 +253,6 @@ define(['angular'], function() {
         $scope.sold.push({'renewableType': {id:"grid",name:"Sold"}});
     };
 
-
-
     $scope.removeProp = function(prop){
 
         var index;
@@ -636,6 +634,8 @@ define(['angular'], function() {
             for (var i = 0; i < $scope.propTypes.length; i++){
                 if($scope.propTypes[i].valid === true){
 
+                //console.log($scope.propTypes[i]);
+
 
                     $scope.propTypes[i].propertyModel.hasParkingHeating = $scope.hasParkingHeating;
                     $scope.propTypes[i].propertyModel.openParkingArea = $scope.openParkingArea;
@@ -649,6 +649,7 @@ define(['angular'], function() {
                     $scope.propTypes[i].propertyModel.targetToggle = $scope.auxModel.targetToggle;
                     $scope.propTypes[i].propertyModel.city = $scope.auxModel.city;
                     $scope.propTypes[i].propertyModel.buildingName = ($scope.auxModel.buildingName) ? $scope.auxModel.buildingName : "Anonymous";
+                    $scope.propTypes[i].propertyModel.propTypeName = ($scope.propTypes[i].name) ? $scope.propTypes[i].name : "No Name";
                     $scope.propTypes[i].propertyModel.postalCode = $scope.auxModel.postalCode;
                     $scope.propTypes[i].propertyModel.state = $scope.auxModel.state;
                     $scope.propTypes[i].propertyModel.HDD = $scope.auxModel.HDD;

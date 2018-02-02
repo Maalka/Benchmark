@@ -53,6 +53,7 @@ trait BaselineActions {
             ))
           case a:PropParams => JsObject(Seq(
             "propType" -> JsString(a.propType),
+            "propTypeName" -> JsString(a.propTypeName),
             "propSize" -> JsNumber(a.propSize),
             "propPercent" -> JsNumber{
               a.propPercent match {
