@@ -19,15 +19,19 @@ import scala.language.implicitConversions
 
 
 trait BaselineActions {
-  this: Controller =>
+  this: BaseController =>
 
-  implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
+  implicit def doubleToJSValue(d: Double): JsValue = Json.toJson(d)
+
   implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(b.value)
-  implicit def listEnergyToJSValue(v: List[Energy]): JsValue = Json.toJson(v.map{
-    case e:Energy => e.value
+
+  implicit def listEnergyToJSValue(v: List[Energy]): JsValue = Json.toJson(v.map {
+    case e: Energy => e.value
   })
 
-  def roundAt(p: Int)(n: Double): Double = { val s = math pow (10, p); (math round n * s) / s }
+  def roundAt(p: Int)(n: Double): Double = {
+    val s = math pow(10, p); (math round n * s) / s
+  }
 
   def apiRecover(throwable: Throwable): Either[String, JsValue] = {
     throwable match {
@@ -35,25 +39,26 @@ trait BaselineActions {
     }
   }
 
-  def api[T](response: T):Either[String, JsValue] = {
+  def api[T](response: T): Either[String, JsValue] = {
 
     response match {
       case v: Energy => Right(v)
       case v: Double => Right(v)
       case v: Int => Right(Json.toJson(v))
-      case v: List[Any] => Right{
-        Json.toJson(v.map{
-          case a:Energy => energyToJSValue(a)
-          case a:EmissionsTuple => JsObject(Seq(a.eType -> Json.toJson(a.eValue)))
-          case a:EnergyTuple => JsObject(Seq(a.energyType -> energyToJSValue(a.energyValue)))
-          case a:PropParams => JsObject(Seq(
+      case v: List[Any] => Right {
+        Json.toJson(v.map {
+          case a: Energy => energyToJSValue(a)
+          case a: EmissionsTuple => JsObject(Seq(a.eType -> Json.toJson(a.eValue)))
+          case a: EnergyTuple => JsObject(Seq(a.energyType -> energyToJSValue(a.energyValue)))
+          case a: PropParams => JsObject(Seq(
             "propType" -> JsString(a.propType),
             "propSize" -> JsNumber(a.propSize),
-            "propPercent" -> JsNumber{
+            "propPercent" -> JsNumber {
               a.propPercent match {
-                case b => roundAt(2)(b*100)}
-              },
-            "areaUnits" -> JsString{
+                case b => roundAt(2)(b * 100)
+              }
+            },
+            "areaUnits" -> JsString {
               a.areaUnits match {
                 case "mSQ" => "sq.m"
                 case "ftSQ" => "sq.ft"
@@ -74,8 +79,8 @@ trait BaselineActions {
 
     val futures = Future.sequence(Seq(
 
-      Baseline.getPV.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
-/*    Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
+      /*    Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
       Baseline.siteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.siteEUIwOnSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -101,7 +106,7 @@ trait BaselineActions {
 
     val fieldNames = Seq(
       "solar"
-/*    "propOutputList",
+      /*    "propOutputList",
 
       "siteEUI",
       "siteEUIwOnSite",
@@ -135,4 +140,4 @@ trait BaselineActions {
 
   }
 }
-class BaselineController @Inject() (val cache: AsyncCacheApi) extends Controller with Security with Logging with BaselineActions
+class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) with Logging with BaselineActions

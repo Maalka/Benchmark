@@ -42,7 +42,8 @@ javaOptions in Universal ++= Seq(
 
 */
 lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
-lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
+//lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
+lazy val root = (project in file(".")).enablePlugins(PlayScala, JavaAppPackaging).dependsOn(squants)
 
 resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
 
@@ -110,7 +111,9 @@ AngularTemplatesKeys.naming := {value : String => value.replace("\\", "/")}
 // rjs = RequireJS, uglifies, shrinks to one file, replaces WebJars with CDN
 // digest = Adds hash to filename
 // gzip = Zips all assets, Asset controller serves them automatically when client accepts them
+//pipelineStages := Seq(rjs, digest, gzip)
 pipelineStages := Seq(rjs, digest, gzip)
+
 
 // RequireJS with sbt-rjs (https://github.com/sbt/sbt-rjs#sbt-rjs)
 // ~~~

@@ -13,7 +13,7 @@ import play.api.cache.{AsyncCacheApi, Cached, SyncCacheApi}
 import scala.concurrent.duration._
 
 /** Application controller, handles authentication */
-class Application @Inject() (cached: Cached, val cache: AsyncCacheApi) extends Controller with Security with Logging {
+class Application @Inject() (cached: Cached, val cache: AsyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) with Logging {
 
   val cacheDuration = 1.day
   implicit val actorSystem = ActorSystem("ServiceName")
@@ -22,10 +22,6 @@ class Application @Inject() (cached: Cached, val cache: AsyncCacheApi) extends C
    * Caching action that caches an OK response for the given amount of time with the key.
    * NotFound will be cached for 5 mins. Any other status will not be cached.
    */
-//  def Caching(key: String, okDuration: Duration) =
-//    new Cached(cache)
-//      .status(_ => key, OK, okDuration.toSeconds.toInt)
-//      .includeStatus(NOT_FOUND, 5.minutes.toSeconds.toInt)
   def caching(key: String) = cached
     .status(_ => key, OK)
     .includeStatus(NOT_FOUND)
@@ -63,71 +59,6 @@ class Application @Inject() (cached: Cached, val cache: AsyncCacheApi) extends C
     Action { implicit request =>
       Ok(play.api.routing.JavaScriptReverseRouter(varName)(routeCache: _*)).as(JAVASCRIPT)
     }
-  }
-
-  /** Used for obtaining the email and password from the HTTP login request */
-  case class LoginCredentials(email: String, password: String)
-
-  /** JSON reader for [[LoginCredentials]]. */
-  implicit val LoginCredentialsFromJson = (
-    (__ \ "email").read[String](minLength[String](5)) ~
-      (__ \ "password").read[String](minLength[String](8))
-    )((email, password) => LoginCredentials(email, password))
-
-  /**
-   * Log-in a user. Expects the credentials in the body in JSON format.
-   *
-   * Set the cookie [[AuthTokenCookieKey]] to have AngularJS set the X-XSRF-TOKEN in the HTTP
-   * header.
-   *
-   * @return The token needed for subsequent requests
-   */
-  def login() = {
-    val token = java.util.UUID.randomUUID.toString
-    Ok(Json.obj("token" -> token))
-      .withCookies(Cookie(AuthTokenCookieKey, token, None, httpOnly = false))
-  }
-//    Action(playBodyParsers.json) { implicit request =>
-//    request.body.validate[LoginCredentials].fold(
-//      errors => {
-//        BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toJson(errors)))
-//      },
-//      credentials => {
-//        // TODO Check credentials, log user in, return correct token
-//        User.findByEmailAndPassword(credentials.email, credentials.password).fold {
-//          log.info("Unregistered user tried to log in")
-//          BadRequest(Json.obj("status" -> "KO", "message" -> "User not registered"))
-//        } { user =>
-//          /*
-//           * For this demo, return a dummy token. A real application would require the following,
-//           * as per the AngularJS documentation:
-//           *
-//           * > The token must be unique for each user and must be verifiable by the server (to
-//           * > prevent the JavaScript from making up its own tokens). We recommend that the token is
-//           * > a digest of your site's authentication cookie with a salt) for added security.
-//           *
-//           */
-//          val token = java.util.UUID.randomUUID.toString
-//          cache.set(token, user.id.get)
-//          log.info(s"User ${user.id.get} succesfully logged in")
-//          Ok(Json.obj("token" -> token))
-//            .withCookies(Cookie(AuthTokenCookieKey, token, None, httpOnly = false))
-//        }
-//      }
-//    )
-//  }
-
-  /**
-   * Log-out a user. Invalidates the authentication token.
-   *
-   * Discard the cookie [[AuthTokenCookieKey]] to have AngularJS no longer set the
-   * X-XSRF-TOKEN in HTTP header.
-   */
-  def logout() = {
-//    HasToken(playBodyParsers.empty) { token => userId => implicit request =>
-//    cache.remove(token)
-//    log.info(s"User $userId succesfully logged out")
-    Ok.discardingCookies(DiscardingCookie(name = AuthTokenCookieKey))
   }
 
   def options = Action {
