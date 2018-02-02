@@ -63,12 +63,15 @@ libraryDependencies ++= Seq(
   "org.webjars" % "highcharts" % "4.2.3",
   "org.webjars" % "highstock" % "4.2.3",
   "org.webjars" % "matchmedia-ng" % "1.0.5",
+  "org.webjars.bower" % "filesaver" % "1.3.3",
+  "org.webjars.npm" % "ng-file-upload" % "12.2.13",
 
   "com.typesafe.akka" %% "akka-slf4j" % "2.5.9",
   "com.typesafe.akka" %% "akka-stream" % "2.5.9",
-//  "com.typesafe.play" %% "play-streams-experimental" % "2.4.8",
   "com.typesafe.play" %% "play-json-joda" % "2.6.8",
+  "org.joda" % "joda-convert" % "1.9.2",
   "com.typesafe.play" %% "play-json" % "2.6.8",
+
   //"com.eclipsesource" %% "play-json-schema-validator" % "0.9.4",
 
   "com.typesafe.play" %% "play-iteratees" % "2.6.1",
