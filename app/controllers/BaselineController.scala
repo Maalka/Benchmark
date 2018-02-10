@@ -69,6 +69,16 @@ trait BaselineActions {
               }
             }
           ))
+          case a: ValidatedSolarMetrics => JsObject(Seq(
+            "system_capacity" -> JsNumber(a.system_capacity),
+            "module_type" -> JsNumber(a.module_type),
+            "losses" -> JsNumber(a.losses),
+            "array_type" -> JsNumber(a.array_type),
+            "tilt" -> JsNumber(a.tilt),
+            "azimuth" -> JsNumber(a.azimuth),
+            "inv_eff" -> JsNumber(a.inv_eff),
+            "filed_id" -> JsString(a.solar_file_id)
+          ))
         })
       }
       case v: String => Right(Json.toJson(v))
@@ -299,20 +309,6 @@ trait BaselineActions {
             Baseline.siteEUIwOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
             Baseline.siteEUIwOnandOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
-            Baseline.sourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-            Baseline.sourceEUIwOnSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-            Baseline.sourceEUIwOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-            Baseline.sourceEUIwOnandOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-            Baseline.getTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-            //this uses default state energy mixes for emissions calcs rather than scaling by source energies per TargetFinder
-            //to follow TargetFinder use Baseline.medianTotalEmissions not Baseline.defaultMedianTotalEmissions
-
-
-            Baseline.onSiteRenewableTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-            Baseline.offSitePurchasedTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-            //this is the total site energy without accounting for renewable generation and/or purchasing
-            Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
             */
 
           ))
@@ -327,16 +323,6 @@ trait BaselineActions {
             "siteEUIwOffSite",
             "siteEUIwOnAndOffSite",
 
-            "sourceEUI",
-            "sourceEUIwOnSite",
-            "sourceEUIwOffSite",
-            "sourceEUIwOnAndOffSite",
-
-            "totalEmissions",
-
-            "onSiteRenewableTotal",
-            "offSitePurchasedTotal",
-            "siteEnergyALL"
             */
           )
 
@@ -352,23 +338,8 @@ trait BaselineActions {
               "errors" -> errors
             ))
           }
-
-
-
-
-
-
-
-
-
-
         }
       )
-
-
-
-
-
   }
 }
 class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) with Logging with BaselineActions

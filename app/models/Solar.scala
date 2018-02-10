@@ -98,10 +98,9 @@ case class SolarProperties(parameters: JsValue) {
       case _ => throw new Exception("System Capacity must be positive! No Defaults Set. ")
     }
 
-    ValidatedSolarMetrics(module_type,array_type,losses,tilt,azimuth,inv_eff, system_capacity)
+    ValidatedSolarMetrics(module_type,array_type,losses,tilt,azimuth,inv_eff, system_capacity, solarResources.solar_file_id)
 
   }
-
 
 
   //This sets defaults where needed for lookups and double checks for file references
@@ -169,135 +168,96 @@ case class SolarProperties(parameters: JsValue) {
     }
   }
 
-
-  def setPVDefaults =
-    for {
-      solarResources <- getSolarResources
-      //set defaults for lookup tables and convert to default units
-      solarResourcesDefaults <- initiateSolarResources(solarResources)
-      arrayList <- getSolarList
-      arrayListDefaults <- Future.sequence(arrayList.pv_data.map(setArrayDefaults(_,solarResourcesDefaults)))
-    } yield {
-      println(arrayListDefaults)
-
-      //println(stories)
-      1.0
-    }
+  /*def getPVWattsData(arrayList:List[ValidatedSolarMetrics]):Future[ValidatedSolarMetrics] = Future {
+    PVWatts API
+    format: JSON
+    api_key
+    system_capacity - calculate
+    module_type
+    losses
+    array_type
+    tilt
+    azimuth
+    file_id
+    inv_eff}*/
 
 
-
-
-  case class SolarList(pv_data: List[SolarMetrics])
-
-  object SolarList {
-    implicit val listReads: Reads[SolarList] = Json.reads[SolarList]
-  }
-
-  case class SolarMetrics(
-                           estimated_area: Option[Double],
-                           pv_area_units: Option[String],
-                           access_perimeter: Option[Double],
-                           w_per_meter2: Option[Double],
-                           system_capacity: Option[Double],
-                           module_type: Option[Int],
-                           losses: Option[Double],
-                           array_type: Option[Int],
-                           tilt: Option[Double],
-                           azimuth: Option[Double],
-                           inv_eff: Option[Double])
-
-  object SolarMetrics {
-    implicit val solarMetricsReads: Reads[SolarMetrics] = Json.reads[SolarMetrics]
-  }
+def setPVDefaults =
+for {
+  solarResources <- getSolarResources
+  //set defaults for lookup tables and convert to default units
+  solarResourcesDefaults <- initiateSolarResources(solarResources)
+  arrayList <- getSolarList
+  arrayListDefaults <- Future.sequence(arrayList.pv_data.map(setArrayDefaults(_,solarResourcesDefaults)))
+} yield {
+  arrayListDefaults
+}
 
 
 
 
-  case class SolarResources(
-                             pv_resource: Option[Int],
-                             prescriptive_resource: Option[Int],
-                             solar_file_id: Option[String],
-                             climate_zone: Option[String],
-                             floor_area: Option[Double],
-                             floor_area_units: Option[String],
-                             stories: Option[Double])
+case class SolarList(pv_data: List[SolarMetrics])
 
-  object SolarResources {
-    implicit val solarResourcesReads: Reads[SolarResources] = Json.reads[SolarResources]
-  }
+object SolarList {
+implicit val listReads: Reads[SolarList] = Json.reads[SolarList]
+}
+
+case class SolarMetrics(
+                       estimated_area: Option[Double],
+                       pv_area_units: Option[String],
+                       access_perimeter: Option[Double],
+                       w_per_meter2: Option[Double],
+                       system_capacity: Option[Double],
+                       module_type: Option[Int],
+                       losses: Option[Double],
+                       array_type: Option[Int],
+                       tilt: Option[Double],
+                       azimuth: Option[Double],
+                       inv_eff: Option[Double])
+
+object SolarMetrics {
+implicit val solarMetricsReads: Reads[SolarMetrics] = Json.reads[SolarMetrics]
+}
+
+
+
+
+case class SolarResources(
+                         pv_resource: Option[Int],
+                         prescriptive_resource: Option[Int],
+                         solar_file_id: Option[String],
+                         climate_zone: Option[String],
+                         floor_area: Option[Double],
+                         floor_area_units: Option[String],
+                         stories: Option[Double])
+
+object SolarResources {
+implicit val solarResourcesReads: Reads[SolarResources] = Json.reads[SolarResources]
+}
 
 }
 
 
 // These classes represent data that have been populated with defaults
 case class ValidatedSolarMetrics(
-                                  module_type: Int,
-                                  array_type: Int,
-                                  losses: Double,
-                                  tilt: Double,
-                                  azimuth: Double,
-                                  inv_eff: Double,
-                                  system_capacity: Double
-                                )
+                              module_type: Int,
+                              array_type: Int,
+                              losses: Double,
+                              tilt: Double,
+                              azimuth: Double,
+                              inv_eff: Double,
+                              system_capacity: Double,
+                              solar_file_id: String
+                            )
 case class ValidatedSolarResources(
-                                    pv_resource: Int,
-                                    solar_file_id: String,
-                                    climate_zone: String,
-                                    floor_area: Double,
-                                    stories: Double
-                                  )
-
-/*PVWatts API
-  format: JSON
-  api_key
-  system_capacity - calculate
-  module_type
-  losses
-  array_type
-  tilt
-  azimuth
-  file_id
-  inv_eff
+                                pv_resource: Int,
+                                solar_file_id: String,
+                                climate_zone: String,
+                                floor_area: Double,
+                                stories: Double
+                              )
 
 
-
-
-  format: JSON
-  api_key
-  system_capacity - calculate
-  file_id
-
-
-
-
-  CALCULATE SYSTEM CAPACITY FOR EACH SOLAR ARRAY ENTRY
-
-
-  */
-
-
-
-
-
-
-/*    def roundAt(p: Int)(n: Double): Double = {
-      val s = math pow(10, p); (math round n * s) / s
-    }
-
-    resource match {
-      case 0 => JsObject(Map(
-        "pv_area" -> JsNumber(pvArea),
-        "access_perimeter" -> JsNumber(accessPerimeter),
-        "w_per_meter2" -> JsNumber(wattsPerMeterSquared),
-        "system_capacity" -> JsNumber(roundAt(2)(pvArea * wattsPerMeterSquared)),
-        "module_type" -> JsNumber(0),
-        "losses" -> JsNumber(0.10),
-        "array_type" -> JsNumber(0),
-        "tilt" -> JsNumber(10),
-        "azimuth" -> JsNumber(180),
-        "inv_eff" -> JsNumber(0.96)
-      ))
-    }*/
 
 
 
