@@ -4,9 +4,12 @@
 
 
 package controllers
+import com.eclipsesource.schema._
+import com.eclipsesource.schema.internal.validation.VA
 import models._
 import com.google.inject.Inject
 import play.api.cache.{AsyncCacheApi, SyncCacheApi}
+import play.api.libs.json.Reads.min
 import play.api.libs.json._
 import play.api.mvc._
 
@@ -30,7 +33,8 @@ trait BaselineActions {
   })
 
   def roundAt(p: Int)(n: Double): Double = {
-    val s = math pow(10, p); (math round n * s) / s
+    val s = math pow(10, p);
+    (math round n * s) / s
   }
 
   def apiRecover(throwable: Throwable): Either[String, JsValue] = {
@@ -73,70 +77,288 @@ trait BaselineActions {
   }
 
 
+  val schema = Json.fromJson[SchemaType](Json.parse(
+    """{
+        "type": "array",
+        "id": "http://znc.maalka.com/znc",
+        "items": [
+          {
+          "id": "/items",
+          "type": "object",
+          "properties": {
+            "building_type": {
+              "type": "string",
+              "required":true,
+              "enum": ["OfficeLarge", "OfficeMedium", "OfficeSmall", "RetailStandalone", "RetailStripmall",
+                      "SchoolPrimary", "SchoolSecondary", "Hospital", "OutPatientHealthCare",
+                      "RestaurantSitDown", "RestaurantFastFood", "HotelLarge", "HotelSmall",
+                      "Warehouse", "ApartmentHighRise", "ApartmentMidRise", "Office", "Retail", "School",
+                      "Healthcare", "Restaurant", "Hotel", "Apartment", "Warehouse", "AllOthers"]
+            },
+            "floor_area": {
+              "type": "number",
+              "minimum": 0,
+              "required":true
+            },
+            "floor_area_units": {
+              "type": "string",
+              "required":true,
+              "enum": ["mSQ", "ftSQ"]
+            },
+            "stories": {
+              "type": "number",
+              "minimum": 0,
+              "required":true
+            },
+            "prescriptive_resource": {
+              "type": "integer"
+            },
+            "source_conversion_resource": {
+              "type": "integer"
+            },
+            "emissions_conversion_resource": {
+              "type": "integer"
+            },
+            "pv_resource": {
+              "type": "integer"
+            },
+            "approach": {
+              "type": "string",
+              "enum": ["prescriptive", "performance"]
+            },
+            "metric": {
+              "type": "string",
+              "enum": ["site", "source", "carbon"]
+            },
+            "metric_electricity": {
+              "type": "number",
+              "minimum": 0
+            },
+            "metric_natural_gas": {
+              "type": "number",
+              "minimum": 0
+            },
+            "metric_fuel_oil": {
+              "type": "number",
+              "minimum": 0
+            },
+            "metric_propane": {
+              "type": "number",
+              "minimum": 0
+            },
+            "metric_steam": {
+              "type": "number",
+              "minimum": 0
+            },
+            "metric_hot_water": {
+              "type": "number",
+              "minimum": 0
+            },
+            "metric_chilled_water": {
+              "type": "number",
+              "minimum": 0
+            },
+            "metric_coal": {
+              "type": "number",
+              "minimum": 0
+            },
+            "climate_zone": {
+              "type": "string",
+              "enum": ["0A", "0B", "1A", "1B", "2A", "2B", "3A", "3B", "3C", "4A", "4B", "4C", "5A", "5B", "5C", "6A", "6B", "7", "8"],
+              "required": true
+            },
+            "solar_file_id": {
+              "type": "string",
+              "required": true
+            },
+            "pv_data": {
+              "id": "/items/properties/pv_data",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "access_perimeter": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "w_per_meter2": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "system_capacity": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "module_type": {
+                    "type": "integer",
+                    "enum": [0,1,2]
+                  },
+                  "losses": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "array_type": {
+                    "type": "integer",
+                    "enum": [0,1,2,3,4]
+                  },
+                  "tilt": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 360
+                  },
+                  "azimuth": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 360
+                  },
+                  "inv_eff": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1.0
+                  }
+                }
+              }
+            },
+            "energies": {
+              "id": "/items/properties/energies",
+              "type": "array",
+              "items": {
+                  "type": "object",
+                  "properties": {
+                    "energyName": {
+                      "type": "string"
+                    },
+                    "energyType": {
+                      "type": "string",
+                      "enum": ["electricity","natural_gas","fuel_oil","propane","steam","hot_water","chilled_water","coal"]
+                    },
+                    "energyUnits": {
+                      "type": "string",
+                       "enum": ["KBtu","MBtu","kWh","MWh","GJ","NGMcf","NGKcf","NGCcf","NGcf", "NGm3","Therms","No1UKG","No1USG",
+                             "No1L","No2UKG","No2USG","No2L","No4UKG","No4USG","No4L","No6UKG","No6USG","No6L","DieselUKG","DieselUSG",
+                             "DieselL","KeroseneUKG","KeroseneUSG","KeroseneL","PropaneUKG","PropaneUSG","PropaneCf","PropaneCCf",
+                             "PropaneKCf","PropaneL","SteamLb","SteamKLb","SteamMLb","CHWTonH","CoalATon","CoalATonne","CoalALb",
+                             "CoalAKLb","CoalAMLb","CoalBitTon","CoalBitTonne","CoalBitLb","CoalBitKLb","CoalBitMLb","CokeTon","CokeTonne",
+                             "CokeLb","CokeKLb","CokeMLb","WoodTon","WoodTonne"]
+                    },
+                    "energyUse": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "energyName",
+                    "energyType",
+                    "energyUnits",
+                    "energyUse"
+                  ]
+              }
+            }
+          }
+          }
+        ]
+      }""".stripMargin)).get
+
+  val validator = new SchemaValidator()
+
+
   def getZEPIMetrics() = Action.async(parse.json) { implicit request =>
 
-    val Baseline: EUIMetrics = EUIMetrics(request.body)
+      val Baseline: EUIMetrics = EUIMetrics(request.body)
 
-    val futures = Future.sequence(Seq(
+      val json: JsValue = request.body
+      val result = validator.validate(schema, json)
 
-      Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
-      /*    Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      result.fold(
+        invalid = { errors =>
+          Future {
+            BadRequest(errors.toJson)
+          }
+        },
+        valid = { post =>
 
-      Baseline.siteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.siteEUIwOnSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.siteEUIwOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.siteEUIwOnandOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+          val futures = Future.sequence(Seq(
 
-      Baseline.sourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.sourceEUIwOnSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.sourceEUIwOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.sourceEUIwOnandOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+            Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
+            /*
+            Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
-      Baseline.getTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      //this uses default state energy mixes for emissions calcs rather than scaling by source energies per TargetFinder
-      //to follow TargetFinder use Baseline.medianTotalEmissions not Baseline.defaultMedianTotalEmissions
+            Baseline.siteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+            Baseline.siteEUIwOnSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+            Baseline.siteEUIwOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+            Baseline.siteEUIwOnandOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+            Baseline.sourceEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+            Baseline.sourceEUIwOnSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+            Baseline.sourceEUIwOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+            Baseline.sourceEUIwOnandOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+            Baseline.getTotalEmissions.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+            //this uses default state energy mixes for emissions calcs rather than scaling by source energies per TargetFinder
+            //to follow TargetFinder use Baseline.medianTotalEmissions not Baseline.defaultMedianTotalEmissions
 
 
-      Baseline.onSiteRenewableTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      Baseline.offSitePurchasedTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      //this is the total site energy without accounting for renewable generation and/or purchasing
-      Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}*/
+            Baseline.onSiteRenewableTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+            Baseline.offSitePurchasedTotal.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+            //this is the total site energy without accounting for renewable generation and/or purchasing
+            Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+            */
 
-    ))
+          ))
 
-    val fieldNames = Seq(
-      "solar"
-      /*    "propOutputList",
+          val fieldNames = Seq(
+            "solar"
+            /*
+            "propOutputList",
 
-      "siteEUI",
-      "siteEUIwOnSite",
-      "siteEUIwOffSite",
-      "siteEUIwOnAndOffSite",
+            "siteEUI",
+            "siteEUIwOnSite",
+            "siteEUIwOffSite",
+            "siteEUIwOnAndOffSite",
 
-      "sourceEUI",
-      "sourceEUIwOnSite",
-      "sourceEUIwOffSite",
-      "sourceEUIwOnAndOffSite",
+            "sourceEUI",
+            "sourceEUIwOnSite",
+            "sourceEUIwOffSite",
+            "sourceEUIwOnAndOffSite",
 
-      "totalEmissions",
+            "totalEmissions",
 
-      "onSiteRenewableTotal",
-      "offSitePurchasedTotal",
-      "siteEnergyALL"*/
-    )
+            "onSiteRenewableTotal",
+            "offSitePurchasedTotal",
+            "siteEnergyALL"
+            */
+          )
 
-    futures.map(fieldNames.zip(_)).map { r =>
-      val errors = r.collect {
-        case (n, Left(s)) => Json.obj(n -> s)
-      }
-      val results = r.collect {
-        case (n, Right(s)) => Json.obj(n -> s)
-      }
-      Ok(Json.obj(
-        "values" -> results,
-        "errors" -> errors
-      ))
-    }
+          futures.map(fieldNames.zip(_)).map { r =>
+            val errors = r.collect {
+              case (n, Left(s)) => Json.obj(n -> s)
+            }
+            val results = r.collect {
+              case (n, Right(s)) => Json.obj(n -> s)
+            }
+            Ok(Json.obj(
+              "values" -> results,
+              "errors" -> errors
+            ))
+          }
+
+
+
+
+
+
+
+
+
+
+        }
+      )
+
+
+
+
 
   }
 }

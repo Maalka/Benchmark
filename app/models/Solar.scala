@@ -1,6 +1,5 @@
 package models
 
-//import com.eclipsesource.schema._
 import squants.energy.{Energy, Gigajoules, KBtus, TBtus}
 import squants.space._
 
@@ -16,9 +15,8 @@ import play.api.libs.json.Reads.min
 case class SolarProperties(parameters: JsValue) {
 
 
-//  def getArrayDefaults(solarList: SolarList, solarResources: ValidatedSolarResources): Future[SolarList] = Future {
-//    solarList.pv_data.map(setArrayDefaults(_, solarResources))
-//  }
+
+
 
   def setArrayDefaults(metrics: SolarMetrics, solarResources: ValidatedSolarResources):Future[ValidatedSolarMetrics] = Future{
 
