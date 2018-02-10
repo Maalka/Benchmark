@@ -178,6 +178,15 @@ trait BaselineActions {
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
+                  "estimated_area": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "pv_area_units": {
+                    "minimum": 0,
+                    "type": "string",
+                    "enum": ["mSQ", "ftSQ"]
+                  },
                   "access_perimeter": {
                     "minimum": 0,
                     "type": "number"
