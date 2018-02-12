@@ -369,6 +369,7 @@ trait BaselineActions {
 
 
             Baseline.getPrescriptiveEndUses.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+            Baseline.getPrescriptiveEndUsePercents.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
             Baseline.getPrescriptiveElectricity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
             Baseline.getPrescriptiveNG.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
             Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
@@ -386,6 +387,7 @@ trait BaselineActions {
 
           val fieldNames = Seq(
             "prescriptiveEndUses",
+            "prescriptiveEndUsePercents",
             "prescriptiveElectricityUseIntensity",
             "prescriptiveNGUseIntensity",
             "pvSystemDetails"

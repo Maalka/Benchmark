@@ -23,7 +23,9 @@ case class EUIMetrics(parameters: JsValue) {
   def getPV = pvSystems.setPVDefaults
 
   val prescriptiveEUI = PrescriptiveValues(result.head)
-  def getPrescriptiveEndUses = prescriptiveEUI.lookupPrescriptiveEndUSeDistribution
+  def getPrescriptiveEndUsePercents = prescriptiveEUI.lookupPrescriptiveEndUSePercents
+  def getPrescriptiveEndUses = prescriptiveEUI.lookupPrescriptiveEndUSes
+
   def getPrescriptiveElectricity = prescriptiveEUI.lookupPrescriptiveElectricityWeighted
   def getPrescriptiveNG = prescriptiveEUI.lookupPrescriptiveNGWeighted
 

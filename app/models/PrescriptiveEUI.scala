@@ -18,7 +18,14 @@ import squants.space.{Area, SquareFeet, SquareMeters}
 
 case class PrescriptiveValues(parameters:JsValue) {
 
-  def lookupPrescriptiveEndUSeDistribution: Future[EndUseDistribution] = {
+  def lookupPrescriptiveEndUSePercents: Future[EndUseDistribution] = {
+    for {
+      weightedEndUseDistList <- lookupPrescriptiveEndUSes
+      endUsePercents <- getEndUseDistPercents(weightedEndUseDistList)
+    } yield endUsePercents
+  }
+
+  def lookupPrescriptiveEndUSes: Future[EndUseDistribution] = {
     for {
       electric <- lookupPrescriptiveElectricityWeighted
       ng <- lookupPrescriptiveNGWeighted
@@ -87,6 +94,46 @@ case class PrescriptiveValues(parameters:JsValue) {
 
 
 
+  def getEndUseDistPercents(EndUses:EndUseDistribution):Future[EndUseDistribution] = Future {
+
+
+        val sum = {
+          EndUses.htg +
+          EndUses.clg +
+          EndUses.intLgt +
+          EndUses.extLgt +
+          EndUses.intEqp +
+          EndUses.extEqp +
+          EndUses.fans +
+          EndUses.pumps +
+          EndUses.heatRej +
+          EndUses.humid +
+          EndUses.heatRec +
+          EndUses.swh +
+          EndUses.refrg +
+          EndUses.gentor
+        }
+
+       EndUseDistribution(
+          EndUses.htg/sum,
+          EndUses.clg/sum,
+          EndUses.intLgt/sum,
+          EndUses.extLgt/sum,
+          EndUses.intEqp/sum,
+          EndUses.extEqp/sum,
+          EndUses.fans/sum,
+          EndUses.pumps/sum,
+          EndUses.heatRej/sum,
+          EndUses.humid/sum,
+          EndUses.heatRec/sum,
+          EndUses.swh/sum,
+          EndUses.refrg/sum,
+          EndUses.gentor/sum,
+          EndUses.net/sum,
+          EndUses.site_EUI/sum
+        )
+    }
+
   def getWeightedEndUSeDistList(elec:ElectricityDistribution, ng:NaturalGasDistribution):Future[EndUseDistribution] = Future {
 
         EndUseDistribution(
@@ -107,7 +154,6 @@ case class PrescriptiveValues(parameters:JsValue) {
           elec.elec_net + ng.ng_net,
           elec.site_EUI
         )
-    
     }
 
 
@@ -275,7 +321,6 @@ case class PrescriptiveValues(parameters:JsValue) {
       }
       case _ => throw new Exception("No Floor Area Found! ")
     }
-    println(propType, floorArea, "ftSQ")
     ValidatedPropTypes(propType,floorArea,"ftSQ")
   }
 
