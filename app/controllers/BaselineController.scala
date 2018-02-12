@@ -79,6 +79,42 @@ trait BaselineActions {
             "inv_eff" -> JsNumber(a.inv_eff),
             "filed_id" -> JsString(a.solar_file_id)
           ))
+          case a: ElectricityDistribution => JsObject(Seq(
+            "elec_htg" -> JsNumber(a.elec_htg),
+            "elec_clg" -> JsNumber(a.elec_clg),
+            "elec_intLgt" -> JsNumber(a.elec_intLgt),
+            "elec_extLgt" -> JsNumber(a.elec_extLgt),
+            "elec_intEqp" -> JsNumber(a.elec_intEqp),
+            "elec_extEqp" -> JsNumber(a.elec_extEqp),
+            "elec_fans" -> JsNumber(a.elec_fans),
+            "elec_pumps" -> JsNumber(a.elec_pumps),
+            "elec_heatRej" -> JsNumber(a.elec_heatRej),
+            "elec_humid" -> JsNumber(a.elec_humid),
+            "elec_heatRec" -> JsNumber(a.elec_heatRec),
+            "elec_swh" -> JsNumber(a.elec_swh),
+            "elec_refrg" -> JsNumber(a.elec_refrg),
+            "elec_gentor" -> JsNumber(a.elec_gentor),
+            "elec_net" -> JsNumber(a.elec_net),
+            "site_EUI" -> JsNumber(a.site_EUI)
+          ))
+          case a: NaturalGasDistribution => JsObject(Seq(
+            "ng_htg" -> JsNumber(a.ng_htg),
+            "ng_clg" -> JsNumber(a.ng_clg),
+            "ng_intLgt" -> JsNumber(a.ng_intLgt),
+            "ng_extLgt" -> JsNumber(a.ng_extLgt),
+            "ng_intEqp" -> JsNumber(a.ng_intEqp),
+            "ng_extEqp" -> JsNumber(a.ng_extEqp),
+            "ng_fans" -> JsNumber(a.ng_fans),
+            "ng_pumps" -> JsNumber(a.ng_pumps),
+            "ng_heatRej" -> JsNumber(a.ng_heatRej),
+            "ng_humid" -> JsNumber(a.ng_humid),
+            "ng_heatRec" -> JsNumber(a.ng_heatRec),
+            "ng_swh" -> JsNumber(a.ng_swh),
+            "ng_refrg" -> JsNumber(a.ng_refrg),
+            "ng_gentor" -> JsNumber(a.ng_gentor),
+            "ng_net" -> JsNumber(a.ng_net),
+            "site_EUI" -> JsNumber(a.site_EUI)
+          ))
         })
       }
       case v: String => Right(Json.toJson(v))
@@ -116,7 +152,7 @@ trait BaselineActions {
         "ng_refrg" -> JsNumber(a.ng_refrg),
         "ng_gentor" -> JsNumber(a.ng_gentor),
         "ng_net" -> JsNumber(a.ng_net),
-        "ng_site_EUI" -> JsNumber(a.site_EUI)
+        "site_EUI" -> JsNumber(a.site_EUI)
       )))
       case None => Left("Could not recognize input type")
     }
@@ -132,25 +168,38 @@ trait BaselineActions {
           "id": "/items",
           "type": "object",
           "properties": {
-            "building_type": {
-              "type": "string",
-              "required":true,
-              "enum": ["OfficeLarge", "OfficeMedium", "OfficeSmall", "RetailStandalone", "RetailStripmall",
-                      "SchoolPrimary", "SchoolSecondary", "Hospital", "OutPatientHealthCare",
-                      "RestaurantSitDown", "RestaurantFastFood", "HotelLarge", "HotelSmall",
-                      "Warehouse", "ApartmentHighRise", "ApartmentMidRise", "Office", "Retail", "School",
-                      "Healthcare", "Restaurant", "Hotel", "Apartment", "Warehouse", "AllOthers"]
-            },
-            "floor_area": {
-              "type": "number",
-              "minimum": 0,
-              "required":true
-            },
-            "floor_area_units": {
-              "type": "string",
-              "required":true,
-              "enum": ["mSQ", "ftSQ"]
-            },
+            "prop_types": {
+               "id": "/items/properties/prop_types",
+               "type": "array",
+               "required":true,
+               "items": {
+                   "type": "object",
+                   "minItems": 1,
+                   "properties": {
+                     "building_type": {
+                     "type": "string",
+                     "enum": ["OfficeLarge", "OfficeMedium", "OfficeSmall", "RetailStandalone", "RetailStripmall",
+                             "SchoolPrimary", "SchoolSecondary", "Hospital", "OutPatientHealthCare",
+                             "RestaurantSitDown", "RestaurantFastFood", "HotelLarge", "HotelSmall",
+                             "Warehouse", "ApartmentHighRise", "ApartmentMidRise", "Office", "Retail", "School",
+                             "Healthcare", "Restaurant", "Hotel", "Apartment", "Warehouse", "AllOthers"]
+                     },
+                     "floor_area": {
+                      "type": "number",
+                      "minimum": 0
+                     },
+                     "floor_area_units": {
+                       "type": "string",
+                       "enum": ["mSQ", "ftSQ"]
+                     }
+                   },
+                   "required": [
+                     "building_type",
+                     "floor_area",
+                     "floor_area_units"
+                   ]
+               }
+             },
             "stories": {
               "type": "number",
               "minimum": 0,

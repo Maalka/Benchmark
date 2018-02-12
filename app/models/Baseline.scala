@@ -23,8 +23,8 @@ case class EUIMetrics(parameters: JsValue) {
   def getPV = pvSystems.setPVDefaults
 
   val prescriptiveEUI = PrescriptiveValues(result.head)
-  def getPrescriptiveElectricity = prescriptiveEUI.lookupPrescriptiveElectricity
-  def getPrescriptiveNG = prescriptiveEUI.lookupPrescriptiveNG
+  def getPrescriptiveElectricity = prescriptiveEUI.lookupPrescriptiveElectricityWeighted
+  def getPrescriptiveNG = prescriptiveEUI.lookupPrescriptiveNGWeighted
 
 
 
