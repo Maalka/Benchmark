@@ -14,7 +14,10 @@ import play.api.libs.json.Reads.min
 
 case class SolarProperties(parameters: JsValue) {
 
+  val prescriptiveEUI = PrescriptiveValues(parameters)
+
   def setArrayDefaults(metrics: SolarMetrics, solarResources: ValidatedSolarResources):Future[ValidatedSolarMetrics] = Future{
+
 
     val default = solarResources.pv_resource
 
@@ -104,7 +107,9 @@ case class SolarProperties(parameters: JsValue) {
 
 
   //This sets defaults where needed for lookups and double checks for file references
-  def initiateSolarResources(solarResources: SolarResources): Future[ValidatedSolarResources] = Future {
+  def initiateSolarResources(solarResources: SolarResources,building_size: Double): Future[ValidatedSolarResources] = Future {
+
+    //building_size is always in Square Feet
 
     //default resources are always 1
     val pv_resource = solarResources.pv_resource match {
@@ -129,27 +134,14 @@ case class SolarProperties(parameters: JsValue) {
       case _ => throw new Exception("Prescriptive Resouce not Supported! ")
     }
 
-    val units = solarResources.floor_area_units match {
-      case Some("mSQ") => "mSQ"
-      case Some("ftSQ") => "ftSQ"
-      case _ => throw new Exception("Floor Area Units must be either ftSQ or mSQ")
-    }
-    val floorArea = solarResources.floor_area match {
-      case Some(a: Double) => {
-        units match {
-          case "mSQ" => (Area((a, "mSQ")).get to SquareMeters)
-          case "ftSQ" => (Area((a, "ftSQ")).get to SquareMeters)
-          case _ => throw new Exception("Floor Area Units Must be mSQ or ftSQ! ")
-        }
-      }
-      case _ => throw new Exception("No Floor Area Found! ")
-    }
+    val floorArea = (Area((building_size, "ftSQ")).get to SquareMeters)
+
 
     val stories = solarResources.stories match {
       case Some(a: Double) =>  a
       case _ => throw new Exception("No Number of Stories Found! ")
     }
-
+    println(floorArea)
     ValidatedSolarResources(pv_resource, solarID, climateZone, floorArea, stories)
   }
 
@@ -177,9 +169,11 @@ case class SolarProperties(parameters: JsValue) {
 
 def setPVDefaults: Future[List[ValidatedSolarMetrics]] =
 for {
+  validatedPropList <- prescriptiveEUI.getValidatedPropList
+  building_size <- Future(validatedPropList.map(_.floor_area).sum)
   solarResources <- getSolarResources
   //set defaults for lookup tables and convert to default units
-  solarResourcesDefaults <- initiateSolarResources(solarResources)
+  solarResourcesDefaults <- initiateSolarResources(solarResources, building_size)
   arrayList <- getSolarList
   arrayListDefaults <- Future.sequence(arrayList.pv_data.map(setArrayDefaults(_,solarResourcesDefaults)))
 } yield {

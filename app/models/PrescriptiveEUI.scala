@@ -243,7 +243,8 @@ case class PrescriptiveValues(parameters:JsValue) {
       }
       case _ => throw new Exception("No Floor Area Found! ")
     }
-    ValidatedPropTypes(propType,floorArea,units)
+    println(propType, floorArea, "ftSQ")
+    ValidatedPropTypes(propType,floorArea,"ftSQ")
   }
 
 
