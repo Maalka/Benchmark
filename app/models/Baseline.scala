@@ -23,11 +23,45 @@ case class EUIMetrics(parameters: JsValue) {
   def getPV = pvSystems.setPVDefaults
 
   val prescriptiveEUI = PrescriptiveValues(result.head)
-  def getPrescriptiveEndUsePercents = prescriptiveEUI.lookupPrescriptiveEndUSePercents
-  def getPrescriptiveEndUses = prescriptiveEUI.lookupPrescriptiveEndUSes
 
-  def getPrescriptiveElectricity = prescriptiveEUI.lookupPrescriptiveElectricityWeighted
-  def getPrescriptiveNG = prescriptiveEUI.lookupPrescriptiveNGWeighted
+  def getPrescriptiveEndUsePercents = {
+    for {
+      prescriptiveEndUSePercents <- prescriptiveEUI.lookupPrescriptiveEndUSePercents
+    } yield prescriptiveEndUSePercents
+  }
+
+  def getPrescriptiveEndUses = {
+    for {
+      prescriptiveEndUses <- prescriptiveEUI.lookupPrescriptiveEndUSes
+      converted <- convertPrescriptive(prescriptiveEndUses)
+    } yield converted
+  }
+  def getPrescriptiveElectricity = {
+    for {
+      prescriptiveElectricityWeighted <- prescriptiveEUI.lookupPrescriptiveElectricityWeighted
+      converted <- convertPrescriptive(prescriptiveElectricityWeighted)
+    } yield converted
+  }
+
+  def getPrescriptiveNG = {
+    for {
+      prescriptiveNGWeighted <- prescriptiveEUI.lookupPrescriptiveNGWeighted
+      converted <- convertPrescriptive(prescriptiveNGWeighted)
+    } yield converted
+  }
+
+  def getPrescriptiveTotalEnergy = {
+    for {
+      prescriptiveTotalEnergy <- prescriptiveEUI.lookupPrescriptiveTotalEnergy
+      converted <- convertEnergy(prescriptiveTotalEnergy)
+    } yield converted
+  }
+
+
+
+
+
+
 
 
 
@@ -35,6 +69,14 @@ case class EUIMetrics(parameters: JsValue) {
   val energyCalcs:EUICalculator = EUICalculator(result.head)
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
   val buildingEmissions:Emissions = Emissions(result.head)
+
+//default reporting units are IMPERIAL (kbtu, square feet, ...)
+  def reportingUnits:String = {
+    result.head.asOpt[ReportingUnits] match {
+      case Some(a) => a.reporting_units
+      case _ => "imperial"
+    }
+  }
 
 
   def getBuildingName:Future[String] = Future{buildingProps.buildingName}
@@ -219,6 +261,7 @@ case class EUIMetrics(parameters: JsValue) {
     } yield outputList
   }
 
+
   def sourceEnergy: Future[Energy] =
     for {
       sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
@@ -301,40 +344,103 @@ case class EUIMetrics(parameters: JsValue) {
     }
   }
 
-  def getMix(state:String,propType:String):Future[Double] = {
-    val local = for {
-      mixLookup <- loadEnergyMixTable.map { case a => (a \ state \ propType).toOption }
-      mixValue <- mixLookup match {
-        case Some(a) => Future{a.as[Double]}
-        case _ => throw new Exception("Could not find State and PropType in statePropertyEnergyMix.json")
-      }
-    } yield mixValue
 
-    local.recoverWith{case NonFatal(th) => getDefaultMix(state)}
+
+case class ReportingUnits(reporting_units:String)
+  object ReportingUnits {
+    implicit val ReportingUnitsReads: Reads[ReportingUnits] = Json.reads[ReportingUnits]
   }
 
-  def getDefaultMix(state:String):Future[Double] = {
-    for {
-      mixLookup <- loadEnergyMixTable.map { case a => (a \ state \ "Other").toOption }
-      mixValue <- mixLookup match {
-        case Some(a) => Future{a.as[Double]}
-        case _ => throw new Exception("Could not find Default energyMix in statePropertyEnergyMix.json")
-      }
-    } yield mixValue
-  }
 
-  def loadEnergyMixTable: Future[JsValue] = {
-    for {
-      is <- Future(Play.current.resourceAsStream("statePropertyEnergyMix.json"))
-      json <- Future {
-        is match {
-          case Some(is: InputStream) => {
-            Json.parse(is)
+  def convertPrescriptive[T](distribution: T)  = Future {
+    reportingUnits match {
+      case ("metric") => {
+        val c = (KBtus(1) to KilowattHours) / (SquareFeet(1) to SquareMeters)
+        distribution match {
+          case b:ElectricityDistribution => {
+            ElectricityDistribution(
+              b.elec_htg * c,
+              b.elec_clg * c,
+              b.elec_intLgt * c,
+              b.elec_extLgt * c,
+              b.elec_intEqp * c,
+              b.elec_extEqp * c,
+              b.elec_fans * c,
+              b.elec_pumps * c,
+              b.elec_heatRej * c,
+              b.elec_humid * c,
+              b.elec_heatRec * c,
+              b.elec_swh * c,
+              b.elec_refrg * c,
+              b.elec_gentor * c,
+              b.elec_net * c,
+              b.site_EUI * c
+            )
           }
-          case i => throw new Exception("statePropEnergyMix - Could not open file: %s".format(i))
+          case b:NaturalGasDistribution => {
+            NaturalGasDistribution(
+              b.ng_htg * c,
+              b.ng_clg * c,
+              b.ng_intLgt * c,
+              b.ng_extLgt * c,
+              b.ng_intEqp * c,
+              b.ng_extEqp * c,
+              b.ng_fans * c,
+              b.ng_pumps * c,
+              b.ng_heatRej * c,
+              b.ng_humid * c,
+              b.ng_heatRec * c,
+              b.ng_swh * c,
+              b.ng_refrg * c,
+              b.ng_gentor * c,
+              b.ng_net * c,
+              b.site_EUI * c
+            )
+          }
+          case b:EndUseDistribution => {
+            EndUseDistribution(
+              b.htg * c,
+              b.clg * c,
+              b.intLgt * c,
+              b.extLgt * c,
+              b.intEqp * c,
+              b.extEqp * c,
+              b.fans * c,
+              b.pumps * c,
+              b.heatRej * c,
+              b.humid * c,
+              b.heatRec * c,
+              b.swh * c,
+              b.refrg * c,
+              b.gentor * c,
+              b.net * c,
+              b.site_EUI * c
+            )
+          }
         }
       }
-    } yield json
+      case _ => distribution
+    }
+  }
+
+
+// conversions
+
+  def convertEUI(energyEntry:Energy):Future[Energy] = Future{
+    reportingUnits match {
+      case ("imperial") => energyEntry
+      case ("metric") => (energyEntry in KilowattHours)/(SquareFeet(1) to SquareMeters)
+      case _ =>  throw new Exception ("Reporting Units not Identified!")
+    }
+  }
+
+
+  def convertEnergy(energyEntry:Energy):Future[Energy] = Future{
+    reportingUnits match {
+      case ("imperial") => energyEntry
+      case ("metric") => energyEntry in KilowattHours
+      case _ =>  throw new Exception ("Reporting Units not Identified!")
+    }
   }
 
 
@@ -345,7 +451,6 @@ case class EUIMetrics(parameters: JsValue) {
       case (_, "metric") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KilowattHours)}
       case (_, "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KBtus)}
       case _ => energies
-
     }
   }
 

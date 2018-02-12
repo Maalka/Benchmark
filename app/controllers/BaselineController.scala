@@ -190,6 +190,10 @@ trait BaselineActions {
             "prescriptive_resource": {
               "type": "integer"
             },
+            "reporting_units": {
+              "type": "string",
+              "enum": ["imperial", "metric"]
+            },
             "source_conversion_resource": {
               "type": "integer"
             },
@@ -367,40 +371,25 @@ trait BaselineActions {
 
           val futures = Future.sequence(Seq(
 
-
             Baseline.getPrescriptiveEndUses.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
             Baseline.getPrescriptiveEndUsePercents.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+            Baseline.getPrescriptiveTotalEnergy.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+
             Baseline.getPrescriptiveElectricity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
             Baseline.getPrescriptiveNG.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
             Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
-            /*
-            Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-            Baseline.siteEUIConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-            Baseline.siteEUIwOnSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-            Baseline.siteEUIwOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-            Baseline.siteEUIwOnandOffSiteConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-
-            */
 
           ))
 
           val fieldNames = Seq(
-            "prescriptiveEndUses",
+            "prescriptiveEndUseIntensity",
             "prescriptiveEndUsePercents",
+            "prescriptiveTotalEnergy",
+
             "prescriptiveElectricityUseIntensity",
             "prescriptiveNGUseIntensity",
             "pvSystemDetails"
 
-            /*
-            "propOutputList",
-
-            "siteEUI",
-            "siteEUIwOnSite",
-            "siteEUIwOffSite",
-            "siteEUIwOnAndOffSite",
-
-            */
           )
 
           futures.map(fieldNames.zip(_)).map { r =>

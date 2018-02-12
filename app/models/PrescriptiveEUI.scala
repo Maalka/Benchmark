@@ -12,11 +12,22 @@ import play.api.libs.functional.syntax._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
+import squants.Energy
+import squants.energy.{Energy, KBtus}
 import squants.space.{Area, SquareFeet, SquareMeters}
 
 
 
 case class PrescriptiveValues(parameters:JsValue) {
+
+  def lookupPrescriptiveTotalEnergy: Future[Energy] = {
+    for {
+      validatedPropList <- getValidatedPropList
+      building_size <- Future(validatedPropList.map(_.floor_area).sum)
+      weightedEndUseDistList <- lookupPrescriptiveEndUSes
+      endUsePercents <- getPrescriptiveTotalEnergy(weightedEndUseDistList,building_size)
+    } yield endUsePercents
+  }
 
   def lookupPrescriptiveEndUSePercents: Future[EndUseDistribution] = {
     for {
@@ -94,8 +105,28 @@ case class PrescriptiveValues(parameters:JsValue) {
 
 
 
-  def getEndUseDistPercents(EndUses:EndUseDistribution):Future[EndUseDistribution] = Future {
+  def getPrescriptiveTotalEnergy(EndUses:EndUseDistribution, buildingSize: Double):Future[Energy] = Future {
+// End Uses are in KBtu and building size is in Square Feet
+        val sum = {
+          EndUses.htg +
+          EndUses.clg +
+          EndUses.intLgt +
+          EndUses.extLgt +
+          EndUses.intEqp +
+          EndUses.extEqp +
+          EndUses.fans +
+          EndUses.pumps +
+          EndUses.heatRej +
+          EndUses.humid +
+          EndUses.heatRec +
+          EndUses.swh +
+          EndUses.refrg +
+          EndUses.gentor
+        }
+       KBtus(sum*buildingSize)
+    }
 
+  def getEndUseDistPercents(EndUses:EndUseDistribution):Future[EndUseDistribution] = Future {
 
         val sum = {
           EndUses.htg +
