@@ -18,6 +18,14 @@ import squants.space.{Area, SquareFeet, SquareMeters}
 
 case class PrescriptiveValues(parameters:JsValue) {
 
+  def lookupPrescriptiveEndUSeDistribution: Future[EndUseDistribution] = {
+    for {
+      electric <- lookupPrescriptiveElectricityWeighted
+      ng <- lookupPrescriptiveNGWeighted
+      weightedEndUseDistList <- getWeightedEndUSeDistList(electric,ng)
+    } yield weightedEndUseDistList
+  }
+
   def lookupPrescriptiveElectricityWeighted: Future[ElectricityDistribution] = {
     for {
       lookupParams <- getPrescriptiveParams
@@ -77,6 +85,30 @@ case class PrescriptiveValues(parameters:JsValue) {
     } yield euiDist
   }
 
+
+
+  def getWeightedEndUSeDistList(elec:ElectricityDistribution, ng:NaturalGasDistribution):Future[EndUseDistribution] = Future {
+
+        EndUseDistribution(
+          elec.elec_htg + ng.ng_htg,
+          elec.elec_clg + ng.ng_clg,
+          elec.elec_intLgt + ng.ng_intLgt,
+          elec.elec_extLgt + ng.ng_extLgt,
+          elec.elec_intEqp + ng.ng_intEqp,
+          elec.elec_extEqp + ng.ng_extEqp,
+          elec.elec_fans + ng.ng_fans,
+          elec.elec_pumps + ng.ng_pumps,
+          elec.elec_heatRej + ng.ng_heatRej,
+          elec.elec_humid + ng.ng_humid,
+          elec.elec_heatRec + ng.ng_heatRec,
+          elec.elec_swh + ng.ng_swh,
+          elec.elec_refrg + ng.ng_refrg,
+          elec.elec_gentor + ng.ng_gentor,
+          elec.elec_net + ng.ng_net,
+          elec.site_EUI
+        )
+    
+    }
 
 
   def getWeightedElecDistList(areaWeights:List[Double], distList:List[ElectricityDistribution]):Future[ElectricityDistribution] = Future {
@@ -269,6 +301,11 @@ case class PrescriptiveValues(parameters:JsValue) {
     } yield validatedProps
   }
 }
+
+case class EndUseDistribution(htg:Double,clg:Double,intLgt:Double = 0.0,extLgt:Double = 0.0,intEqp:Double = 0.0,
+                                   extEqp:Double = 0.0, fans:Double = 0.0,pumps:Double = 0.0,heatRej:Double = 0.0,
+                                   humid:Double = 0.0, heatRec:Double = 0.0,swh:Double = 0.0,refrg:Double = 0.0,
+                                   gentor:Double = 0.0,net:Double = 0.0, site_EUI:Double = 0.0)
 
 
 case class ElectricityDistribution(elec_htg:Double,elec_clg:Double,elec_intLgt:Double = 0.0,elec_extLgt:Double = 0.0,elec_intEqp:Double = 0.0,
