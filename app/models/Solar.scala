@@ -122,7 +122,7 @@ case class SolarProperties(parameters: JsValue) {
     val climateZone = prescriptive_resource match {
       case 0 => {
         solarResources.climate_zone match {
-          case Some(a) if List("0A", "0B", "1A", "1B", "2A", "2B", "3A", "3B", "3C", "4A", "4B", "4C", "5A", "5B", "5C", "6A", "6B", "7", "8").contains(a) => a
+          case Some(a) if List("1A", "1B", "2A", "2B", "3A", "3B", "3C", "4A", "4B", "4C", "5A", "5B", "5C", "6A", "6B", "7", "8").contains(a) => a
           case _ => throw new Exception("Not a valid Climate Zone for given Prescriptive Resource! ")
         }
       }
@@ -168,21 +168,14 @@ case class SolarProperties(parameters: JsValue) {
     }
   }
 
-  /*def getPVWattsData(arrayList:List[ValidatedSolarMetrics]):Future[ValidatedSolarMetrics] = Future {
+/*
     PVWatts API
     format: JSON
     api_key
-    system_capacity - calculate
-    module_type
-    losses
-    array_type
-    tilt
-    azimuth
-    file_id
-    inv_eff}*/
+*/
 
 
-def setPVDefaults =
+def setPVDefaults: Future[List[ValidatedSolarMetrics]] =
 for {
   solarResources <- getSolarResources
   //set defaults for lookup tables and convert to default units

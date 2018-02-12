@@ -22,12 +22,16 @@ case class EUIMetrics(parameters: JsValue) {
   val pvSystems:SolarProperties = SolarProperties(result.head)
   def getPV = pvSystems.setPVDefaults
 
+  val prescriptiveEUI = PrescriptiveValues(result.head)
+  def getPrescriptiveElectricity = prescriptiveEUI.lookupPrescriptiveElectricity
+  def getPrescriptiveNG = prescriptiveEUI.lookupPrescriptiveNG
+
+
 
   val combinedPropMetrics:CombinedPropTypes = CombinedPropTypes(parameters)
   val energyCalcs:EUICalculator = EUICalculator(result.head)
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
   val buildingEmissions:Emissions = Emissions(result.head)
-
 
 
   def getBuildingName:Future[String] = Future{buildingProps.buildingName}

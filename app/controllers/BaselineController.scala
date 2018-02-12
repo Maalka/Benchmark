@@ -82,6 +82,42 @@ trait BaselineActions {
         })
       }
       case v: String => Right(Json.toJson(v))
+      case a: ElectricityDistribution => Right(JsObject(Seq(
+        "elec_htg" -> JsNumber(a.elec_htg),
+        "elec_clg" -> JsNumber(a.elec_clg),
+        "elec_intLgt" -> JsNumber(a.elec_intLgt),
+        "elec_extLgt" -> JsNumber(a.elec_extLgt),
+        "elec_intEqp" -> JsNumber(a.elec_intEqp),
+        "elec_extEqp" -> JsNumber(a.elec_extEqp),
+        "elec_fans" -> JsNumber(a.elec_fans),
+        "elec_pumps" -> JsNumber(a.elec_pumps),
+        "elec_heatRej" -> JsNumber(a.elec_heatRej),
+        "elec_humid" -> JsNumber(a.elec_humid),
+        "elec_heatRec" -> JsNumber(a.elec_heatRec),
+        "elec_swh" -> JsNumber(a.elec_swh),
+        "elec_refrg" -> JsNumber(a.elec_refrg),
+        "elec_gentor" -> JsNumber(a.elec_gentor),
+        "elec_net" -> JsNumber(a.elec_net),
+        "site_EUI" -> JsNumber(a.site_EUI)
+      )))
+      case a: NaturalGasDistribution => Right(JsObject(Seq(
+        "ng_htg" -> JsNumber(a.ng_htg),
+        "ng_clg" -> JsNumber(a.ng_clg),
+        "ng_intLgt" -> JsNumber(a.ng_intLgt),
+        "ng_extLgt" -> JsNumber(a.ng_extLgt),
+        "ng_intEqp" -> JsNumber(a.ng_intEqp),
+        "ng_extEqp" -> JsNumber(a.ng_extEqp),
+        "ng_fans" -> JsNumber(a.ng_fans),
+        "ng_pumps" -> JsNumber(a.ng_pumps),
+        "ng_heatRej" -> JsNumber(a.ng_heatRej),
+        "ng_humid" -> JsNumber(a.ng_humid),
+        "ng_heatRec" -> JsNumber(a.ng_heatRec),
+        "ng_swh" -> JsNumber(a.ng_swh),
+        "ng_refrg" -> JsNumber(a.ng_refrg),
+        "ng_gentor" -> JsNumber(a.ng_gentor),
+        "ng_net" -> JsNumber(a.ng_net),
+        "ng_site_EUI" -> JsNumber(a.site_EUI)
+      )))
       case None => Left("Could not recognize input type")
     }
   }
@@ -174,7 +210,7 @@ trait BaselineActions {
             },
             "climate_zone": {
               "type": "string",
-              "enum": ["0A", "0B", "1A", "1B", "2A", "2B", "3A", "3B", "3C", "4A", "4B", "4C", "5A", "5B", "5C", "6A", "6B", "7", "8"],
+              "enum": ["1A", "1B", "2A", "2B", "3A", "3B", "3C", "4A", "4B", "4C", "5A", "5B", "5C", "6A", "6B", "7", "8"],
               "required": true
             },
             "solar_file_id": {
@@ -300,6 +336,9 @@ trait BaselineActions {
 
           val futures = Future.sequence(Seq(
 
+
+            Baseline.getPrescriptiveElectricity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+            Baseline.getPrescriptiveNG.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
             Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
             /*
             Baseline.getPropOutputList.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
@@ -314,7 +353,10 @@ trait BaselineActions {
           ))
 
           val fieldNames = Seq(
-            "solar"
+            "prescriptiveElectricityUseIntensity",
+            "prescriptiveNGUseIntensity",
+            "pvSystemDetails"
+
             /*
             "propOutputList",
 
