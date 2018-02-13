@@ -20,6 +20,8 @@ import squants.space.{Area, SquareFeet, SquareMeters}
 
 case class PrescriptiveValues(parameters:JsValue) {
 
+  val finalConversion:MetricConversion = MetricConversion(parameters)
+
   def lookupPrescriptiveTotalEnergy: Future[Energy] = {
     for {
       validatedPropList <- getValidatedPropList
@@ -40,7 +42,10 @@ case class PrescriptiveValues(parameters:JsValue) {
     for {
       electric <- lookupPrescriptiveElectricityWeighted
       ng <- lookupPrescriptiveNGWeighted
-      weightedEndUseDistList <- getWeightedEndUSeDistList(electric,ng)
+      conversionMetrics <- finalConversion.getConversionMetrics
+      electric_converted <- finalConversion.convertMetrics(electric,None,conversionMetrics)
+      ng_converted <- finalConversion.convertMetrics(ng,None,conversionMetrics)
+      weightedEndUseDistList <- getWeightedEndUSeDistList(electric_converted,ng_converted)
     } yield weightedEndUseDistList
   }
 
@@ -52,7 +57,9 @@ case class PrescriptiveValues(parameters:JsValue) {
       areaWeights <- getAreaWeights(validatedPropList)
       elecDistList:List[ElectricityDistribution] <- Future.sequence(validatedPropList.map(lookupPrescriptiveElectricity(_)))
       weightedElecDistList <- getWeightedElecDistList(areaWeights,elecDistList)
-    } yield weightedElecDistList
+      conversionMetrics <- finalConversion.getConversionMetrics
+      electric_converted <- finalConversion.convertMetrics(weightedElecDistList,None,conversionMetrics)
+    } yield electric_converted
   }
 
 
@@ -64,7 +71,9 @@ case class PrescriptiveValues(parameters:JsValue) {
       areaWeights <- getAreaWeights(validatedPropList)
       ngDistList: List[NaturalGasDistribution] <- Future.sequence(validatedPropList.map(lookupPrescriptiveNG(_)))
       weightedNGDistList <- getWeightedNGDistList(areaWeights,ngDistList)
-    } yield weightedNGDistList
+      conversionMetrics <- finalConversion.getConversionMetrics
+      ng_converted <- finalConversion.convertMetrics(weightedNGDistList,None,conversionMetrics)
+    } yield ng_converted
   }
 
 

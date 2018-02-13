@@ -20,37 +20,38 @@ case class EUIMetrics(parameters: JsValue) {
   val result = parameters.as[List[JsValue]]
 
   val pvSystems:SolarProperties = SolarProperties(result.head)
+  val finalConversion:MetricConversion = MetricConversion(result.head)
   def getPV = pvSystems.setPVDefaults
 
   val prescriptiveEUI = PrescriptiveValues(result.head)
 
-  def getPrescriptiveEndUsePercents = {
+  def getPrescriptiveEndUsePercents:Future[EndUseDistribution] = {
     for {
       prescriptiveEndUSePercents <- prescriptiveEUI.lookupPrescriptiveEndUSePercents
     } yield prescriptiveEndUSePercents
   }
 
-  def getPrescriptiveEndUses = {
+  def getPrescriptiveEndUses:Future[Any] = {
     for {
       prescriptiveEndUses <- prescriptiveEUI.lookupPrescriptiveEndUSes
       converted <- convertPrescriptive(prescriptiveEndUses)
     } yield converted
   }
-  def getPrescriptiveElectricity = {
+  def getPrescriptiveElectricity:Future[Any] = {
     for {
       prescriptiveElectricityWeighted <- prescriptiveEUI.lookupPrescriptiveElectricityWeighted
       converted <- convertPrescriptive(prescriptiveElectricityWeighted)
     } yield converted
   }
 
-  def getPrescriptiveNG = {
+  def getPrescriptiveNG:Future[Any] = {
     for {
       prescriptiveNGWeighted <- prescriptiveEUI.lookupPrescriptiveNGWeighted
       converted <- convertPrescriptive(prescriptiveNGWeighted)
     } yield converted
   }
 
-  def getPrescriptiveTotalEnergy = {
+  def getPrescriptiveTotalEnergy:Future[Energy] = {
     for {
       prescriptiveTotalEnergy <- prescriptiveEUI.lookupPrescriptiveTotalEnergy
       converted <- convertEnergy(prescriptiveTotalEnergy)

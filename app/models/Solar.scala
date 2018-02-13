@@ -16,64 +16,64 @@ case class SolarProperties(parameters: JsValue) {
 
   val prescriptiveEUI = PrescriptiveValues(parameters)
 
-  def setArrayDefaults(metrics: SolarMetrics, solarResources: ValidatedSolarResources):Future[ValidatedSolarMetrics] = Future{
+  def setArrayDefaults(metrics: SolarMetrics, solarResources: ValidatedSolarResources): Future[ValidatedSolarMetrics] = Future {
 
 
     val default = solarResources.pv_resource
 
     //Default module_type is 0 - Standard, Others are 1-Premium, 2-Thin Film
     val module_type = metrics.module_type match {
-      case Some(a: Int) if List(0,1,2).contains(a) => a
+      case Some(a: Int) if List(0, 1, 2).contains(a) => a
       case Some(_) => throw new Exception("Module Type Must be [0,1,2]! ")
-      case _ if (default==0) => 0
+      case _ if (default == 0) => 0
       case _ => throw new Exception("Module Type Must be [0,1,2]! No Default Set. ")
     }
     //Default array_type is 0=Fixed - Open Rack, 1=Fixed - Roof Mounted, 2=1-Axis, 3=1-Axis Backtracking or 4=2-Axis
     val array_type = metrics.array_type match {
-      case Some(a: Int) if List(0,1,2,3,4).contains(a) => a
+      case Some(a: Int) if List(0, 1, 2, 3, 4).contains(a) => a
       case Some(_) => throw new Exception("Array Type Must be [0,1,2,3,4]! ")
-      case _ if (default==0) => 0
+      case _ if (default == 0) => 0
       case _ => throw new Exception("Array Type Must be [0,1,2,3,4]! No Default Set. ")
     }
     //Default losses
     val losses = metrics.losses match {
       case Some(a: Double) if a < 1.0 => a
       case Some(_) => throw new Exception("Losses are a percentage and must be less that 1! ")
-      case _ if (default==0) => 0.10
+      case _ if (default == 0) => 0.10
       case _ => throw new Exception("Losses are a percentage and must be less that 1! No Default Set. ")
     }
     //Default tilt
     val tilt: Double = metrics.tilt match {
       case Some(a: Double) if a < 360.0 => a
       case Some(_) => throw new Exception("Tilt must be less than 360 Degrees! ")
-      case _ if (default==0) => 10
+      case _ if (default == 0) => 10
       case _ => throw new Exception("Tilt must be less than 360 Degrees! No Default Set. ")
     }
     //Default azimuth
     val azimuth: Double = metrics.azimuth match {
       case Some(a: Double) if a < 360.0 => a
       case Some(_) => throw new Exception("Azimuth must be less than 360 Degrees! ")
-      case _ if (default==0) => 180
+      case _ if (default == 0) => 180
       case _ => throw new Exception("Azimuth must be less than 360 Degrees! No Default Set. ")
     }
     //Default inveter efficiency
     val inv_eff = metrics.inv_eff match {
       case Some(a: Double) if a < 1.0 => a
       case Some(_) => throw new Exception("Azimuth must be less than 360 Degrees! ")
-      case _ if (default==0) => 0.96
+      case _ if (default == 0) => 0.96
       case _ => throw new Exception("Azimuth must be less than 360 Degrees! No Default Set. ")
     }
     //Default access perimeter
     val access_perimeter = metrics.access_perimeter match {
       case Some(a: Double) => a
-      case _ if (default==0) => 2.0
+      case _ if (default == 0) => 2.0
       case _ => throw new Exception("Access Perimeter must be positive! No Default Set. ")
     }
     val w_per_meter2 = metrics.w_per_meter2 match {
-      case Some(a: Double)  => a
-      case _ if (module_type==0) => 150.0
-      case _ if (module_type==1) => 190.0
-      case _ if (module_type==2) => 100.0
+      case Some(a: Double) => a
+      case _ if (module_type == 0) => 150.0
+      case _ if (module_type == 1) => 190.0
+      case _ if (module_type == 2) => 100.0
       case _ => throw new Exception("No w_per_meter2 value for Module Type. ")
     }
     val area_units = metrics.pv_area_units match {
@@ -90,24 +90,24 @@ case class SolarProperties(parameters: JsValue) {
           case _ => throw new Exception("If PV Area is supplied, pv_area_units must be mSQ or ftSQ! ")
         }
       }
-      case _ => solarResources.floor_area / solarResources.stories - 4*access_perimeter*(math.sqrt(solarResources.floor_area /
+      case _ => solarResources.floor_area / solarResources.stories - 4 * access_perimeter * (math.sqrt(solarResources.floor_area /
         solarResources.stories) - access_perimeter)
     }
 
     //Default access perimeter
     val system_capacity = metrics.system_capacity match {
       case Some(a: Double) => a
-      case _ if (default==0) => pv_area*w_per_meter2
+      case _ if (default == 0) => pv_area * w_per_meter2
       case _ => throw new Exception("System Capacity must be positive! No Defaults Set. ")
     }
 
-    ValidatedSolarMetrics(module_type,array_type,losses,tilt,azimuth,inv_eff, system_capacity, solarResources.solar_file_id)
+    ValidatedSolarMetrics(module_type, array_type, losses, tilt, azimuth, inv_eff, system_capacity, solarResources.solar_file_id)
 
   }
 
 
   //This sets defaults where needed for lookups and double checks for file references
-  def initiateSolarResources(solarResources: SolarResources,building_size: Double): Future[ValidatedSolarResources] = Future {
+  def initiateSolarResources(solarResources: SolarResources, building_size: Double): Future[ValidatedSolarResources] = Future {
 
     //building_size is always in Square Feet
 
@@ -138,10 +138,9 @@ case class SolarProperties(parameters: JsValue) {
 
 
     val stories = solarResources.stories match {
-      case Some(a: Double) =>  a
+      case Some(a: Double) => a
       case _ => throw new Exception("No Number of Stories Found! ")
     }
-    println(floorArea)
     ValidatedSolarResources(pv_resource, solarID, climateZone, floorArea, stories)
   }
 
@@ -160,27 +159,18 @@ case class SolarProperties(parameters: JsValue) {
     }
   }
 
-/*
-    PVWatts API
-    format: JSON
-    api_key
-*/
-
-
-def setPVDefaults: Future[List[ValidatedSolarMetrics]] =
-for {
-  validatedPropList <- prescriptiveEUI.getValidatedPropList
-  building_size <- Future(validatedPropList.map(_.floor_area).sum)
-  solarResources <- getSolarResources
-  //set defaults for lookup tables and convert to default units
-  solarResourcesDefaults <- initiateSolarResources(solarResources, building_size)
-  arrayList <- getSolarList
-  arrayListDefaults <- Future.sequence(arrayList.pv_data.map(setArrayDefaults(_,solarResourcesDefaults)))
-} yield {
-  arrayListDefaults
+  def setPVDefaults: Future[List[ValidatedSolarMetrics]] = {
+    for {
+      validatedPropList <- prescriptiveEUI.getValidatedPropList
+      building_size <- Future(validatedPropList.map(_.floor_area).sum)
+      solarResources <- getSolarResources
+      //set defaults for lookup tables and convert to default units
+      solarResourcesDefaults <- initiateSolarResources(solarResources, building_size)
+      arrayList <- getSolarList
+      arrayListDefaults <- Future.sequence(arrayList.pv_data.map(setArrayDefaults(_, solarResourcesDefaults)))
+    } yield arrayListDefaults
+  }
 }
-
-
 
 
 case class SolarList(pv_data: List[SolarMetrics])
@@ -222,7 +212,6 @@ object SolarResources {
 implicit val solarResourcesReads: Reads[SolarResources] = Json.reads[SolarResources]
 }
 
-}
 
 
 // These classes represent data that have been populated with defaults

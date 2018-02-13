@@ -194,12 +194,6 @@ trait BaselineActions {
               "type": "string",
               "enum": ["imperial", "metric"]
             },
-            "source_conversion_resource": {
-              "type": "integer"
-            },
-            "emissions_conversion_resource": {
-              "type": "integer"
-            },
             "pv_resource": {
               "type": "integer"
             },
@@ -208,40 +202,50 @@ trait BaselineActions {
               "enum": ["prescriptive", "performance"]
             },
             "metric": {
-              "type": "string",
-              "enum": ["site", "source", "carbon"]
-            },
-            "metric_electricity": {
-              "type": "number",
-              "minimum": 0
-            },
-            "metric_natural_gas": {
-              "type": "number",
-              "minimum": 0
-            },
-            "metric_fuel_oil": {
-              "type": "number",
-              "minimum": 0
-            },
-            "metric_propane": {
-              "type": "number",
-              "minimum": 0
-            },
-            "metric_steam": {
-              "type": "number",
-              "minimum": 0
-            },
-            "metric_hot_water": {
-              "type": "number",
-              "minimum": 0
-            },
-            "metric_chilled_water": {
-              "type": "number",
-              "minimum": 0
-            },
-            "metric_coal": {
-              "type": "number",
-              "minimum": 0
+              "id": "/items/properties/metric",
+              "type": "object",
+              "properties": {
+                "metric_type": {
+                  "type": "string",
+                  "enum": ["site", "source", "carbon"]
+                },
+                "conversion_resource": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "metric_electricity": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "metric_natural_gas": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "metric_fuel_oil": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "metric_propane": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "metric_steam": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "metric_hot_water": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "metric_chilled_water": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "metric_coal": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
             },
             "climate_zone": {
               "type": "string",
@@ -386,8 +390,8 @@ trait BaselineActions {
             "prescriptiveEndUsePercents",
             "prescriptiveTotalEnergy",
 
-            "prescriptiveElectricityUseIntensity",
-            "prescriptiveNGUseIntensity",
+            "prescriptiveElectricityMetricIntensity",
+            "prescriptiveNGMetricIntensity",
             "pvSystemDetails"
 
           )
