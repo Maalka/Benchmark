@@ -77,46 +77,49 @@ trait BaselineActions {
             "tilt" -> JsNumber(a.tilt),
             "azimuth" -> JsNumber(a.azimuth),
             "inv_eff" -> JsNumber(a.inv_eff),
-            "filed_id" -> JsString(a.solar_file_id)
+            "solar_filed_id" -> JsString(a.solar_file_id)
+          ))
+          case a: ValidatedPropTypes => JsObject(Seq(
+            "prop_types" -> JsString(a.building_type),
+            "floor_area" -> JsNumber(a.floor_area),
+            "floor_area_units" -> JsString(a.floor_area_units)
           ))
         })
       }
       case v: String => Right(Json.toJson(v))
       case a: ElectricityDistribution => Right(JsObject(Seq(
-        "elec_htg" -> JsNumber(a.elec_htg),
-        "elec_clg" -> JsNumber(a.elec_clg),
-        "elec_intLgt" -> JsNumber(a.elec_intLgt),
-        "elec_extLgt" -> JsNumber(a.elec_extLgt),
-        "elec_intEqp" -> JsNumber(a.elec_intEqp),
-        "elec_extEqp" -> JsNumber(a.elec_extEqp),
-        "elec_fans" -> JsNumber(a.elec_fans),
-        "elec_pumps" -> JsNumber(a.elec_pumps),
-        "elec_heatRej" -> JsNumber(a.elec_heatRej),
-        "elec_humid" -> JsNumber(a.elec_humid),
-        "elec_heatRec" -> JsNumber(a.elec_heatRec),
-        "elec_swh" -> JsNumber(a.elec_swh),
-        "elec_refrg" -> JsNumber(a.elec_refrg),
-        "elec_gentor" -> JsNumber(a.elec_gentor),
-        "elec_net" -> JsNumber(a.elec_net),
-        "site_EUI" -> JsNumber(a.site_EUI)
+        "htg" -> JsNumber(a.elec_htg),
+        "clg" -> JsNumber(a.elec_clg),
+        "intLgt" -> JsNumber(a.elec_intLgt),
+        "extLgt" -> JsNumber(a.elec_extLgt),
+        "intEqp" -> JsNumber(a.elec_intEqp),
+        "extEqp" -> JsNumber(a.elec_extEqp),
+        "fans" -> JsNumber(a.elec_fans),
+        "pumps" -> JsNumber(a.elec_pumps),
+        "heatRej" -> JsNumber(a.elec_heatRej),
+        "humid" -> JsNumber(a.elec_humid),
+        "heatRec" -> JsNumber(a.elec_heatRec),
+        "swh" -> JsNumber(a.elec_swh),
+        "refrg" -> JsNumber(a.elec_refrg),
+        "gentor" -> JsNumber(a.elec_gentor),
+        "net" -> JsNumber(a.elec_net)
       )))
       case a: NaturalGasDistribution => Right(JsObject(Seq(
-        "ng_htg" -> JsNumber(a.ng_htg),
-        "ng_clg" -> JsNumber(a.ng_clg),
-        "ng_intLgt" -> JsNumber(a.ng_intLgt),
-        "ng_extLgt" -> JsNumber(a.ng_extLgt),
-        "ng_intEqp" -> JsNumber(a.ng_intEqp),
-        "ng_extEqp" -> JsNumber(a.ng_extEqp),
-        "ng_fans" -> JsNumber(a.ng_fans),
-        "ng_pumps" -> JsNumber(a.ng_pumps),
-        "ng_heatRej" -> JsNumber(a.ng_heatRej),
-        "ng_humid" -> JsNumber(a.ng_humid),
-        "ng_heatRec" -> JsNumber(a.ng_heatRec),
-        "ng_swh" -> JsNumber(a.ng_swh),
-        "ng_refrg" -> JsNumber(a.ng_refrg),
-        "ng_gentor" -> JsNumber(a.ng_gentor),
-        "ng_net" -> JsNumber(a.ng_net),
-        "site_EUI" -> JsNumber(a.site_EUI)
+        "htg" -> JsNumber(a.ng_htg),
+        "clg" -> JsNumber(a.ng_clg),
+        "intLgt" -> JsNumber(a.ng_intLgt),
+        "extLgt" -> JsNumber(a.ng_extLgt),
+        "intEqp" -> JsNumber(a.ng_intEqp),
+        "extEqp" -> JsNumber(a.ng_extEqp),
+        "fans" -> JsNumber(a.ng_fans),
+        "pumps" -> JsNumber(a.ng_pumps),
+        "heatRej" -> JsNumber(a.ng_heatRej),
+        "humid" -> JsNumber(a.ng_humid),
+        "heatRec" -> JsNumber(a.ng_heatRec),
+        "swh" -> JsNumber(a.ng_swh),
+        "refrg" -> JsNumber(a.ng_refrg),
+        "gentor" -> JsNumber(a.ng_gentor),
+        "net" -> JsNumber(a.ng_net)
       )))
       case a: EndUseDistribution => Right(JsObject(Seq(
         "htg" -> JsNumber(a.htg),
@@ -133,8 +136,27 @@ trait BaselineActions {
         "swh" -> JsNumber(a.swh),
         "refrg" -> JsNumber(a.refrg),
         "gentor" -> JsNumber(a.gentor),
-        "net" -> JsNumber(a.net),
-        "site_EUI" -> JsNumber(a.site_EUI)
+        "net" -> JsNumber(a.net)
+      )))
+      case a: ValidatedConversionDetails => Right(JsObject(Seq(
+        "metric_type" -> JsString(a.metric_type),
+        "conversion_resource" -> JsNumber(a.conversion_resource),
+        "source_electricity" -> JsNumber(a.source_electricity),
+        "source_natural_gas" -> JsNumber(a.source_natural_gas),
+        "source_fuel_oil" -> JsNumber(a.source_fuel_oil),
+        "source_propane" -> JsNumber(a.source_propane),
+        "source_steam" -> JsNumber(a.source_steam),
+        "source_hot_water" -> JsNumber(a.source_hot_water),
+        "source_chilled_water" -> JsNumber(a.source_chilled_water),
+        "source_coal" -> JsNumber(a.source_coal),
+        "carbon_electricity" -> JsNumber(a.carbon_electricity),
+        "carbon_natural_gas" -> JsNumber(a.carbon_natural_gas),
+        "carbon_fuel_oil" -> JsNumber(a.carbon_fuel_oil),
+        "carbon_propane" -> JsNumber(a.carbon_propane),
+        "carbon_steam" -> JsNumber(a.carbon_steam),
+        "carbon_hot_water" -> JsNumber(a.carbon_hot_water),
+        "carbon_chilled_water" -> JsNumber(a.carbon_chilled_water),
+        "carbon_coal" -> JsNumber(a.carbon_coal)
       )))
       case None => Left("Could not recognize input type")
     }
@@ -213,35 +235,67 @@ trait BaselineActions {
                   "type": "integer",
                   "minimum": 0
                 },
-                "metric_electricity": {
+                "carbon_electricity": {
                   "type": "number",
                   "minimum": 0
                 },
-                "metric_natural_gas": {
+                "carbon_natural_gas": {
                   "type": "number",
                   "minimum": 0
                 },
-                "metric_fuel_oil": {
+                "carbon_fuel_oil": {
                   "type": "number",
                   "minimum": 0
                 },
-                "metric_propane": {
+                "carbon_propane": {
                   "type": "number",
                   "minimum": 0
                 },
-                "metric_steam": {
+                "carbon_steam": {
                   "type": "number",
                   "minimum": 0
                 },
-                "metric_hot_water": {
+                "carbon_hot_water": {
                   "type": "number",
                   "minimum": 0
                 },
-                "metric_chilled_water": {
+                "carbon_chilled_water": {
                   "type": "number",
                   "minimum": 0
                 },
-                "metric_coal": {
+                "carbon_coal": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "source_electricity": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "source_natural_gas": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "source_fuel_oil": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "source_propane": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "source_steam": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "source_hot_water": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "source_chilled_water": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "source_coal": {
                   "type": "number",
                   "minimum": 0
                 }
@@ -375,24 +429,44 @@ trait BaselineActions {
 
           val futures = Future.sequence(Seq(
 
-            Baseline.getPrescriptiveEndUses.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-            Baseline.getPrescriptiveEndUsePercents.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-            Baseline.getPrescriptiveTotalEnergy.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+            Baseline.getPrescriptiveTotalSite.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+            Baseline.getPrescriptiveTotalSiteIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+            Baseline.getPrescriptiveTotalSource.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+            Baseline.getPrescriptiveTotalSourceIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+            Baseline.getPrescriptiveTotalCarbon.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+            Baseline.getPrescriptiveTotalCarbonIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
 
+            Baseline.getPrescriptiveEndUses.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
             Baseline.getPrescriptiveElectricity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
             Baseline.getPrescriptiveNG.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-            Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
+
+            Baseline.getPrescriptiveEndUsePercents.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+
+            Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+
+            Baseline.getBuildingData.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+            Baseline.getMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
 
           ))
 
           val fieldNames = Seq(
-            "prescriptiveEndUseIntensity",
-            "prescriptiveEndUsePercents",
-            "prescriptiveTotalEnergy",
+            "prototype_total_site_energy",
+            "prototype_total_site_EUI",
+            "prototype_total_source",
+            "prototype_total_source_intensity",
+            "prototype_total_carbon",
+            "prototype_total_carbon_intensity",
 
-            "prescriptiveElectricityMetricIntensity",
-            "prescriptiveNGMetricIntensity",
-            "pvSystemDetails"
+            "prototype_end_use_metric_data",
+            "prototype_electricity_metric_data",
+            "prototype_natural_gas_metric_data",
+
+            "prototype_end_use_metric_percents",
+
+            "pv_system_details",
+
+            "prop_types",
+            "metrics_conversion_details"
 
           )
 

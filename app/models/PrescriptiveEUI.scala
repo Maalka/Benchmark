@@ -22,34 +22,41 @@ case class PrescriptiveValues(parameters:JsValue) {
 
   val finalConversion:MetricConversion = MetricConversion(parameters)
 
-  def lookupPrescriptiveTotalEnergy: Future[Energy] = {
+
+  def lookupPrescriptiveTotalMetricIntensity(metric:Option[String]): Future[Energy] = {
     for {
       validatedPropList <- getValidatedPropList
       building_size <- Future(validatedPropList.map(_.floor_area).sum)
-      weightedEndUseDistList <- lookupPrescriptiveEndUSes
-      endUsePercents <- getPrescriptiveTotalEnergy(weightedEndUseDistList,building_size)
+      weightedEndUseDistList <- lookupPrescriptiveEndUses(metric)
+      totalEUI <- getPrescriptiveTotalEUI(weightedEndUseDistList)
+    } yield KBtus(totalEUI)
+  }
+
+  def lookupPrescriptiveTotalMetric(metric:Option[String]): Future[Energy] = {
+    for {
+      validatedPropList <- getValidatedPropList
+      building_size <- Future(validatedPropList.map(_.floor_area).sum)
+      totalEUI <- lookupPrescriptiveTotalMetricIntensity(metric)
+      endUsePercents <- Future(totalEUI*building_size)
     } yield endUsePercents
   }
 
-  def lookupPrescriptiveEndUSePercents: Future[EndUseDistribution] = {
+  def lookupPrescriptiveEndUsePercents(metric:Option[String]): Future[EndUseDistribution] = {
     for {
-      weightedEndUseDistList <- lookupPrescriptiveEndUSes
+      weightedEndUseDistList <- lookupPrescriptiveEndUses(metric)
       endUsePercents <- getEndUseDistPercents(weightedEndUseDistList)
     } yield endUsePercents
   }
 
-  def lookupPrescriptiveEndUSes: Future[EndUseDistribution] = {
+  def lookupPrescriptiveEndUses(metric:Option[String]): Future[EndUseDistribution] = {
     for {
-      electric <- lookupPrescriptiveElectricityWeighted
-      ng <- lookupPrescriptiveNGWeighted
-      conversionMetrics <- finalConversion.getConversionMetrics
-      electric_converted <- finalConversion.convertMetrics(electric,None,conversionMetrics)
-      ng_converted <- finalConversion.convertMetrics(ng,None,conversionMetrics)
-      weightedEndUseDistList <- getWeightedEndUSeDistList(electric_converted,ng_converted)
+      electric <- lookupPrescriptiveElectricityWeighted(metric)
+      ng <- lookupPrescriptiveNGWeighted(metric)
+      weightedEndUseDistList <- getWeightedEndUSeDistList(electric,ng)
     } yield weightedEndUseDistList
   }
 
-  def lookupPrescriptiveElectricityWeighted: Future[ElectricityDistribution] = {
+  def lookupPrescriptiveElectricityWeighted(metric:Option[String]): Future[ElectricityDistribution] = {
     for {
       lookupParams <- getPrescriptiveParams
       lookupTableName <- chooseLookupTable(lookupParams)
@@ -57,13 +64,13 @@ case class PrescriptiveValues(parameters:JsValue) {
       areaWeights <- getAreaWeights(validatedPropList)
       elecDistList:List[ElectricityDistribution] <- Future.sequence(validatedPropList.map(lookupPrescriptiveElectricity(_)))
       weightedElecDistList <- getWeightedElecDistList(areaWeights,elecDistList)
-      conversionMetrics <- finalConversion.getConversionMetrics
-      electric_converted <- finalConversion.convertMetrics(weightedElecDistList,None,conversionMetrics)
+      conversionMetrics <- finalConversion.getConversionMetrics(metric)
+      electric_converted <- finalConversion.convertMetrics(weightedElecDistList,None,conversionMetrics,metric)
     } yield electric_converted
   }
 
 
-  def lookupPrescriptiveNGWeighted: Future[NaturalGasDistribution] = {
+  def lookupPrescriptiveNGWeighted(metric:Option[String]): Future[NaturalGasDistribution] = {
     for {
       lookupParams <- getPrescriptiveParams
       lookupTableName <- chooseLookupTable(lookupParams)
@@ -71,8 +78,8 @@ case class PrescriptiveValues(parameters:JsValue) {
       areaWeights <- getAreaWeights(validatedPropList)
       ngDistList: List[NaturalGasDistribution] <- Future.sequence(validatedPropList.map(lookupPrescriptiveNG(_)))
       weightedNGDistList <- getWeightedNGDistList(areaWeights,ngDistList)
-      conversionMetrics <- finalConversion.getConversionMetrics
-      ng_converted <- finalConversion.convertMetrics(weightedNGDistList,None,conversionMetrics)
+      conversionMetrics <- finalConversion.getConversionMetrics(metric)
+      ng_converted <- finalConversion.convertMetrics(weightedNGDistList,None,conversionMetrics,metric)
     } yield ng_converted
   }
 
@@ -114,9 +121,9 @@ case class PrescriptiveValues(parameters:JsValue) {
 
 
 
-  def getPrescriptiveTotalEnergy(EndUses:EndUseDistribution, buildingSize: Double):Future[Energy] = Future {
+  def getPrescriptiveTotalEUI(EndUses:EndUseDistribution):Future[Double] = Future {
 // End Uses are in KBtu and building size is in Square Feet
-        val sum = {
+
           EndUses.htg +
           EndUses.clg +
           EndUses.intLgt +
@@ -131,8 +138,7 @@ case class PrescriptiveValues(parameters:JsValue) {
           EndUses.swh +
           EndUses.refrg +
           EndUses.gentor
-        }
-       KBtus(sum*buildingSize)
+
     }
 
   def getEndUseDistPercents(EndUses:EndUseDistribution):Future[EndUseDistribution] = Future {
@@ -169,8 +175,7 @@ case class PrescriptiveValues(parameters:JsValue) {
           EndUses.swh/sum,
           EndUses.refrg/sum,
           EndUses.gentor/sum,
-          EndUses.net/sum,
-          EndUses.site_EUI/sum
+          EndUses.net/sum
         )
     }
 
@@ -191,8 +196,7 @@ case class PrescriptiveValues(parameters:JsValue) {
           elec.elec_swh + ng.ng_swh,
           elec.elec_refrg + ng.ng_refrg,
           elec.elec_gentor + ng.ng_gentor,
-          elec.elec_net + ng.ng_net,
-          elec.site_EUI
+          elec.elec_net + ng.ng_net
         )
     }
 
@@ -216,8 +220,7 @@ case class PrescriptiveValues(parameters:JsValue) {
           b.elec_swh * c,
           b.elec_refrg * c,
           b.elec_gentor * c,
-          b.elec_net * c,
-          b.site_EUI * c
+          b.elec_net * c
         )
       }
     }
@@ -237,9 +240,8 @@ case class PrescriptiveValues(parameters:JsValue) {
     val elec_refrg = weightedList.map(_.elec_refrg).sum
     val elec_gentor = weightedList.map(_.elec_gentor).sum
     val elec_net = weightedList.map(_.elec_net).sum
-    val site_EUI = weightedList.map(_.site_EUI).sum
 
-    ElectricityDistribution(elec_htg, elec_clg,elec_intLgt, elec_extLgt, elec_intEqp, elec_extEqp, elec_fans, elec_pumps, elec_heatRej, elec_humid, elec_heatRec, elec_swh, elec_refrg, elec_gentor, elec_net, site_EUI)
+    ElectricityDistribution(elec_htg, elec_clg,elec_intLgt, elec_extLgt, elec_intEqp, elec_extEqp, elec_fans, elec_pumps, elec_heatRej, elec_humid, elec_heatRec, elec_swh, elec_refrg, elec_gentor, elec_net)
 
     }
 
@@ -263,8 +265,7 @@ case class PrescriptiveValues(parameters:JsValue) {
           b.ng_swh * c,
           b.ng_refrg * c,
           b.ng_gentor * c,
-          b.ng_net * c,
-          b.site_EUI * c
+          b.ng_net * c
         )
       }
     }
@@ -284,9 +285,8 @@ case class PrescriptiveValues(parameters:JsValue) {
     val ng_refrg = weightedList.map(_.ng_refrg).sum
     val ng_gentor = weightedList.map(_.ng_gentor).sum
     val ng_net = weightedList.map(_.ng_net).sum
-    val site_EUI = weightedList.map(_.site_EUI).sum
 
-    NaturalGasDistribution(ng_htg, ng_clg,ng_intLgt, ng_extLgt, ng_intEqp,ng_extEqp, ng_fans, ng_pumps, ng_heatRej, ng_humid, ng_heatRec, ng_swh, ng_refrg, ng_gentor, ng_net, site_EUI)
+    NaturalGasDistribution(ng_htg, ng_clg,ng_intLgt, ng_extLgt, ng_intEqp,ng_extEqp, ng_fans, ng_pumps, ng_heatRej, ng_humid, ng_heatRec, ng_swh, ng_refrg, ng_gentor, ng_net)
 
   }
 
@@ -351,6 +351,7 @@ case class PrescriptiveValues(parameters:JsValue) {
       case Some("ftSQ") => "ftSQ"
       case _ => throw new Exception("Floor Area Units must be either ftSQ or mSQ")
     }
+
     val floorArea:Double = propDesc.floor_area match {
       case Some(a: Double) => {
         units match {
@@ -380,23 +381,24 @@ case class PrescriptiveValues(parameters:JsValue) {
           case true => throw new Exception("Prop List is Empty!")
           case _ => Future.sequence(props.prop_types.map(getValidatedPropParams(_)))
         }
-
-
       }
     } yield validatedProps
   }
 }
 
+
+
+
 case class EndUseDistribution(htg:Double,clg:Double,intLgt:Double = 0.0,extLgt:Double = 0.0,intEqp:Double = 0.0,
                                    extEqp:Double = 0.0, fans:Double = 0.0,pumps:Double = 0.0,heatRej:Double = 0.0,
                                    humid:Double = 0.0, heatRec:Double = 0.0,swh:Double = 0.0,refrg:Double = 0.0,
-                                   gentor:Double = 0.0,net:Double = 0.0, site_EUI:Double = 0.0)
+                                   gentor:Double = 0.0,net:Double = 0.0)
 
 
 case class ElectricityDistribution(elec_htg:Double,elec_clg:Double,elec_intLgt:Double = 0.0,elec_extLgt:Double = 0.0,elec_intEqp:Double = 0.0,
                                    elec_extEqp:Double = 0.0, elec_fans:Double = 0.0,elec_pumps:Double = 0.0,elec_heatRej:Double = 0.0,
                                    elec_humid:Double = 0.0, elec_heatRec:Double = 0.0,elec_swh:Double = 0.0,elec_refrg:Double = 0.0,
-                                   elec_gentor:Double = 0.0,elec_net:Double = 0.0, site_EUI:Double = 0.0)
+                                   elec_gentor:Double = 0.0,elec_net:Double = 0.0)
 
 object ElectricityDistribution {
   implicit val ElectricityDistributionReads: Reads[ElectricityDistribution] = Json.reads[ElectricityDistribution]
@@ -404,7 +406,7 @@ object ElectricityDistribution {
 case class NaturalGasDistribution(ng_htg:Double = 0.0,ng_clg:Double = 0.0,ng_intLgt:Double = 0.0,ng_extLgt:Double = 0.0,
                                   ng_intEqp:Double = 0.0,ng_extEqp:Double = 0.0,ng_fans:Double = 0.0,ng_pumps:Double = 0.0,
                                   ng_heatRej:Double = 0.0,ng_humid:Double = 0.0,ng_heatRec:Double = 0.0, ng_swh:Double = 0.0,
-                                  ng_refrg:Double = 0.0,ng_gentor:Double = 0.0,ng_net:Double = 0.0,site_EUI:Double = 0.0)
+                                  ng_refrg:Double = 0.0,ng_gentor:Double = 0.0,ng_net:Double = 0.0)
 
 object NaturalGasDistribution {
   implicit val NaturalGasDistributionReads: Reads[NaturalGasDistribution] = Json.reads[NaturalGasDistribution]

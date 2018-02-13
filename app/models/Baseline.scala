@@ -27,36 +27,76 @@ case class EUIMetrics(parameters: JsValue) {
 
   def getPrescriptiveEndUsePercents:Future[EndUseDistribution] = {
     for {
-      prescriptiveEndUSePercents <- prescriptiveEUI.lookupPrescriptiveEndUSePercents
+      prescriptiveEndUSePercents <- prescriptiveEUI.lookupPrescriptiveEndUsePercents(None)
     } yield prescriptiveEndUSePercents
   }
 
-  def getPrescriptiveEndUses:Future[Any] = {
+  def getPrescriptiveEndUses:Future[EndUseDistribution] = {
     for {
-      prescriptiveEndUses <- prescriptiveEUI.lookupPrescriptiveEndUSes
+      prescriptiveEndUses <- prescriptiveEUI.lookupPrescriptiveEndUses(None)
       converted <- convertPrescriptive(prescriptiveEndUses)
     } yield converted
   }
-  def getPrescriptiveElectricity:Future[Any] = {
+  def getPrescriptiveElectricity:Future[ElectricityDistribution] = {
     for {
-      prescriptiveElectricityWeighted <- prescriptiveEUI.lookupPrescriptiveElectricityWeighted
+      prescriptiveElectricityWeighted <- prescriptiveEUI.lookupPrescriptiveElectricityWeighted(None)
       converted <- convertPrescriptive(prescriptiveElectricityWeighted)
     } yield converted
   }
 
-  def getPrescriptiveNG:Future[Any] = {
+  def getPrescriptiveNG:Future[NaturalGasDistribution] = {
     for {
-      prescriptiveNGWeighted <- prescriptiveEUI.lookupPrescriptiveNGWeighted
+      prescriptiveNGWeighted <- prescriptiveEUI.lookupPrescriptiveNGWeighted(None)
       converted <- convertPrescriptive(prescriptiveNGWeighted)
     } yield converted
   }
 
-  def getPrescriptiveTotalEnergy:Future[Energy] = {
+  def getPrescriptiveTotalCarbonIntensity:Future[Energy] = {
     for {
-      prescriptiveTotalEnergy <- prescriptiveEUI.lookupPrescriptiveTotalEnergy
+      prescriptiveTotalEUI <- prescriptiveEUI.lookupPrescriptiveTotalMetricIntensity(Some("carbon"))
+      converted <- convertEUI(prescriptiveTotalEUI)
+    } yield converted
+  }
+
+  def getPrescriptiveTotalCarbon:Future[Energy] = {
+    for {
+      prescriptiveTotalEnergy <- prescriptiveEUI.lookupPrescriptiveTotalMetric(Some("carbon"))
       converted <- convertEnergy(prescriptiveTotalEnergy)
     } yield converted
   }
+  def getPrescriptiveTotalSourceIntensity:Future[Energy] = {
+    for {
+      prescriptiveTotalEUI <- prescriptiveEUI.lookupPrescriptiveTotalMetricIntensity(Some("source"))
+      converted <- convertEUI(prescriptiveTotalEUI)
+    } yield converted
+  }
+
+  def getPrescriptiveTotalSource:Future[Energy] = {
+    for {
+      prescriptiveTotalEnergy <- prescriptiveEUI.lookupPrescriptiveTotalMetric(Some("source"))
+      converted <- convertEnergy(prescriptiveTotalEnergy)
+    } yield converted
+  }
+
+  def getPrescriptiveTotalSiteIntensity:Future[Energy] = {
+    for {
+      prescriptiveTotalEUI <- prescriptiveEUI.lookupPrescriptiveTotalMetricIntensity(Some("site"))
+      converted <- convertEUI(prescriptiveTotalEUI)
+    } yield converted
+  }
+
+  def getPrescriptiveTotalSite:Future[Energy] = {
+    for {
+      prescriptiveTotalEnergy <- prescriptiveEUI.lookupPrescriptiveTotalMetric(Some("site"))
+      converted <- convertEnergy(prescriptiveTotalEnergy)
+    } yield converted
+  }
+
+
+
+  def getBuildingData:Future[List[ValidatedPropTypes]] = prescriptiveEUI.getValidatedPropList
+
+  def getMetrics:Future[ValidatedConversionDetails] = finalConversion.getConversionMetrics(None)
 
 
 
@@ -353,7 +393,7 @@ case class ReportingUnits(reporting_units:String)
   }
 
 
-  def convertPrescriptive[T](distribution: T)  = Future {
+  def convertPrescriptive[T](distribution: T):Future[T]  = Future {
     reportingUnits match {
       case ("metric") => {
         val c = (KBtus(1) to KilowattHours) / (SquareFeet(1) to SquareMeters)
@@ -374,8 +414,7 @@ case class ReportingUnits(reporting_units:String)
               b.elec_swh * c,
               b.elec_refrg * c,
               b.elec_gentor * c,
-              b.elec_net * c,
-              b.site_EUI * c
+              b.elec_net * c
             )
           }
           case b:NaturalGasDistribution => {
@@ -394,8 +433,7 @@ case class ReportingUnits(reporting_units:String)
               b.ng_swh * c,
               b.ng_refrg * c,
               b.ng_gentor * c,
-              b.ng_net * c,
-              b.site_EUI * c
+              b.ng_net * c
             )
           }
           case b:EndUseDistribution => {
@@ -414,13 +452,12 @@ case class ReportingUnits(reporting_units:String)
               b.swh * c,
               b.refrg * c,
               b.gentor * c,
-              b.net * c,
-              b.site_EUI * c
+              b.net * c
             )
           }
         }
-      }
-      case _ => distribution
+      }.asInstanceOf[T]
+      case _ => distribution.asInstanceOf[T]
     }
   }
 
@@ -495,9 +532,26 @@ case class ReportingUnits(reporting_units:String)
 
 }
 
+// These classes represent data that have been populated with defaults
+case class BuildingData(
+                           building_type: Option[String],
+                           solar_file_id: Option[String],
+                           climate_zone: Option[String],
+                           floor_area: Option[Double],
+                           floor_area_units: Option[String],
+                           stories: Option[Double])
 
+object BuildingData {
+  implicit val BuildingDataReads: Reads[BuildingData] = Json.reads[BuildingData]
+}
 
-
+case class ValidatedBuildingData(
+                           building_type: String,
+                           solar_file_id: String,
+                           climate_zone: String,
+                           floor_area: Double,
+                           floor_area_units: String,
+                           stories: Double)
 
 
 
