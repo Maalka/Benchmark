@@ -22,32 +22,67 @@ case class PrescriptiveValues(parameters:JsValue) {
 
   val finalConversion:MetricConversion = MetricConversion(parameters)
 
-  def lookupPrescriptiveTotalEnergy: Future[Energy] = {
+  def lookupPrescriptiveTotalMetric: Future[List[Double]] = {
     for {
       validatedPropList <- getValidatedPropList
       building_size <- Future(validatedPropList.map(_.floor_area).sum)
       weightedEndUseDistList <- lookupPrescriptiveEndUSes
-      endUsePercents <- getPrescriptiveTotalEnergy(weightedEndUseDistList,building_size)
+      endUsePercents <- Future.sequence(weightedEndUseDistList.map(getPrescriptiveTotalEnergy(_,building_size)))
     } yield endUsePercents
   }
 
-  def lookupPrescriptiveEndUSePercents: Future[EndUseDistribution] = {
+  def lookupPrescriptiveEndUSePercents: Future[List[EndUseDistribution]] = {
     for {
       weightedEndUseDistList <- lookupPrescriptiveEndUSes
-      endUsePercents <- getEndUseDistPercents(weightedEndUseDistList)
+      endUsePercents <- Future.sequence(weightedEndUseDistList.map(getEndUseDistPercents(_)))
+        //getEndUseDistPercents(weightedEndUseDistList)
     } yield endUsePercents
   }
 
-  def lookupPrescriptiveEndUSes: Future[EndUseDistribution] = {
+  def lookupPrescriptiveEndUSes: Future[List[EndUseDistribution]] = {
     for {
       electric <- lookupPrescriptiveElectricityWeighted
       ng <- lookupPrescriptiveNGWeighted
-      conversionMetrics <- finalConversion.getConversionMetrics
-      electric_converted <- finalConversion.convertMetrics(electric,None,conversionMetrics)
-      ng_converted <- finalConversion.convertMetrics(ng,None,conversionMetrics)
-      weightedEndUseDistList <- getWeightedEndUSeDistList(electric_converted,ng_converted)
+      weightedEndUseDistList <- Future.sequence{
+        (electric, ng).zipped.map {
+          case (a:ElectricityDistribution,b:NaturalGasDistribution) => getWeightedEndUSeDistList(a,b)
+          case _ => throw new Exception("Cannot Calculate EndUse Breakdowns for Site/Source/Cabrbon")
+        }
+      }
+
+
     } yield weightedEndUseDistList
   }
+
+  def lookupPrescriptiveElectricityWeighted: Future[List[ElectricityDistribution]] = {
+    for {
+      lookupParams <- getPrescriptiveParams
+      lookupTableName <- chooseLookupTable(lookupParams)
+      conversionMetrics <- finalConversion.getConversionMetrics
+      validatedPropList <- getValidatedPropList
+      areaWeights <- getAreaWeights(validatedPropList)
+      elecDistList:List[ElectricityDistribution] <- Future.sequence(validatedPropList.map(lookupPrescriptiveElectricity(_)))
+      weightedElecDistList <- getWeightedElecDistList(areaWeights,elecDistList)
+      conversionMetrics <- finalConversion.getConversionMetrics
+      electric_converted:List[ElectricityDistribution] <- Future.sequence{conversionMetrics.map(finalConversion.convertMetrics(weightedElecDistList,None,_))}
+    } yield electric_converted
+  }
+
+
+  def lookupPrescriptiveNGWeighted: Future[List[NaturalGasDistribution]] = {
+    for {
+      lookupParams <- getPrescriptiveParams
+      lookupTableName <- chooseLookupTable(lookupParams)
+      validatedPropList <- getValidatedPropList
+      areaWeights <- getAreaWeights(validatedPropList)
+      ngDistList: List[NaturalGasDistribution] <- Future.sequence(validatedPropList.map(lookupPrescriptiveNG(_)))
+      weightedNGDistList <- getWeightedNGDistList(areaWeights,ngDistList)
+      conversionMetrics <- finalConversion.getConversionMetrics
+      ng_converted:List[NaturalGasDistribution] <- Future.sequence{conversionMetrics.map(finalConversion.convertMetrics(weightedNGDistList,None,_))}
+    } yield ng_converted
+  }
+
+/*
 
   def lookupPrescriptiveElectricityWeighted: Future[ElectricityDistribution] = {
     for {
@@ -76,6 +111,7 @@ case class PrescriptiveValues(parameters:JsValue) {
     } yield ng_converted
   }
 
+*/
 
   def lookupPrescriptiveElectricity(propDesc:ValidatedPropTypes): Future[ElectricityDistribution] = {
     for {
@@ -114,7 +150,7 @@ case class PrescriptiveValues(parameters:JsValue) {
 
 
 
-  def getPrescriptiveTotalEnergy(EndUses:EndUseDistribution, buildingSize: Double):Future[Energy] = Future {
+  def getPrescriptiveTotalEnergy(EndUses:EndUseDistribution, buildingSize: Double):Future[Double] = Future {
 // End Uses are in KBtu and building size is in Square Feet
         val sum = {
           EndUses.htg +
@@ -132,7 +168,7 @@ case class PrescriptiveValues(parameters:JsValue) {
           EndUses.refrg +
           EndUses.gentor
         }
-       KBtus(sum*buildingSize)
+       sum*buildingSize
     }
 
   def getEndUseDistPercents(EndUses:EndUseDistribution):Future[EndUseDistribution] = Future {

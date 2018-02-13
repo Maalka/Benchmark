@@ -25,7 +25,7 @@ case class EUIMetrics(parameters: JsValue) {
 
   val prescriptiveEUI = PrescriptiveValues(result.head)
 
-  def getPrescriptiveEndUsePercents:Future[EndUseDistribution] = {
+  def getPrescriptiveEndUsePercents:Future[List[EndUseDistribution]] = {
     for {
       prescriptiveEndUSePercents <- prescriptiveEUI.lookupPrescriptiveEndUSePercents
     } yield prescriptiveEndUSePercents
@@ -51,11 +51,11 @@ case class EUIMetrics(parameters: JsValue) {
     } yield converted
   }
 
-  def getPrescriptiveTotalEnergy:Future[Energy] = {
+  def getPrescriptiveTotalEnergy:Future[List[Double]] = {
     for {
-      prescriptiveTotalEnergy <- prescriptiveEUI.lookupPrescriptiveTotalEnergy
-      converted <- convertEnergy(prescriptiveTotalEnergy)
-    } yield converted
+      prescriptiveTotalEnergy <- prescriptiveEUI.lookupPrescriptiveTotalMetric
+      //converted <- convertEnergy(prescriptiveTotalEnergy)
+    } yield prescriptiveTotalEnergy
   }
 
 

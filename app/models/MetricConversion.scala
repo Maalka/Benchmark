@@ -21,9 +21,31 @@ import squants.space.{Area, SquareFeet, SquareMeters}
 case class MetricConversion(parameters:JsValue) {
 
 
-  def getConversionMetrics: Future[ValidatedConversionDetails] = Future {
+  def getConversionMetrics: Future[List[ValidatedConversionDetails]] = Future.sequence {
 
-    parameters.asOpt[ConversionMetrics] match {
+
+      parameters.asOpt[ConversionMetrics] match {
+        case Some(a) => {
+          List(
+            getConversionMetricsbyType(Some(a), "site"),
+            getConversionMetricsbyType(Some(a), "source"),
+            getConversionMetricsbyType(Some(a), "carbon")
+          )
+        }
+        case None => {
+          List(
+            Future{ValidatedConversionDetails("site", 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)},
+            Future{ValidatedConversionDetails("site", 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)},
+            Future{ValidatedConversionDetails("site", 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)}
+          )
+        }
+      }
+  }
+
+
+    def getConversionMetricsbyType(conversionMetrics: Option[ConversionMetrics],metric_type:String): Future[ValidatedConversionDetails] = Future {
+
+    conversionMetrics match {
       case Some(a) => {
         a.metric.conversion_resource match {
           /*default is conversion_resource 0, so add all other cases for different lookups here
@@ -35,10 +57,10 @@ case class MetricConversion(parameters:JsValue) {
           */
           case _ => {
             val conversion_resource = 0
-            val metric_type = a.metric.metric_type match {
-              case Some(met) => met
-              case _ => "site"
-            }
+            //val metric_type = a.metric.metric_type match {
+              //case Some(met) => met
+              //case _ => "site"
+            //}
             val metric_electricity = (a.metric.metric_electricity, metric_type) match {
               case (Some(b), "source") => b
               case (Some(b), "carbon") => b
@@ -208,7 +230,7 @@ object ConversionMetrics {
   implicit val ConversionMetricsReads: Reads[ConversionMetrics] = Json.reads[ConversionMetrics]
 }
 case class ConversionDetails(
-                              metric_type: Option[String],
+                              //metric_type: Option[String],
                               conversion_resource: Option[Int],
                               metric_electricity: Option[Double],
                               metric_natural_gas: Option[Double],

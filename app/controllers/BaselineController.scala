@@ -79,43 +79,97 @@ trait BaselineActions {
             "inv_eff" -> JsNumber(a.inv_eff),
             "filed_id" -> JsString(a.solar_file_id)
           ))
+          case a: ElectricityDistribution => JsObject(Seq(
+            "htg" -> JsNumber(a.elec_htg),
+            "clg" -> JsNumber(a.elec_clg),
+            "intLgt" -> JsNumber(a.elec_intLgt),
+            "extLgt" -> JsNumber(a.elec_extLgt),
+            "intEqp" -> JsNumber(a.elec_intEqp),
+            "extEqp" -> JsNumber(a.elec_extEqp),
+            "fans" -> JsNumber(a.elec_fans),
+            "pumps" -> JsNumber(a.elec_pumps),
+            "heatRej" -> JsNumber(a.elec_heatRej),
+            "humid" -> JsNumber(a.elec_humid),
+            "heatRec" -> JsNumber(a.elec_heatRec),
+            "swh" -> JsNumber(a.elec_swh),
+            "refrg" -> JsNumber(a.elec_refrg),
+            "gentor" -> JsNumber(a.elec_gentor),
+            "net" -> JsNumber(a.elec_net),
+            "site_EUI" -> JsNumber(a.site_EUI)
+          ))
+          case a: NaturalGasDistribution => JsObject(Seq(
+            "htg" -> JsNumber(a.ng_htg),
+            "clg" -> JsNumber(a.ng_clg),
+            "intLgt" -> JsNumber(a.ng_intLgt),
+            "extLgt" -> JsNumber(a.ng_extLgt),
+            "intEqp" -> JsNumber(a.ng_intEqp),
+            "extEqp" -> JsNumber(a.ng_extEqp),
+            "fans" -> JsNumber(a.ng_fans),
+            "pumps" -> JsNumber(a.ng_pumps),
+            "heatRej" -> JsNumber(a.ng_heatRej),
+            "humid" -> JsNumber(a.ng_humid),
+            "heatRec" -> JsNumber(a.ng_heatRec),
+            "swh" -> JsNumber(a.ng_swh),
+            "refrg" -> JsNumber(a.ng_refrg),
+            "gentor" -> JsNumber(a.ng_gentor),
+            "net" -> JsNumber(a.ng_net),
+            "site_EUI" -> JsNumber(a.site_EUI)
+          ))
+          case a: EndUseDistribution => JsObject(Seq(
+            "htg" -> JsNumber(a.htg),
+            "clg" -> JsNumber(a.clg),
+            "intLgt" -> JsNumber(a.intLgt),
+            "extLgt" -> JsNumber(a.extLgt),
+            "intEqp" -> JsNumber(a.intEqp),
+            "extEqp" -> JsNumber(a.extEqp),
+            "fans" -> JsNumber(a.fans),
+            "pumps" -> JsNumber(a.pumps),
+            "heatRej" -> JsNumber(a.heatRej),
+            "humid" -> JsNumber(a.humid),
+            "heatRec" -> JsNumber(a.heatRec),
+            "swh" -> JsNumber(a.swh),
+            "refrg" -> JsNumber(a.refrg),
+            "gentor" -> JsNumber(a.gentor),
+            "net" -> JsNumber(a.net),
+            "site_EUI" -> JsNumber(a.site_EUI)
+          ))
         })
       }
       case v: String => Right(Json.toJson(v))
       case a: ElectricityDistribution => Right(JsObject(Seq(
-        "elec_htg" -> JsNumber(a.elec_htg),
-        "elec_clg" -> JsNumber(a.elec_clg),
-        "elec_intLgt" -> JsNumber(a.elec_intLgt),
-        "elec_extLgt" -> JsNumber(a.elec_extLgt),
-        "elec_intEqp" -> JsNumber(a.elec_intEqp),
-        "elec_extEqp" -> JsNumber(a.elec_extEqp),
-        "elec_fans" -> JsNumber(a.elec_fans),
-        "elec_pumps" -> JsNumber(a.elec_pumps),
-        "elec_heatRej" -> JsNumber(a.elec_heatRej),
-        "elec_humid" -> JsNumber(a.elec_humid),
-        "elec_heatRec" -> JsNumber(a.elec_heatRec),
-        "elec_swh" -> JsNumber(a.elec_swh),
-        "elec_refrg" -> JsNumber(a.elec_refrg),
-        "elec_gentor" -> JsNumber(a.elec_gentor),
-        "elec_net" -> JsNumber(a.elec_net),
+        "htg" -> JsNumber(a.elec_htg),
+        "clg" -> JsNumber(a.elec_clg),
+        "intLgt" -> JsNumber(a.elec_intLgt),
+        "extLgt" -> JsNumber(a.elec_extLgt),
+        "intEqp" -> JsNumber(a.elec_intEqp),
+        "extEqp" -> JsNumber(a.elec_extEqp),
+        "fans" -> JsNumber(a.elec_fans),
+        "pumps" -> JsNumber(a.elec_pumps),
+        "heatRej" -> JsNumber(a.elec_heatRej),
+        "humid" -> JsNumber(a.elec_humid),
+        "heatRec" -> JsNumber(a.elec_heatRec),
+        "swh" -> JsNumber(a.elec_swh),
+        "refrg" -> JsNumber(a.elec_refrg),
+        "gentor" -> JsNumber(a.elec_gentor),
+        "net" -> JsNumber(a.elec_net),
         "site_EUI" -> JsNumber(a.site_EUI)
       )))
       case a: NaturalGasDistribution => Right(JsObject(Seq(
-        "ng_htg" -> JsNumber(a.ng_htg),
-        "ng_clg" -> JsNumber(a.ng_clg),
-        "ng_intLgt" -> JsNumber(a.ng_intLgt),
-        "ng_extLgt" -> JsNumber(a.ng_extLgt),
-        "ng_intEqp" -> JsNumber(a.ng_intEqp),
-        "ng_extEqp" -> JsNumber(a.ng_extEqp),
-        "ng_fans" -> JsNumber(a.ng_fans),
-        "ng_pumps" -> JsNumber(a.ng_pumps),
-        "ng_heatRej" -> JsNumber(a.ng_heatRej),
-        "ng_humid" -> JsNumber(a.ng_humid),
-        "ng_heatRec" -> JsNumber(a.ng_heatRec),
-        "ng_swh" -> JsNumber(a.ng_swh),
-        "ng_refrg" -> JsNumber(a.ng_refrg),
-        "ng_gentor" -> JsNumber(a.ng_gentor),
-        "ng_net" -> JsNumber(a.ng_net),
+        "htg" -> JsNumber(a.ng_htg),
+        "clg" -> JsNumber(a.ng_clg),
+        "intLgt" -> JsNumber(a.ng_intLgt),
+        "extLgt" -> JsNumber(a.ng_extLgt),
+        "intEqp" -> JsNumber(a.ng_intEqp),
+        "extEqp" -> JsNumber(a.ng_extEqp),
+        "fans" -> JsNumber(a.ng_fans),
+        "pumps" -> JsNumber(a.ng_pumps),
+        "heatRej" -> JsNumber(a.ng_heatRej),
+        "humid" -> JsNumber(a.ng_humid),
+        "heatRec" -> JsNumber(a.ng_heatRec),
+        "swh" -> JsNumber(a.ng_swh),
+        "refrg" -> JsNumber(a.ng_refrg),
+        "gentor" -> JsNumber(a.ng_gentor),
+        "net" -> JsNumber(a.ng_net),
         "site_EUI" -> JsNumber(a.site_EUI)
       )))
       case a: EndUseDistribution => Right(JsObject(Seq(
@@ -386,13 +440,13 @@ trait BaselineActions {
           ))
 
           val fieldNames = Seq(
-            "prescriptiveEndUseIntensity",
-            "prescriptiveEndUsePercents",
-            "prescriptiveTotalEnergy",
+            "prototype_end_use_data",
+            "prototype_end_use_percents",
+            "prototype_total_energy",
 
-            "prescriptiveElectricityMetricIntensity",
-            "prescriptiveNGMetricIntensity",
-            "pvSystemDetails"
+            "prototype_electricity_data",
+            "prototype_natural_gas_data",
+            "pv_system_details"
 
           )
 
