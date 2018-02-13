@@ -239,7 +239,6 @@ case class MetricConversion(parameters:JsValue) {
         )
       }
       case (b: NaturalGasDistribution, "carbon") => {
-        println(conversionFactors)
         NaturalGasDistribution(
           b.ng_htg * conversionFactors.carbon_natural_gas,
           b.ng_clg * conversionFactors.carbon_natural_gas,
