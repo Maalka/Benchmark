@@ -21,7 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
 
-class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, restController: RestController) extends AbstractController(cc) with Logging {
+class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, nrel_client: NREL_Client) extends AbstractController(cc) with Logging {
 
   implicit def doubleToJSValue(d: Double): JsValue = Json.toJson(d)
 
@@ -443,7 +443,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
           // do we need to combine Baseline.getPV and results from the REST call?s
           //Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          restController.makeWsRequest().map { r => Right(r.json) }.recover { case NonFatal(th) => apiRecover(th) } ,
+          nrel_client.makeWsRequest().map { Right(_) }.recover { case NonFatal(th) => apiRecover(th) } ,
 
           Baseline.getBuildingData.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.getMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
