@@ -51,10 +51,10 @@ resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
 libraryDependencies ++= Seq(
   filters,
   guice,
+  ws,
   ehcache,
   // WebJars (i.e. client-side) dependencies
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
-  "org.scalatestplus" %% "play" % "1.4.0-M3" % "test",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test",
   "org.mockito" % "mockito-all" % "1.10.19",
   "org.webjars" % "requirejs" % "2.1.22",
   "org.webjars" % "jquery" % "2.1.3",

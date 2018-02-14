@@ -21,8 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
 
-trait BaselineActions {
-  this: BaseController =>
+class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, restController: RestController) extends AbstractController(cc) with Logging {
 
   implicit def doubleToJSValue(d: Double): JsValue = Json.toJson(d)
 
@@ -162,6 +161,9 @@ trait BaselineActions {
     }
   }
 
+
+
+  val validator = new SchemaValidator()
 
   val schema = Json.fromJson[SchemaType](Json.parse(
     """{
@@ -409,81 +411,79 @@ trait BaselineActions {
         ]
       }""".stripMargin)).get
 
-  val validator = new SchemaValidator()
-
-
   def getZEPIMetrics() = Action.async(parse.json) { implicit request =>
 
-      val Baseline: EUIMetrics = EUIMetrics(request.body)
+    val Baseline: EUIMetrics = EUIMetrics(request.body)
 
-      val json: JsValue = request.body
-      val result = validator.validate(schema, json)
+    val json: JsValue = request.body
+    val result = validator.validate(schema, json)
 
-      result.fold(
-        invalid = { errors =>
-          Future {
-            BadRequest(errors.toJson)
-          }
-        },
-        valid = { post =>
-
-          val futures = Future.sequence(Seq(
-
-            Baseline.getPrescriptiveTotalSite.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-            Baseline.getPrescriptiveTotalSiteIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-            Baseline.getPrescriptiveTotalSource.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-            Baseline.getPrescriptiveTotalSourceIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-            Baseline.getPrescriptiveTotalCarbon.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-            Baseline.getPrescriptiveTotalCarbonIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-
-            Baseline.getPrescriptiveEndUses.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-            Baseline.getPrescriptiveElectricity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-            Baseline.getPrescriptiveNG.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-
-            Baseline.getPrescriptiveEndUsePercents.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-
-            Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-
-            Baseline.getBuildingData.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-            Baseline.getMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
-
-          ))
-
-          val fieldNames = Seq(
-            "prototype_total_site_energy",
-            "prototype_total_site_EUI",
-            "prototype_total_source",
-            "prototype_total_source_intensity",
-            "prototype_total_carbon",
-            "prototype_total_carbon_intensity",
-
-            "prototype_end_use_metric_data",
-            "prototype_electricity_metric_data",
-            "prototype_natural_gas_metric_data",
-
-            "prototype_end_use_metric_percents",
-
-            "pv_system_details",
-
-            "prop_types",
-            "metrics_conversion_details"
-
-          )
-
-          futures.map(fieldNames.zip(_)).map { r =>
-            val errors = r.collect {
-              case (n, Left(s)) => Json.obj(n -> s)
-            }
-            val results = r.collect {
-              case (n, Right(s)) => Json.obj(n -> s)
-            }
-            Ok(Json.obj(
-              "values" -> results,
-              "errors" -> errors
-            ))
-          }
+    result.fold(
+      invalid = { errors =>
+        Future {
+          BadRequest(errors.toJson)
         }
-      )
+      },
+      valid = { post =>
+
+        val futures = Future.sequence(Seq(
+
+          Baseline.getPrescriptiveTotalSite.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.getPrescriptiveTotalSiteIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.getPrescriptiveTotalSource.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.getPrescriptiveTotalSourceIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.getPrescriptiveTotalCarbon.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.getPrescriptiveTotalCarbonIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+
+          Baseline.getPrescriptiveEndUses.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.getPrescriptiveElectricity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.getPrescriptiveNG.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+
+          Baseline.getPrescriptiveEndUsePercents.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+
+          // do we need to combine Baseline.getPV and results from the REST call?s
+          //Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          restController.makeWsRequest().map { r => Right(r.json) }.recover { case NonFatal(th) => apiRecover(th) } ,
+
+          Baseline.getBuildingData.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.getMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
+
+        ))
+
+        val fieldNames = Seq(
+          "prototype_total_site_energy",
+          "prototype_total_site_EUI",
+          "prototype_total_source",
+          "prototype_total_source_intensity",
+          "prototype_total_carbon",
+          "prototype_total_carbon_intensity",
+
+          "prototype_end_use_metric_data",
+          "prototype_electricity_metric_data",
+          "prototype_natural_gas_metric_data",
+
+          "prototype_end_use_metric_percents",
+
+          "pv_system_details",
+
+          "prop_types",
+          "metrics_conversion_details"
+
+        )
+
+        futures.map(fieldNames.zip(_)).map { r =>
+          val errors = r.collect {
+            case (n, Left(s)) => Json.obj(n -> s)
+          }
+          val results = r.collect {
+            case (n, Right(s)) => Json.obj(n -> s)
+          }
+          Ok(Json.obj(
+            "values" -> results,
+            "errors" -> errors
+          ))
+        }
+      }
+    )
   }
 }
-class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) with Logging with BaselineActions
