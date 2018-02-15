@@ -4,17 +4,22 @@ package models
 
 import squants.energy._
 import squants.space._
+
 import scala.concurrent.Future
 import scala.language._
 import scala.math._
 import play.api.libs.json._
 import play.api.Play
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import java.io.{InputStream}
+import java.io.InputStream
+
+import play.api.libs.ws.WSResponse
+
 import scala.util.control.NonFatal
 
 
-case class EUIMetrics(parameters: JsValue) {
+case class EUIMetrics(parameters: JsValue, nrel_client: NREL_Client) {
 
 
   val result = parameters.as[List[JsValue]]
@@ -22,6 +27,8 @@ case class EUIMetrics(parameters: JsValue) {
   val pvSystems:SolarProperties = SolarProperties(result.head)
   val finalConversion:MetricConversion = MetricConversion(result.head)
   def getPV = pvSystems.setPVDefaults
+
+  def pVWattsResponse: Future[JsValue] = nrel_client.makeWsRequest()
 
   val prescriptiveEUI = PrescriptiveValues(result.head)
 

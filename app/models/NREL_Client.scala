@@ -1,27 +1,20 @@
-package controllers
+package models
 
-import javax.inject.Inject
+import javax.inject._
 
 import play.api.Configuration
+import play.api.libs.json.{JsDefined, JsValue, Json}
 import play.api.libs.ws.{WSClient, WSResponse}
-import play.api.mvc.{AbstractController, ControllerComponents}
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-class RestController @Inject()(ws: WSClient, config: Configuration, cc: ControllerComponents) extends AbstractController(cc) with Logging {
+@Singleton
+class NREL_Client @Inject()(ws: WSClient, config: Configuration) {
 
   val url = config.get[String]("pv_system_details.url")
 
-  def makeRequest = Action.async { implicit request =>
-
-    makeWsRequest().map { r =>
-        Ok(r.json).as("application/json")
-      }
-  }
-
-  def makeWsRequest(): Future[WSResponse]  = {
+  def makeWsRequest(): Future[JsValue]  = {
 
     ws.url(url)
       .addQueryStringParameters(
@@ -39,6 +32,14 @@ class RestController @Inject()(ws: WSClient, config: Configuration, cc: Controll
         // no such field is API spec
         // ("solar_filed_id", config.get[String]("pv_system_details.solar_filed_id"))
       )
-      .get()
+      .get().map(_.json)
+  }
+
+  def parseResponse(json: JsValue): Either[String, JsValue] = {
+    val err: Option[JsValue] = json \ "error" match {
+      case e:JsDefined => Some(e.get)
+      case _ => None
+    }
+   err.map { e => Left(e.toString()) }.getOrElse( Right(json))
   }
 }

@@ -21,7 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
 
-class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, restController: RestController) extends AbstractController(cc) with Logging {
+class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, nrel_client: NREL_Client) extends AbstractController(cc) with Logging {
 
   implicit def doubleToJSValue(d: Double): JsValue = Json.toJson(d)
 
@@ -413,7 +413,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
   def getZEPIMetrics() = Action.async(parse.json) { implicit request =>
 
-    val Baseline: EUIMetrics = EUIMetrics(request.body)
+    val Baseline: EUIMetrics = EUIMetrics(request.body, nrel_client)
 
     val json: JsValue = request.body
     val result = validator.validate(schema, json)
@@ -425,6 +425,20 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
         }
       },
       valid = { post =>
+
+        val f1: Future[Either[String, JsValue]] = Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
+        val f2: Future[Either[String, JsValue]] = nrel_client.makeWsRequest().map { nrel_client.parseResponse(_) }.recover { case NonFatal(th) => apiRecover(th) }
+
+        val merged: Future[Either[String, JsValue]] = for {
+          e1 <- f1
+          e2 <- f2
+        } yield (e1, e2) match {
+          case (Left(s: String), _) => Left(s)
+          case (_, Left(s: String)) => Left(s)
+          case (Right(j1:JsValue), Right(j2:JsValue)) => {
+            Right(Json.obj("PVDefaults" -> j1).deepMerge(j2.as[JsObject]))
+          }
+        }
 
         val futures = Future.sequence(Seq(
 
@@ -441,9 +455,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
           Baseline.getPrescriptiveEndUsePercents.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
 
-          // do we need to combine Baseline.getPV and results from the REST call?s
-          //Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          restController.makeWsRequest().map { r => Right(r.json) }.recover { case NonFatal(th) => apiRecover(th) } ,
+          merged.recover { case NonFatal(th) => apiRecover(th) } ,
 
           Baseline.getBuildingData.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.getMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
