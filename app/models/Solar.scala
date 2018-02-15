@@ -101,7 +101,7 @@ case class SolarProperties(parameters: JsValue) {
       case _ => throw new Exception("System Capacity must be positive! No Defaults Set. ")
     }
 
-    ValidatedSolarMetrics(module_type, array_type, losses, tilt, azimuth, inv_eff, system_capacity, solarResources.solar_file_id)
+    ValidatedSolarMetrics(module_type, array_type, losses, tilt, azimuth, inv_eff, system_capacity, solarResources.file_id)
 
   }
 
@@ -120,7 +120,7 @@ case class SolarProperties(parameters: JsValue) {
       case Some(a: Int) => a
       case _ => 0
     }
-    val solarID = solarResources.solar_file_id match {
+    val solarID = solarResources.file_id match {
       case Some(a: String) => a
       case _ => throw new Exception("No Solar File ID Found! ")
     }
@@ -202,7 +202,7 @@ implicit val solarMetricsReads: Reads[SolarMetrics] = Json.reads[SolarMetrics]
 case class SolarResources(
                          pv_resource: Option[Int],
                          prescriptive_resource: Option[Int],
-                         solar_file_id: Option[String],
+                         file_id: Option[String],
                          climate_zone: Option[String],
                          floor_area: Option[Double],
                          floor_area_units: Option[String],
@@ -223,11 +223,11 @@ case class ValidatedSolarMetrics(
                               azimuth: Double,
                               inv_eff: Double,
                               system_capacity: Double,
-                              solar_file_id: String
+                              file_id: String
                             )
 case class ValidatedSolarResources(
                                 pv_resource: Int,
-                                solar_file_id: String,
+                                file_id: String,
                                 climate_zone: String,
                                 floor_area: Double,
                                 stories: Double

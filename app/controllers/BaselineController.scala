@@ -76,10 +76,10 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
             "array_type" -> JsNumber(a.array_type),
             "tilt" -> JsNumber(a.tilt),
             "azimuth" -> JsNumber(a.azimuth),
-            "inv_eff" -> JsNumber(90), //JsNumber(a.inv_eff),
-            //"solar_filed_id" -> JsString(a.solar_file_id)
-            "lat" -> JsNumber(40),
-            "lon" -> JsNumber(-105)
+            //"inv_eff" -> JsNumber(a.inv_eff),
+            "file_id" -> JsString(a.file_id)
+            //"lat" -> JsNumber(40),
+            //"lon" -> JsNumber(-105)
           ))
           case a: ValidatedPropTypes => JsObject(Seq(
             "prop_types" -> JsString(a.building_type),
@@ -311,7 +311,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
               "enum": ["1A", "1B", "2A", "2B", "3A", "3B", "3C", "4A", "4B", "4C", "5A", "5B", "5C", "6A", "6B", "7", "8"],
               "required": true
             },
-            "solar_file_id": {
+            "file_id": {
               "type": "string",
               "required": true
             },
@@ -340,7 +340,8 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                     "type": "number"
                   },
                   "system_capacity": {
-                    "minimum": 0,
+                    "minimum": 0.05,
+                    "maximum": 10000.0,
                     "type": "number"
                   },
                   "module_type": {
@@ -349,8 +350,8 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                   },
                   "losses": {
                     "type": "number",
-                    "minimum": 0,
-                    "maximum": 1
+                    "minimum": -5,
+                    "maximum": 99
                   },
                   "array_type": {
                     "type": "integer",
@@ -359,7 +360,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                   "tilt": {
                     "type": "number",
                     "minimum": 0,
-                    "maximum": 360
+                    "maximum": 90
                   },
                   "azimuth": {
                     "type": "number",
@@ -368,8 +369,8 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                   },
                   "inv_eff": {
                     "type": "number",
-                    "minimum": 0,
-                    "maximum": 1.0
+                    "minimum": 90,
+                    "maximum": 99.5
                   }
                 }
               }
@@ -409,7 +410,8 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                   ]
               }
             }
-          }
+          },
+          "required": ["file_id"]
           }
         ]
       }""".stripMargin)).get
