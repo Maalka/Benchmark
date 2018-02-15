@@ -3,7 +3,7 @@ package models
 import javax.inject._
 
 import play.api.Configuration
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsDefined, JsValue, Json}
 import play.api.libs.ws.{WSClient, WSResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,12 +13,6 @@ import scala.concurrent.Future
 class NREL_Client @Inject()(ws: WSClient, config: Configuration) {
 
   val url = config.get[String]("pv_system_details.url")
-
-//  def makeRequest = Action.async { implicit request =>
-//
-//    makeWsRequest().map { r =>
-//        Ok(r.json).as("application/json")
-//      }
 
   def makeWsRequest(): Future[JsValue]  = {
 
@@ -42,6 +36,10 @@ class NREL_Client @Inject()(ws: WSClient, config: Configuration) {
   }
 
   def parseResponse(json: JsValue): Either[String, JsValue] = {
-    Right(Json.toJson(""))
+    val err: Option[JsValue] = json \ "error" match {
+      case e:JsDefined => Some(e.get)
+      case _ => None
+    }
+   err.map { e => Left(e.toString()) }.getOrElse( Right(json))
   }
 }
