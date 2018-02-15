@@ -2,7 +2,7 @@ package models
 
 import javax.inject._
 
-import play.api.Configuration
+import play.api.{Configuration, Logger}
 import play.api.libs.json.{JsDefined, JsValue, Json}
 import play.api.libs.ws.{WSClient, WSResponse}
 
@@ -14,23 +14,16 @@ class NREL_Client @Inject()(ws: WSClient, config: Configuration) {
 
   val url = config.get[String]("pv_system_details.url")
 
-  def makeWsRequest(): Future[JsValue]  = {
+  def makeWsRequest(queryParameters: Seq[(String, String)]): Future[JsValue]  = {
+
+    Logger.info("calling WS with params: " + queryParameters)
 
     ws.url(url)
       .addQueryStringParameters(
-        ("api_key", config.get[String]("pv_system_details.api_key")),
-        ("format", config.get[String]("pv_system_details.format")),
-        ("lat", "40"), // required if address or file_id not specified
-        ("lon", "-105"), // required if address or file_id not specified
-        ("system_capacity", config.get[String]("pv_system_details.system_capacity")),
-        ("azimuth", config.get[String]("pv_system_details.azimuth")),
-        ("tilt", config.get[String]("pv_system_details.tilt")),
-        ("array_type", config.get[String]("pv_system_details.array_type")),
-        ("inv_eff", config.get[String]("pv_system_details.inv_eff")),
-        ("module_type", config.get[String]("pv_system_details.module_type")),
-        ("losses", config.get[String]("pv_system_details.losses"))
-        // no such field is API spec
-        // ("solar_filed_id", config.get[String]("pv_system_details.solar_filed_id"))
+        Seq(
+          ("api_key", config.get[String]("pv_system_details.api_key")),
+          ("format", config.get[String]("pv_system_details.format"))
+        ) ++ queryParameters: _*
       )
       .get().map(_.json)
   }

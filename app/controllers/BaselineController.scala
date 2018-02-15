@@ -8,18 +8,19 @@ import com.eclipsesource.schema._
 import com.eclipsesource.schema.internal.validation.VA
 import models._
 import com.google.inject.Inject
+import play.api.Logger
 import play.api.cache.{AsyncCacheApi, SyncCacheApi}
 import play.api.libs.json.Reads.min
 import play.api.libs.json._
 import play.api.mvc._
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import squants.energy.Energy
 
 import scala.util.control.NonFatal
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
-
+import scala.concurrent.duration._
 
 class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, nrel_client: NREL_Client) extends AbstractController(cc) with Logging {
 
@@ -69,14 +70,16 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
             }
           ))
           case a: ValidatedSolarMetrics => JsObject(Seq(
-            "system_capacity" -> JsNumber(a.system_capacity),
+            "system_capacity" -> JsNumber(147418.77408607837), //JsNumber(a.system_capacity),
             "module_type" -> JsNumber(a.module_type),
             "losses" -> JsNumber(a.losses),
             "array_type" -> JsNumber(a.array_type),
             "tilt" -> JsNumber(a.tilt),
             "azimuth" -> JsNumber(a.azimuth),
-            "inv_eff" -> JsNumber(a.inv_eff),
-            "solar_filed_id" -> JsString(a.solar_file_id)
+            "inv_eff" -> JsNumber(90), //JsNumber(a.inv_eff),
+            //"solar_filed_id" -> JsString(a.solar_file_id)
+            "lat" -> JsNumber(40),
+            "lon" -> JsNumber(-105)
           ))
           case a: ValidatedPropTypes => JsObject(Seq(
             "prop_types" -> JsString(a.building_type),
@@ -427,14 +430,75 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
       valid = { post =>
 
         val f1: Future[Either[String, JsValue]] = Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
-        val f2: Future[Either[String, JsValue]] = nrel_client.makeWsRequest().map { nrel_client.parseResponse(_) }.recover { case NonFatal(th) => apiRecover(th) }
+
+        val getPV_Parameters: Future[Seq[Map[String, String]]] = f1.map { e =>
+          e match {
+            case Right(jsonArray: JsArray) => jsonArray.as[Seq[Map[String, JsValue]]].map { x => x.map { y => (y._1, y._2.toString())}}
+            case _ => Seq.empty[Map[String, String]]
+          }
+        }
+
+        val multipleFutures: Future[Seq[JsValue]] = getPV_Parameters.flatMap { params =>
+          val a: Seq[Future[JsValue]] = params.map { p =>
+            nrel_client.makeWsRequest(p.toSeq)
+          }
+          Future.sequence(a)
+        }
+
+        val f2 = multipleFutures.map { r =>
+          val stationInfo = (r.head \ "station_info").get
+          val version = (r.head \ "version").get
+          val ac_annual: Double = r.map{a => (a \ "outputs" \ "ac_annual").as[Double]}.sum
+          val capacity_factor = r.map{a => (a \ "outputs" \ "capacity_factor").as[Double]}.sum / r.map{a => (a \ "outputs" \ "capacity_factor").as[Double]}.length
+          val solrad_annual = r.map{a => (a \ "outputs" \ "solrad_annual").as[Double]}.sum
+
+          val arr1 =  r.map{a => (a \ "outputs" \ "ac_monthly").as[Array[Double]]}
+
+          val ac_monthly = arr1.tail.fold(arr1.head) { (z, i) =>
+            (z, i).zipped.map(_ + _)
+          }
+
+          val arr2 =  r.map{a => (a \ "outputs" \ "dc_monthly").as[Array[Double]]}
+
+          val dc_monthly = arr2.tail.fold(arr2.head) { (z, i) =>
+            (z, i).zipped.map(_ + _)
+          }
+
+          val arr3 =  r.map{a => (a \ "outputs" \ "poa_monthly").as[Array[Double]]}
+
+          val poa_monthly = arr3.tail.fold(arr3.head) { (z, i) =>
+            (z, i).zipped.map(_ + _)
+          }
+
+          val arr4 =  r.map{a => (a \ "outputs" \ "solrad_monthly").as[Array[Double]]}
+
+          val solrad_monthly = arr4.tail.fold(arr4.head) { (z, i) =>
+            (z, i).zipped.map(_ + _)
+          }
+
+          val a: JsValue = Json.obj(
+            "outputs" -> Json.obj(
+              "ac_annual" -> ac_annual,
+              "capacity_factor" -> capacity_factor,
+              "solrad_annual" -> solrad_annual,
+              "ac_monthly" -> ac_monthly,
+              "dc_monthly" -> dc_monthly,
+              "poa_monthly" -> poa_monthly,
+              "solrad_monthly" -> solrad_monthly
+            ),
+            "stationInfo" -> stationInfo,
+            "version" -> version
+          )
+          Right(a)
+
+        }
 
         val merged: Future[Either[String, JsValue]] = for {
           e1 <- f1
           e2 <- f2
         } yield (e1, e2) match {
           case (Left(s: String), _) => Left(s)
-          case (_, Left(s: String)) => Left(s)
+//          case (_, Left(s: String)) => Left(s)
           case (Right(j1:JsValue), Right(j2:JsValue)) => {
             Right(Json.obj("PVDefaults" -> j1).deepMerge(j2.as[JsObject]))
           }
