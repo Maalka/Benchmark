@@ -31,11 +31,11 @@ class NREL_ClientSpec extends PlaySpec with GuiceOneServerPerSuite {
         """
           |{
           |                        "array_type": 0,
-          |                        "azimuth": 45,
-          |                        "inv_eff": 0.3,
-          |                        "losses": 0.2,
+          |                        "azimuth": 180,
+          |                        "inv_eff": 4,
+          |                        "losses": 20,
           |                        "module_type": 0,
-          |                        "solar_filed_id": "test_id",
+          |                        "solar_filed_id": "0-94018",
           |                        "system_capacity": 4793618.052614899,
           |                        "tilt": 20
           |                    }
@@ -43,6 +43,7 @@ class NREL_ClientSpec extends PlaySpec with GuiceOneServerPerSuite {
 
       Console.println(jsonInput.as[JsObject].fields.map{ f => f._2.toString()})
       val xx: Seq[(String, String)] = (jsonInput.as[JsObject].fields).map { f => (f._1, f._2.toString()) }
+
 
       val result: Future[JsValue] = client.makeWsRequest(xx)
       val f1: Future[JsValue] = result.map { r =>

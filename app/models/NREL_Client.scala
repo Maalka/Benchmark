@@ -21,8 +21,8 @@ class NREL_Client @Inject()(ws: WSClient, config: Configuration) {
     ws.url(url)
       .addQueryStringParameters(
         Seq(
-          ("api_key", "w3WkKGmAPAji3glLuVK44Qdk2zDbvzbtlZ3SPaGw"),//config.get[String]("pv_system_details.api_key")),
-          ("format", "json")//config.get[String]("pv_system_details.format"))
+          ("api_key", config.get[String]("pv_system_details.api_key")),
+          ("format", config.get[String]("pv_system_details.format"))
         ) ++ queryParameters: _*
       )
       .get().map(_.json)
@@ -36,4 +36,5 @@ class NREL_Client @Inject()(ws: WSClient, config: Configuration) {
    err.map { e => Left(e.toString()) }.getOrElse( Right(json))
   }
 }
+
 

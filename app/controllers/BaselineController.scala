@@ -433,6 +433,9 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
         val f1: Future[Either[String, JsValue]] = Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
 
+
+
+
         val getPV_Parameters: Future[Seq[Map[String, String]]] = f1.map { e =>
           e match {
             case Right(jsonArray: JsArray) => jsonArray.as[Seq[Map[String, JsValue]]].map { x => x.map { y => (y._1, y._2.toString())}}
@@ -441,13 +444,16 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
         }
 
         val multipleFutures: Future[Seq[JsValue]] = getPV_Parameters.flatMap { params =>
+
           val a: Seq[Future[JsValue]] = params.map { p =>
             nrel_client.makeWsRequest(p.toSeq)
           }
           Future.sequence(a)
         }
 
+
         val f2 = multipleFutures.map { r =>
+    
           val stationInfo = (r.head \ "station_info").get
           val version = (r.head \ "version").get
           val ac_annual: Double = r.map{a => (a \ "outputs" \ "ac_annual").as[Double]}.sum
@@ -505,6 +511,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
             Right(Json.obj("PVDefaults" -> j1).deepMerge(j2.as[JsObject]))
           }
         }
+
 
         val futures = Future.sequence(Seq(
 

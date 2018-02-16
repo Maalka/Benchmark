@@ -37,17 +37,17 @@ case class SolarProperties(parameters: JsValue) {
     }
     //Default losses
     val losses = metrics.losses match {
-      case Some(a: Double) if a < 1.0 => a
-      case Some(_) => throw new Exception("Losses are a percentage and must be less that 1! ")
-      case _ if (default == 0) => 0.10
+      case Some(a: Double) if a < 99.0 => a
+      case Some(_) => throw new Exception("Losses are a percentage and must be less that 99! ")
+      case _ if (default == 0) => 10.0
       case _ => throw new Exception("Losses are a percentage and must be less that 1! No Default Set. ")
     }
     //Default tilt
     val tilt: Double = metrics.tilt match {
-      case Some(a: Double) if a < 360.0 => a
-      case Some(_) => throw new Exception("Tilt must be less than 360 Degrees! ")
-      case _ if (default == 0) => 10
-      case _ => throw new Exception("Tilt must be less than 360 Degrees! No Default Set. ")
+      case Some(a: Double) if (a > -5.0 && a < 90.0) => a
+      case Some(_) => throw new Exception("Tilt must be less than 90 Degrees! ")
+      case _ if (default == 0) => 10.0
+      case _ => throw new Exception("Tilt must be less than 90 Degrees! No Default Set. ")
     }
     //Default azimuth
     val azimuth: Double = metrics.azimuth match {
@@ -58,9 +58,9 @@ case class SolarProperties(parameters: JsValue) {
     }
     //Default inveter efficiency
     val inv_eff = metrics.inv_eff match {
-      case Some(a: Double) if a < 1.0 => a
+      case Some(a: Double) if (a > 90.0 && a < 99.5) => a
       case Some(_) => throw new Exception("Azimuth must be less than 360 Degrees! ")
-      case _ if (default == 0) => 0.96
+      case _ if (default == 0) => 96.0
       case _ => throw new Exception("Azimuth must be less than 360 Degrees! No Default Set. ")
     }
     //Default access perimeter
