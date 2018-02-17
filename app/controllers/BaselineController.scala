@@ -434,17 +434,20 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
         val f1: Future[Either[String, JsValue]] = Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
 
 
-
-
         val getPV_Parameters: Future[Seq[Map[String, String]]] = f1.map { e =>
           e match {
-            case Right(jsonArray: JsArray) => jsonArray.as[Seq[Map[String, JsValue]]].map { x => x.map { y => (y._1, y._2.toString())}}
+            case Right(jsonArray: JsArray) => jsonArray.as[Seq[Map[String, JsValue]]].map {
+              x => {
+                x.map { y => (y._1, y._2 match {
+                  case a:JsNumber => a.toString()
+                  case a:JsString => a.as[String]
+                }) }
+              }}
             case _ => Seq.empty[Map[String, String]]
           }
         }
 
         val multipleFutures: Future[Seq[JsValue]] = getPV_Parameters.flatMap { params =>
-
           val a: Seq[Future[JsValue]] = params.map { p =>
             nrel_client.makeWsRequest(p.toSeq)
           }
@@ -453,7 +456,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
 
         val f2 = multipleFutures.map { r =>
-    
+
           val stationInfo = (r.head \ "station_info").get
           val version = (r.head \ "version").get
           val ac_annual: Double = r.map{a => (a \ "outputs" \ "ac_annual").as[Double]}.sum
@@ -498,8 +501,8 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
             "version" -> version
           )
           Right(a)
-
         }
+
 
         val merged: Future[Either[String, JsValue]] = for {
           e1 <- f1
@@ -510,6 +513,43 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
           case (Right(j1:JsValue), Right(j2:JsValue)) => {
             Right(Json.obj("PVDefaults" -> j1).deepMerge(j2.as[JsObject]))
           }
+        }
+
+        val solar_inputs = multipleFutures.map { r =>
+
+          val azimuth = (r.head \ "inputs" \ "azimuth").get
+          val losses = (r.head \ "inputs" \ "losses").get
+          val module_type = (r.head \ "inputs" \ "module_type").get
+          val tilt = (r.head \ "inputs" \ "tilt").get
+          val array_type = (r.head \ "inputs" \ "array_type").get
+          val file_id = (r.head \ "inputs" \ "file_id").get
+          val system_capacity = (r.head \ "inputs" \ "system_capacity").get
+
+          val a: JsValue = Json.obj(
+            "inputs" -> Json.obj(
+              "azimuth" -> azimuth,
+              "losses" -> losses,
+              "module_type" -> module_type,
+              "tilt" -> tilt,
+              "array_type" -> array_type,
+              "file_id" -> file_id,
+              "system_capacity" -> system_capacity
+            ))
+          Right(a)
+        }
+
+        val solar_errors = multipleFutures.map { r =>
+
+          val errors = r.map{a => (a \ "errors").as[Seq[String]]}.flatten
+
+          Left(Json.toJson(errors.map{JsString(_)}).toString())
+        }
+
+        val solar_warnings = multipleFutures.map { r =>
+
+          val warnings = r.map{a => (a \ "warnings").as[Seq[String]]}.flatten
+
+          Left(Json.toJson(warnings.map{JsString(_)}).toString())
         }
 
 
@@ -528,10 +568,14 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
           Baseline.getPrescriptiveEndUsePercents.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
 
-          merged.recover { case NonFatal(th) => apiRecover(th) } ,
-
           Baseline.getBuildingData.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          Baseline.getMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
+          Baseline.getMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+
+
+          solar_inputs.recover { case NonFatal(th) => apiRecover(th) } ,
+          solar_errors.recover { case NonFatal(th) => apiRecover(th) } ,
+          solar_warnings.recover { case NonFatal(th) => apiRecover(th) } ,
+          merged.recover { case NonFatal(th) => apiRecover(th) }
 
         ))
 
@@ -549,11 +593,13 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
           "prototype_end_use_metric_percents",
 
-          "pv_system_details",
+          "property_types",
+          "input_conversion_metrics",
 
-          "prop_types",
-          "metrics_conversion_details"
-
+          "pvwatts_inputs",
+          "pvwatts_errors",
+          "pvwatts_warnings",
+          "pvwatts_system_details"
         )
 
         futures.map(fieldNames.zip(_)).map { r =>
