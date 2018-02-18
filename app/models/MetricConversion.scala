@@ -20,157 +20,186 @@ import squants.space.{Area, SquareFeet, SquareMeters}
 
 case class MetricConversion(parameters:JsValue) {
 
+  //all conversions are from kbtu of a source
+  val emissionsScaleFactor:Double = KBtus(1) to MegawattHours
+
+  val source_0: Map[String,Double] = Map(
+    "electricity" -> 3.15,
+    "natural_gas" -> 1.09,
+    "fuel_oil" -> 1.19,
+    "propane" -> 1.15,
+    "srteam" -> 1.45,
+    "hot_water" -> 1.35,
+    "chilled_water" -> 1.04,
+    "coal" -> 1.05,
+    "other" -> 1.05
+   )
+
+  val carbon_0: Map[String,Double] = Map(
+    "electricity" -> 0.61 * emissionsScaleFactor,
+    "natural_gas" -> 0.23 * emissionsScaleFactor,
+    "fuel_oil" -> 0.30 * emissionsScaleFactor,
+    "propane" -> 0.27 * emissionsScaleFactor,
+    "steam" -> 0.39 * emissionsScaleFactor,
+    "hot_water" -> 0.37 * emissionsScaleFactor,
+    "chilled_water" -> 0.15 * emissionsScaleFactor,
+    "coal" -> 0.37 * emissionsScaleFactor,
+    "other" -> 0.37 * emissionsScaleFactor
+  )
+    
 
   def getConversionMetrics(metricType:Option[String]): Future[ValidatedConversionDetails] = Future {
-    val emissionsScaleFactor:Double = KBtus(1) to MegawattHours
+  //all conversions are from kbtu of a source
+
+    val metric_type = metricType match {
+      case Some(a) => a
+      case None => parameters.asOpt[ConversionMetrics] match {
+        case Some(a) => a.metric.metric_type.getOrElse("site")
+        case _ => "site"
+      }
+    }
+    val conversion_resource:Int = parameters.asOpt[ConversionMetrics] match {
+        case Some(a) => a.metric.conversion_resource.getOrElse(0)
+        case _ => 0
+      }
 
     parameters.asOpt[ConversionMetrics] match {
       case Some(a) => {
-        a.metric.conversion_resource match {
-          /*default is conversion_resource 0, so add all other cases for different lookups here
-           case <new conversion resource table integer> => {
-            val conversion_resource = 0
-            val metric_type = a.metric.metric_type match {
-              case Some(met) => met
-              case _ => "site"
-          */
-          case _ => {
-            val conversion_resource = 0
-            val metric_type = metricType match {
-              case Some(temp) => temp
-              case None => a.metric.metric_type match {
-                case Some(met) => met
-                case _ => "site"
-              }
+        metric_type match {
+          case "source" => {
+            val source_electricity = (a.metric.source_electricity, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => source_0("electricity")
+              case (_, _) => source_0("electricity") // source_0 is the default
             }
-            val source_electricity = (a.metric.source_electricity, metric_type) match {
-              case (Some(b), "source") => b
-              case (_, "source") => 3.15
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+            val source_natural_gas = (a.metric.source_natural_gas, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => source_0("natural_gas")
+              case (_, _) => source_0("natural_gas") // source_0 is the default
             }
-            val carbon_electricity = (a.metric.carbon_electricity, metric_type) match {
-              case (Some(b), "carbon") => b * emissionsScaleFactor
-              case (_, "carbon") => 0.61 * emissionsScaleFactor
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+          }
+            val source_fuel_oil = (a.metric.source_fuel_oil, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => source_0("fuel_oil")
+              case (_, _) => source_0("fuel_oil") // source_0 is the default
             }
-            val source_natural_gas = (a.metric.source_natural_gas, metric_type) match {
-              case (Some(b), "source") => b
-              case (_, "source") => 1.09
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+            val source_propane = (a.metric.source_propane, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => source_0("propane")
+              case (_, _) => source_0("propane") // source_0 is the default
             }
-            val carbon_natural_gas = (a.metric.carbon_natural_gas, metric_type) match {
-              case (Some(b), "carbon") => b * emissionsScaleFactor
-              case (_, "carbon") => 0.23 * emissionsScaleFactor
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+            val source_steam = (a.metric.source_steam, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => source_0("steam")
+              case (_, _) => source_0("steam") // source_0 is the default
             }
-            val source_fuel_oil = (a.metric.source_fuel_oil, metric_type) match {
-              case (Some(b), "source") => b
-              case (_, "source") => 1.19
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+            val source_hot_water = (a.metric.source_hot_water, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => source_0("hot_water")
+              case (_, _) => source_0("hot_water") // source_0 is the default
             }
-            val carbon_fuel_oil = (a.metric.carbon_fuel_oil, metric_type) match {
-              case (Some(b), "carbon") => b * emissionsScaleFactor
-              case (_, "carbon") => 0.30 * emissionsScaleFactor
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+            val source_chilled_water = (a.metric.source_chilled_water, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => source_0("chilled_water")
+              case (_, _) => source_0("chilled_water") // source_0 is the default
             }
-            val source_propane = (a.metric.source_propane, metric_type) match {
-              case (Some(b), "source") => b
-              case (_, "source") => 1.15
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+            val source_coal = (a.metric.source_coal, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => source_0("coal")
+              case (_, _) => source_0("coal") // source_0 is the default
             }
-            val carbon_propane = (a.metric.carbon_propane, metric_type) match {
-              case (Some(b), "carbon") => b * emissionsScaleFactor
-              case (_, "carbon") => 0.27 * emissionsScaleFactor
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+            val source_other = (a.metric.source_other, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => source_0("other")
+              case (_, _) => source_0("other") // source_0 is the default
             }
-            val source_steam = (a.metric.source_steam, metric_type) match {
-              case (Some(b), "source") => b
-              case (_, "source") => 1.45
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+          case "carbon" =>
+            val carbon_electricity = (a.metric.carbon_electricity, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => carbon_0("electricity")
+              case (_, _) => carbon_0("electricity") // source_0 is the default
             }
-            val carbon_steam = (a.metric.carbon_steam, metric_type) match {
-              case (Some(b), "carbon") => b * emissionsScaleFactor
-              case (_, "carbon") => 0.39 * emissionsScaleFactor
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+
+            val carbon_natural_gas = (a.metric.carbon_natural_gas, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => carbon_0("natural_gas")
+              case (_, _) => carbon_0("natural_gas") // carbon_0 is the default
             }
-            val source_hot_water = (a.metric.source_hot_water, metric_type) match {
-              case (Some(b), "source") => b
-              case (_, "source") => 1.35
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+
+            val carbon_fuel_oil = (a.metric.carbon_fuel_oil, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => carbon_0("fuel_oil")
+              case (_, _) => carbon_0("fuel_oil") // carbon_0 is the default
             }
-            val carbon_hot_water = (a.metric.carbon_hot_water, metric_type) match {
-              case (Some(b), "carbon") => b * emissionsScaleFactor
-              case (_, "carbon") => 0.37 * emissionsScaleFactor
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+
+            val carbon_propane = (a.metric.carbon_propane, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => carbon_0("propane")
+              case (_, _) => carbon_0("propane") // carbon_0 is the default
+
+            val carbon_steam = (a.metric.carbon_steam, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => carbon_0("steam")
+              case (_, _) => carbon_0("steam") // carbon_0 is the default
             }
-            val source_chilled_water = (a.metric.source_chilled_water, metric_type) match {
-              case (Some(b), "source") => b
-              case (_, "source") => 1.04
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+
+            val carbon_hot_water = (a.metric.carbon_hot_water, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => carbon_0("hot_water")
+              case (_, _) => carbon_0("hot_water") // carbon_0 is the default
             }
-            val carbon_chilled_water = (a.metric.carbon_chilled_water, metric_type) match {
-              case (Some(b), "carbon") => b * emissionsScaleFactor
-              case (_, "carbon") => 0.15 * emissionsScaleFactor
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+
+            val carbon_chilled_water = (a.metric.carbon_chilled_water, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => carbon_0("chilled_water")
+              case (_, _) => carbon_0("chilled_water") // carbon_0 is the default
             }
-            val source_coal = (a.metric.source_coal, metric_type) match {
-              case (Some(b), "source") => b
-              case (_, "source") => 1.05
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
+
+            val carbon_coal = (a.metric.carbon_coal, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => carbon_0("coal")
+              case (_, _) => carbon_0("coal") // carbon_0 is the default
             }
-            val carbon_coal = (a.metric.carbon_coal, metric_type) match {
-              case (Some(b), "carbon") => b * emissionsScaleFactor
-              case (_, "carbon") => 0.37 * emissionsScaleFactor
-              case (_, "site") => 1.0
-              case (_, _) => 1.0
-            }
+
+            val carbon_other = (a.metric.carbon_other, conversion_resource) match {
+              case (Some(b), _) => b
+              case (_, 0) => carbon_0("other")
+              case (_, _) => carbon_0("other") // carbon_0 is the default
+        }
+                
             ValidatedConversionDetails(
               metric_type,
               conversion_resource,
-              carbon_electricity,
-              carbon_natural_gas,
-              carbon_fuel_oil,
-              carbon_propane,
-              carbon_steam,
-              carbon_hot_water,
-              carbon_chilled_water,
-              carbon_coal,
-              source_electricity,
-              source_natural_gas,
-              source_fuel_oil,
-              source_propane,
-              source_steam,
-              source_hot_water,
-              source_chilled_water,
-              source_coal
+              Option(carbon_electricity).getOrElse(1.0),
+              Option(carbon_natural_gas).getOrElse(1.0),
+              Option(carbon_fuel_oil).getOrElse(1.0),
+              Option(carbon_propane).getOrElse(1.0),
+              Option(carbon_steam).getOrElse(1.0),
+              Option(carbon_hot_water).getOrElse(1.0),
+              Option(carbon_chilled_water).getOrElse(1.0),
+              Option(carbon_coal).getOrElse(1.0),
+              Option(carbon_other).getOrElse(1.0),
+              Option(source_electricity).getOrElse(1.0),
+              Option(source_natural_gas).getOrElse(1.0),
+              Option(source_fuel_oil).getOrElse(1.0),
+              Option(source_propane).getOrElse(1.0),
+              Option(source_steam).getOrElse(1.0),
+              Option(source_hot_water).getOrElse(1.0),
+              Option(source_chilled_water).getOrElse(1.0),
+              Option(source_coal).getOrElse(1.0),
+              Option(source_other).getOrElse(1.0)
             )
           }
         }
       }
 
-      case _ => ValidatedConversionDetails("site", 0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
+      
     }
   }
 
 
   def convertMetrics[T](energyEntry:T, energyType:Option[String], conversionFactors:ValidatedConversionDetails, metricType:Option[String]):Future[T] = Future {
-    // If metric=carbon, the values should be tonnes of CO2e emissions per MWh of energy used.
-    // ALL ENERGY VALUES PASSED AS KBTU ON INPUT
+    // ALL ENERGY VALUES PASSED AS KBTU BASE INPUT
 
     val metric = metricType match {
       case Some(temp) => temp
@@ -340,6 +369,7 @@ case class ConversionDetails(
                               carbon_hot_water: Option[Double],
                               carbon_chilled_water: Option[Double],
                               carbon_coal: Option[Double],
+                              carbon_other: Option[Double],
                               source_electricity: Option[Double],
                               source_natural_gas: Option[Double],
                               source_fuel_oil: Option[Double],
@@ -347,7 +377,8 @@ case class ConversionDetails(
                               source_steam: Option[Double],
                               source_hot_water: Option[Double],
                               source_chilled_water: Option[Double],
-                              source_coal: Option[Double]
+                              source_coal: Option[Double],
+                              source_other: Option[Double]
                             )
 
 object ConversionDetails {
@@ -356,24 +387,26 @@ object ConversionDetails {
 
 
   case class ValidatedConversionDetails(
-                              metric_type: String,
-                              conversion_resource: Int,
-                              carbon_electricity: Double,
-                              carbon_natural_gas: Double,
-                              carbon_fuel_oil: Double,
-                              carbon_propane: Double,
-                              carbon_steam: Double,
-                              carbon_hot_water: Double,
-                              carbon_chilled_water: Double,
-                              carbon_coal: Double,
-                              source_electricity: Double,
-                              source_natural_gas: Double,
-                              source_fuel_oil: Double,
-                              source_propane: Double,
-                              source_steam: Double,
-                              source_hot_water: Double,
-                              source_chilled_water: Double,
-                              source_coal: Double
+                                      metric_type: String,
+                                      conversion_resource: Int,
+                                      carbon_electricity: Double,
+                                      carbon_natural_gas: Double,
+                                      carbon_fuel_oil: Double,
+                                      carbon_propane: Double,
+                                      carbon_steam: Double,
+                                      carbon_hot_water: Double,
+                                      carbon_chilled_water: Double,
+                                      carbon_coal: Double,
+                                      carbon_other: Double,
+                                      source_electricity: Double,
+                                      source_natural_gas: Double,
+                                      source_fuel_oil: Double,
+                                      source_propane: Double,
+                                      source_steam: Double,
+                                      source_hot_water: Double,
+                                      source_chilled_water: Double,
+                                      source_coal: Double,
+                                      source_other: Double
                                        )
 object ValidatedConversionDetails {
   implicit val ValidatedConversionDetailsReads: Reads[ValidatedConversionDetails] = Json.reads[ValidatedConversionDetails]
