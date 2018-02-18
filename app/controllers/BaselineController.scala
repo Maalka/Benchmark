@@ -10,6 +10,7 @@ import models._
 import com.google.inject.Inject
 import play.api.Logger
 import play.api.cache.{AsyncCacheApi, SyncCacheApi}
+import play.api.libs.json.Json.JsValueWrapper
 import play.api.libs.json.Reads.min
 import play.api.libs.json._
 import play.api.mvc._
@@ -52,25 +53,9 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
       case v: List[Any] => Right {
         Json.toJson(v.map {
           case a: Energy => energyToJSValue(a)
-          case a: EmissionsTuple => JsObject(Seq(a.eType -> Json.toJson(a.eValue)))
-          case a: EnergyTuple => JsObject(Seq(a.energyType -> energyToJSValue(a.energyValue)))
-          case a: PropParams => JsObject(Seq(
-            "propType" -> JsString(a.propType),
-            "propSize" -> JsNumber(a.propSize),
-            "propPercent" -> JsNumber {
-              a.propPercent match {
-                case b => roundAt(2)(b * 100)
-              }
-            },
-            "areaUnits" -> JsString {
-              a.areaUnits match {
-                case "mSQ" => "sq.m"
-                case "ftSQ" => "sq.ft"
-              }
-            }
-          ))
+          case a: ValidatedEnergy => JsObject(Seq(a.energyType -> energyToJSValue(a.energyValue)))
           case a: ValidatedSolarMetrics => JsObject(Seq(
-            "system_capacity" -> JsNumber(147418.77408607837), //JsNumber(a.system_capacity),
+            "system_capacity" -> JsNumber(a.system_capacity),
             "module_type" -> JsNumber(a.module_type),
             "losses" -> JsNumber(a.losses),
             "array_type" -> JsNumber(a.array_type),
@@ -86,8 +71,19 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
             "floor_area" -> JsNumber(a.floor_area),
             "floor_area_units" -> JsString(a.floor_area_units)
           ))
+        case v: Map[String,Any] =>
+          JsObject(v.map {
+            case (a,b) => {
+              val ret: (String, JsValue) = b match {
+                case _: String => a.toString -> JsString(b.asInstanceOf[String])
+                case _: Double => a.toString -> JsNumber(b.asInstanceOf[Double])
+                case _: Energy => a.toString -> energyToJSValue(b.asInstanceOf[Energy])
+              }
+              ret
+            }
+          })
         })
-      }
+        }
       case v: String => Right(Json.toJson(v))
       case a: ElectricityDistribution => Right(JsObject(Seq(
         "htg" -> JsNumber(a.elec_htg),
@@ -391,11 +387,9 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                     "energyUnits": {
                       "type": "string",
                        "enum": ["KBtu","MBtu","kWh","MWh","GJ","NGMcf","NGKcf","NGCcf","NGcf", "NGm3","Therms","No1UKG","No1USG",
-                             "No1L","No2UKG","No2USG","No2L","No4UKG","No4USG","No4L","No6UKG","No6USG","No6L","DieselUKG","DieselUSG",
-                             "DieselL","KeroseneUKG","KeroseneUSG","KeroseneL","PropaneUKG","PropaneUSG","PropaneCf","PropaneCCf",
+                             "No1L","No2UKG","No2USG","No2L","No4UKG","No4USG","No4L","No6UKG","No6USG","No6L","PropaneUKG","PropaneUSG","PropaneCf","PropaneCCf",
                              "PropaneKCf","PropaneL","SteamLb","SteamKLb","SteamMLb","CHWTonH","CoalATon","CoalATonne","CoalALb",
-                             "CoalAKLb","CoalAMLb","CoalBitTon","CoalBitTonne","CoalBitLb","CoalBitKLb","CoalBitMLb","CokeTon","CokeTonne",
-                             "CokeLb","CokeKLb","CokeMLb","WoodTon","WoodTonne"]
+                             "CoalBitTon","CoalBitTonne","CoalBitLb","CokeTon","CokeTonne","CokeLb","WoodTon","WoodTonne"]
                     },
                     "energyUse": {
                       "type": "number",
@@ -511,7 +505,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
           case (Left(s: String), _) => Left(s)
 //          case (_, Left(s: String)) => Left(s)
           case (Right(j1:JsValue), Right(j2:JsValue)) => {
-            Right(Json.obj("PVDefaults" -> j1).deepMerge(j2.as[JsObject]))
+            Right(Json.obj("PVWatts_inputs" -> j1).deepMerge(j2.as[JsObject]))
           }
         }
 
@@ -555,12 +549,11 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
         val futures = Future.sequence(Seq(
 
-          Baseline.getPrescriptiveTotalSite.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          Baseline.getPrescriptiveTotalSiteIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          Baseline.getPrescriptiveTotalSource.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          Baseline.getPrescriptiveTotalSourceIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          Baseline.getPrescriptiveTotalCarbon.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          Baseline.getPrescriptiveTotalCarbonIntensity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.getBuildingData.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.getSiteMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+
+          Baseline.getMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.getPrescriptiveMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
 
           Baseline.getPrescriptiveEndUses.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.getPrescriptiveElectricity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
@@ -568,11 +561,10 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
           Baseline.getPrescriptiveEndUsePercents.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
 
-          Baseline.getBuildingData.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          Baseline.getMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
 
 
-          solar_inputs.recover { case NonFatal(th) => apiRecover(th) } ,
+
+
           solar_errors.recover { case NonFatal(th) => apiRecover(th) } ,
           solar_warnings.recover { case NonFatal(th) => apiRecover(th) } ,
           merged.recover { case NonFatal(th) => apiRecover(th) }
@@ -580,23 +572,18 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
         ))
 
         val fieldNames = Seq(
-          "prototype_total_site_energy",
-          "prototype_total_site_EUI",
-          "prototype_total_source",
-          "prototype_total_source_intensity",
-          "prototype_total_carbon",
-          "prototype_total_carbon_intensity",
-
-          "prototype_end_use_metric_data",
-          "prototype_electricity_metric_data",
-          "prototype_natural_gas_metric_data",
-
-          "prototype_end_use_metric_percents",
-
           "property_types",
-          "input_conversion_metrics",
+          "actual_reported_metrics",
 
-          "pvwatts_inputs",
+          "input_conversion_metrics",
+          "prescriptive_metrics",
+
+          "prescriptive_metrics_end_use_metric_data",
+          "prescriptive_metrics_electricity_metric_data",
+          "prescriptive_metrics_natural_gas_metric_data",
+
+          "prescriptive_metrics_end_use_metric_percents",
+
           "pvwatts_errors",
           "pvwatts_warnings",
           "pvwatts_system_details"

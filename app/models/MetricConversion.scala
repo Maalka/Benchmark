@@ -22,6 +22,7 @@ case class MetricConversion(parameters:JsValue) {
 
 
   def getConversionMetrics(metricType:Option[String]): Future[ValidatedConversionDetails] = Future {
+    val emissionsScaleFactor:Double = KBtus(1) to MegawattHours
 
     parameters.asOpt[ConversionMetrics] match {
       case Some(a) => {
@@ -49,8 +50,8 @@ case class MetricConversion(parameters:JsValue) {
               case (_, _) => 1.0
             }
             val carbon_electricity = (a.metric.carbon_electricity, metric_type) match {
-              case (Some(b), "carbon") => b
-              case (_, "carbon") => 0.61
+              case (Some(b), "carbon") => b * emissionsScaleFactor
+              case (_, "carbon") => 0.61 * emissionsScaleFactor
               case (_, "site") => 1.0
               case (_, _) => 1.0
             }
@@ -61,8 +62,8 @@ case class MetricConversion(parameters:JsValue) {
               case (_, _) => 1.0
             }
             val carbon_natural_gas = (a.metric.carbon_natural_gas, metric_type) match {
-              case (Some(b), "carbon") => b
-              case (_, "carbon") => 0.23
+              case (Some(b), "carbon") => b * emissionsScaleFactor
+              case (_, "carbon") => 0.23 * emissionsScaleFactor
               case (_, "site") => 1.0
               case (_, _) => 1.0
             }
@@ -73,8 +74,8 @@ case class MetricConversion(parameters:JsValue) {
               case (_, _) => 1.0
             }
             val carbon_fuel_oil = (a.metric.carbon_fuel_oil, metric_type) match {
-              case (Some(b), "carbon") => b
-              case (_, "carbon") => 0.30
+              case (Some(b), "carbon") => b * emissionsScaleFactor
+              case (_, "carbon") => 0.30 * emissionsScaleFactor
               case (_, "site") => 1.0
               case (_, _) => 1.0
             }
@@ -85,8 +86,8 @@ case class MetricConversion(parameters:JsValue) {
               case (_, _) => 1.0
             }
             val carbon_propane = (a.metric.carbon_propane, metric_type) match {
-              case (Some(b), "carbon") => b
-              case (_, "carbon") => 0.27
+              case (Some(b), "carbon") => b * emissionsScaleFactor
+              case (_, "carbon") => 0.27 * emissionsScaleFactor
               case (_, "site") => 1.0
               case (_, _) => 1.0
             }
@@ -97,8 +98,8 @@ case class MetricConversion(parameters:JsValue) {
               case (_, _) => 1.0
             }
             val carbon_steam = (a.metric.carbon_steam, metric_type) match {
-              case (Some(b), "carbon") => b
-              case (_, "carbon") => 0.39
+              case (Some(b), "carbon") => b * emissionsScaleFactor
+              case (_, "carbon") => 0.39 * emissionsScaleFactor
               case (_, "site") => 1.0
               case (_, _) => 1.0
             }
@@ -109,8 +110,8 @@ case class MetricConversion(parameters:JsValue) {
               case (_, _) => 1.0
             }
             val carbon_hot_water = (a.metric.carbon_hot_water, metric_type) match {
-              case (Some(b), "carbon") => b
-              case (_, "carbon") => 0.37
+              case (Some(b), "carbon") => b * emissionsScaleFactor
+              case (_, "carbon") => 0.37 * emissionsScaleFactor
               case (_, "site") => 1.0
               case (_, _) => 1.0
             }
@@ -121,8 +122,8 @@ case class MetricConversion(parameters:JsValue) {
               case (_, _) => 1.0
             }
             val carbon_chilled_water = (a.metric.carbon_chilled_water, metric_type) match {
-              case (Some(b), "carbon") => b
-              case (_, "carbon") => 0.15
+              case (Some(b), "carbon") => b * emissionsScaleFactor
+              case (_, "carbon") => 0.15 * emissionsScaleFactor
               case (_, "site") => 1.0
               case (_, _) => 1.0
             }
@@ -133,8 +134,8 @@ case class MetricConversion(parameters:JsValue) {
               case (_, _) => 1.0
             }
             val carbon_coal = (a.metric.carbon_coal, metric_type) match {
-              case (Some(b), "carbon") => b
-              case (_, "carbon") => 0.37
+              case (Some(b), "carbon") => b * emissionsScaleFactor
+              case (_, "carbon") => 0.37 * emissionsScaleFactor
               case (_, "site") => 1.0
               case (_, _) => 1.0
             }
@@ -258,31 +259,33 @@ case class MetricConversion(parameters:JsValue) {
         )
       }
 
-      case (b: Energy, "source") => {
-        energyType match {
-          case Some("electricity") => KBtus((b to KBtus) * conversionFactors.source_electricity)
-          case Some("natural_gas") => KBtus((b to KBtus) * conversionFactors.source_natural_gas)
-          case Some("fuel_oil") => KBtus((b to KBtus) * conversionFactors.source_fuel_oil)
-          case Some("propane") => KBtus((b to KBtus) * conversionFactors.source_propane)
-          case Some("steam") => KBtus((b to KBtus) * conversionFactors.source_steam)
-          case Some("hot_water") => KBtus((b to KBtus) * conversionFactors.source_hot_water)
-          case Some("chilled_water") => KBtus((b to KBtus) * conversionFactors.source_chilled_water)
-          case Some("coal") => KBtus((b to KBtus) * conversionFactors.source_coal)
-          case _ => throw new Exception("Cannot Convert Energy Value - Type Unkown")
+      case (b: ValidatedEnergy, "source") => {
+        val energyValue = energyType match {
+          case Some("electricity") => (b.energyValue ) * conversionFactors.source_electricity
+          case Some("natural_gas") => (b.energyValue ) * conversionFactors.source_natural_gas
+          case Some("fuel_oil") => (b.energyValue ) * conversionFactors.source_fuel_oil
+          case Some("propane") => (b.energyValue ) * conversionFactors.source_propane
+          case Some("steam") => (b.energyValue ) * conversionFactors.source_steam
+          case Some("hot_water") => (b.energyValue ) * conversionFactors.source_hot_water
+          case Some("chilled_water") => (b.energyValue ) * conversionFactors.source_chilled_water
+          case Some("coal") => (b.energyValue ) * conversionFactors.source_coal
+          case _ => throw new Exception("Cannot Convert Energy Value to Source Energy - Type Unkown")
         }
+        ValidatedEnergy(b.energyType,b.energyName,energyValue)
       }
-      case (b: Energy, "carbon") => {
-        energyType match {
-          case Some("electricity") => KBtus((b to KBtus) * conversionFactors.carbon_electricity)
-          case Some("natural_gas") => KBtus((b to KBtus) * conversionFactors.carbon_natural_gas)
-          case Some("fuel_oil") => KBtus((b to KBtus) * conversionFactors.carbon_fuel_oil)
-          case Some("propane") => KBtus((b to KBtus) * conversionFactors.carbon_propane)
-          case Some("steam") => KBtus((b to KBtus) * conversionFactors.carbon_steam)
-          case Some("hot_water") => KBtus((b to KBtus) * conversionFactors.carbon_hot_water)
-          case Some("chilled_water") => KBtus((b to KBtus) * conversionFactors.carbon_chilled_water)
-          case Some("coal") => KBtus((b to KBtus) * conversionFactors.carbon_coal)
-          case _ => throw new Exception("Cannot Convert Energy Value - Type Unkown")
+      case (b: ValidatedEnergy, "carbon") => {
+        val energyValue = energyType match {
+          case Some("electricity") => (b.energyValue ) * conversionFactors.carbon_electricity
+          case Some("natural_gas") => (b.energyValue ) * conversionFactors.carbon_natural_gas
+          case Some("fuel_oil") => (b.energyValue ) * conversionFactors.carbon_fuel_oil
+          case Some("propane") => (b.energyValue ) * conversionFactors.carbon_propane
+          case Some("steam") => (b.energyValue ) * conversionFactors.carbon_steam
+          case Some("hot_water") => (b.energyValue ) * conversionFactors.carbon_hot_water
+          case Some("chilled_water") => (b.energyValue ) * conversionFactors.carbon_chilled_water
+          case Some("coal") => (b.energyValue ) * conversionFactors.carbon_coal
+          case _ => throw new Exception("Cannot Convert Energy Value to Carbon - Type Unkown")
         }
+        ValidatedEnergy(b.energyType,b.energyName,energyValue)
       }
       case (b: Double, "source") => {
         energyType match {
@@ -294,7 +297,7 @@ case class MetricConversion(parameters:JsValue) {
           case Some("hot_water") => b * conversionFactors.source_hot_water
           case Some("chilled_water") => b * conversionFactors.source_chilled_water
           case Some("coal") => b * conversionFactors.source_coal
-          case _ => throw new Exception("Cannot Convert Energy (Double) Value - Type Unkown")
+          case _ => throw new Exception("Cannot Convert Energy (Double) Value to Source - Type Unkown")
         }
       }
       case (b: Double, "carbon") => {
@@ -307,7 +310,7 @@ case class MetricConversion(parameters:JsValue) {
           case Some("hot_water") => b * conversionFactors.carbon_hot_water
           case Some("chilled_water") => b * conversionFactors.carbon_chilled_water
           case Some("coal") => b * conversionFactors.carbon_coal
-          case _ => throw new Exception("Cannot Convert Energy (Double) Value - Type Unkown")
+          case _ => throw new Exception("Cannot Convert Energy (Double) Value to Carbon - Type Unkown")
         }
       }
       case (b: EndUseDistribution, _) => b

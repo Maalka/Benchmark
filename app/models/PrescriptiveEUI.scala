@@ -22,24 +22,20 @@ case class PrescriptiveValues(parameters:JsValue) {
 
   val finalConversion:MetricConversion = MetricConversion(parameters)
 
-
-  def lookupPrescriptiveTotalMetricIntensity(metric:Option[String]): Future[Energy] = {
+  def getBuildingSize:Future[Double] = {
     for {
       validatedPropList <- getValidatedPropList
       building_size <- Future(validatedPropList.map(_.floor_area).sum)
+    } yield building_size
+  }
+
+  def lookupPrescriptiveTotalMetricIntensity(metric:Option[String]): Future[Energy] = {
+    for {
       weightedEndUseDistList <- lookupPrescriptiveEndUses(metric)
       totalEUI <- getPrescriptiveTotalEUI(weightedEndUseDistList)
     } yield KBtus(totalEUI)
   }
 
-  def lookupPrescriptiveTotalMetric(metric:Option[String]): Future[Energy] = {
-    for {
-      validatedPropList <- getValidatedPropList
-      building_size <- Future(validatedPropList.map(_.floor_area).sum)
-      totalEUI <- lookupPrescriptiveTotalMetricIntensity(metric)
-      endUsePercents <- Future(totalEUI*building_size)
-    } yield endUsePercents
-  }
 
   def lookupPrescriptiveEndUsePercents(metric:Option[String]): Future[EndUseDistribution] = {
     for {
