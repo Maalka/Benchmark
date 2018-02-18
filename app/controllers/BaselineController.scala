@@ -33,6 +33,77 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
     case e: Energy => e.value
   })
 
+   def electricityDistributionToJSValue(a: ElectricityDistribution): JsValue = {
+     JsObject(Seq(
+       "htg" -> JsNumber(a.elec_htg),
+       "clg" -> JsNumber(a.elec_clg),
+       "intLgt" -> JsNumber(a.elec_intLgt),
+       "extLgt" -> JsNumber(a.elec_extLgt),
+       "intEqp" -> JsNumber(a.elec_intEqp),
+       "extEqp" -> JsNumber(a.elec_extEqp),
+       "fans" -> JsNumber(a.elec_fans),
+       "pumps" -> JsNumber(a.elec_pumps),
+       "heatRej" -> JsNumber(a.elec_heatRej),
+       "humid" -> JsNumber(a.elec_humid),
+       "heatRec" -> JsNumber(a.elec_heatRec),
+       "swh" -> JsNumber(a.elec_swh),
+       "refrg" -> JsNumber(a.elec_refrg),
+       "gentor" -> JsNumber(a.elec_gentor),
+       "net" -> JsNumber(a.elec_net)
+     ))
+   }
+
+   def ngDistributionToJSValue(a: NaturalGasDistribution): JsValue = {
+     JsObject(Seq(
+       "htg" -> JsNumber(a.ng_htg),
+       "clg" -> JsNumber(a.ng_clg),
+       "intLgt" -> JsNumber(a.ng_intLgt),
+       "extLgt" -> JsNumber(a.ng_extLgt),
+       "intEqp" -> JsNumber(a.ng_intEqp),
+       "extEqp" -> JsNumber(a.ng_extEqp),
+       "fans" -> JsNumber(a.ng_fans),
+       "pumps" -> JsNumber(a.ng_pumps),
+       "heatRej" -> JsNumber(a.ng_heatRej),
+       "humid" -> JsNumber(a.ng_humid),
+       "heatRec" -> JsNumber(a.ng_heatRec),
+       "swh" -> JsNumber(a.ng_swh),
+       "refrg" -> JsNumber(a.ng_refrg),
+       "gentor" -> JsNumber(a.ng_gentor),
+       "net" -> JsNumber(a.ng_net)
+     ))
+   }
+
+   def endUseDistributionToJSValue(a: EndUseDistribution): JsValue = {
+     JsObject(Seq(
+       "htg" -> JsNumber(a.htg),
+       "clg" -> JsNumber(a.clg),
+       "intLgt" -> JsNumber(a.intLgt),
+       "extLgt" -> JsNumber(a.extLgt),
+       "intEqp" -> JsNumber(a.intEqp),
+       "extEqp" -> JsNumber(a.extEqp),
+       "fans" -> JsNumber(a.fans),
+       "pumps" -> JsNumber(a.pumps),
+       "heatRej" -> JsNumber(a.heatRej),
+       "humid" -> JsNumber(a.humid),
+       "heatRec" -> JsNumber(a.heatRec),
+       "swh" -> JsNumber(a.swh),
+       "refrg" -> JsNumber(a.refrg),
+       "gentor" -> JsNumber(a.gentor),
+       "net" -> JsNumber(a.net)
+     ))
+   }
+
+   def energyListToJSValue(a: List[EnergyMetrics]): JsValue = {
+     Json.toJson(a.map {b =>
+       JsObject(Seq(
+         "energy_name" -> JsString(b.energyName),
+         "energy_type" -> JsString(b.energyType),
+         "energy_use" -> JsNumber(b.energyUse),
+         "energy_units" -> JsString(b.energyUnits)
+       ))
+     })
+   }
+
   def roundAt(p: Int)(n: Double): Double = {
     val s = math pow(10, p);
     (math round n * s) / s
@@ -61,10 +132,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
             "array_type" -> JsNumber(a.array_type),
             "tilt" -> JsNumber(a.tilt),
             "azimuth" -> JsNumber(a.azimuth),
-            //"inv_eff" -> JsNumber(a.inv_eff),
             "file_id" -> JsString(a.file_id)
-            //"lat" -> JsNumber(40),
-            //"lon" -> JsNumber(-105)
           ))
           case a: ValidatedPropTypes => JsObject(Seq(
             "prop_types" -> JsString(a.building_type),
@@ -78,6 +146,10 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                 case _: String => a.toString -> JsString(b.asInstanceOf[String])
                 case _: Double => a.toString -> JsNumber(b.asInstanceOf[Double])
                 case _: Energy => a.toString -> energyToJSValue(b.asInstanceOf[Energy])
+                case _: ElectricityDistribution => a.toString -> electricityDistributionToJSValue(b.asInstanceOf[ElectricityDistribution])
+                case _: NaturalGasDistribution => a.toString -> ngDistributionToJSValue(b.asInstanceOf[NaturalGasDistribution])
+                case _: EndUseDistribution => a.toString -> endUseDistributionToJSValue(b.asInstanceOf[EndUseDistribution])
+                case _: List[EnergyMetrics] => a.toString -> energyListToJSValue(b.asInstanceOf[List[EnergyMetrics]])
               }
               ret
             }
@@ -139,22 +211,24 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
       case a: ValidatedConversionDetails => Right(JsObject(Seq(
         "metric_type" -> JsString(a.metric_type),
         "conversion_resource" -> JsNumber(a.conversion_resource),
-        "source_electricity" -> JsNumber(a.source_electricity),
-        "source_natural_gas" -> JsNumber(a.source_natural_gas),
-        "source_fuel_oil" -> JsNumber(a.source_fuel_oil),
-        "source_propane" -> JsNumber(a.source_propane),
-        "source_steam" -> JsNumber(a.source_steam),
-        "source_hot_water" -> JsNumber(a.source_hot_water),
-        "source_chilled_water" -> JsNumber(a.source_chilled_water),
-        "source_coal" -> JsNumber(a.source_coal),
-        "carbon_electricity" -> JsNumber(a.carbon_electricity),
-        "carbon_natural_gas" -> JsNumber(a.carbon_natural_gas),
-        "carbon_fuel_oil" -> JsNumber(a.carbon_fuel_oil),
-        "carbon_propane" -> JsNumber(a.carbon_propane),
-        "carbon_steam" -> JsNumber(a.carbon_steam),
-        "carbon_hot_water" -> JsNumber(a.carbon_hot_water),
-        "carbon_chilled_water" -> JsNumber(a.carbon_chilled_water),
-        "carbon_coal" -> JsNumber(a.carbon_coal)
+        "source_electricity" -> JsNumber(a.source("electricity")),
+        "source_natural_gas" -> JsNumber(a.source("natural_gas")),
+        "source_fuel_oil" -> JsNumber(a.source("fuel_oil")),
+        "source_propane" -> JsNumber(a.source("propane")),
+        "source_steam" -> JsNumber(a.source("steam")),
+        "source_hot_water" -> JsNumber(a.source("hot_water")),
+        "source_chilled_water" -> JsNumber(a.source("chilled_water")),
+        "source_coal" -> JsNumber(a.source("coal")),
+        "source_other" -> JsNumber(a.source("other")),
+        "carbon_electricity" -> JsNumber(a.carbon("electricity")),
+        "carbon_natural_gas" -> JsNumber(a.carbon("natural_gas")),
+        "carbon_fuel_oil" -> JsNumber(a.carbon("fuel_oil")),
+        "carbon_propane" -> JsNumber(a.carbon("propane")),
+        "carbon_steam" -> JsNumber(a.carbon("steam")),
+        "carbon_hot_water" -> JsNumber(a.carbon("hot_water")),
+        "carbon_chilled_water" -> JsNumber(a.carbon("chilled_water")),
+        "carbon_coal" -> JsNumber(a.carbon("coal")),
+        "carbon_other" -> JsNumber(a.carbon("other"))
       )))
       case None => Left("Could not recognize input type")
     }
@@ -382,7 +456,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                     },
                     "energyType": {
                       "type": "string",
-                      "enum": ["electricity","natural_gas","fuel_oil","propane","steam","hot_water","chilled_water","coal"]
+                      "enum": ["electricity","natural_gas","fuel_oil","propane","steam","hot_water","chilled_water","coal","other"]
                     },
                     "energyUnits": {
                       "type": "string",
@@ -427,7 +501,6 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
         val f1: Future[Either[String, JsValue]] = Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
 
-
         val getPV_Parameters: Future[Seq[Map[String, String]]] = f1.map { e =>
           e match {
             case Right(jsonArray: JsArray) => jsonArray.as[Seq[Map[String, JsValue]]].map {
@@ -449,36 +522,36 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
         }
 
 
-        val f2 = multipleFutures.map { r =>
+        def f2(ccEnergy:Double, ccIntensity:Double) = multipleFutures.map { r =>
 
           val stationInfo = (r.head \ "station_info").get
           val version = (r.head \ "version").get
-          val ac_annual: Double = r.map{a => (a \ "outputs" \ "ac_annual").as[Double]}.sum
+          val ac_annual: Double = r.map{a => (a \ "outputs" \ "ac_annual").as[Double]}.sum * ccEnergy
           val capacity_factor = r.map{a => (a \ "outputs" \ "capacity_factor").as[Double]}.sum / r.map{a => (a \ "outputs" \ "capacity_factor").as[Double]}.length
-          val solrad_annual = r.map{a => (a \ "outputs" \ "solrad_annual").as[Double]}.sum
+          val solrad_annual = r.map{a => (a \ "outputs" \ "solrad_annual").as[Double]}.sum * ccIntensity
 
           val arr1 =  r.map{a => (a \ "outputs" \ "ac_monthly").as[Array[Double]]}
 
           val ac_monthly = arr1.tail.fold(arr1.head) { (z, i) =>
             (z, i).zipped.map(_ + _)
-          }
+          }.map(_ * ccEnergy)
 
           val arr2 =  r.map{a => (a \ "outputs" \ "dc_monthly").as[Array[Double]]}
 
           val dc_monthly = arr2.tail.fold(arr2.head) { (z, i) =>
             (z, i).zipped.map(_ + _)
-          }
+          }.map(_ * ccEnergy)
 
           val arr3 =  r.map{a => (a \ "outputs" \ "poa_monthly").as[Array[Double]]}
 
           val poa_monthly = arr3.tail.fold(arr3.head) { (z, i) =>
-            (z, i).zipped.map(_ + _)
+            (z, i).zipped.map(_ + _).map(_ * ccIntensity)
           }
 
           val arr4 =  r.map{a => (a \ "outputs" \ "solrad_monthly").as[Array[Double]]}
 
           val solrad_monthly = arr4.tail.fold(arr4.head) { (z, i) =>
-            (z, i).zipped.map(_ + _)
+            (z, i).zipped.map(_ + _).map(_ * ccIntensity)
           }
 
           val a: JsValue = Json.obj(
@@ -497,15 +570,57 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
           Right(a)
         }
 
+        def solarTotal(ccEnergy:Double, ccIntensity:Double):Future[Double] = multipleFutures.map { r =>
+
+          r.map{a => (a \ "outputs" \ "ac_annual").as[Double]}.sum * ccEnergy
+
+        }
+
 
         val merged: Future[Either[String, JsValue]] = for {
+          cc_energy <- Baseline.solarConversionEnergy
+          cc_intensity <- Baseline.solarConversionIntensity
           e1 <- f1
-          e2 <- f2
+          e2 <- f2(cc_energy,cc_intensity)
         } yield (e1, e2) match {
           case (Left(s: String), _) => Left(s)
 //          case (_, Left(s: String)) => Left(s)
           case (Right(j1:JsValue), Right(j2:JsValue)) => {
             Right(Json.obj("PVWatts_inputs" -> j1).deepMerge(j2.as[JsObject]))
+          }
+        }
+
+
+        val performanceRequirements: Future[Seq[Map[String,Any]]] = {
+          for {
+            totalSite <- Baseline.getTotalSiteEnergy
+            cc_energy <- Baseline.solarConversionEnergy
+            cc_intensity <- Baseline.solarConversionIntensity
+            e1 <- f1
+            pvTotal <- solarTotal(cc_energy, cc_intensity)
+          } yield {
+            Seq(
+              Map("re_rec_onsite_pv" -> pvTotal),
+              Map("building_energy" -> totalSite.value),
+              Map("re_total_needed" -> totalSite.value),
+              Map("re_procured" -> Math.max(totalSite.value - pvTotal,0.0))
+            )
+          }
+        }
+        val prescriptiveRequirements: Future[Seq[Map[String,Any]]] = {
+          for {
+            totalPrescriptive <- Baseline.getPrescriptiveTotalSite
+            cc_energy <- Baseline.solarConversionEnergy
+            cc_intensity <- Baseline.solarConversionIntensity
+            e1 <- f1
+            pvTotal <- solarTotal(cc_energy, cc_intensity)
+          } yield {
+            Seq(
+              Map("re_rec_onsite_pv" -> pvTotal),
+              Map("prescriptive_building_energy" -> totalPrescriptive.value),
+              Map("prescriptive_re_total_needed" -> totalPrescriptive.value),
+              Map("prescriptive_re_procured" -> Math.max(totalPrescriptive.value - pvTotal,0.0))
+            )
           }
         }
 
@@ -549,44 +664,36 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
         val futures = Future.sequence(Seq(
 
+          performanceRequirements.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          prescriptiveRequirements.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+
           Baseline.getBuildingData.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.getSiteMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-
-          Baseline.getMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.getPrescriptiveMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-
-          Baseline.getPrescriptiveEndUses.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          Baseline.getPrescriptiveElectricity.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          Baseline.getPrescriptiveNG.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-
-          Baseline.getPrescriptiveEndUsePercents.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-
-
-
-
 
           solar_errors.recover { case NonFatal(th) => apiRecover(th) } ,
           solar_warnings.recover { case NonFatal(th) => apiRecover(th) } ,
-          merged.recover { case NonFatal(th) => apiRecover(th) }
+          merged.recover { case NonFatal(th) => apiRecover(th) },
+
+
+          Baseline.getMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) }
 
         ))
 
         val fieldNames = Seq(
+
+          "performance_requirements",
+          "prescriptive_Requirements",
           "property_types",
-          "actual_reported_metrics",
 
-          "input_conversion_metrics",
+          "performance_metrics",
           "prescriptive_metrics",
-
-          "prescriptive_metrics_end_use_metric_data",
-          "prescriptive_metrics_electricity_metric_data",
-          "prescriptive_metrics_natural_gas_metric_data",
-
-          "prescriptive_metrics_end_use_metric_percents",
 
           "pvwatts_errors",
           "pvwatts_warnings",
-          "pvwatts_system_details"
+          "pvwatts_system_details",
+
+          "conversion_metrics"
         )
 
         futures.map(fieldNames.zip(_)).map { r =>

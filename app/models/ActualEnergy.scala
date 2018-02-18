@@ -33,7 +33,6 @@ case class EUICalculator(parameters: JsValue) {
   }
 
 
-
   def getSiteEnergySum(energyList: List[ValidatedEnergy]):Future[Energy] = Future {
     energyList.map(_.energyValue).sum in KBtus
   }
@@ -52,7 +51,10 @@ case class EUICalculator(parameters: JsValue) {
 
   def getSiteEnergyList: Future[EnergyList] = Future {
     parameters.asOpt[EnergyList] match {
-      case Some(a) => a
+      case Some(a) => a.energies.isEmpty match {
+        case true => throw new Exception("No performance energy data provided!")
+        case _ => a
+      }
       case _ => throw new Exception("Unidentified energy entry in array!")
     }
   }

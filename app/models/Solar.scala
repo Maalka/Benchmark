@@ -1,6 +1,6 @@
 package models
 
-import squants.energy.{Energy, Gigajoules, KBtus, TBtus}
+import squants.energy._
 import squants.space._
 
 import scala.concurrent.Future
@@ -63,11 +63,23 @@ case class SolarProperties(parameters: JsValue) {
       case _ if (default == 0) => 96.0
       case _ => throw new Exception("Azimuth must be less than 360 Degrees! No Default Set. ")
     }
+    val area_units = metrics.pv_area_units match {
+      case Some("mSQ") => "mSQ"
+      case Some("ftSQ") => "ftSQ"
+      case Some(_) => throw new Exception("PV Area Units Must be mSQ or ftSQ! ")
+      case _ => "No PV Area Units"
+    }
     //Default access perimeter
     val access_perimeter = metrics.access_perimeter match {
-      case Some(a: Double) => a
-      case _ if (default == 0) => 2.0
-      case _ => throw new Exception("Access Perimeter must be positive! No Default Set. ")
+      case Some(a: Double) => {
+        area_units match {
+          case "mSQ" => Meters(a) to Meters
+          case "ftSQ" => Feet(a) to Meters
+          case _ => throw new Exception("If PV Area is supplied, pv_area_units must be mSQ or ftSQ! ")
+        }
+      }
+      case _ if (default == 0) => 2.0 //Meters
+      case _ => throw new Exception("If access perimeter is supplied, pv_area_units must be mSQ or ftSQ! ")
     }
     val w_per_meter2 = metrics.w_per_meter2 match {
       case Some(a: Double) => a
@@ -76,12 +88,7 @@ case class SolarProperties(parameters: JsValue) {
       case _ if (module_type == 2) => 100.0
       case _ => throw new Exception("No w_per_meter2 value for Module Type. ")
     }
-    val area_units = metrics.pv_area_units match {
-      case Some("mSQ") => "mSQ"
-      case Some("ftSQ") => "ftSQ"
-      case Some(_) => throw new Exception("PV Area Units Must be mSQ or ftSQ! ")
-      case _ => "No PV Area Units"
-    }
+
     val pv_area = metrics.estimated_area match {
       case Some(a: Double) => {
         area_units match {
@@ -90,14 +97,14 @@ case class SolarProperties(parameters: JsValue) {
           case _ => throw new Exception("If PV Area is supplied, pv_area_units must be mSQ or ftSQ! ")
         }
       }
-      case _ => solarResources.floor_area / solarResources.stories - 4 * access_perimeter * (math.sqrt(solarResources.floor_area /
+      case _ => (solarResources.floor_area / solarResources.stories) - 4 * access_perimeter * (math.sqrt(solarResources.floor_area /
         solarResources.stories) - access_perimeter)
     }
 
     //Default access perimeter
     val system_capacity = metrics.system_capacity match {
       case Some(a: Double) => a
-      case _ if (default == 0) => pv_area * w_per_meter2
+      case _ if (default == 0) => pv_area * w_per_meter2 * (Watts(1) to Kilowatts)
       case _ => throw new Exception("System Capacity must be positive! No Defaults Set. ")
     }
 

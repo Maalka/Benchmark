@@ -50,17 +50,21 @@ case class EUIMetrics(parameters: JsValue, nrel_client: NREL_Client) {
       convertedTotalSite <- convertEnergy(totalSite)
       convertedTotalSource <- convertEnergy(totalSource)
 
+      energyList <- submittedEnergy.getSiteEnergyList
+
 
       } yield {
         Seq(
-          Map("building_size"->convertedBuildingSize),
+
           Map("site_energy"->convertedTotalSite),
           Map("source_energy"->convertedTotalSource),
           Map("carbon_tonnes"->totalCarbon),
 
           Map("site_eui"->convertedTotalSite / convertedBuildingSize),
           Map("source_eui"->totalSource / convertedBuildingSize),
-          Map("carbon_intensity"->totalCarbon / convertedBuildingSize)
+          Map("carbon_intensity"->totalCarbon / convertedBuildingSize),
+
+          Map("building_energy_list"-> energyList.energies)
         )
       }
   }
@@ -79,6 +83,11 @@ case class EUIMetrics(parameters: JsValue, nrel_client: NREL_Client) {
       convertedTotalSite <- convertEnergy(totalSite)
 
 
+      prescriptiveEndUses <- getPrescriptiveEndUses
+      prescriptiveElectricity <- getPrescriptiveElectricity
+      prescriptiveNG <- getPrescriptiveNG
+      prescriptiveEndUsePercents <- getPrescriptiveEndUsePercents
+
       } yield {
         Seq(
           Map("site_energy"->convertedTotalSite),
@@ -87,10 +96,23 @@ case class EUIMetrics(parameters: JsValue, nrel_client: NREL_Client) {
 
           Map("site_eui"->convertedTotalSite / convertedBuildingSize),
           Map("source_eui"->convertedTotalSource / convertedBuildingSize),
-          Map("carbon_intensity"->totalCarbon / convertedBuildingSize)
+          Map("carbon_intensity"->totalCarbon / convertedBuildingSize),
+
+          Map("prescriptive_end_use_metric_data"->prescriptiveEndUses),
+          Map("prescriptive_electricity_metric_data"->prescriptiveElectricity),
+          Map("prescriptive_natural_gas_metric_data"->prescriptiveNG),
+          Map("prescriptive_end_use_metric_percents"->prescriptiveEndUsePercents)
         )
       }
   }
+
+  def getTotalSiteEnergy: Future[Energy] = {
+    for {
+      totalSite <- submittedEnergy.getTotalSiteEnergy
+      convertedTotalSite <- convertEnergy(totalSite)
+    } yield convertedTotalSite
+  }
+
 
   def getTotalActualCarbon: Future[Double] = getTotalActualMetric(Some("carbon"))
   def getTotalActualSource: Future[Energy] = {
@@ -192,6 +214,7 @@ case class EUIMetrics(parameters: JsValue, nrel_client: NREL_Client) {
     }
   }
 
+
 case class ReportingUnits(reporting_units:String)
   object ReportingUnits {
     implicit val ReportingUnitsReads: Reads[ReportingUnits] = Json.reads[ReportingUnits]
@@ -270,10 +293,29 @@ case class ReportingUnits(reporting_units:String)
 // final output conversions
 
   def energyMetricUnit(energyEntry:Energy):Energy = energyEntry in KilowattHours
-  def energyMetricConstant:Double = KBtus(1) to KilowattHours
+  def energyMetricConstant:Double = KBtus(1) to KilowattHours //interpret as kwh per kbtu
 
   def areaMetricUnit(areaEntry:Double):Double = SquareFeet(areaEntry) to SquareMeters
-  def areaMetricConstant:Double = SquareFeet(1) to SquareMeters
+  def areaMetricConstant:Double = SquareFeet(1) to SquareMeters//interpret as sq meters per sq ft
+
+  def solarConversionEnergy: Future[Double] = Future{
+    result.head.asOpt[ReportingUnits] match {
+      case Some(a) => a.reporting_units match {
+        case "metric" => 1.0
+        case _ => 1.0 / energyMetricConstant
+      }
+      case _ => 1.0 / energyMetricConstant
+    }
+  }
+  def solarConversionIntensity: Future[Double] = Future{
+    result.head.asOpt[ReportingUnits] match {
+      case Some(a) => a.reporting_units match {
+        case "metric" => 1.0
+        case _ => 1.0 / energyMetricConstant * areaMetricConstant
+      }
+      case _ => 1.0 / energyMetricConstant * areaMetricConstant
+    }
+  }
 
   def convertEnergy(energyEntry:Energy):Future[Energy] = Future{
     //input should always be KBtus
