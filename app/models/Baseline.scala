@@ -37,7 +37,7 @@ case class EUIMetrics(parameters: JsValue, nrel_client: NREL_Client) {
   def getBuildingData: Future[List[ValidatedPropTypes]] = prescriptiveEUI.getValidatedPropList
   def getMetrics: Future[ValidatedConversionDetails] = metricConversion.getConversionMetrics(None)
 
-  def getSiteMetrics:Future[Seq[Map[String,Any]]] = {
+  def getSiteMetrics:Future[Map[String,Any]] = {
     //Site EUI and Energy have to be converted to reportingUnits for output as last step, carbon and source are already converted
       for {
       buildingSize <- prescriptiveEUI.getBuildingSize
@@ -52,24 +52,20 @@ case class EUIMetrics(parameters: JsValue, nrel_client: NREL_Client) {
 
       energyList <- submittedEnergy.getSiteEnergyList
 
-
       } yield {
-        Seq(
-
-          Map("site_energy"->convertedTotalSite),
-          Map("source_energy"->convertedTotalSource),
-          Map("carbon_tonnes"->totalCarbon),
-
-          Map("site_eui"->convertedTotalSite / convertedBuildingSize),
-          Map("source_eui"->totalSource / convertedBuildingSize),
-          Map("carbon_intensity"->totalCarbon / convertedBuildingSize),
-
-          Map("building_energy_list"-> energyList.energies)
-        )
+          Map(
+          "site_energy"->convertedTotalSite,
+          "source_energy"->convertedTotalSource,
+          "carbon_tonnes"->totalCarbon,
+          "site_eui"->convertedTotalSite / convertedBuildingSize,
+          "source_eui"->totalSource / convertedBuildingSize,
+          "carbon_intensity"->totalCarbon / convertedBuildingSize,
+          "building_energy_list"-> energyList.energies
+          )
       }
   }
 
-  def getPrescriptiveMetrics:Future[Seq[Map[String,Any]]] = {
+  def getPrescriptiveMetrics:Future[Map[String,Any]] = {
 
       for {
       buildingSize <- prescriptiveEUI.getBuildingSize
@@ -89,19 +85,17 @@ case class EUIMetrics(parameters: JsValue, nrel_client: NREL_Client) {
       prescriptiveEndUsePercents <- getPrescriptiveEndUsePercents
 
       } yield {
-        Seq(
-          Map("site_energy"->convertedTotalSite),
-          Map("source_energy"->convertedTotalSource),
-          Map("carbon_tonnes"->totalCarbon),
-
-          Map("site_eui"->convertedTotalSite / convertedBuildingSize),
-          Map("source_eui"->convertedTotalSource / convertedBuildingSize),
-          Map("carbon_intensity"->totalCarbon / convertedBuildingSize),
-
-          Map("prescriptive_end_use_metric_data"->prescriptiveEndUses),
-          Map("prescriptive_electricity_metric_data"->prescriptiveElectricity),
-          Map("prescriptive_natural_gas_metric_data"->prescriptiveNG),
-          Map("prescriptive_end_use_metric_percents"->prescriptiveEndUsePercents)
+        Map(
+          "site_energy"->convertedTotalSite,
+          "source_energy"->convertedTotalSource,
+          "carbon_tonnes"->totalCarbon,
+          "site_eui"->convertedTotalSite / convertedBuildingSize,
+          "source_eui"->convertedTotalSource / convertedBuildingSize,
+          "carbon_intensity"->totalCarbon / convertedBuildingSize,
+          "prescriptive_end_use_metric_data"->prescriptiveEndUses,
+          "prescriptive_electricity_metric_data"->prescriptiveElectricity,
+          "prescriptive_natural_gas_metric_data"->prescriptiveNG,
+          "prescriptive_end_use_metric_percents"->prescriptiveEndUsePercents
         )
       }
   }
