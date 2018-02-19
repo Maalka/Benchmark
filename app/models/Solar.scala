@@ -75,7 +75,7 @@ case class SolarProperties(parameters: JsValue) {
         area_units match {
           case "mSQ" => Meters(a) to Meters
           case "ftSQ" => Feet(a) to Meters
-          case _ => throw new Exception("If PV Area is supplied, pv_area_units must be mSQ or ftSQ! ")
+          case _ => throw new Exception("If access_perimeter is provided, pv_area_units must be mSQ or ftSQ! ")
         }
       }
       case _ if (default == 0) => 2.0 //Meters

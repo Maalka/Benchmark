@@ -620,6 +620,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
           Baseline.getSiteMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.getPrescriptiveMetrics.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
 
+          Baseline.getPV.map(api(_)).recover { case NonFatal(th) => apiRecover(th) } ,
           solar_errors.recover { case NonFatal(th) => apiRecover(th) } ,
           solar_warnings.recover { case NonFatal(th) => apiRecover(th) } ,
           merged.recover { case NonFatal(th) => apiRecover(th) },
@@ -637,6 +638,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
           "performance_metrics",
           "prescriptive_metrics",
 
+          "pv_array",
           "pvwatts_errors",
           "pvwatts_warnings",
           "pvwatts_system_details",
