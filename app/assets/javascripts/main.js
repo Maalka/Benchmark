@@ -56,7 +56,7 @@
       'angular': '../lib/angularjs/angular',
       'angular-route': '../lib/angularjs/angular-route',
       'angular-cookies': '../lib/angularjs/angular-cookies',
-      'angular-file-upload': '../lib/ng-file-upload/ng-file-upload',
+      'angular-file-upload': '../lib/ng-file-upload/dist/ng-file-upload',
       'filesaver': '../lib/filesaver/FileSaver',
       'highcharts-core': '../lib/highstock/highstock',
       'highcharts-more': '../lib/highstock/highcharts-more',

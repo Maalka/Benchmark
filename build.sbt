@@ -42,7 +42,9 @@ javaOptions in Universal ++= Seq(
 
 */
 lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
-lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
+//lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
+lazy val root = (project in file(".")).enablePlugins(PlayScala, JavaAppPackaging).dependsOn(squants)
+
 
 resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
 
@@ -67,12 +69,12 @@ libraryDependencies ++= Seq(
   "org.webjars.npm" % "ng-file-upload" % "12.2.13",
   "com.github.tototoshi" %% "scala-csv" % "1.2.1",
 
-
-  "com.typesafe.akka" %% "akka-slf4j" % "2.4.8",
-  "com.typesafe.akka" %% "akka-stream" % "2.4.8",
-
-  "com.typesafe.play" %% "play-json" % "2.6.0",
-  "com.eclipsesource" %% "play-json-schema-validator" % "0.9.4",
+  "com.typesafe.akka" %% "akka-slf4j" % "2.5.9",
+  "com.typesafe.akka" %% "akka-stream" % "2.5.9",
+  "com.typesafe.play" %% "play-json-joda" % "2.6.8",
+  "org.joda" % "joda-convert" % "1.9.2",
+  "com.typesafe.play" %% "play-json" % "2.6.8",
+  //"com.eclipsesource" %% "play-json-schema-validator" % "0.9.4",
 
   "com.typesafe.play" %% "play-iteratees" % "2.6.1",
   "com.typesafe.play" %% "play-iteratees-reactive-streams" % "2.6.1"
@@ -116,7 +118,7 @@ AngularTemplatesKeys.naming := {value : String => value.replace("\\", "/")}
 // rjs = RequireJS, uglifies, shrinks to one file, replaces WebJars with CDN
 // digest = Adds hash to filename
 // gzip = Zips all assets, Asset controller serves them automatically when client accepts them
-pipelineStages := Seq(rjs, digest, gzip)
+//pipelineStages := Seq(rjs, digest, gzip)
 
 // RequireJS with sbt-rjs (https://github.com/sbt/sbt-rjs#sbt-rjs)
 // ~~~
