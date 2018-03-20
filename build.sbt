@@ -44,31 +44,48 @@ javaOptions in Universal ++= Seq(
 lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
 lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
 
+resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
+
 
 // Dependencies
 libraryDependencies ++= Seq(
   filters,
-  cache,
+  guice,
+  ehcache,
   // WebJars (i.e. client-side) dependencies
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
   "org.scalatestplus" %% "play" % "1.4.0-M3" % "test",
   "org.mockito" % "mockito-all" % "1.10.19",
   "org.webjars" % "requirejs" % "2.1.22",
   "org.webjars" % "jquery" % "2.1.3",
-  "org.webjars" %% "webjars-play" % "2.4.0-1",
+  "org.webjars" %% "webjars-play" % "2.6.3",
   "org.webjars" % "angularjs" % "1.4.7" exclude("org.webjars", "jquery"),
   "org.webjars" % "highcharts" % "4.2.3",
   "org.webjars" % "highstock" % "4.2.3",
   "org.webjars" % "matchmedia-ng" % "1.0.5",
   "org.webjars.bower" % "filesaver" % "1.3.3",
+  "org.webjars.npm" % "ng-file-upload" % "12.2.13",
   "com.github.tototoshi" %% "scala-csv" % "1.2.1",
-  "org.webjars.bower" % "ng-file-upload" % "12.0.4",
+
 
   "com.typesafe.akka" %% "akka-slf4j" % "2.4.8",
   "com.typesafe.akka" %% "akka-stream" % "2.4.8",
-  "com.typesafe.play" %% "play-streams-experimental" % "2.4.8"
 
+  "com.typesafe.play" %% "play-json" % "2.6.0",
+  "com.eclipsesource" %% "play-json-schema-validator" % "0.9.4",
+
+  "com.typesafe.play" %% "play-iteratees" % "2.6.1",
+  "com.typesafe.play" %% "play-iteratees-reactive-streams" % "2.6.1"
 )
+
+/*
+dependencyOverrides := Set(
+
+  "com.typesafe.play" %% "play-json" % "2.4.6",
+  "com.typesafe.play" %% "play-specs2" % "2.4.6" % "test"
+
+
+)*/
 
 // Scala Compiler Options
 scalacOptions in ThisBuild ++= Seq(
