@@ -24,7 +24,7 @@ case class EUICalculator(parameters: JsValue) {
 
   implicit def boolOptToInt(b: Option[Boolean]): Int = if (b.getOrElse(false)) 1 else 0
 
-  def country:String = {
+  def country: String = {
     parameters.asOpt[ConversionInfo] match {
       case Some(a) => {
         a.country match {
@@ -32,12 +32,10 @@ case class EUICalculator(parameters: JsValue) {
           case _ => throw new Exception("Could not retrieve Country")
         }
       }
-
       case _ => throw new Exception("Could not retrieve Country")
     }
   }
-
-  def reportingUnits:String = {
+  def reportingUnits: String = {
     parameters.asOpt[ConversionInfo] match {
       case Some(a) => {
         a.reportingUnits match {
@@ -45,7 +43,6 @@ case class EUICalculator(parameters: JsValue) {
           case None => "us"
         }
       }
-
       case _ => throw new Exception("Could not retrieve Reporting Units")
     }
   }

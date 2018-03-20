@@ -441,10 +441,12 @@ case class EUIMetrics(parameters: JsValue) {
       outputList <- Future{
         energyCalcs.reportingUnits match {
             case "us" => propTypes.map{
-              a => PropParams(a.printed, a.buildingSize * conversionConstant, a.buildingSize / propGFASum, "ftSQ")
+              a => PropParams(a.printed, a.buildingSize * conversionConstant,
+                a.buildingSize / propGFASum, "ftSQ", a.propTypeName.getOrElse(null))
             }
             case "metric" => propTypes.map{
-              a => PropParams(a.printed, a.buildingSize * conversionConstant, a.buildingSize / propGFASum, "mSQ")
+              a => PropParams(a.printed, a.buildingSize * conversionConstant,
+                a.buildingSize / propGFASum, "mSQ", a.propTypeName.getOrElse(null))
             }
           }
         }
@@ -707,7 +709,7 @@ case class EUIMetrics(parameters: JsValue) {
 
 
 
-  def computeLookupEUI[T](targetBuilding: T): Future[Double] = Future{
+  def computeLookupEUI(targetBuilding: BaseLine): Future[Double] = {
     targetBuilding match {
       case a: GenericBuilding => throw new Exception("Lookup EUI could not be computed - Generic Building: No Algorithm!")
       case a: BaseLine => a.expectedEnergy

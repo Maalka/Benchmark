@@ -7,19 +7,19 @@ package controllers
 import models._
 
 import com.google.inject.Inject
-import play.api.cache.CacheApi
+import play.api.cache.{AsyncCacheApi, SyncCacheApi}
 import play.api.libs.json._
 import play.api.mvc._
 import scala.concurrent.Future
-import squants.energy.{Energy}
+import squants.energy.Energy
 
 import scala.util.control.NonFatal
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
 
-trait BaselineActions {
-  this: Controller =>
+class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, restController: RestController) extends AbstractController(cc) with Logging {
+
 
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
   implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(b.value)
@@ -53,6 +53,7 @@ trait BaselineActions {
             ))
           case a:PropParams => JsObject(Seq(
             "propType" -> JsString(a.propType),
+            "propTypeName" -> JsString(a.propTypeName),
             "propSize" -> JsNumber(a.propSize),
             "propPercent" -> JsNumber{
               a.propPercent match {
@@ -129,8 +130,29 @@ trait BaselineActions {
       //this is the total site energy without accounting for renewable generation and/or purchasing
       Baseline.siteEnergyALL.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
 
+
+      //these are specific to Maalka platform
+/*      Baseline.getESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.getTargetESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.getMedianESScore.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},*/
+
+      Baseline.siteEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.siteEnergyListConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.sourceEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.sourceEnergyListConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+      Baseline.medianSiteEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.medianSourceEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+      Baseline.percentBetterSiteEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.percentBetterSourceEnergyConverted.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
+      Baseline.getDirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+      Baseline.getIndirectEmissionList().map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
+
       Baseline.getParkingEnergyOnly.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
       Baseline.getParkingAreaOnly.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
+
 
 
     ))
@@ -177,9 +199,27 @@ trait BaselineActions {
       "offSitePurchasedTotal",
       "siteEnergyALL",
 
+/*      //these are specific to Maalka platform
+      "actualES",
+      "targetES",
+      "medianES",*/
+
+      "totalSiteEnergy",
+      "siteEnergyList",
+      "totalSourceEnergy",
+      "sourceEnergyList",
+
+      "medianSiteEnergy",
+      "medianSourceEnergy",
+
+      "medianSiteEnergy",
+      "medianSourceEnergy",
+
+      "directSiteEmissions",
+      "indirectSiteEmissions",
+
       "parkingEnergy",
       "parkingArea"
-
     )
 
     futures.map(fieldNames.zip(_)).map { r =>
@@ -197,4 +237,5 @@ trait BaselineActions {
 
   }
 }
-class BaselineController @Inject() (val cache: CacheApi) extends Controller with Security with Logging with BaselineActions
+
+
