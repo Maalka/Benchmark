@@ -18,7 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
 
-class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, restController: RestController) extends AbstractController(cc) with Logging {
+class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) with Logging {
 
 
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)

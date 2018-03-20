@@ -67,7 +67,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "matchmedia-ng" % "1.0.5",
   "org.webjars.bower" % "filesaver" % "1.3.3",
   "org.webjars.npm" % "ng-file-upload" % "12.2.13",
-  //"com.github.tototoshi" %% "scala-csv" % "1.2.1",
+  "com.github.tototoshi" %% "scala-csv" % "1.2.1",
 
   "com.typesafe.akka" %% "akka-slf4j" % "2.5.9",
   "com.typesafe.akka" %% "akka-stream" % "2.5.9",

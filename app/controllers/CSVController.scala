@@ -7,6 +7,7 @@ package controllers
 import java.io._
 import java.util.zip.{ZipEntry, ZipOutputStream}
 
+import akka.stream.ActorMaterializer
 import akka.actor.ActorSystem
 import akka.dispatch.Envelope
 import akka.stream._
@@ -16,7 +17,7 @@ import com.github.tototoshi.csv.{CSVReader, CSVWriter, DefaultCSVFormat, QUOTE_N
 import com.google.inject.Inject
 import models._
 import models.CSVlistCompute
-import play.api.cache.CacheApi
+import play.api.cache.{AsyncCacheApi, CacheApi}
 import play.api.libs.Files.TemporaryFile
 import play.api.libs.concurrent.Akka
 import play.api.libs.iteratee.Enumerator
@@ -31,12 +32,11 @@ import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
 
-class CSVController @Inject() (val cache: CacheApi) extends Controller with Security with Logging {
+class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, system:ActorSystem) extends AbstractController(cc) with Logging {
 
   import scala.concurrent.ExecutionContext.Implicits.global
-  import play.api.Play.current
 
-  implicit val system = Akka.system
+
 
   val decider: Supervision.Decider = {
     case NonFatal(th) =>
@@ -51,6 +51,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
     case _ => Supervision.Stop
   }
 
+  implicit val actorSystem = ActorSystem("ServiceName")
   implicit val materializer = ActorMaterializer()
 
   implicit val timeout = Timeout(5 seconds)
@@ -186,7 +187,7 @@ class CSVController @Inject() (val cache: CacheApi) extends Controller with Secu
             }
             zip.close()
           }
-          Ok.stream(enumerator >>> Enumerator.eof).withHeaders(
+          Ok.chunked(enumerator >>> Enumerator.eof).withHeaders(
             "Content-Type" -> "application/zip",
             "Content-Disposition" -> "attachment; filename=Results.zip"
           )

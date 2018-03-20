@@ -15,7 +15,7 @@ import scala.concurrent.Future
 case class CSVcompute(parameters: List[List[String]]) {
 
   val validZipCodes:String = {
-    Play.application.resourceAsStream("valid_zipcodes.json") match {
+    Play.current.resourceAsStream("valid_zipcodes.json") match {
       case Some(is: InputStream) => {
         Json.parse(is).toString()
       }

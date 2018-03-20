@@ -6,20 +6,20 @@
 package controllers
 
 import models._
-
 import com.google.inject.Inject
-import play.api.cache.CacheApi
+import play.api.cache.{AsyncCacheApi, CacheApi}
 import play.api.libs.json._
 import play.api.mvc._
-import scala.concurrent.Future
+import play.mvc.Security
 
+import scala.concurrent.Future
 import scala.util.control.NonFatal
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
 
-trait DegreeDaysActions {
-  this: Controller =>
+class DegreeDaysController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) with Logging {
+  this: AbstractController =>
 
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
 
@@ -73,4 +73,4 @@ trait DegreeDaysActions {
 
   }
 }
-class DegreeDaysController @Inject() (val cache: CacheApi) extends Controller with Security with Logging with DegreeDaysActions
+
