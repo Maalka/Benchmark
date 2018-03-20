@@ -18,8 +18,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
 
-trait BaselineActions {
-  this: BaseController =>
+class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, restController: RestController) extends AbstractController(cc) with Logging {
+
 
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
   implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(b.value)
@@ -238,5 +238,4 @@ trait BaselineActions {
   }
 }
 
-class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) with Logging with BaselineActions
 
