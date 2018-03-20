@@ -10,7 +10,7 @@
         </tr>
         <tr  class="top aligned" ng-repeat="prop in propOutputList">
             <td ng-if="$first" rowspan="{{propOutputList.length}}">USES</td>
-            <td>{{prop.propType}}</td>
+            <td>{{prop.propTypeName}}</td>
             <td colspan=2 >{{prop.propSize | number : 0}} {{prop.areaUnits}} ({{prop.propPercent | number : 1}}%)</td>
         </tr>
         <tr><td colspan="4">

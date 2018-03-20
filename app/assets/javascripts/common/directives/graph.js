@@ -943,7 +943,7 @@ define(['angular','highcharts', 'maalkaflags', './main'], function(angular) {
                   legend: {
                     enabled: true,
                     margin: 0,
-                    padding: 0,
+                    padding: -5,
                     symbolWidth: 5,
                     symbolHeight: 5,
                     itemDistance: 8,
