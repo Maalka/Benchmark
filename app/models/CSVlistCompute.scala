@@ -3,7 +3,7 @@ package models
 import play.api.libs.json._
 import scala.concurrent.Future
 import squants.energy.Energy
-
+import play.api.{ Configuration, Environment }
 import scala.util.control.NonFatal
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
@@ -12,7 +12,7 @@ import scala.language.implicitConversions
 /**
   * Created by rimukas on 1/13/17.
   */
-case class CSVlistCompute() {
+case class CSVlistCompute(configuration:Configuration) {
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
   implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(b.value)
   implicit def listEnergyToJSValue(v: List[Energy]): JsValue = Json.toJson(v.map{
@@ -66,7 +66,7 @@ case class CSVlistCompute() {
 
   def getMetrics(csvJson:JsValue):Future[JsObject] = {
 
-    val Baseline: EUIMetrics = EUIMetrics(csvJson)
+    val Baseline: EUIMetrics = EUIMetrics(csvJson, configuration)
 
     val futures = Future.sequence(Seq(
 

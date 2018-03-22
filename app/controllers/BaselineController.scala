@@ -12,6 +12,7 @@ import com.google.inject.Inject
 import play.api.cache.{AsyncCacheApi, SyncCacheApi}
 import play.api.libs.json._
 
+import play.api.{ Configuration, Environment }
 import play.api.mvc._
 import scala.concurrent.Future
 import squants.energy.Energy
@@ -21,7 +22,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
 
-class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) with Logging {
+class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, configuration: Configuration) extends AbstractController(cc) with Logging {
 
 
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
@@ -171,30 +172,30 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                        "type": ["boolean","null"]
                    },
                    "parkingAreaUnits": {
-                       "id": "/items/properties/parkingAreaUnits",
-                       "type": "string",
-                       "enum": ["ftSQ","mSQ"]
-                   },
-                   "hasParkingHeating": {
-                       "id": "/items/properties/hasParkingHeating",
-                       "type": "boolean"
-                   },
-                   "openParkingArea": {
-                       "id": "/items/properties/openParkingArea",
-                       "type": "number"
-                   },
-                   "partiallyEnclosedParkingArea": {
-                       "id": "/items/properties/partiallyEnclosedParkingArea",
-                       "type": "number"
-                   },
-                   "fullyEnclosedParkingArea": {
-                       "id": "/items/properties/fullyEnclosedParkingArea",
-                       "type": "number"
-                   },
-                   "totalParkingArea": {
-                       "id": "/items/properties/totalParkingArea",
-                       "type": "number"
-                   },
+                     "id": "/items/properties/parkingAreaUnits",
+                     "type": ["string","null"],
+                     "enum": ["ftSQ","mSQ",null]
+                 },
+                 "hasParkingHeating": {
+                     "id": "/items/properties/hasParkingHeating",
+                     "type": ["boolean","null"]
+                 },
+                 "openParkingArea": {
+                     "id": "/items/properties/openParkingArea",
+                     "type": ["number","null"]
+                 },
+                 "partiallyEnclosedParkingArea": {
+                     "id": "/items/properties/partiallyEnclosedParkingArea",
+                     "type": ["number","null"]
+                 },
+                 "fullyEnclosedParkingArea": {
+                     "id": "/items/properties/fullyEnclosedParkingArea",
+                     "type": ["number","null"]
+                 },
+                 "totalParkingArea": {
+                     "id": "/items/properties/totalParkingArea",
+                     "type": ["number","null"]
+                 },
                    "hasPool": {
                        "id": "/items/properties/hasPool",
                        "type": ["boolean","null"]
@@ -402,7 +403,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                                "energyName": {
                                    "id": "/items/properties/renewableEnergies/items/properties/energyName",
                                    "type": "string",
-                                   "enum": ["On-Site Solar","On-Site Wind","On-Site Other","Electric (renewable)","Sold "]
+                                   "enum": ["On-Site Solar","On-Site Wind","On-Site Other","Electric (renewable)","Sold"]
                                },
                                "energyRate": {
                                    "id": "/items/properties/renewableEnergies/items/properties/energyRate",
@@ -426,7 +427,6 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                                }
                            },
                            "required": [
-                               "energyRate",
                                "energyUnits",
                                "energyUse",
                                "energyType",
@@ -579,9 +579,10 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
 
   def getZEPIMetrics() = Action.async(parse.json) { implicit request =>
 
-    val Baseline: EUIMetrics = EUIMetrics(request.body)
+    val Baseline: EUIMetrics = EUIMetrics(request.body, configuration)
 
     val json: JsValue = request.body
+
     val result = validator.validate(schema, json)
 
     result.fold(

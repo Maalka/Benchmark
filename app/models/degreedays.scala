@@ -28,7 +28,7 @@ object DegreeDays {
 
   def loadLookupTable(filename:String): Future[JsValue] = {
     for {
-      is <- Future(Play.current.resourceAsStream(filename))
+      is <- Future(play.api.Environment.simple().resourceAsStream(filename))
       json <- Future {
         is match {
           case Some(is: InputStream) => {

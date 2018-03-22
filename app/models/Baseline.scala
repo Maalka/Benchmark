@@ -4,24 +4,28 @@ package models
 
 import squants.energy._
 import squants.space._
+
 import scala.concurrent.Future
 import scala.language._
 import scala.math._
 import play.api.libs.json._
-import play.api.Play
+import play.api.{Configuration, Play}
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import java.io.{InputStream}
+import java.io.InputStream
+
 import scala.util.control.NonFatal
 
 
-case class EUIMetrics(parameters: JsValue) {
+case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
 
 
   val result = parameters.as[List[JsValue]]
 
 
-  val combinedPropMetrics:CombinedPropTypes = CombinedPropTypes(parameters)
-  val es:ES = ES(parameters)
+  val combinedPropMetrics:CombinedPropTypes = CombinedPropTypes(parameters, configuration)
+  val es:ES = ES(parameters, configuration)
+  val degreeDays = DegreeDays(result.head)
 
   val energyCalcs:EUICalculator = EUICalculator(result.head)
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
@@ -163,7 +167,8 @@ case class EUIMetrics(parameters: JsValue) {
 
   def getParkingEnergyOnly:Future[Double] = {
     for {
-      parkingEnergy <- combinedPropMetrics.getParkingEnergy(result.head)
+      heatingDays <- degreeDays.lookupHDD
+      parkingEnergy <- combinedPropMetrics.getParkingEnergy(result.head,heatingDays)
       convertedEnergy <- energyConversion(parkingEnergy)
     } yield convertedEnergy.value
   }
@@ -758,7 +763,7 @@ case class EUIMetrics(parameters: JsValue) {
 
   def loadEnergyMixTable: Future[JsValue] = {
     for {
-      is <- Future(Play.current.resourceAsStream("statePropertyEnergyMix.json"))
+      is <- Future(play.api.Environment.simple().resourceAsStream("statePropertyEnergyMix.json"))
       json <- Future {
         is match {
           case Some(is: InputStream) => {

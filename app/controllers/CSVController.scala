@@ -24,6 +24,7 @@ import play.api.libs.concurrent.Akka
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.json._
 import play.api.mvc._
+import play.api.{ Configuration, Environment }
 
 import scala.concurrent.duration._
 import scala.concurrent.Future
@@ -33,7 +34,7 @@ import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
 
-class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, system:ActorSystem) extends AbstractController(cc) with Logging {
+class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, system:ActorSystem, configuration: Configuration) extends AbstractController(cc) with Logging {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -118,7 +119,7 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
 
         val reader = CSVReader.open(uploadedFile)
 
-        val csvTemp = CSVlistCompute()
+        val csvTemp = CSVlistCompute(configuration)
         val csvList = CSVcompute(reader.all)
 
 

@@ -731,9 +731,12 @@ object GenericBuilding {
   implicit val genericBuildingTypeRead: Reads[GenericBuilding] = Json.reads[GenericBuilding]
 }
 
-case class Parking(openParkingArea: PosDouble, partiallyEnclosedParkingArea: PosDouble,
-                   fullyEnclosedParkingArea: PosDouble, HDD: PosDouble, hasParkingHeating: Option[Boolean],
-                   areaUnits: String, country: String, buildingType: String, totalParkingArea: PosDouble) {
+case class Parking(openParkingArea: Option[PosDouble], partiallyEnclosedParkingArea: Option[PosDouble],
+                   fullyEnclosedParkingArea: Option[PosDouble], hasParkingHeating: Option[Boolean],
+                   areaUnits: String, country: Option[String], buildingType: String, totalParkingArea: Option[PosDouble],
+                   postalCode:String) {
+
+  val degreeDays = PostalDegreeDays(postalCode)
 
   implicit def boolOptToInt(b: Option[Boolean]): Int = if (b.getOrElse(false)) 1 else 0
 
@@ -742,17 +745,8 @@ case class Parking(openParkingArea: PosDouble, partiallyEnclosedParkingArea: Pos
     case "mSQ" => SquareMeters(1) to SquareFeet
   }
 
-  def energyReduce: Double = regressionSegments.map(_.reduce).sum
-
-  def expectedEnergy = energyReduce
-
   val printed: String = "Parking"
-  val regressionSegments = Seq[RegressionSegment](
-    RegressionSegment(9.385, 0, openParkingArea.value * areaConvert),
-    RegressionSegment(28.16, 0, partiallyEnclosedParkingArea.value * areaConvert),
-    RegressionSegment(35.67, 0, fullyEnclosedParkingArea.value * areaConvert),
-    RegressionSegment(0.009822, 0, HDD.value * hasParkingHeating * fullyEnclosedParkingArea.value * areaConvert)
-  )
+
 }
 
 object Parking {
