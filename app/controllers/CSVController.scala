@@ -18,6 +18,7 @@ import com.google.inject.Inject
 import models._
 import models.CSVlistCompute
 import play.api.cache.{AsyncCacheApi, CacheApi}
+import play.api.libs.EventSource
 import play.api.libs.Files.TemporaryFile
 import play.api.libs.concurrent.Akka
 import play.api.libs.iteratee.Enumerator
@@ -111,7 +112,9 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
         ))
       case upload => {
         val filename = upload.filename
-        val uploadedFile = upload.ref.moveTo(new File(tempDir + File.separator + filename))
+        val uploadedFile = new File(tempDir + File.separator + filename)
+        upload.ref.moveTo(uploadedFile)
+
 
         val reader = CSVReader.open(uploadedFile)
 
@@ -171,26 +174,30 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
           error_writer.close()
           writer.close()
 
+          import java.io.ByteArrayOutputStream
+          val baos = new ByteArrayOutputStream
+          val zip = new ZipOutputStream(baos)
 
-          val enumerator = Enumerator.outputStream { os =>
-            val zip = new ZipOutputStream(os)
-            Seq(processedEntries, unprocessedEntries, uploadedFile).foreach { f =>
-              zip.putNextEntry(new ZipEntry("Results/%s".format(f.getName)))
-              val in = new BufferedInputStream(new FileInputStream(f))
-              var b = in.read()
-              while (b > -1) {
-                zip.write(b)
-                b = in.read
-              }
-              in.close()
-              zip.closeEntry()
+          Seq(processedEntries, unprocessedEntries, uploadedFile).foreach { f =>
+            zip.putNextEntry(new ZipEntry("Results/%s".format(f.getName)))
+            val in = new BufferedInputStream(new FileInputStream(f))
+            var b = in.read()
+            while (b > -1) {
+              zip.write(b)
+              b = in.read
             }
-            zip.close()
+            in.close()
+            zip.closeEntry()
           }
-          Ok.chunked(enumerator >>> Enumerator.eof).withHeaders(
-            "Content-Type" -> "application/zip",
-            "Content-Disposition" -> "attachment; filename=Results.zip"
-          )
+          zip.close()
+
+          val bais = new ByteArrayInputStream(baos.toByteArray)
+          val source = StreamConverters.fromInputStream(() => bais)
+
+          Ok.chunked(source).withHeaders(
+          "Content-Type" -> "application/zip",
+          "Content-Disposition" -> "attachment; filename=Results.zip"
+        )
         }.recover {
           case NonFatal(th) =>
             //println(th)
