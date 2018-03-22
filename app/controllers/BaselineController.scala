@@ -77,505 +77,504 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
   }
 
 
+  val validator = new SchemaValidator()
+
   val schema = Json.fromJson[SchemaType](Json.parse(
     """{
-         "$schema": "http://json-schema.org/draft-04/schema#",
-         "id": "http://baseline.maalka.com/baseline",
-         "type": "array",
-         "items": [
-             {
-                 "id": "/items",
-                 "type": "object",
-                 "properties": {
-                     "CDD": {
-                         "id": "/items/properties/CDD",
-                         "minimum": 0,
-                         "type": "number"
-                     },
-                     "GFA": {
-                         "id": "/items/properties/GFA",
-                         "minimum": 0,
-                         "type": "number"
-                     },
-                     "HDD": {
-                         "id": "/items/properties/HDD",
-                         "minimum": 0,
-                         "type": "number"
-                     },
-                     "annualITEnergy": {
-                         "id": "/items/properties/annualITEnergy",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "areaUnits": {
-                         "id": "/items/properties/areaUnits",
-                         "type": "string",
-                         "enum": ["ftSQ","mSQ"]
-                     },
-                     "avgNumResidents": {
-                         "id": "/items/properties/avgNumResidents",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "baselineConstant": {
-                         "id": "/items/properties/baselineConstant",
-                         "type": "number",
-                         "enum": [100,130]
-                     },
-                     "buildingName": {
-                         "id": "/items/properties/buildingName",
-                         "type": ["string","null"]
-                     },
-                     "buildingType": {
-                         "id": "/items/properties/buildingType",
-                         "type": "string",
-                         "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
-                         "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
-                         "WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
-                         "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
-                         "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
-                         "Bar","Nightclub","Casino","OtherEntertainment","ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
-                         "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
-                         "TransportationTerminal","WastewaterCenter","OtherPublicServices","WorshipCenter","AutoDealership","EnclosedMall","DataCenter","PersonalServices",
-                         "RepairServices","OtherServices","Zoo","K12School","Other","SingleFamilyDetached","SingleFamilyAttached","MobileHome"]
-                     },
-                     "city": {
-                         "id": "/items/properties/city",
-                         "type": ["string","null"]
-                     },
-                     "country": {
-                         "id": "/items/properties/country",
-                         "type": "string",
-                         "enum": ["USA","Canada"]
-                     },
-                     "defaultValues": {
-                         "id": "/items/properties/defaultValues",
-                         "type": "boolean"
-                     },
-                     "gymFloorArea": {
-                         "id": "/items/properties/gymFloorArea",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "hasCooking": {
-                         "id": "/items/properties/hasCooking",
-                         "type": ["boolean","null"]
-                     },
-                     "hasFoodPreparation": {
-                         "id": "/items/properties/hasFoodPreparation",
-                         "type": ["boolean","null"]
-                     },
-                     "hasLaundryFacility": {
-                         "id": "/items/properties/hasLaundryFacility",
-                         "type": ["boolean","null"]
-                     },
-                     "parkingAreaUnits": {
-                         "id": "/items/properties/parkingAreaUnits",
-                         "type": "string",
-                         "enum": ["ftSQ","mSQ"]
-                     },
-                     "hasParkingHeating": {
-                         "id": "/items/properties/hasParkingHeating",
-                         "type": "boolean"
-                     },
-                     "openParkingArea": {
-                         "id": "/items/properties/openParkingArea",
-                         "type": "number"
-                     },
-                     "partiallyEnclosedParkingArea": {
-                         "id": "/items/properties/partiallyEnclosedParkingArea",
-                         "type": "number"
-                     },
-                     "fullyEnclosedParkingArea": {
-                         "id": "/items/properties/fullyEnclosedParkingArea",
-                         "type": "number"
-                     },
-                     "totalParkingArea": {
-                         "id": "/items/properties/totalParkingArea",
-                         "type": "number"
-                     },
-                     "hasPool": {
-                         "id": "/items/properties/hasPool",
-                         "type": ["boolean","null"]
-                     },
-                     "indoorOutdoor": {
-                         "id": "/items/properties/indoorOutdoor",
-                         "type": ["boolean","null"]
-                     },
-                     "isHighSchool": {
-                         "id": "/items/properties/isHighSchool",
-                         "type": ["boolean","null"]
-                     },
-                     "isOpenAllWeekdays": {
-                         "id": "/items/properties/isOpenAllWeekdays",
-                         "type": ["boolean","null"]
-                     },
-                     "isOpenWeekends": {
-                         "id": "/items/properties/isOpenWeekends",
-                         "type": ["boolean","null"]
-                     },
-                     "isOutdoorPool": {
-                         "id": "/items/properties/isOutdoorPool",
-                         "type": ["boolean","null"]
-                     },
-                     "isSecondarySchool": {
-                         "id": "/items/properties/isSecondarySchool",
-                         "type": ["boolean","null"]
-                     },
-                     "isSmallBank": {
-                         "id": "/items/properties/isSmallBank",
-                         "type": ["boolean","null"]
-                     },
-                     "isWarehouseRefrigerated": {
-                         "id": "/items/properties/isWarehouseRefrigerated",
-                         "type": ["boolean","null"]
-                     },
-                     "lengthRefrFoodDisplayCases": {
-                         "id": "/items/properties/lengthRefrFoodDisplayCases",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "licensedBedCapacity": {
-                         "id": "/items/properties/licensedBedCapacity",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "maxNumResidents": {
-                         "id": "/items/properties/maxNumResidents",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numBedrooms": {
-                         "id": "/items/properties/numBedrooms",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numCashRegisters": {
-                         "id": "/items/properties/numCashRegisters",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numCommWashingMachines": {
-                         "id": "/items/properties/numCommWashingMachines",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numComputers": {
-                         "id": "/items/properties/numComputers",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numElectronicLifts": {
-                         "id": "/items/properties/numElectronicLifts",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numFTEWorkers": {
-                         "id": "/items/properties/numFTEWorkers",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numMRIMachines": {
-                         "id": "/items/properties/numMRIMachines",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numOpenClosedRefrCases": {
-                         "id": "/items/properties/numOpenClosedRefrCases",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numRefrUnits": {
-                         "id": "/items/properties/numRefrUnits",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numRezUnits": {
-                         "id": "/items/properties/numRezUnits",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numRezWashingMachines": {
-                         "id": "/items/properties/numRezWashingMachines",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numServers": {
-                         "id": "/items/properties/numServers",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numStaffedBeds": {
-                         "id": "/items/properties/numStaffedBeds",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numUnitsLowRise1to4": {
-                         "id": "/items/properties/numUnitsLowRise1to4",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numWalkinRefrUnits": {
-                         "id": "/items/properties/numWalkinRefrUnits",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "numWorkersMainShift": {
-                         "id": "/items/properties/numWorkersMainShift",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "percentBetterThanMedian": {
-                         "id": "/items/properties/percentBetterThanMedian",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "percentCooled": {
-                         "id": "/items/properties/percentCooled",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "percentHeated": {
-                         "id": "/items/properties/percentHeated",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "postalCode": {
-                         "id": "/items/properties/postalCode",
-                         "type": "string"
-                     },
-                     "energies": {
-                         "id": "/items/properties/energies",
-                         "items": {
-                             "id": "/items/properties/energies/items",
-                             "properties": {
-                                 "energyName": {
-                                     "id": "/items/properties/energies/items/properties/energyName",
-                                     "type": "string",
-                                     "enum": ["Electric (Grid)","Electric (renewable)","Natural Gas","Fuel Oil 1","Fuel Oil 2","Fuel Oil 4","Fuel Oil 5,6","Propane","Kerosene","District Steam",
-                                     "District Hot Water","District Chilled Water (Absorption)","District Chilled Water (Electric)","District Chilled Water (Engine)",
-                                     "District Chilled Water (Other)","Wood","Coke","Coal (Anthracite)","Coal (Bituminous)","Diesel","Other","On-Site Solar","On-Site Wind","On-Site Other","Electric (renewable)","Sold"]
-                                 },
-                                 "energyRate": {
-                                     "id": "/items/properties/energies/items/properties/energyRate",
-                                     "minimum": 0,
-                                     "type": ["number","null"]
-                                 },
-                                 "energyType": {
-                                     "id": "/items/properties/energies/items/properties/energyType",
-                                     "type": "string",
-                                     "enum": ["grid","onSiteElectricity","naturalGas","fuelOil1","fuelOil2","fuelOil4","fuelOil6", "propane","kerosene","steam","hotWater",
-                                     "chilledWater","wood","coke","coalA","coalB","diesel", "other"]
-                                 },
-                                 "energyUnits": {
-                                     "id": "/items/properties/energies/items/properties/energyUnits",
-                                     "type": "string",
-                                     "enum": ["KBtu","MBtu","kWh","MWh","GJ","NGMcf","NGKcf","NGCcf","NGcf", "NGm3","Therms","No1UKG","No1USG",
-                                     "No1L","No2UKG","No2USG","No2L","No4UKG","No4USG","No4L","No6UKG","No6USG","No6L","DieselUKG","DieselUSG",
-                                     "DieselL","KeroseneUKG","KeroseneUSG","KeroseneL","PropaneUKG","PropaneUSG","PropaneCf","PropaneCCf",
-                                     "PropaneKCf","PropaneL","SteamLb","SteamKLb","SteamMLb","CHWTonH","CoalATon","CoalATonne","CoalALb",
-                                     "CoalAKLb","CoalAMLb","CoalBitTon","CoalBitTonne","CoalBitLb","CoalBitKLb","CoalBitMLb","CokeTon","CokeTonne",
-                                     "CokeLb","CokeKLb","CokeMLb","WoodTon","WoodTonne"]
-                                 },
-                                 "energyUse": {
-                                     "id": "/items/properties/energies/items/properties/energyUse",
-                                     "minimum": 0,
-                                     "type": "number"
-                                 }
-                             },
-                             "required": [
-                                 "energyUnits",
-                                 "energyUse",
-                                 "energyType",
-                                 "energyName"
-                             ],
-                             "type": ["object"]
-                         },
-                         "type": ["array","null"]
-                     },
-                     "renewableEnergies": {
-                         "id": "/items/properties/renewableEnergies",
-                         "items": {
-                             "id": "/items/properties/renewableEnergies/items",
-                             "properties": {
-                                 "energyName": {
-                                     "id": "/items/properties/renewableEnergies/items/properties/energyName",
-                                     "type": "string",
-                                     "enum": ["On-Site Solar","On-Site Wind","On-Site Other","Electric (renewable)","Sold "]
-                                 },
-                                 "energyRate": {
-                                     "id": "/items/properties/renewableEnergies/items/properties/energyRate",
-                                     "minimum": 0,
-                                     "type": ["number","null"]
-                                 },
-                                 "energyType": {
-                                     "id": "/items/properties/renewableEnergies/items/properties/energyType",
-                                     "type": "string",
-                                     "enum": ["grid"]
-                                 },
-                                 "energyUnits": {
-                                     "id": "/items/properties/renewableEnergies/items/properties/energyUnits",
-                                     "type": "string",
-                                     "enum": ["KBtu","MBtu","kWh","MWh","GJ"]
-                                 },
-                                 "energyUse": {
-                                     "id": "/items/properties/renewableEnergies/items/properties/energyUse",
-                                     "minimum": 0,
-                                     "type": "number"
-                                 }
-                             },
-                             "required": [
-                                 "energyRate",
-                                 "energyUnits",
-                                 "energyUse",
-                                 "energyType",
-                                 "energyName"
-                             ],
-                             "type": "object"
-                         },
-                         "type": ["array","null"]
-                     },
-                     "reportingUnits": {
-                         "id": "/items/properties/reportingUnits",
-                         "type": "string",
-                         "enum": ["us","metric"]
-                     },
-                     "seatingCapacity": {
-                         "id": "/items/properties/seatingCapacity",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "state": {
-                         "id": "/items/properties/state",
-                         "type": "string",
-                         "enum": ["AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","GU","HI","IA","ID", "IL","IN","KS","KY","LA","MA","MD","ME","MH","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY", "OH","OK","OR","PA","PR","PW","RI","SC","SD","TN","TX","UT","VA","VI","VT","WA","WI","WV","WY"]
-                     },
-                     "studentSeatingCapacity": {
-                         "id": "/items/properties/studentSeatingCapacity",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "wastewaterAvgInfluentInflow": {
-                         "id": "/items/properties/wastewaterAvgInfluentInflow",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "wastewaterEffluentBiologicalOxygenDemand": {
-                         "id": "/items/properties/wastewaterEffluentBiologicalOxygenDemand",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "wastewaterHasNutrientRemoval": {
-                         "id": "/items/properties/wastewaterHasNutrientRemoval",
-                         "type": ["boolean","null"]
-                     },
-                     "wastewaterHasTrickleFiltration": {
-                         "id": "/items/properties/wastewaterHasTrickleFiltration",
-                         "type": ["boolean","null"]
-                     },
-                     "wastewaterInfluentBiologicalOxygenDemand": {
-                         "id": "/items/properties/wastewaterInfluentBiologicalOxygenDemand",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "wastewaterLoadFactor": {
-                         "id": "/items/properties/wastewaterLoadFactor",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "wastewaterPlantDesignFlowRate": {
-                         "id": "/items/properties/wastewaterPlantDesignFlowRate",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     },
-                     "weeklyOperatingHours": {
-                         "id": "/items/properties/weeklyOperatingHours",
-                         "minimum": 0,
-                         "type": ["number","null"]
-                     }
-                 },
-                 "required": [
-                     "buildingType",
-                     "postalCode",
-                     "state",
-                     "country",
-                     "GFA",
-                     "areaUnits",
-                     "reportingUnits"
-                 ],
-                 "anyOf": [
-                     {
-                         "properties": {
-                             "buildingType": {
-                                 "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
-                                     "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
-                                     "WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
-                                     "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
-                                     "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
-                                     "Bar","Nightclub","Casino","OtherEntertainment","ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
-                                     "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
-                                     "TransportationTerminal","OtherPublicServices","WorshipCenter","AutoDealership","EnclosedMall","PersonalServices",
-                                     "RepairServices","OtherServices","Zoo","K12School","Other","SingleFamilyDetached","SingleFamilyAttached","MobileHome"]
-                             }
-                         }
-                     },
-                     {
-                         "properties": {
-                             "buildingType": {"enum": ["WastewaterCenter"]},
-                             "wastewaterAvgInfluentInflow": {
-                                 "id": "/properties/wastewaterAvgInfluentInflow",
-                                 "minimum": 0,
-                                 "type": "number"
-                             },
-                             "wastewaterInfluentBiologicalOxygenDemand": {
-                                 "id": "/properties/wastewaterInfluentBiologicalOxygenDemand",
-                                 "minimum": 0,
-                                 "type": "number"
-                             },
-                             "wastewaterEffluentBiologicalOxygenDemand": {
-                                 "id": "/properties/wastewaterEffluentBiologicalOxygenDemand",
-                                 "minimum": 0,
-                                 "type": "number"
-                             },
-                             "wastewaterPlantDesignFlowRate": {
-                                 "id": "/properties/wastewaterPlantDesignFlowRate",
-                                 "minimum": 0,
-                                 "type": "number"
-                             },
-                             "wastewaterLoadFactor": {
-                                 "id": "/properties/wastewaterPlantDesignFlowRate",
-                                 "minimum": 0,
-                                 "type": "number"
-                             },
-                             "wastewaterHasTrickleFiltration": {
-                                 "id": "/properties/wastewaterHasTrickleFiltration",
-                                 "type": "boolean"
-                             },
-                             "wastewaterHasNutrientRemoval": {
-                                 "id": "/properties/wastewaterHasNutrientRemoval",
-                                 "type": "boolean"
-                             }
-                         },
-                         "required": ["wastewaterAvgInfluentInflow", "wastewaterInfluentBiologicalOxygenDemand", "wastewaterEffluentBiologicalOxygenDemand",
-                         "wastewaterPlantDesignFlowRate", "wastewaterLoadFactor", "wastewaterHasTrickleFiltration","wastewaterHasNutrientRemoval"]
-                     },
-                     {
-                         "properties": {
-                             "buildingType": {"enum": ["DataCenter"]},
-                             "annualITEnergy": {
-                                 "id": "/properties/annualITEnergy",
-                                 "minimum": 0,
-                                 "type": "number"
-                             }
-                         },
-                         "required": ["annualITEnergy"]
-                     }
-                 ]
-             }
-         ]
-        }""".stripMargin)).get
-
-  val validator = new SchemaValidator()
+       "id": "http://baseline.maalka.com/baseline",
+       "type": "array",
+       "items": [
+           {
+               "id": "/items",
+               "type": "object",
+               "properties": {
+                   "CDD": {
+                       "id": "/items/properties/CDD",
+                       "minimum": 0,
+                       "type": "number"
+                   },
+                   "GFA": {
+                       "id": "/items/properties/GFA",
+                       "minimum": 0,
+                       "type": "number"
+                   },
+                   "HDD": {
+                       "id": "/items/properties/HDD",
+                       "minimum": 0,
+                       "type": "number"
+                   },
+                   "annualITEnergy": {
+                       "id": "/items/properties/annualITEnergy",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "areaUnits": {
+                       "id": "/items/properties/areaUnits",
+                       "type": "string",
+                       "enum": ["ftSQ","mSQ"]
+                   },
+                   "avgNumResidents": {
+                       "id": "/items/properties/avgNumResidents",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "baselineConstant": {
+                       "id": "/items/properties/baselineConstant",
+                       "type": "number",
+                       "enum": [100,130]
+                   },
+                   "buildingName": {
+                       "id": "/items/properties/buildingName",
+                       "type": ["string","null"]
+                   },
+                   "buildingType": {
+                       "id": "/items/properties/buildingType",
+                       "type": "string",
+                       "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
+                       "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
+                       "WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
+                       "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
+                       "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
+                       "Bar","Nightclub","Casino","OtherEntertainment","ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
+                       "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
+                       "TransportationTerminal","WastewaterCenter","OtherPublicServices","WorshipCenter","AutoDealership","EnclosedMall","DataCenter","PersonalServices",
+                       "RepairServices","OtherServices","Zoo","K12School","Other","SingleFamilyDetached","SingleFamilyAttached","MobileHome"]
+                   },
+                   "city": {
+                       "id": "/items/properties/city",
+                       "type": ["string","null"]
+                   },
+                   "country": {
+                       "id": "/items/properties/country",
+                       "type": "string",
+                       "enum": ["USA","Canada"]
+                   },
+                   "defaultValues": {
+                       "id": "/items/properties/defaultValues",
+                       "type": "boolean"
+                   },
+                   "gymFloorArea": {
+                       "id": "/items/properties/gymFloorArea",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "hasCooking": {
+                       "id": "/items/properties/hasCooking",
+                       "type": ["boolean","null"]
+                   },
+                   "hasFoodPreparation": {
+                       "id": "/items/properties/hasFoodPreparation",
+                       "type": ["boolean","null"]
+                   },
+                   "hasLaundryFacility": {
+                       "id": "/items/properties/hasLaundryFacility",
+                       "type": ["boolean","null"]
+                   },
+                   "parkingAreaUnits": {
+                       "id": "/items/properties/parkingAreaUnits",
+                       "type": "string",
+                       "enum": ["ftSQ","mSQ"]
+                   },
+                   "hasParkingHeating": {
+                       "id": "/items/properties/hasParkingHeating",
+                       "type": "boolean"
+                   },
+                   "openParkingArea": {
+                       "id": "/items/properties/openParkingArea",
+                       "type": "number"
+                   },
+                   "partiallyEnclosedParkingArea": {
+                       "id": "/items/properties/partiallyEnclosedParkingArea",
+                       "type": "number"
+                   },
+                   "fullyEnclosedParkingArea": {
+                       "id": "/items/properties/fullyEnclosedParkingArea",
+                       "type": "number"
+                   },
+                   "totalParkingArea": {
+                       "id": "/items/properties/totalParkingArea",
+                       "type": "number"
+                   },
+                   "hasPool": {
+                       "id": "/items/properties/hasPool",
+                       "type": ["boolean","null"]
+                   },
+                   "indoorOutdoor": {
+                       "id": "/items/properties/indoorOutdoor",
+                       "type": ["boolean","null"]
+                   },
+                   "isHighSchool": {
+                       "id": "/items/properties/isHighSchool",
+                       "type": ["boolean","null"]
+                   },
+                   "isOpenAllWeekdays": {
+                       "id": "/items/properties/isOpenAllWeekdays",
+                       "type": ["boolean","null"]
+                   },
+                   "isOpenWeekends": {
+                       "id": "/items/properties/isOpenWeekends",
+                       "type": ["boolean","null"]
+                   },
+                   "isOutdoorPool": {
+                       "id": "/items/properties/isOutdoorPool",
+                       "type": ["boolean","null"]
+                   },
+                   "isSecondarySchool": {
+                       "id": "/items/properties/isSecondarySchool",
+                       "type": ["boolean","null"]
+                   },
+                   "isSmallBank": {
+                       "id": "/items/properties/isSmallBank",
+                       "type": ["boolean","null"]
+                   },
+                   "isWarehouseRefrigerated": {
+                       "id": "/items/properties/isWarehouseRefrigerated",
+                       "type": ["boolean","null"]
+                   },
+                   "lengthRefrFoodDisplayCases": {
+                       "id": "/items/properties/lengthRefrFoodDisplayCases",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "licensedBedCapacity": {
+                       "id": "/items/properties/licensedBedCapacity",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "maxNumResidents": {
+                       "id": "/items/properties/maxNumResidents",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numBedrooms": {
+                       "id": "/items/properties/numBedrooms",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numCashRegisters": {
+                       "id": "/items/properties/numCashRegisters",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numCommWashingMachines": {
+                       "id": "/items/properties/numCommWashingMachines",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numComputers": {
+                       "id": "/items/properties/numComputers",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numElectronicLifts": {
+                       "id": "/items/properties/numElectronicLifts",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numFTEWorkers": {
+                       "id": "/items/properties/numFTEWorkers",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numMRIMachines": {
+                       "id": "/items/properties/numMRIMachines",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numOpenClosedRefrCases": {
+                       "id": "/items/properties/numOpenClosedRefrCases",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numRefrUnits": {
+                       "id": "/items/properties/numRefrUnits",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numRezUnits": {
+                       "id": "/items/properties/numRezUnits",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numRezWashingMachines": {
+                       "id": "/items/properties/numRezWashingMachines",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numServers": {
+                       "id": "/items/properties/numServers",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numStaffedBeds": {
+                       "id": "/items/properties/numStaffedBeds",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numUnitsLowRise1to4": {
+                       "id": "/items/properties/numUnitsLowRise1to4",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numWalkinRefrUnits": {
+                       "id": "/items/properties/numWalkinRefrUnits",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "numWorkersMainShift": {
+                       "id": "/items/properties/numWorkersMainShift",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "percentBetterThanMedian": {
+                       "id": "/items/properties/percentBetterThanMedian",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "percentCooled": {
+                       "id": "/items/properties/percentCooled",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "percentHeated": {
+                       "id": "/items/properties/percentHeated",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "postalCode": {
+                       "id": "/items/properties/postalCode",
+                       "type": "string"
+                   },
+                   "energies": {
+                       "id": "/items/properties/energies",
+                       "items": {
+                           "id": "/items/properties/energies/items",
+                           "properties": {
+                               "energyName": {
+                                   "id": "/items/properties/energies/items/properties/energyName",
+                                   "type": "string",
+                                   "enum": ["Electric (Grid)","Electric (renewable)","Natural Gas","Fuel Oil 1","Fuel Oil 2","Fuel Oil 4","Fuel Oil 5,6","Propane","Kerosene","District Steam",
+                                   "District Hot Water","District Chilled Water (Absorption)","District Chilled Water (Electric)","District Chilled Water (Engine)",
+                                   "District Chilled Water (Other)","Wood","Coke","Coal (Anthracite)","Coal (Bituminous)","Diesel","Other","On-Site Solar","On-Site Wind","On-Site Other","Electric (renewable)","Sold"]
+                               },
+                               "energyRate": {
+                                   "id": "/items/properties/energies/items/properties/energyRate",
+                                   "minimum": 0,
+                                   "type": ["number","null"]
+                               },
+                               "energyType": {
+                                   "id": "/items/properties/energies/items/properties/energyType",
+                                   "type": "string",
+                                   "enum": ["grid","onSiteElectricity","naturalGas","fuelOil1","fuelOil2","fuelOil4","fuelOil6", "propane","kerosene","steam","hotWater",
+                                   "chilledWater","wood","coke","coalA","coalB","diesel", "other"]
+                               },
+                               "energyUnits": {
+                                   "id": "/items/properties/energies/items/properties/energyUnits",
+                                   "type": "string",
+                                   "enum": ["KBtu","MBtu","kWh","MWh","GJ","NGMcf","NGKcf","NGCcf","NGcf", "NGm3","Therms","No1UKG","No1USG",
+                                   "No1L","No2UKG","No2USG","No2L","No4UKG","No4USG","No4L","No6UKG","No6USG","No6L","DieselUKG","DieselUSG",
+                                   "DieselL","KeroseneUKG","KeroseneUSG","KeroseneL","PropaneUKG","PropaneUSG","PropaneCf","PropaneCCf",
+                                   "PropaneKCf","PropaneL","SteamLb","SteamKLb","SteamMLb","CHWTonH","CoalATon","CoalATonne","CoalALb",
+                                   "CoalAKLb","CoalAMLb","CoalBitTon","CoalBitTonne","CoalBitLb","CoalBitKLb","CoalBitMLb","CokeTon","CokeTonne",
+                                   "CokeLb","CokeKLb","CokeMLb","WoodTon","WoodTonne"]
+                               },
+                               "energyUse": {
+                                   "id": "/items/properties/energies/items/properties/energyUse",
+                                   "minimum": 0,
+                                   "type": "number"
+                               }
+                           },
+                           "required": [
+                               "energyUnits",
+                               "energyUse",
+                               "energyType",
+                               "energyName"
+                           ],
+                           "type": ["object"]
+                       },
+                       "type": ["array","null"]
+                   },
+                   "renewableEnergies": {
+                       "id": "/items/properties/renewableEnergies",
+                       "items": {
+                           "id": "/items/properties/renewableEnergies/items",
+                           "properties": {
+                               "energyName": {
+                                   "id": "/items/properties/renewableEnergies/items/properties/energyName",
+                                   "type": "string",
+                                   "enum": ["On-Site Solar","On-Site Wind","On-Site Other","Electric (renewable)","Sold "]
+                               },
+                               "energyRate": {
+                                   "id": "/items/properties/renewableEnergies/items/properties/energyRate",
+                                   "minimum": 0,
+                                   "type": ["number","null"]
+                               },
+                               "energyType": {
+                                   "id": "/items/properties/renewableEnergies/items/properties/energyType",
+                                   "type": "string",
+                                   "enum": ["grid"]
+                               },
+                               "energyUnits": {
+                                   "id": "/items/properties/renewableEnergies/items/properties/energyUnits",
+                                   "type": "string",
+                                   "enum": ["KBtu","MBtu","kWh","MWh","GJ"]
+                               },
+                               "energyUse": {
+                                   "id": "/items/properties/renewableEnergies/items/properties/energyUse",
+                                   "minimum": 0,
+                                   "type": "number"
+                               }
+                           },
+                           "required": [
+                               "energyRate",
+                               "energyUnits",
+                               "energyUse",
+                               "energyType",
+                               "energyName"
+                           ],
+                           "type": "object"
+                       },
+                       "type": ["array","null"]
+                   },
+                   "reportingUnits": {
+                       "id": "/items/properties/reportingUnits",
+                       "type": "string",
+                       "enum": ["us","metric"]
+                   },
+                   "seatingCapacity": {
+                       "id": "/items/properties/seatingCapacity",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "state": {
+                       "id": "/items/properties/state",
+                       "type": "string",
+                       "enum": ["AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","GU","HI","IA","ID", "IL","IN","KS","KY","LA","MA","MD","ME","MH","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY", "OH","OK","OR","PA","PR","PW","RI","SC","SD","TN","TX","UT","VA","VI","VT","WA","WI","WV","WY"]
+                   },
+                   "studentSeatingCapacity": {
+                       "id": "/items/properties/studentSeatingCapacity",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "wastewaterAvgInfluentInflow": {
+                       "id": "/items/properties/wastewaterAvgInfluentInflow",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "wastewaterEffluentBiologicalOxygenDemand": {
+                       "id": "/items/properties/wastewaterEffluentBiologicalOxygenDemand",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "wastewaterHasNutrientRemoval": {
+                       "id": "/items/properties/wastewaterHasNutrientRemoval",
+                       "type": ["boolean","null"]
+                   },
+                   "wastewaterHasTrickleFiltration": {
+                       "id": "/items/properties/wastewaterHasTrickleFiltration",
+                       "type": ["boolean","null"]
+                   },
+                   "wastewaterInfluentBiologicalOxygenDemand": {
+                       "id": "/items/properties/wastewaterInfluentBiologicalOxygenDemand",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "wastewaterLoadFactor": {
+                       "id": "/items/properties/wastewaterLoadFactor",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "wastewaterPlantDesignFlowRate": {
+                       "id": "/items/properties/wastewaterPlantDesignFlowRate",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   },
+                   "weeklyOperatingHours": {
+                       "id": "/items/properties/weeklyOperatingHours",
+                       "minimum": 0,
+                       "type": ["number","null"]
+                   }
+               },
+               "required": [
+                   "buildingType",
+                   "postalCode",
+                   "state",
+                   "country",
+                   "GFA",
+                   "areaUnits",
+                   "reportingUnits"
+               ],
+               "anyOf": [
+                   {
+                       "properties": {
+                           "buildingType": {
+                               "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
+                                   "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
+                                   "WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
+                                   "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
+                                   "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
+                                   "Bar","Nightclub","Casino","OtherEntertainment","ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
+                                   "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
+                                   "TransportationTerminal","OtherPublicServices","WorshipCenter","AutoDealership","EnclosedMall","PersonalServices",
+                                   "RepairServices","OtherServices","Zoo","K12School","Other","SingleFamilyDetached","SingleFamilyAttached","MobileHome"]
+                           }
+                       }
+                   },
+                   {
+                       "properties": {
+                           "buildingType": {"enum": ["WastewaterCenter"]},
+                           "wastewaterAvgInfluentInflow": {
+                               "id": "/properties/wastewaterAvgInfluentInflow",
+                               "minimum": 0,
+                               "type": "number"
+                           },
+                           "wastewaterInfluentBiologicalOxygenDemand": {
+                               "id": "/properties/wastewaterInfluentBiologicalOxygenDemand",
+                               "minimum": 0,
+                               "type": "number"
+                           },
+                           "wastewaterEffluentBiologicalOxygenDemand": {
+                               "id": "/properties/wastewaterEffluentBiologicalOxygenDemand",
+                               "minimum": 0,
+                               "type": "number"
+                           },
+                           "wastewaterPlantDesignFlowRate": {
+                               "id": "/properties/wastewaterPlantDesignFlowRate",
+                               "minimum": 0,
+                               "type": "number"
+                           },
+                           "wastewaterLoadFactor": {
+                               "id": "/properties/wastewaterPlantDesignFlowRate",
+                               "minimum": 0,
+                               "type": "number"
+                           },
+                           "wastewaterHasTrickleFiltration": {
+                               "id": "/properties/wastewaterHasTrickleFiltration",
+                               "type": "boolean"
+                           },
+                           "wastewaterHasNutrientRemoval": {
+                               "id": "/properties/wastewaterHasNutrientRemoval",
+                               "type": "boolean"
+                           }
+                       },
+                       "required": ["wastewaterAvgInfluentInflow", "wastewaterInfluentBiologicalOxygenDemand", "wastewaterEffluentBiologicalOxygenDemand",
+                       "wastewaterPlantDesignFlowRate", "wastewaterLoadFactor", "wastewaterHasTrickleFiltration","wastewaterHasNutrientRemoval"]
+                   },
+                   {
+                       "properties": {
+                           "buildingType": {"enum": ["DataCenter"]},
+                           "annualITEnergy": {
+                               "id": "/properties/annualITEnergy",
+                               "minimum": 0,
+                               "type": "number"
+                           }
+                       },
+                       "required": ["annualITEnergy"]
+                   }
+               ]
+           }
+       ]
+    }""".stripMargin)).get
 
 
   def getZEPIMetrics() = Action.async(parse.json) { implicit request =>
