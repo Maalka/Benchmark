@@ -655,7 +655,6 @@ define(['angular'], function() {
                     $scope.propTypes[i].propertyModel.HDD = $scope.auxModel.HDD;
                     $scope.propTypes[i].propertyModel.CDD = $scope.auxModel.CDD;
                     $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
-                    $scope.propTypes[i].propertyModel.targetScore = null;
                     //$scope.propTypes[i].propertyModel.netMetered = $scope.auxModel.netMetered;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
