@@ -1035,7 +1035,7 @@ define(['angular'], function() {
                 {id:"GJ",name:"GJ",filter_id:"naturalGas"},
                 {id:"KBtu",name:"kBtu",filter_id:"naturalGas"},
                 {id:"MBtu",name:"MBtu",filter_id:"naturalGas"},
-                {id:"therms",name:"Therms",filter_id:"naturalGas"},
+                {id:"Therms",name:"Therms",filter_id:"naturalGas"},
 
                 //<!--Fuel Oil No. 1 -->
                 {id:"KBtu",name:"kBtu",filter_id:"fueloil1Unit"},
@@ -1100,7 +1100,7 @@ define(['angular'], function() {
                 {id:"GJ",name:"GJ",filter_id:"steam"},
                 {id:"KBtu",name:"kBtu",filter_id:"steam"},
                 {id:"MBtu",name:"MBtu",filter_id:"steam"},
-                {id:"therms",name:"Therms",filter_id:"steam"},
+                {id:"Therms",name:"Therms",filter_id:"steam"},
                 {id:"SteamLb",name:"Pounds",filter_id:"steam"},
                 {id:"SteamKLb",name:"Thousand pounds",filter_id:"steam"},
                 {id:"SteamMLb",name:"Million pounds",filter_id:"steam"},
@@ -1109,7 +1109,7 @@ define(['angular'], function() {
                 {id:"KBtu",name:"kBtu",filter_id:"hotWater"},
                 {id:"MBtu",name:"MBtu",filter_id:"hotWater"},
                 {id:"GJ",name:"GJ",filter_id:"hotWater"},
-                {id:"therms",name:"Therms",filter_id:"hotWater"},
+                {id:"Therms",name:"Therms",filter_id:"hotWater"},
 
                 //<!--District Chilled Water-->
                 {id:"KBtu",name:"kBtu",filter_id:"chilledWater"},
