@@ -372,7 +372,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                                "energyUnits": {
                                    "id": "/items/properties/energies/items/properties/energyUnits",
                                    "type": "string",
-                                   "enum": ["KBtu","MBtu","kWh","MWh","GJ","NGMcf","NGKcf","NGCcf","NGcf", "NGm3","Therms","No1UKG","No1USG",
+                                   "enum": ["KBtu","MBtu","kWh","MWh","GJ","NGMcf","NGKcf","NGCcf","NGcf", "NGm3","therms","No1UKG","No1USG",
                                    "No1L","No2UKG","No2USG","No2L","No4UKG","No4USG","No4L","No6UKG","No6USG","No6L","DieselUKG","DieselUSG",
                                    "DieselL","KeroseneUKG","KeroseneUSG","KeroseneL","PropaneUKG","PropaneUSG","PropaneCf","PropaneCCf",
                                    "PropaneKCf","PropaneL","SteamLb","SteamKLb","SteamMLb","CHWTonH","CoalATon","CoalATonne","CoalALb",
@@ -582,6 +582,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
     val Baseline: EUIMetrics = EUIMetrics(request.body, configuration)
 
     val json: JsValue = request.body
+    println(json)
 
     val result = validator.validate(schema, json)
 
@@ -593,6 +594,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
       },
       valid = { post =>
 
+        println(json)
 
         val futures = Future.sequence(Seq(
 
