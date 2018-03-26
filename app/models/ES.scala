@@ -2,6 +2,7 @@
 package models
 
 import play.api.libs.json.{JsValue, JsPath, Reads}
+import play.api.{Configuration, Play}
 import squants.energy.Energy
 import play.api.libs.functional.syntax._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -11,10 +12,10 @@ import scala.math._
 /**
  * Created by rimukas on 5/24/16.
  */
-case class ES(parameters: JsValue) {
+case class ES(parameters: JsValue, configuration: Configuration) {
 
   val result = parameters.as[List[JsValue]]
-  val combinedPropMetrics:CombinedPropTypes = CombinedPropTypes(parameters)
+  val combinedPropMetrics:CombinedPropTypes = CombinedPropTypes(parameters, configuration)
   val energyCalcs:EUICalculator = EUICalculator(result.head)
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
 
@@ -105,8 +106,8 @@ case class ES(parameters: JsValue) {
       buildingList <- Future.sequence(result.map(BuildingProperties(_).getBuilding))
       nonGenericPropFilter <- getNonGenericBuildings(buildingList)
       nonGenericPropTypes <- combinedPropMetrics.filterPropTypes(nonGenericPropFilter)
-      targetEnergy <- EUIMetrics(parameters).percentBetterSourceEnergy
-      targetEnergy <- EUIMetrics(parameters).percentBetterSourceEnergy
+      targetEnergy <- EUIMetrics(parameters, configuration).percentBetterSourceEnergy
+      targetEnergy <- EUIMetrics(parameters, configuration).percentBetterSourceEnergy
       computedES <- {
         buildingList.length match {
           case a if a == 1 => singleES(nonGenericPropTypes.head,targetEnergy)

@@ -75,7 +75,7 @@
                         </div>
                     </div>
                     <div class="five wide column"> <!-- ng-show="lacksDD" -->
-                        <div class="tooltip">Degree Days
+                        <div class="tooltip">Optional Degree Days
                             <div class="tooltip">
                                 <sup><i class="blue circle info icon"></i></sup>
                                 <span class="tooltiptext">
@@ -98,16 +98,16 @@
                             <div class="two wide field">
                                 <label>HDD</label>
                             </div>
-                            <div class="five wide field required">
+                            <div class="five wide field">
                                 <input type="number" ng-model="auxModel.HDD"
-                                       required name="HDD" min="0" placeholder="HDD">
+                                       name="HDD" min="0" placeholder="HDD">
                             </div>
                             <div class="two wide field">
                                 <label>CDD</label>
                             </div>
-                            <div class="four wide field required">
+                            <div class="four wide field">
                                 <input type="number" ng-model="auxModel.CDD"
-                                       required name="CDD" min="0">
+                                       name="CDD" min="0">
                             </div>
                         </div>
                     </div>
@@ -193,7 +193,7 @@
                             dropdown
                             ng-model="prop.changeTo"
                             ng-change="updatePropType($index)"
-                            ng-options="item as item.name for item in buildingProperties.buildingType[prop.buildingList] | orderBy : 'name' track by item.id ">
+                            ng-options="item as item.name for item in buildingProperties.buildingType[prop.buildingList] | orderBy : 'name' track by item.name ">
                         <option value="">Select</option>
                     </select>
                 </div>

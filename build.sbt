@@ -7,7 +7,7 @@ name := "benchmark"
 organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
-version := "1.8.1.0"
+version := "1.9.0.0"
 
 scalaVersion in ThisBuild := "2.11.6"
 
@@ -42,33 +42,52 @@ javaOptions in Universal ++= Seq(
 
 */
 lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
-lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
+//lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
+lazy val root = (project in file(".")).enablePlugins(PlayScala, JavaAppPackaging).dependsOn(squants)
+
+
+resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
 
 
 // Dependencies
 libraryDependencies ++= Seq(
   filters,
-  cache,
+  guice,
+  ehcache,
+  ws,
   // WebJars (i.e. client-side) dependencies
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
-  "org.scalatestplus" %% "play" % "1.4.0-M3" % "test",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test",
   "org.mockito" % "mockito-all" % "1.10.19",
   "org.webjars" % "requirejs" % "2.1.22",
   "org.webjars" % "jquery" % "2.1.3",
-  "org.webjars" %% "webjars-play" % "2.4.0-1",
+  "org.webjars" %% "webjars-play" % "2.6.3",
   "org.webjars" % "angularjs" % "1.4.7" exclude("org.webjars", "jquery"),
   "org.webjars" % "highcharts" % "4.2.3",
   "org.webjars" % "highstock" % "4.2.3",
   "org.webjars" % "matchmedia-ng" % "1.0.5",
   "org.webjars.bower" % "filesaver" % "1.3.3",
+  "org.webjars.npm" % "ng-file-upload" % "12.2.13",
   "com.github.tototoshi" %% "scala-csv" % "1.2.1",
-  "org.webjars.bower" % "ng-file-upload" % "12.0.4",
 
-  "com.typesafe.akka" %% "akka-slf4j" % "2.4.8",
-  "com.typesafe.akka" %% "akka-stream" % "2.4.8",
-  "com.typesafe.play" %% "play-streams-experimental" % "2.4.8"
+  "com.typesafe.akka" %% "akka-slf4j" % "2.5.9",
+  "com.typesafe.akka" %% "akka-stream" % "2.5.9",
+  "com.typesafe.play" %% "play-json-joda" % "2.6.8",
+  "org.joda" % "joda-convert" % "1.9.2",
+  "com.typesafe.play" %% "play-json" % "2.6.8",
+  "com.eclipsesource" %% "play-json-schema-validator" % "0.9.4",
 
+  "com.typesafe.play" %% "play-iteratees" % "2.6.1",
+  "com.typesafe.play" %% "play-iteratees-reactive-streams" % "2.6.1"
 )
+
+/*
+dependencyOverrides := Set(
+
+  "com.typesafe.play" %% "play-json" % "2.4.6",
+  "com.typesafe.play" %% "play-specs2" % "2.4.6" % "test"
+
+
+)*/
 
 // Scala Compiler Options
 scalacOptions in ThisBuild ++= Seq(
@@ -99,7 +118,7 @@ AngularTemplatesKeys.naming := {value : String => value.replace("\\", "/")}
 // rjs = RequireJS, uglifies, shrinks to one file, replaces WebJars with CDN
 // digest = Adds hash to filename
 // gzip = Zips all assets, Asset controller serves them automatically when client accepts them
-pipelineStages := Seq(rjs, digest, gzip)
+//pipelineStages := Seq(rjs, digest, gzip)
 
 // RequireJS with sbt-rjs (https://github.com/sbt/sbt-rjs#sbt-rjs)
 // ~~~

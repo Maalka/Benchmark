@@ -28,7 +28,7 @@ object DegreeDays {
 
   def loadLookupTable(filename:String): Future[JsValue] = {
     for {
-      is <- Future(Play.current.resourceAsStream(filename))
+      is <- Future(play.api.Environment.simple().resourceAsStream(filename))
       json <- Future {
         is match {
           case Some(is: InputStream) => {
@@ -44,7 +44,6 @@ object DegreeDays {
 
 case class DegreeDays(parameters:JsValue) {
   import DegreeDays._
-
 
   def lookupWeatherStation: Future[String] = {
     for {
@@ -141,4 +140,58 @@ object DDmonths {
 case class WeatherStation(Station:String,Elevation:String)
 object WeatherStation {
   implicit val weatherStationRead: Reads[WeatherStation] = Json.reads[WeatherStation]
+}
+
+
+case class PostalDegreeDays(postalCode:String) {
+  import DegreeDays._
+
+  def lookupWeatherStation: Future[String] = {
+    for {
+      zipTable <- zipStationLookupTable
+      zipStation <-
+      Future {
+        (zipTable \ postalCode \ "station").toOption match {
+          case Some(a) => a.as[String]
+          case _ => throw new Exception("Could not retrieve Zip Code for Lookup")
+        }
+      }
+    } yield zipStation
+  }
+
+  def lookupCDD: Future[Double] = {
+    for {
+      zipStation <- lookupWeatherStation
+      futureTable <- ddStationLookupTable
+      ddMonths <-  Future{
+          (futureTable \ zipStation \ "CDD").toOption match {
+            case Some(a) => a.as[Double]
+            case _ => throw new Exception("Could not match Zip Code to Weather Station")
+          }
+        }
+
+    } yield ddMonths
+  }
+
+  def lookupHDD: Future[Double] = {
+    for {
+
+      zipStation <- lookupWeatherStation
+      futureTable <- ddStationLookupTable
+      ddMonths <- Future{
+          (futureTable \ zipStation \ "HDD").toOption match {
+            case Some(a) => a.as[Double]
+            case _ => throw new Exception("Could not match Zip Code to Weather Station")
+          }
+        }
+
+    } yield ddMonths
+  }
+
+  /*def getZipCode:Future[String] = Future{
+    parameters.validate[ZipCode] match {
+      case JsSuccess(a, _) => a.postalCode
+      case JsError(err) => throw new Exception("Could not find Zip Code!")
+    }
+  }*/
 }

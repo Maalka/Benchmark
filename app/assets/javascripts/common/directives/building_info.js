@@ -810,10 +810,10 @@ define(['angular','./main'], function(angular) {
                             required: "USA"
                         },
                         {
-                            name: "wastewaterEffluentBiologicalOxygenDemand(mg/l)",
+                            name: "wastewaterEffluentBiologicalOxygenDemand",
                             default: 8.0,
                             type: "number",
-                            title: "Effluent Biological Oxygen Demand",
+                            title: "Effluent Biological Oxygen Demand (mg/l)",
                             required: "USA"
                         },
                         {

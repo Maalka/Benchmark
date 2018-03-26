@@ -7,9 +7,9 @@ resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releas
 // Use the Play sbt plugin for Play projects
 addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.1.4")
 
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.4.6")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.10")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-jshint" % "1.0.3")
+addSbtPlugin("com.typesafe.sbt" % "sbt-jshint" % "1.0.6")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-less" % "1.0.6")
 
@@ -25,3 +25,5 @@ addSbtPlugin("org.databrary" % "sbt-angular-templates" % "0.2")
 
 // This plugin automatically refreshes Chrome when you make changes to your app
 //addSbtPlugin("com.jamesward" %% "play-auto-refresh" % "0.0.11")
+
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.9.0")

@@ -253,8 +253,6 @@ define(['angular'], function() {
         $scope.sold.push({'renewableType': {id:"grid",name:"Sold"}});
     };
 
-
-
     $scope.removeProp = function(prop){
 
         var index;
@@ -448,6 +446,26 @@ define(['angular'], function() {
               {"offSitePurchasedTotal": $scope.getPropResponseField(results,"offSitePurchasedTotal")},
               {"siteEnergyALL": $scope.getPropResponseField(results,"siteEnergyALL")},
 
+
+                //For the Maalka Platform
+/*            {"actualES": $scope.getPropResponseField(results,"actualES")},
+              {"medianES": $scope.getPropResponseField(results,"actualES")},
+              {"targetES": $scope.getPropResponseField(results,"targetES")},*/
+
+              {"siteEnergyList": $scope.getPropResponseField(results,"siteEnergyList")},
+              {"totalSiteEnergy": Math.ceil($scope.getPropResponseField(results,"totalSiteEnergy"))},
+              {"sourceEnergyList": $scope.getPropResponseField(results,"sourceEnergyList")},
+              {"totalSourceEnergy": Math.ceil($scope.getPropResponseField(results,"totalSourceEnergy"))},
+
+              {"medianSiteEnergy": Math.ceil($scope.getPropResponseField(results,"medianSiteEnergy"))},
+              {"medianSourceEnergy": Math.ceil($scope.getPropResponseField(results,"medianSourceEnergy"))},
+
+              {"percentBetterSiteEnergy": Math.ceil($scope.getPropResponseField(results,"percentBetterSiteEnergy"))},
+              {"percentBetterSourceEnergy": Math.ceil($scope.getPropResponseField(results,"percentBetterSourceEnergy"))},
+
+              {"directSiteEmissions": Math.ceil($scope.getPropResponseField(results,"directSiteEmissions"))},
+              {"indirectSiteEmissions": Math.ceil($scope.getPropResponseField(results,"indirectSiteEmissions"))},
+
               {"parkingEnergy": $scope.getPropResponseField(results,"parkingEnergy")},
               {"parkingArea": $scope.getPropResponseField(results,"parkingArea")}
 
@@ -616,6 +634,8 @@ define(['angular'], function() {
             for (var i = 0; i < $scope.propTypes.length; i++){
                 if($scope.propTypes[i].valid === true){
 
+                //console.log($scope.propTypes[i]);
+
 
                     $scope.propTypes[i].propertyModel.hasParkingHeating = $scope.hasParkingHeating;
                     $scope.propTypes[i].propertyModel.openParkingArea = $scope.openParkingArea;
@@ -629,12 +649,12 @@ define(['angular'], function() {
                     $scope.propTypes[i].propertyModel.targetToggle = $scope.auxModel.targetToggle;
                     $scope.propTypes[i].propertyModel.city = $scope.auxModel.city;
                     $scope.propTypes[i].propertyModel.buildingName = ($scope.auxModel.buildingName) ? $scope.auxModel.buildingName : "Anonymous";
+                    $scope.propTypes[i].propertyModel.propTypeName = ($scope.propTypes[i].name) ? $scope.propTypes[i].name : "No Name";
                     $scope.propTypes[i].propertyModel.postalCode = $scope.auxModel.postalCode;
                     $scope.propTypes[i].propertyModel.state = $scope.auxModel.state;
                     $scope.propTypes[i].propertyModel.HDD = $scope.auxModel.HDD;
                     $scope.propTypes[i].propertyModel.CDD = $scope.auxModel.CDD;
                     $scope.propTypes[i].propertyModel.reportingUnits = $scope.auxModel.reportingUnits;
-                    $scope.propTypes[i].propertyModel.targetScore = null;
                     //$scope.propTypes[i].propertyModel.netMetered = $scope.auxModel.netMetered;
                     $scope.propTypes[i].propertyModel.percentBetterThanMedian = $scope.auxModel.percentBetterThanMedian;
 
