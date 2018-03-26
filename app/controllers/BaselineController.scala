@@ -582,6 +582,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
     val Baseline: EUIMetrics = EUIMetrics(request.body, configuration)
 
     val json: JsValue = request.body
+    println(json)
 
     val result = validator.validate(schema, json)
 
@@ -593,6 +594,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
       },
       valid = { post =>
 
+        println(json)
 
         val futures = Future.sequence(Seq(
 

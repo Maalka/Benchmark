@@ -81,7 +81,7 @@
       {
         "energyName": "Natural Gas",
         "energyType": "naturalGas",
-        "energyUnits": "therms",
+        "energyUnits": "Therms",
         "energyUse": 2000,
         "energyRate": null
       }
