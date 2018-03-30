@@ -41,9 +41,10 @@ javaOptions in Universal ++= Seq(
 )
 
 */
-lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
+//lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
+//lazy val squants = ProjectRef(uri("https://rimasgulbinas@bitbucket.org/maalka/squants.git"), "squantsJVM")
 //lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
-lazy val root = (project in file(".")).enablePlugins(PlayScala, JavaAppPackaging).dependsOn(squants)
+//lazy val root = (project in file(".")).enablePlugins(PlayScala, JavaAppPackaging).dependsOn(squants)
 
 
 resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
@@ -67,6 +68,9 @@ libraryDependencies ++= Seq(
   "org.webjars" % "matchmedia-ng" % "1.0.5",
   "org.webjars.bower" % "filesaver" % "1.3.3",
   "org.webjars.npm" % "ng-file-upload" % "12.2.13",
+
+  "org.typelevel" %% "squants" % "1.3.1-maalka-1.0",
+
   "com.github.tototoshi" %% "scala-csv" % "1.2.1",
 
   "com.typesafe.akka" %% "akka-slf4j" % "2.5.9",
