@@ -418,7 +418,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                                "energyUnits": {
                                    "id": "/items/properties/renewableEnergies/items/properties/energyUnits",
                                    "type": "string",
-                                   "enum": ["KBtu","MBtu","kWh","MWh","GJ"]
+                                   "enum": ["kBtu","MBtu","kWh","MWh","GJ"]
                                },
                                "energyUse": {
                                    "id": "/items/properties/renewableEnergies/items/properties/energyUse",

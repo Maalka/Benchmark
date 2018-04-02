@@ -634,7 +634,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
   def getDefaultEnergyTotals(defaultMix:Double, medianSourceEnergy:Energy): Future[EnergyList] = Future{
 
     val energyUnit = buildingProps.country match {
-      case "USA" => "KBtu"
+      case "USA" => "kBtu"
       case _ => "GJ"
     }
 

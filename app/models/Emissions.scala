@@ -72,17 +72,17 @@ case class Emissions(parameters:JsValue) {
     entries match {
       case a: EnergyList => a.energies.map {
         case b: EnergyMetrics => {
-          Energy((b.energyUse, b.energyUnits)) match {
-            case c: Success[Energy] => (c.get in MBtus, b.energyType)
-            case c: Failure[Energy] => throw new Exception("Could not convert energy to MBtus for Emissions Calc")
+          energyCalcs.mapEnergy(b.energyUnits,b.energyUse) match {
+            case Some(c) => (MBtus(c to MBtus), b.energyType)
+            case None => throw new Exception("Could not convert energy to MBtus for Emissions Calc")
           }
         }
       }
       case a: RenewableEnergyList => a.renewableEnergies.map {
         case b: EnergyMetrics => {
-          Energy((b.energyUse, b.energyUnits)) match {
-            case c: Success[Energy] => (c.get in MBtus, b.energyType)
-            case c: Failure[Energy] => throw new Exception("Could not convert energy to MBtus for Emissions Calc")
+          energyCalcs.mapEnergy(b.energyUnits,b.energyUse) match {
+            case Some(c) => (MBtus(c to MBtus), b.energyType)
+            case None => throw new Exception("Could not convert energy to MBtus for Emissions Calc")
           }
         }
       }

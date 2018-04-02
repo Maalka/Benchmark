@@ -1003,7 +1003,7 @@ define(['angular'], function() {
             ],
 
             renewableUnits:[
-                {id:"KBtu",name:"kBtu",filter_id:"grid"},
+                {id:"kBtu",name:"kBtu",filter_id:"grid"},
                 {id:"MBtu",name:"MBtu",filter_id:"grid"},
                 {id:"kWh",name:"kWh",filter_id:"grid"},
                 {id:"MWh",name:"MWh",filter_id:"grid"},

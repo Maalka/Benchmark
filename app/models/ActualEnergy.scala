@@ -134,22 +134,84 @@ case class EUICalculator(parameters: JsValue) {
     Future(f)
   }
 
+  def mapEnergy(units:String,value:Double):Option[Energy] = {
+    var energyValue =units match {
+      case "kBtu" => Some(KBtus(value))
+      case "MBtu" => Some(MBtus(value))
+      case "kWh" => Some(KilowattHours(value))
+      case "MWh" => Some(MegawattHours(value))
+      case "GJ" => Some(Gigajoules(value))
+      case "NG Mcf" => Some(NGMCfs(value))
+      case "NG kcf" => Some(NGKCfs(value))
+      case "NG ccf" => Some(NGCCfs(value))
+      case "NG cf" => Some(NGCfs(value))
+      case "NGm3" => Some(NGm3s(value))
+      case "therms" => Some(Therms(value))
+      case "No1 igal" => Some(OilNo1UKGs(value))
+      case "No1 gal" => Some(OilNo1USGs(value))
+      case "No1 L" => Some(OilNo1Ls(value))
+      case "No2 igal" => Some(OilNo2UKGs(value))
+      case "No2 gal" => Some(OilNo2USGs(value))
+      case "No2 L" => Some(OilNo2Ls(value))
+      case "No4 igal" => Some(OilNo4UKGs(value))
+      case "No4 gal" => Some(OilNo4USGs(value))
+      case "No4 L" => Some(OilNo4Ls(value))
+      case "No6 igal" => Some(OilNo6UKGs(value))
+      case "No6 gal" => Some(OilNo6USGs(value))
+      case "No6 L" => Some(OilNo6Ls(value))
+      case "Diesel igal" => Some(DieselUKGs(value))
+      case "Diesel gal" => Some(DieselUSGs(value))
+      case "Diesel L" => Some(DieselLs(value))
+      case "Kerosene igal" => Some(KeroseneUKGs(value))
+      case "Kerosene gal" => Some(KeroseneUSGs(value))
+      case "Kerosene L" => Some(KeroseneLs(value))
+      case "Propane igal" => Some(PropaneUKGs(value))
+      case "Propane gal" => Some(PropaneUSGs(value))
+      case "Propane cf" => Some(PropaneCfs(value))
+      case "Propane ccf" => Some(PropaneCCfs(value))
+      case "Propane kcf" => Some(PropaneKCfs(value))
+      case "Propane L" => Some(PropaneLs(value))
+      case "Steam lb" => Some(SteamLbs(value))
+      case "Steam klb" => Some(SteamKLbs(value))
+      case "Steam Mlb" => Some(SteamMLbs(value))
+      case "CHW TonH" => Some(CHWTonHs(value))
+      case "CoalA ton" => Some(CoalATons(value))
+      case "CoalA tonne" => Some(CoalATonnes(value))
+      case "CoalA lb" => Some(CoalALbs(value))
+      case "CoalA klb" => Some(CoalAKLbs(value))
+      case "CoalA Mlb" => Some(CoalAMLbs(value))
+      case "CoalBit ton" => Some(CoalBitTons(value))
+      case "CoalBit tonne" => Some(CoalBitTonnes(value))
+      case "CoalBit lb" => Some(CoalBitLbs(value))
+      case "CoalBit klb" => Some(CoalBitKLbs(value))
+      case "CoalBit Mlb" => Some(CoalBitMLbs(value))
+      case "Coke ton" => Some(CokeTons(value))
+      case "Coke tonne" => Some(CokeTonnes(value))
+      case "Coke lb" => Some(CokeLbs(value))
+      case "Coke klb" => Some(CokeKLbs(value))
+      case "Coke Mlb" => Some(CokeMLbs(value))
+      case "Wood ton" => Some(WoodTons(value))
+      case "Wood tonne" => Some(WoodTonnes(value))
+      case _ => None
+    }
+    return energyValue
+  }
 
   def computeSiteEnergy[T](entries: T): Future[List[EnergyTuple]] = Future {
     entries match {
       case a: EnergyList => a.energies.map {
         case a: EnergyMetrics => {
-          Energy((a.energyUse, a.energyUnits)) match {
-            case b:Success[Energy] => EnergyTuple(a.energyType,a.energyName,b.get)
-            case b: Failure[Energy] => throw new Exception("Could not determine energy unit for entry")
+          mapEnergy(a.energyUnits,a.energyUse) match {
+            case Some(b) => EnergyTuple(a.energyType,a.energyName,b)
+            case None => throw new Exception("Could not determine energy unit for entry")
           }
         }
       }
       case a: RenewableEnergyList => a.renewableEnergies.map {
         case a: EnergyMetrics => {
-          Energy((a.energyUse, a.energyUnits)) match {
-            case b:Success[Energy] => EnergyTuple(a.energyType,a.energyName,b.get)
-            case b: Failure[Energy] => throw new Exception("Could not determine energy unit for entry")
+          mapEnergy(a.energyUnits,a.energyUse) match {
+            case Some(b) => EnergyTuple(a.energyType,a.energyName,b)
+            case None => throw new Exception("Could not determine energy unit for entry")
           }
         }
       }
@@ -201,10 +263,10 @@ case class EUICalculator(parameters: JsValue) {
   def computeSourceEnergy[T](entries: T): Future[List[EnergyTuple]] = Future{
     entries match {
       case a: EnergyList => a.energies.map {
-        case a: EnergyMetrics => sourceConvert(a.energyType,a.energyName, Energy((a.energyUse, a.energyUnits)))
+        case a: EnergyMetrics => sourceConvert(a.energyType,a.energyName, mapEnergy(a.energyUnits,a.energyUse))
       }
       case a: RenewableEnergyList => a.renewableEnergies.map {
-        case a: EnergyMetrics => sourceConvert(a.energyType,a.energyName, Energy((a.energyUse, a.energyUnits)))
+        case a: EnergyMetrics => sourceConvert(a.energyType,a.energyName, mapEnergy(a.energyUnits,a.energyUse))
       }
       case _ => throw new Exception("Could not compute Source Energy from Site Energy")
     }
@@ -252,39 +314,39 @@ case class EUICalculator(parameters: JsValue) {
     }
   }
 
-  def sourceConvert(energyType: String, energyName:String, siteEnergy: Try[Energy]): EnergyTuple = {
+  def sourceConvert(energyType: String, energyName:String, siteEnergy: Option[Energy]): EnergyTuple = {
     val sourceEnergyValue = siteEnergy match {
-        case a: Success[Energy] => {
+        case Some(a) => {
         (energyType, country) match {
-        case ("grid", "USA") => a.get * siteToSourceConversions.gridUS
-        case ("grid", "Canada") => a.get * siteToSourceConversions.gridCanada
-        case ("naturalGas", "USA") => a.get * siteToSourceConversions.ngUS
-        case ("naturalGas", "Canada") => a.get * siteToSourceConversions.ngCanada
-        case ("onSiteElectricity", _) => a.get * siteToSourceConversions.onSiteElectricity
-        case ("fuelOil1", _) => a.get * siteToSourceConversions.fuelOil
-        case ("fuelOil2", _) => a.get * siteToSourceConversions.fuelOil
-        case ("fuelOil4", _) => a.get * siteToSourceConversions.fuelOil
-        case ("fuelOil6", _) => a.get * siteToSourceConversions.fuelOil
-        case ("kerosene", _) => a.get * siteToSourceConversions.fuelOil
-        case ("diesel", _) => a.get * siteToSourceConversions.fuelOil
-        case ("propane", "USA") => a.get * siteToSourceConversions.propaneUS
-        case ("propane", "Canada") => a.get * siteToSourceConversions.propaneCanada
-        case ("steam", _) => a.get * siteToSourceConversions.steam
-        case ("hotWater", _) => a.get * siteToSourceConversions.hotWater
-        case ("chilledWater", "USA") => a.get * siteToSourceConversions.chilledWaterUS
-        case ("chilledWater", "Canada") => a.get * siteToSourceConversions.chilledWaterCanada
-        case ("wood", _) => a.get * siteToSourceConversions.wood
-        case ("coke", _) => a.get * siteToSourceConversions.coke
-        case ("coalA", _) => a.get * siteToSourceConversions.coal
-        case ("coalB", _) => a.get * siteToSourceConversions.coal
-        case ("other", _) => a.get * siteToSourceConversions.other
-        case ("onSiteSolar", _) => a.get * siteToSourceConversions.gridUS
-        case ("onSiteWind", _) => a.get * siteToSourceConversions.gridUS
-        case ("onSiteOther", _) => a.get * siteToSourceConversions.gridUS
-        case ("offSite", _) => a.get * siteToSourceConversions.gridUS
+        case ("grid", "USA") => a * siteToSourceConversions.gridUS
+        case ("grid", "Canada") => a * siteToSourceConversions.gridCanada
+        case ("naturalGas", "USA") => a * siteToSourceConversions.ngUS
+        case ("naturalGas", "Canada") => a * siteToSourceConversions.ngCanada
+        case ("onSiteElectricity", _) => a * siteToSourceConversions.onSiteElectricity
+        case ("fuelOil1", _) => a * siteToSourceConversions.fuelOil
+        case ("fuelOil2", _) => a * siteToSourceConversions.fuelOil
+        case ("fuelOil4", _) => a * siteToSourceConversions.fuelOil
+        case ("fuelOil6", _) => a * siteToSourceConversions.fuelOil
+        case ("kerosene", _) => a * siteToSourceConversions.fuelOil
+        case ("diesel", _) => a * siteToSourceConversions.fuelOil
+        case ("propane", "USA") => a * siteToSourceConversions.propaneUS
+        case ("propane", "Canada") => a * siteToSourceConversions.propaneCanada
+        case ("steam", _) => a * siteToSourceConversions.steam
+        case ("hotWater", _) => a * siteToSourceConversions.hotWater
+        case ("chilledWater", "USA") => a * siteToSourceConversions.chilledWaterUS
+        case ("chilledWater", "Canada") => a * siteToSourceConversions.chilledWaterCanada
+        case ("wood", _) => a * siteToSourceConversions.wood
+        case ("coke", _) => a * siteToSourceConversions.coke
+        case ("coalA", _) => a * siteToSourceConversions.coal
+        case ("coalB", _) => a * siteToSourceConversions.coal
+        case ("other", _) => a * siteToSourceConversions.other
+        case ("onSiteSolar", _) => a * siteToSourceConversions.gridUS
+        case ("onSiteWind", _) => a * siteToSourceConversions.gridUS
+        case ("onSiteOther", _) => a * siteToSourceConversions.gridUS
+        case ("offSite", _) => a * siteToSourceConversions.gridUS
         case (_, _) => throw new Exception("Could Not Convert to Source Energy")
       }}
-      case a: Failure[Energy] => throw new Exception("Could not read site energy entry")
+      case None => throw new Exception("Could not read site energy entry")
     }
     return EnergyTuple(energyType,energyName,sourceEnergyValue)
   }
