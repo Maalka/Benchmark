@@ -175,27 +175,27 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                      "id": "/items/properties/parkingAreaUnits",
                      "type": ["string","null"],
                      "enum": ["ftSQ","mSQ",null]
-                 },
-                 "hasParkingHeating": {
-                     "id": "/items/properties/hasParkingHeating",
-                     "type": ["boolean","null"]
-                 },
-                 "openParkingArea": {
-                     "id": "/items/properties/openParkingArea",
-                     "type": ["number","null"]
-                 },
-                 "partiallyEnclosedParkingArea": {
-                     "id": "/items/properties/partiallyEnclosedParkingArea",
-                     "type": ["number","null"]
-                 },
-                 "fullyEnclosedParkingArea": {
-                     "id": "/items/properties/fullyEnclosedParkingArea",
-                     "type": ["number","null"]
-                 },
-                 "totalParkingArea": {
-                     "id": "/items/properties/totalParkingArea",
-                     "type": ["number","null"]
-                 },
+                   },
+                   "hasParkingHeating": {
+                       "id": "/items/properties/hasParkingHeating",
+                       "type": ["boolean","null"]
+                   },
+                   "openParkingArea": {
+                       "id": "/items/properties/openParkingArea",
+                       "type": ["number","null"]
+                   },
+                   "partiallyEnclosedParkingArea": {
+                       "id": "/items/properties/partiallyEnclosedParkingArea",
+                       "type": ["number","null"]
+                   },
+                   "fullyEnclosedParkingArea": {
+                       "id": "/items/properties/fullyEnclosedParkingArea",
+                       "type": ["number","null"]
+                   },
+                   "totalParkingArea": {
+                       "id": "/items/properties/totalParkingArea",
+                       "type": ["number","null"]
+                   },
                    "hasPool": {
                        "id": "/items/properties/hasPool",
                        "type": ["boolean","null"]
