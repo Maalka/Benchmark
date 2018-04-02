@@ -44,10 +44,12 @@ javaOptions in Universal ++= Seq(
 //lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
 //lazy val squants = ProjectRef(uri("https://rimasgulbinas@bitbucket.org/maalka/squants.git"), "squantsJVM")
 //lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
-//lazy val root = (project in file(".")).enablePlugins(PlayScala, JavaAppPackaging).dependsOn(squants)
+lazy val root = (project in file(".")).enablePlugins(PlayScala, JavaAppPackaging)
 
 
 resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
+resolvers += "Artifactory Realm" at "https://jfrog.maalka.com/artifactory/libs-release-local/"
+
 
 
 // Dependencies
