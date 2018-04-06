@@ -1,11 +1,13 @@
 package models
 
-import squants.energy.{TBtus, Gigajoules, KBtus, Energy}
+import squants.energy._
 import squants.space._
+
 import scala.concurrent.Future
 import scala.language._
 import scala.math._
 import play.api.libs.json._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.functional.syntax._
 
@@ -323,10 +325,11 @@ sealed trait BaseLine {
   }
 
   val buildingSize: Double = {
-    country match {
-      case "USA" => (Area((GFA.value, areaUnits)).get to SquareFeet)
-      case "Canada" => (Area((GFA.value, areaUnits)).get to SquareMeters)
-      case _ => throw new Exception("Country not Found")
+    (areaUnits, country) match {
+      case ("ftSQ","USA") => SquareFeet(GFA.value).value
+      case ("mSQ","USA") => SquareMeters(GFA.value) to SquareFeet
+      case ("ftSQ","Canada") => SquareFeet(GFA.value) to SquareMeters
+      case ("mSQ","Canada") => SquareMeters(GFA.value).value
     }
   }
 
@@ -1647,8 +1650,8 @@ case class DataCenter(reportingUnits:String, GFA:PosDouble, areaUnits:String, co
     case _ => 2.05
   }
 
-  val annualITEnergyTBtu: Double = (Energy((annualITEnergy.value, "kWh")).get to TBtus) * siteToSourceITConvert
-  val annualITEnergyKBtu: Double = (Energy((annualITEnergy.value, "kWh")).get to KBtus) * siteToSourceITConvert
+  val annualITEnergyTBtu: Double = (KilowattHours(annualITEnergy.value) to TBtus) * siteToSourceITConvert
+  val annualITEnergyKBtu: Double = (KilowattHours(annualITEnergy.value) to KBtus) * siteToSourceITConvert
 
   //this results in expected energy, not EUI
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (

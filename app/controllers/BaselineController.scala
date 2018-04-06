@@ -175,27 +175,27 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                      "id": "/items/properties/parkingAreaUnits",
                      "type": ["string","null"],
                      "enum": ["ftSQ","mSQ",null]
-                 },
-                 "hasParkingHeating": {
-                     "id": "/items/properties/hasParkingHeating",
-                     "type": ["boolean","null"]
-                 },
-                 "openParkingArea": {
-                     "id": "/items/properties/openParkingArea",
-                     "type": ["number","null"]
-                 },
-                 "partiallyEnclosedParkingArea": {
-                     "id": "/items/properties/partiallyEnclosedParkingArea",
-                     "type": ["number","null"]
-                 },
-                 "fullyEnclosedParkingArea": {
-                     "id": "/items/properties/fullyEnclosedParkingArea",
-                     "type": ["number","null"]
-                 },
-                 "totalParkingArea": {
-                     "id": "/items/properties/totalParkingArea",
-                     "type": ["number","null"]
-                 },
+                   },
+                   "hasParkingHeating": {
+                       "id": "/items/properties/hasParkingHeating",
+                       "type": ["boolean","null"]
+                   },
+                   "openParkingArea": {
+                       "id": "/items/properties/openParkingArea",
+                       "type": ["number","null"]
+                   },
+                   "partiallyEnclosedParkingArea": {
+                       "id": "/items/properties/partiallyEnclosedParkingArea",
+                       "type": ["number","null"]
+                   },
+                   "fullyEnclosedParkingArea": {
+                       "id": "/items/properties/fullyEnclosedParkingArea",
+                       "type": ["number","null"]
+                   },
+                   "totalParkingArea": {
+                       "id": "/items/properties/totalParkingArea",
+                       "type": ["number","null"]
+                   },
                    "hasPool": {
                        "id": "/items/properties/hasPool",
                        "type": ["boolean","null"]
@@ -372,12 +372,12 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                                "energyUnits": {
                                    "id": "/items/properties/energies/items/properties/energyUnits",
                                    "type": "string",
-                                   "enum": ["KBtu","MBtu","kWh","MWh","GJ","NGMcf","NGKcf","NGCcf","NGcf", "NGm3","Therms","No1UKG","No1USG",
-                                   "No1L","No2UKG","No2USG","No2L","No4UKG","No4USG","No4L","No6UKG","No6USG","No6L","DieselUKG","DieselUSG",
-                                   "DieselL","KeroseneUKG","KeroseneUSG","KeroseneL","PropaneUKG","PropaneUSG","PropaneCf","PropaneCCf",
-                                   "PropaneKCf","PropaneL","SteamLb","SteamKLb","SteamMLb","CHWTonH","CoalATon","CoalATonne","CoalALb",
-                                   "CoalAKLb","CoalAMLb","CoalBitTon","CoalBitTonne","CoalBitLb","CoalBitKLb","CoalBitMLb","CokeTon","CokeTonne",
-                                   "CokeLb","CokeKLb","CokeMLb","WoodTon","WoodTonne"]
+                                   "enum": ["kBtu","MBtu","kWh","MWh","GJ","NG Mcf","NG kcf","NG ccf","NG cf", "NGm3","therms","No1 igal","No1 gal",
+                                   "No1 L","No2 igal","No2 gal","No2 L","No4 igal","No4 gal","No4 L","No6 igal","No6 gal","No6 L","Diesel igal","Diesel gal",
+                                   "Diesel L","Kerosene igal","Kerosene gal","Kerosene L","Propane igal","Propane gal","Propane cf","Propane ccf",
+                                   "Propane kcf","Propane L","Steam lb","Steam klb","Steam Mlb","CHW TonH","CoalA ton","CoalA tonne","CoalA lb",
+                                   "CoalA klb","CoalA Mlb","CoalBit ton","CoalBit tonne","CoalBit lb","CoalBit klb","CoalBit Mlb","Coke ton","Coke tonne",
+                                   "Coke lb","Coke klb","Coke Mlb","Wood ton","Wood tonne"]
                                },
                                "energyUse": {
                                    "id": "/items/properties/energies/items/properties/energyUse",
@@ -418,7 +418,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                                "energyUnits": {
                                    "id": "/items/properties/renewableEnergies/items/properties/energyUnits",
                                    "type": "string",
-                                   "enum": ["KBtu","MBtu","kWh","MWh","GJ"]
+                                   "enum": ["kBtu","MBtu","kWh","MWh","GJ"]
                                },
                                "energyUse": {
                                    "id": "/items/properties/renewableEnergies/items/properties/energyUse",
@@ -582,7 +582,6 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
     val Baseline: EUIMetrics = EUIMetrics(request.body, configuration)
 
     val json: JsValue = request.body
-    println(json)
 
     val result = validator.validate(schema, json)
 
@@ -593,8 +592,6 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
         }
       },
       valid = { post =>
-
-        println(json)
 
         val futures = Future.sequence(Seq(
 
