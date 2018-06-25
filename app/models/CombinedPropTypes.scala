@@ -20,8 +20,6 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
 
   val result = params.as[List[JsValue]]
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
-  val degreeDays = DegreeDays(result.head)
-
 
   def convertToZeroScale(value:Energy):Energy = {
     if(buildingProps.getTarget2030Value == false) {
@@ -42,7 +40,8 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
     for {
       wholeBuildingSourceMedianEUI <- getWholeBuildingSourceMedianEUInoParking
       totalArea <- getTotalArea(result)
-      heatingDays <- degreeDays.lookupHDD
+      targetbuilding <- BuildingProperties(result.head).getBuilding
+      heatingDays <- targetbuilding.getHDD
       parkingEnergy <- getParkingEnergy(result.head, heatingDays)
       adjustedEUI <- Future((wholeBuildingSourceMedianEUI*totalArea + parkingEnergy) / totalArea)
     } yield adjustedEUI
@@ -427,7 +426,7 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
   }
 
 
-  def getParkingEnergy(parkingJSON:JsValue, heatingDays: Int): Future[Energy] = Future {
+  def getParkingEnergy(parkingJSON:JsValue, heatingDays: Double): Future[Energy] = Future {
 
     implicit def boolOptToInt(b:Option[Boolean]):Int = if (b.getOrElse(false)) 1 else 0
 
