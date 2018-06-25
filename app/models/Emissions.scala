@@ -48,7 +48,12 @@ case class Emissions(parameters:JsValue) {
 
     for {
       energyTuples <- computeEnergyAndType(energyList)
-      eGridCode <- getEGrid()
+      eGridCode <- {
+        buildingProps.country match {
+          case "USA" => getEGrid()
+          case _ => Future("Foreign")
+        }
+      }
       indirectFactors <- emissionsIndirectFactors(energyTuples, eGridCode)
     } yield indirectFactors
 
