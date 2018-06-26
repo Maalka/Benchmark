@@ -351,6 +351,21 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
 
   def majorProp:Future[List[Boolean]] = {
     for {
+      buildingTypeSizeList <- Future.sequence(result.map(BuildingProperties(_).getBuilding).map(_.map{
+        case a:BaseLine => (a.propTypeName,a.buildingSize)
+      }
+      ))
+      buildingSizeList <- Future(buildingTypeSizeList.groupBy(_._1).map(_._2.map(_._2).sum))
+
+      buildingSizeSum:Double <- Future(buildingSizeList.sum)
+      buildingSizeRatios <- Future(buildingSizeList.map{_/buildingSizeSum})
+      majorPropType <-  Future(buildingSizeRatios.map{ case a => a > 0.5 }.toList)
+    } yield majorPropType
+  }
+
+  /*
+  def majorProp:Future[List[Boolean]] = {
+    for {
       buildingSizeList <- Future.sequence(result.map(BuildingProperties(_).getBuilding).map(_.map{
         case a:BaseLine => a.buildingSize}
       ))
@@ -359,6 +374,8 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
       majorPropType <-  Future(buildingSizeRatios.map{ case a => a > 0.5 })
     } yield majorPropType
   }
+*/
+
 
   def getAreaWeights:Future[List[Double]] = {
     for {
