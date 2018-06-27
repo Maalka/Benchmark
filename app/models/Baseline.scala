@@ -25,7 +25,6 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
 
   val combinedPropMetrics:CombinedPropTypes = CombinedPropTypes(parameters, configuration)
   val es:ES = ES(parameters, configuration)
-  val degreeDays = DegreeDays(result.head)
 
   val energyCalcs:EUICalculator = EUICalculator(result.head)
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
@@ -167,7 +166,8 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
 
   def getParkingEnergyOnly:Future[Double] = {
     for {
-      heatingDays <- degreeDays.lookupHDD
+      targetbuilding <- BuildingProperties(result.head).getBuilding
+      heatingDays <- targetbuilding.getHDD
       parkingEnergy <- combinedPropMetrics.getParkingEnergy(result.head,heatingDays)
       convertedEnergy <- energyConversion(parkingEnergy)
     } yield convertedEnergy.value

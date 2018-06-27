@@ -310,6 +310,28 @@ sealed trait BaseLine {
     } yield predictedEnergy
 
   }
+  def getHDD: Future[Double] = {
+    for {
+      heating <- {
+        HDD match {
+          case Some(a) => Future(a)
+          case _ => degreeDays.lookupHDD
+        }
+      }
+    } yield heating
+  }
+
+  def getCDD: Future[Double] = {
+    for {
+      cooling <- {
+        CDD match {
+          case Some(a) => Future(a)
+          case _ => degreeDays.lookupCDD
+        }
+      }
+    } yield cooling
+
+  }
 
   implicit def boolOptToInt(b: Option[Boolean]): Int = if (b.getOrElse(false)) 1 else 0
   implicit def boolToInt(b: Boolean): Int = if (b==true) 1 else 0

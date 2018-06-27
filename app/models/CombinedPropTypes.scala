@@ -20,8 +20,6 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
 
   val result = params.as[List[JsValue]]
   val buildingProps:BuildingProperties = BuildingProperties(result.head)
-  val degreeDays = DegreeDays(result.head)
-
 
   def convertToZeroScale(value:Energy):Energy = {
     if(buildingProps.getTarget2030Value == false) {
@@ -42,7 +40,8 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
     for {
       wholeBuildingSourceMedianEUI <- getWholeBuildingSourceMedianEUInoParking
       totalArea <- getTotalArea(result)
-      heatingDays <- degreeDays.lookupHDD
+      targetbuilding <- BuildingProperties(result.head).getBuilding
+      heatingDays <- targetbuilding.getHDD
       parkingEnergy <- getParkingEnergy(result.head, heatingDays)
       adjustedEUI <- Future((wholeBuildingSourceMedianEUI*totalArea + parkingEnergy) / totalArea)
     } yield adjustedEUI
@@ -352,6 +351,21 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
 
   def majorProp:Future[List[Boolean]] = {
     for {
+      buildingTypeSizeList <- Future.sequence(result.map(BuildingProperties(_).getBuilding).map(_.map{
+        case a:BaseLine => (a.propTypeName,a.buildingSize)
+      }
+      ))
+      buildingSizeList <- Future(buildingTypeSizeList.groupBy(_._1).map(_._2.map(_._2).sum))
+
+      buildingSizeSum:Double <- Future(buildingSizeList.sum)
+      buildingSizeRatios <- Future(buildingSizeList.map{_/buildingSizeSum})
+      majorPropType <-  Future(buildingSizeRatios.map{ case a => a > 0.5 }.toList)
+    } yield majorPropType
+  }
+
+  /*
+  def majorProp:Future[List[Boolean]] = {
+    for {
       buildingSizeList <- Future.sequence(result.map(BuildingProperties(_).getBuilding).map(_.map{
         case a:BaseLine => a.buildingSize}
       ))
@@ -360,6 +374,8 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
       majorPropType <-  Future(buildingSizeRatios.map{ case a => a > 0.5 })
     } yield majorPropType
   }
+*/
+
 
   def getAreaWeights:Future[List[Double]] = {
     for {
@@ -427,7 +443,7 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
   }
 
 
-  def getParkingEnergy(parkingJSON:JsValue, heatingDays: Int): Future[Energy] = Future {
+  def getParkingEnergy(parkingJSON:JsValue, heatingDays: Double): Future[Energy] = Future {
 
     implicit def boolOptToInt(b:Option[Boolean]):Int = if (b.getOrElse(false)) 1 else 0
 
