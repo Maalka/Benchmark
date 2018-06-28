@@ -841,12 +841,12 @@ case class Office(GFA:PosDouble, areaUnits:String, country:String, buildingType:
       RegressionSegment(186.6, 0, 1), // regression constant
       RegressionSegment(34.17, 9.535, math.min(log(buildingSize),200000)),
       RegressionSegment(17.28, 2.231, math.min(numComputers.getOrElse(fillPosDoubleDefaults("Office","numComputers",buildingSize)).value / buildingSize * 1000, 11.1)),
-      RegressionSegment(55.96, 3.972, log(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("Office","weeklyOperatingHours",buildingSize)).value)),
-      RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Office","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
+      RegressionSegment(55.96, 3.972, getLog(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("Office","weeklyOperatingHours",buildingSize)).value)),
+      RegressionSegment(10.34, 0.5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Office","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
       RegressionSegment(0.0077, 4411, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Office","percentHeated",buildingSize)).value / 100),
       RegressionSegment(0.0144, 1157, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Office","percentCooled",buildingSize)).value / 100),
       RegressionSegment(0, 9.535, log(buildingSize)),
-      RegressionSegment(0, .5616, log(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Office","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
+      RegressionSegment(0, .5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Office","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
       RegressionSegment(0, 0, 1)
     )
   }
@@ -873,12 +873,12 @@ case class FinancialOffice(GFA:PosDouble, areaUnits:String, country:String, buil
     RegressionSegment(186.6, 0, 1), // regression constant
     RegressionSegment(34.17, 9.535, math.min(log(buildingSize),200000)),
     RegressionSegment(17.28, 2.231, math.min(numComputers.getOrElse(fillPosDoubleDefaults("FinancialOffice","numComputers",buildingSize)).value / buildingSize * 1000, 11.1)),
-    RegressionSegment(55.96, 3.972, log(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("FinancialOffice","weeklyOperatingHours",buildingSize)).value)),
-    RegressionSegment(10.34, 0.5616, log(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("FinancialOffice","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
+    RegressionSegment(55.96, 3.972, getLog(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("FinancialOffice","weeklyOperatingHours",buildingSize)).value)),
+    RegressionSegment(10.34, 0.5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("FinancialOffice","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
     RegressionSegment(0.0077, 4411, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("FinancialOffice","percentHeated",buildingSize)).value / 100),
     RegressionSegment(0.0144, 1157, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("FinancialOffice","percentCooled",buildingSize)).value / 100),
     RegressionSegment(-64.83*isSmallBank.getOrElse(fillBooleanDefaults("FinancialOffice","isSmallBank").get), 9.535, log(buildingSize)),
-    RegressionSegment(34.2*isSmallBank.getOrElse(fillBooleanDefaults("FinancialOffice","isSmallBank").get), .5616, log(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("FinancialOffice","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
+    RegressionSegment(34.2*isSmallBank.getOrElse(fillBooleanDefaults("FinancialOffice","isSmallBank").get), .5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("FinancialOffice","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
     RegressionSegment(56.3*isSmallBank.getOrElse(fillBooleanDefaults("FinancialOffice","isSmallBank").get), 0, 1)
   )
 }
@@ -1007,14 +1007,14 @@ case class WastewaterCenter(GFA:PosDouble, areaUnits:String, country:String, bui
   val printed:String = "Wastewater Center"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(10.13, 0, 1), // regression constant
-    RegressionSegment(-0.9421, 1.863, log(wastewaterAvgInfluentInflow.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterAvgInfluentInflow",buildingSize)).value)),
-    RegressionSegment(4.876, 5.204, log(wastewaterInfluentBiologicalOxygenDemand.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterInfluentBiologicalOxygenDemand",buildingSize)).value)),
-    RegressionSegment(-2.082, 1.656, log(wastewaterEffluentBiologicalOxygenDemand.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterEffluentBiologicalOxygenDemand",buildingSize)).value)),
-    RegressionSegment(-4.668, 4.171, log(wastewaterLoadFactor.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterLoadFactor",buildingSize)).value)),
+    RegressionSegment(-0.9421, 1.863, getLog(wastewaterAvgInfluentInflow.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterAvgInfluentInflow",buildingSize)).value)),
+    RegressionSegment(4.876, 5.204, getLog(wastewaterInfluentBiologicalOxygenDemand.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterInfluentBiologicalOxygenDemand",buildingSize)).value)),
+    RegressionSegment(-2.082, 1.656, getLog(wastewaterEffluentBiologicalOxygenDemand.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterEffluentBiologicalOxygenDemand",buildingSize)).value)),
+    RegressionSegment(-4.668, 4.171, getLog(wastewaterLoadFactor.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterLoadFactor",buildingSize)).value)),
     RegressionSegment(-2.577,0.179, 1 * wastewaterHasTrickleFiltration.getOrElse(fillBooleanDefaults("WastewaterCenter","wastewaterHasTrickleFiltration").get)),
     RegressionSegment(1.235, 0.4591, 1 * wastewaterHasNutrientRemoval.getOrElse(fillBooleanDefaults("WastewaterCenter","wastewaterHasNutrientRemoval").get)),
-    RegressionSegment(2.355,8.724,log(HDD)),
-    RegressionSegment(1.243, 6.5, log(CDD))
+    RegressionSegment(2.355,8.724,getLog(HDD)),
+    RegressionSegment(1.243, 6.5, getLog(CDD))
   )
 }
 
