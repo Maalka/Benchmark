@@ -839,13 +839,13 @@ case class Office(GFA:PosDouble, areaUnits:String, country:String, buildingType:
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = {
     Seq[RegressionSegment] (
       RegressionSegment(186.6, 0, 1), // regression constant
-      RegressionSegment(34.17, 9.535, math.min(log(buildingSize),200000)),
+      RegressionSegment(34.17, 9.535, math.min(log(buildingSize),log(200000))),
       RegressionSegment(17.28, 2.231, math.min(numComputers.getOrElse(fillPosDoubleDefaults("Office","numComputers",buildingSize)).value / buildingSize * 1000, 11.1)),
       RegressionSegment(55.96, 3.972, getLog(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("Office","weeklyOperatingHours",buildingSize)).value)),
       RegressionSegment(10.34, 0.5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Office","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
       RegressionSegment(0.0077, 4411, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Office","percentHeated",buildingSize)).value / 100),
       RegressionSegment(0.0144, 1157, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Office","percentCooled",buildingSize)).value / 100),
-      RegressionSegment(0, 9.535, log(buildingSize)),
+      RegressionSegment(0, 9.535, math.min(log(buildingSize),log(200000))),
       RegressionSegment(0, .5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Office","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
       RegressionSegment(0, 0, 1)
     )
@@ -871,13 +871,13 @@ case class FinancialOffice(GFA:PosDouble, areaUnits:String, country:String, buil
   val printed:String = "Financial Office"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(186.6, 0, 1), // regression constant
-    RegressionSegment(34.17, 9.535, math.min(log(buildingSize),200000)),
+    RegressionSegment(34.17, 9.535, math.min(log(buildingSize),log(200000))),
     RegressionSegment(17.28, 2.231, math.min(numComputers.getOrElse(fillPosDoubleDefaults("FinancialOffice","numComputers",buildingSize)).value / buildingSize * 1000, 11.1)),
     RegressionSegment(55.96, 3.972, getLog(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("FinancialOffice","weeklyOperatingHours",buildingSize)).value)),
     RegressionSegment(10.34, 0.5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("FinancialOffice","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
     RegressionSegment(0.0077, 4411, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("FinancialOffice","percentHeated",buildingSize)).value / 100),
     RegressionSegment(0.0144, 1157, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("FinancialOffice","percentCooled",buildingSize)).value / 100),
-    RegressionSegment(-64.83*isSmallBank.getOrElse(fillBooleanDefaults("FinancialOffice","isSmallBank").get), 9.535, log(buildingSize)),
+    RegressionSegment(-64.83*isSmallBank.getOrElse(fillBooleanDefaults("FinancialOffice","isSmallBank").get), 9.535, math.min(log(buildingSize),log(200000))),
     RegressionSegment(34.2*isSmallBank.getOrElse(fillBooleanDefaults("FinancialOffice","isSmallBank").get), .5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("FinancialOffice","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
     RegressionSegment(56.3*isSmallBank.getOrElse(fillBooleanDefaults("FinancialOffice","isSmallBank").get), 0, 1)
   )
@@ -1388,9 +1388,9 @@ case class CanadaMedicalOffice(GFA:PosDouble, areaUnits:String, country:String, 
 
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(1.384, 0, 1), // regression constant
-    RegressionSegment(0.00004511, 1635, min(buildingSize,20000.0)),
+    RegressionSegment(0.00004511, 1635, math.min(buildingSize,20000.0)),
     RegressionSegment(0.007505, 58.94, weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("CanadaMedicalOffice","weeklyOperatingHours",buildingSize)).value),
-    RegressionSegment(0.2428, 2.466, min(max(workerDensity,0.3),7)),
+    RegressionSegment(0.2428, 2.466, math.min(max(workerDensity,0.3),7)),
     RegressionSegment(0.001297, 100.1, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("CanadaMedicalOffice","percentCooled",buildingSize)).value/100),
     RegressionSegment(0.0002015, 4808, HDD)
 
