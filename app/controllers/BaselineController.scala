@@ -724,8 +724,8 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
           "medianSiteEnergy",
           "medianSourceEnergy",
 
-          "medianSiteEnergy",
-          "medianSourceEnergy",
+          "percentBetterSiteEnergy",
+          "percentBetterSourceEnergy",
 
           "directSiteEmissions",
           "indirectSiteEmissions",
