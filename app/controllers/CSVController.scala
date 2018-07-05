@@ -176,11 +176,10 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
           writer.close()
 
           import java.io.ByteArrayOutputStream
-          val baos = new PipedOutputStream()
-          val bais = new PipedInputStream(baos)
+          val baos = new ByteArrayOutputStream()
 
           // Create the zip file from the files
-          val zip = new ZipOutputStream(baos)
+          val zip = new ZipOutputStream(new BufferedOutputStream(baos))
           Seq(processedEntries, unprocessedEntries, uploadedFile).foreach { f =>
             zip.putNextEntry(new ZipEntry("Results/%s".format(f.getName)))
             val in = new BufferedInputStream(new FileInputStream(f))
@@ -195,10 +194,9 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
           zip.close()
 
           // Source the importStream into an Akka Source
-          val source = StreamConverters.fromInputStream(() => bais)
-
+          val source = StreamConverters.fromOutputStream(() => baos)
           // Chunk and return the values
-          Ok.chunked(source).withHeaders(
+          Ok(baos.toByteArray).withHeaders(
           "Content-Type" -> "application/zip",
           "Content-Disposition" -> "attachment; filename=Results.zip"
         )
