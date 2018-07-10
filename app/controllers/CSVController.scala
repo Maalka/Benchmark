@@ -12,7 +12,7 @@ import akka.actor.ActorSystem
 import akka.dispatch.Envelope
 import akka.stream._
 import akka.stream.scaladsl._
-import akka.util.Timeout
+import akka.util.{ByteString, Timeout}
 import com.github.tototoshi.csv.{CSVReader, CSVWriter, DefaultCSVFormat, QUOTE_NONE, Quoting}
 import com.google.inject.Inject
 import models._
@@ -24,7 +24,7 @@ import play.api.libs.concurrent.Akka
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.json._
 import play.api.mvc._
-import play.api.{ Configuration, Environment }
+import play.api.{Configuration, Environment}
 
 import scala.concurrent.duration._
 import scala.concurrent.Future
@@ -157,7 +157,7 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
 
         Source.fromIterator(() => csvList.goodBuildingJsonList.toIterator).map {
           js => (js, DegreeDays(js))
-        }.via(calculateDegreeDays).mapAsync(1) {
+        }.via(calculateDegreeDays).mapAsync(4) {
           case (ccdTry, hddTry, js) if ccdTry.isSuccess && hddTry.isSuccess => {
             futureToFutureTry[JsValue](
               csvTemp.getMetrics(Json.toJson(List(Json.obj("CDD" -> ccdTry.get, "HDD" -> hddTry.get) ++ js.asInstanceOf[JsObject])))
@@ -170,17 +170,17 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
             (ccdTry, hddTry, js, Failure(new Throwable("Invalid Postal Code")))
           )
 
-        }.via(CSVWriterFlow).runWith(Sink.ignore).map { r =>
+        }.via(CSVWriterFlow).runWith(Sink.ignore).map { _ =>
           error_writer.writeAll(csvList.badEntriesWithErrors)
           error_writer.close()
           writer.close()
 
-          import java.io.ByteArrayOutputStream
-          val baos = new PipedOutputStream()
-          val bais = new PipedInputStream(baos)
 
-          // Create the zip file from the files
-          val zip = new ZipOutputStream(baos)
+          val path = Files.createTempFile("2030", "zip")
+          val file = path.toFile
+
+          val zip = new ZipOutputStream(Files.newOutputStream(path))
+
           Seq(processedEntries, unprocessedEntries, uploadedFile).foreach { f =>
             zip.putNextEntry(new ZipEntry("Results/%s".format(f.getName)))
             val in = new BufferedInputStream(new FileInputStream(f))
@@ -192,16 +192,14 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
             in.close()
             zip.closeEntry()
           }
+
           zip.close()
 
-          // Source the importStream into an Akka Source
-          val source = StreamConverters.fromInputStream(() => bais)
-
-          // Chunk and return the values
-          Ok.chunked(source).withHeaders(
-          "Content-Type" -> "application/zip",
-          "Content-Disposition" -> "attachment; filename=Results.zip"
-        )
+          Ok.sendFile(path.toFile)
+            .as("application/zip")
+            .withHeaders(
+            "Content-Disposition" -> "attachment; filename=Results.zip"
+          )
         }.recover {
           case NonFatal(th) =>
             //println(th)

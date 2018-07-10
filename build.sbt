@@ -7,7 +7,8 @@ name := "benchmark"
 organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
-version := "1.10.1.0"
+
+version := "1.10.1.3"
 
 scalaVersion in ThisBuild := "2.11.6"
 
@@ -21,7 +22,6 @@ dockerRepository := Some("maalka")
 dockerBaseImage := "maalka/oracle8"
 dockerUpdateLatest := true
 
-/*
 linuxPackageMappings += packageTemplateMapping(s"/var/run/${name.value}/")() withUser name.value withGroup name.value
 
 javaOptions in Universal ++= Seq(
@@ -40,17 +40,14 @@ javaOptions in Universal ++= Seq(
   s"-Dconfig.file=/etc/${name.value}/prod.conf"
 )
 
-*/
 //lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
 //lazy val squants = ProjectRef(uri("https://rimasgulbinas@bitbucket.org/maalka/squants.git"), "squantsJVM")
 //lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
-lazy val root = (project in file(".")).enablePlugins(PlayScala, JavaAppPackaging)
+lazy val root = (project in file(".")).enablePlugins(PlayScala, JavaAppPackaging).enablePlugins(UpstartPlugin)
 
 
 resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
 resolvers += "Artifactory Realm" at "https://jfrog.maalka.com/artifactory/libs-release-local/"
-
-
 
 // Dependencies
 libraryDependencies ++= Seq(
