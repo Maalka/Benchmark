@@ -22,6 +22,7 @@ dockerRepository := Some("maalka")
 dockerBaseImage := "maalka/oracle8"
 dockerUpdateLatest := true
 
+/*
 linuxPackageMappings += packageTemplateMapping(s"/var/run/${name.value}/")() withUser name.value withGroup name.value
 
 javaOptions in Universal ++= Seq(
@@ -39,6 +40,8 @@ javaOptions in Universal ++= Seq(
   // Use separate configuration file for production environment
   s"-Dconfig.file=/etc/${name.value}/prod.conf"
 )
+
+*/
 
 //lazy val squants = ProjectRef(uri("https://github.com/Maalka/squants.git"), "squantsJVM")
 //lazy val squants = ProjectRef(uri("https://rimasgulbinas@bitbucket.org/maalka/squants.git"), "squantsJVM")
