@@ -15,7 +15,7 @@ import scala.concurrent.Future
 case class CSVcompute(parameters: List[List[String]]) {
 
   val validZipCodes:String = {
-    Play.current.resourceAsStream("valid_zipcodes.json") match {
+    play.api.Environment.simple().resourceAsStream("valid_zipcodes.json") match {
       case Some(is: InputStream) => {
         Json.parse(is).toString()
       }
@@ -277,6 +277,7 @@ case class CSVcompute(parameters: List[List[String]]) {
          val buildingEntry = if (buildingTypes.contains(d.trim)){d.trim}else{"ERROR"}
          List(a,stateEntry,postalCodeEntry,buildingEntry,GFAEntry,unitsEntry)
        }
+       case a => List("Error in Row (check for blank columns in CSV): " + a.mkString(" "))
     }
   }
 
