@@ -8,7 +8,7 @@ organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
 
-version := "1.10.2.1"
+version := "1.10.3.0"
 
 scalaVersion in ThisBuild := "2.11.6"
 
