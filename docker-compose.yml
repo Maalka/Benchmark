@@ -1,6 +1,8 @@
 web:
   restart: always
   build: ./
+  environment:
+    - APPLICATION_SECRET
   ports:
     - "80:80"
-  command: benchmark-1.10.1.0/bin/benchmark -Dhttp.port=80 -Dconfig.resource=prod.conf
+  command: benchmark-1.10.2.1/bin/benchmark -Dhttp.port=80 -Dconfig.resource=prod.conf
