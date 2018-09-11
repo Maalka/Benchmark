@@ -13,6 +13,7 @@ import scala.language.implicitConversions
   * Created by rimukas on 1/13/17.
   */
 case class CSVlistCompute(configuration:Configuration) {
+
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
   implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(b.value)
   implicit def listEnergyToJSValue(v: List[Energy]): JsValue = Json.toJson(v.map{

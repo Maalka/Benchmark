@@ -9,99 +9,59 @@ import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import akka.stream.ActorMaterializer
 import akka.actor.ActorSystem
-import akka.dispatch.Envelope
+import akka.actor.Status.Success
 import akka.stream._
 import akka.stream.scaladsl._
 import akka.util.{ByteString, Timeout}
-import com.github.tototoshi.csv.{CSVReader, CSVWriter, DefaultCSVFormat, QUOTE_NONE, Quoting}
+import com.github.tototoshi.csv._
 import com.google.inject.Inject
 import models._
-import models.CSVlistCompute
+import parsers.ParseCSV
+import parsers.ParseCSV.NotValidCSVRow
 import play.api.cache.{AsyncCacheApi, CacheApi}
-import play.api.libs.EventSource
-import play.api.libs.Files.TemporaryFile
-import play.api.libs.concurrent.Akka
-import play.api.libs.iteratee.Enumerator
 import play.api.libs.json._
 import play.api.mvc._
 import play.api.{Configuration, Environment}
+import squants.energy.Energy
 
 import scala.concurrent.duration._
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import scala.language.implicitConversions
 import scala.util.control.NonFatal
 import scala.language.postfixOps
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Try}
 
 
-class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, system:ActorSystem, configuration: Configuration) extends AbstractController(cc) with Logging {
+class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, configuration: Configuration) extends AbstractController(cc) with Logging {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-
-
-  val decider: Supervision.Decider = {
-    case NonFatal(th) =>
-
-
-      val sw = new StringWriter
-      th.printStackTrace(new PrintWriter(sw))
-      //Console.println(sw.toString)
-      //Supervision.Resume
-      Supervision.Stop
-
-    case _ => Supervision.Stop
-  }
-
   implicit val actorSystem = ActorSystem("ServiceName")
   implicit val materializer = ActorMaterializer()
-
-  implicit val timeout = Timeout(5 seconds)
-  //val listCompute = new CSVlistCompute
-
-  val calculateDegreeDays = Flow.fromGraph(GraphDSL.create() { implicit builder =>
-    import GraphDSL.Implicits._
-
-    val zipWith = builder.add(ZipWith[Try[Int],Try[Int],JsValue,(Try[Int],Try[Int],JsValue)]((_, _, _)))
-
-    val broadcast = builder.add(Broadcast[(JsValue,DegreeDays)](3))
-    broadcast.out(0).mapAsync(1) { v =>
-      futureToFutureTry[Int](v._2.lookupCDD)
-    } ~> zipWith.in0
-    broadcast.out(1).mapAsync(1) { v =>
-      futureToFutureTry[Int](v._2.lookupHDD)
-    } ~> zipWith.in1
-    broadcast.out(2).map(_._1) ~> zipWith.in2
-    FlowShape(broadcast.in, zipWith.out)
-
-  })
+  implicit val timeout = Timeout(10 seconds)
 
 
   def futureToFutureTry[T](future: Future[T]): Future[Try[T]] = {
     future.map(Try(_)).recover {
       case NonFatal(th) => Failure(th)
     }
-
   }
-
 
   def upload = Action.async(parse.multipartFormData) { implicit request =>
     import java.nio.file.Files
-
-    var tempDir = Files.createTempDirectory("Results")
-    val processedEntries = new File(tempDir + File.separator + "Results.csv")
-
 
     implicit object MyFormat extends DefaultCSVFormat {
       override val quoting: Quoting = QUOTE_NONE
     }
 
-
+    val tempDir = Files.createTempDirectory("Results")
+    val processedEntries = new File(tempDir + File.separator + "Results.csv")
     val writer = CSVWriter.open(processedEntries)
-
 
     val unprocessedEntries = new File(tempDir + File.separator + "Errors.csv")
     val error_writer = CSVWriter.open(unprocessedEntries)
+
+    writer.writeRow(Seq("Building ID", "Baseline Score", "Baseline Site EUI (kBtu/ft2/yr)", "Baseline Source EUI (kBtu/ft2/yr)"))
 
     request.body.file("attachment").map {
       case upload if upload.filename.takeRight(3) != "csv" =>
@@ -116,62 +76,45 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
         val uploadedFile = new File(tempDir + File.separator + filename)
         upload.ref.moveTo(uploadedFile)
 
-
-        val reader = CSVReader.open(uploadedFile)
-
-        val csvTemp = CSVlistCompute(configuration)
-        val csvList = CSVcompute(reader.all)
-
-
-        csvList.outputUnits match {
-          case "sq.m" => writer.writeRow(List("Building ID", "Baseline Score", "Baseline Site EUI (kWh/m2/yr)", "Baseline Source EUI (kWh/m2/yr)"))//, "Baseline Site Energy (kWh/m2)", "Baseline Source Energy (kWh/m2)"))
-          case "sq.ft" => writer.writeRow(List("Building ID", "Baseline Score", "Baseline Site EUI (kBtu/ft2/yr)", "Baseline Source EUI (kBtu/ft2/yr)"))//, "Baseline Site Energy (kBtu/ft2)", "Baseline Source Energy (kBtu/ft2)"))
-          case _ => writer.writeRow(List("Building ID", "Baseline Score", "Baseline Site EUI", "Baseline Source EUI"))//, "Baseline Site Energy", "Baseline Source Energy"))
-        }
-
-
-        val CSVWriterFlow = Flow[(Try[Int], Try[Int], JsValue, Try[JsValue])].map {
-          case (hdd, cdd, js, Success(metrics)) => {
+        val CSVWriterFlow = Flow[Any].map {
+          case scala.util.Success(metrics:JsValue) => {
 
             // success write success row
-            val metricsList = List(
+            val metricsList = Seq(
               metrics \ "values" \\ "buildingName",
               metrics \ "values" \\ "medianZEPI",
               metrics \ "values" \\ "medianSiteEUI",
               metrics \ "values" \\ "medianSourceEUI"
-              //metrics \ "values" \\ "medianSiteEnergy",
-              //metrics \ "values" \\ "medianSourceEnergy"
             ).flatten
+            println(metricsList)
             writer.writeRow(metricsList)
           }
+          case Left(metrics:NotValidCSVRow) => error_writer.writeRow(metrics.badEntriesWithErrors)
 
-          case (_, _, _, Failure(metrics)) =>
+          case Failure(metrics) =>
             metrics match {
               case NonFatal(th) => {
-                writer.writeRow(List(th.getMessage))
-                // println(th.getMessage)
+                error_writer.writeRow(Seq(th.getMessage))
               }
             }
         }
 
+        val parseCSV: ParseCSV = new ParseCSV
 
-        Source.fromIterator(() => csvList.goodBuildingJsonList.toIterator).map {
-          js => (js, DegreeDays(js))
-        }.via(calculateDegreeDays).mapAsync(4) {
-          case (ccdTry, hddTry, js) if ccdTry.isSuccess && hddTry.isSuccess => {
-            futureToFutureTry[JsValue](
-              csvTemp.getMetrics(Json.toJson(List(Json.obj("CDD" -> ccdTry.get, "HDD" -> hddTry.get) ++ js.asInstanceOf[JsObject])))
-            ).map {
-              case Success(metrics) => (ccdTry, hddTry, js, Try(metrics))
-              case i => (ccdTry, hddTry, js, i)
+        val fileStream1 = new FileInputStream(uploadedFile)
+
+        val csvTemp = CSVlistCompute(configuration)
+
+        parseCSV.toPortfolioFlow(fileStream1)
+          .mapAsync(4) {
+            case Right(js) => {
+              futureToFutureTry[JsValue](
+                csvTemp.getMetrics(js)
+              )
             }
+            case ex => Future(ex)
           }
-          case (ccdTry, hddTry, js) => Future(
-            (ccdTry, hddTry, js, Failure(new Throwable("Invalid Postal Code")))
-          )
-
-        }.via(CSVWriterFlow).runWith(Sink.ignore).map { _ =>
-          error_writer.writeAll(csvList.badEntriesWithErrors)
+          .via(CSVWriterFlow).runWith(Sink.ignore).map { _ =>
           error_writer.close()
           writer.close()
 
@@ -198,8 +141,8 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
           Ok.sendFile(path.toFile)
             .as("application/zip")
             .withHeaders(
-            "Content-Disposition" -> "attachment; filename=Results.zip"
-          )
+              "Content-Disposition" -> "attachment; filename=Results.zip"
+            )
         }.recover {
           case NonFatal(th) =>
             //println(th)
@@ -212,14 +155,9 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
         }
       }
     }.getOrElse {
-
       Future {
         Ok("File is missing")
       }
     }
-
-    //al f = new File("out_list.csv")
-
   }
 }
-
