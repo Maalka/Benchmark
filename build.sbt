@@ -59,6 +59,9 @@ libraryDependencies ++= Seq(
   ehcache,
   ws,
   // WebJars (i.e. client-side) dependencies
+
+  "org.apache.jclouds.api" % "filesystem" % "2.1.1",
+
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test",
   "org.mockito" % "mockito-all" % "1.10.19",
   "org.webjars" % "requirejs" % "2.1.22",
@@ -81,6 +84,7 @@ libraryDependencies ++= Seq(
   "org.joda" % "joda-convert" % "1.9.2",
   "com.typesafe.play" %% "play-json" % "2.6.8",
   "com.eclipsesource" %% "play-json-schema-validator" % "0.9.4",
+
 
   "com.typesafe.play" %% "play-iteratees" % "2.6.1",
   "com.typesafe.play" %% "play-iteratees-reactive-streams" % "2.6.1"

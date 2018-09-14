@@ -3,23 +3,16 @@ package parsers
 import java.io.{InputStream, InputStreamReader}
 
 import akka.NotUsed
-import akka.actor.{ActorSystem, FSM}
-import akka.stream.ActorMaterializer
+import akka.actor.ActorSystem
 import akka.stream.scaladsl._
 import com.github.tototoshi.csv.CSVReader
 import com.google.common.base.Charsets
-import controllers.Logging
 import javax.inject.Inject
-import models._
 import parsers.ParseCSV.NotValidCSVRow
-import play.api.Configuration
 import play.api.libs.json._
-import play.api.mvc.{AbstractController, ControllerComponents}
-import squants.energy.Energy
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.ExecutionContext
+import scala.util.{Success, Try}
 
 object ParseCSV {
   import rowCheck._
