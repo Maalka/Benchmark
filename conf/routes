@@ -19,9 +19,6 @@ POST          /baseline             @controllers.BaselineController.getZEPIMetri
 OPTIONS       /baseline             @controllers.Application.options()
 POST          /degreedays           @controllers.DegreeDaysController.getDDMetrics()
 POST          /csvmetrics           @controllers.CSVController.upload
-POST          /normalize            controllers.ParseController.normalize()
-
-
 
 # Authentication
 #POST          /login               controllers.Application.login()

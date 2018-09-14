@@ -38,7 +38,6 @@ class CSVController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponent
 
   implicit val actorSystem = ActorSystem("ServiceName")
   implicit val materializer = ActorMaterializer()
-  implicit val timeout = Timeout(10 seconds)
 
 
   def futureToFutureTry[T](future: Future[T]): Future[Try[T]] = {
