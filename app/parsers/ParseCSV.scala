@@ -18,37 +18,60 @@ object ParseCSV {
   import rowCheck._
   case class NotValidCSVRow(row:Seq[Option[String]]) extends Exception {
     val badEntriesWithErrors = row match {
-        case List(a, Some(b: String), Some(c: String), Some(d: String), Some(e: String), Some(f: String)) => {
+        case List(a, b,c,d,e,f) => {
           val nameEntry = if (a.isDefined) {
             a.get.trim
           } else {
-            "---" +" No Name Supplied!" + "---"
+            "---" +" No Name Supplied" + "---"
           }
-          val stateEntry = if (states.contains(b.trim)) {
-            b.trim
+          val stateEntry = if (b.isDefined){
+              if(states.contains(b.getOrElse("").trim)) {
+                b.get.trim
+              } else {
+                "---" + b.get.trim + "---"
+              }
           } else {
-            "---" + b.trim + "---"
+            "---No Building Name---"
           }
-          val postalCodeEntry = if (c.trim.length == 5) {
-            c.trim
+
+          val postalCodeEntry = if (c.isDefined){
+              if(c.getOrElse("").trim.length == 5) {
+                c.get.trim
+              } else {
+                "---" + c.get.trim + "---"
+              }
           } else {
-            "---" + c.trim + "---"
+            "---No Postal Code---"
           }
-          val buildingEntry = if (buildingTypes.contains(d.trim)) {
-            d.trim
+          val buildingEntry = if (d.isDefined){
+            if(buildingTypes.contains(d.getOrElse("").trim)) {
+              d.get.trim
+            } else {
+                "---" + d.get.trim + "---"
+              }
           } else {
-            "---" + d.trim + "---"
+            "---No Building Type---"
           }
-          val GFAEntry = if (tryFormat(e, "double")) {
-            e.toDouble
+
+          val GFAEntry = if (e.isDefined){
+            if (tryFormat(e.get, "double")) {
+              e.get.toDouble
+            } else {
+                "---" + e.get.toString.trim + "---"
+              }
           } else {
-            "---" + e.trim + "---"
+            "---No GFA Value---"
           }
-          val unitsEntry = if (unitList.contains(f.trim)) {
-            f.trim
+          val unitsEntry = if (f.isDefined){
+            if(unitList.contains(f.getOrElse("").trim)) {
+              f.get.trim
+            } else {
+              "---" + f.get.trim + "---"
+            }
           } else {
-            "---" + f.trim + "---"
+            "---No GFA Units---"
           }
+
           Seq(nameEntry, stateEntry, buildingEntry, unitsEntry, postalCodeEntry, GFAEntry)
         }
         case _ => Seq("Unspecified Error Detected")
@@ -84,11 +107,11 @@ class ParseCSV @Inject()(implicit val actorSystem: ActorSystem, executionContext
 
     (
       row(0).isDefined &&
-      states.contains(row(1).get.trim) &&
-      buildingTypes.contains(row(3).get.trim) &&
-      unitList.contains(row(5).get.trim) &&
-      (row(2).get.trim.length == 5) &&
-      tryFormat(row(4).get, "double")
+      states.contains(row(1).getOrElse("").trim) &&
+      buildingTypes.contains(row(3).getOrElse("").trim) &&
+      unitList.contains(row(5).getOrElse("").trim) &&
+      (row(2).getOrElse("").trim.length == 5) &&
+      tryFormat(row(4).getOrElse(""), "double")
     )
   }
 

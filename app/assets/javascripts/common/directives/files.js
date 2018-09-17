@@ -48,8 +48,9 @@ define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angul
                                 watchForCompletedFile(targetFileName);
                             }, 1000);
                         } else {
-                            $scope.cosole.log(response);
-                        }                    });
+                            console.log(response);
+                        }
+                    });
                 };
 
                 $scope.upload = function (file) {

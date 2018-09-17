@@ -162,7 +162,6 @@ class BulkCSVService @Inject ()(
         metrics \ "values" \\ "medianSiteEUI",
         metrics \ "values" \\ "medianSourceEUI"
       ).flatten
-      println(metricsList)
       writer.writeRow(metricsList)
     }
     case Left(metrics: NotValidCSVRow) => error_writer.writeRow(metrics.badEntriesWithErrors)
