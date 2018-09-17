@@ -8,7 +8,7 @@ organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
 
-version := "1.10.3.0"
+version := "1.10.4.0"
 
 scalaVersion in ThisBuild := "2.11.6"
 
@@ -21,6 +21,8 @@ packageDescription := "Benchmark tool"
 dockerRepository := Some("maalka")
 dockerBaseImage := "maalka/oracle8"
 dockerUpdateLatest := true
+
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 /*
 linuxPackageMappings += packageTemplateMapping(s"/var/run/${name.value}/")() withUser name.value withGroup name.value
