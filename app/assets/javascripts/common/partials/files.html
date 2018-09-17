@@ -12,25 +12,27 @@
                    >
                         {{ "Upload CSV" }}
                 </button>
-<br>
+            <br>
             <button ng-disabled="attachment === undefined"
+                <!--ng-if = "downloadLink === undefined || loadingFileFiller.attachmentName !== undefined"-->
                 class="ui green button"
                     style = "margin-bottom: 2em; padding: 1.1em 2em; background-color: #5ba372"
                 ng-class="{loading: loading}"
-                type="submit" ng-click="submitFile()">Submit
+                type="submit" ng-click="submitFile()">Submit {{attachment.name}}
             </button>
+
+
             <!--<p ng-if="attachment === undefined && loadingFileFiller.attachmentName === undefined">
                 << Upload your data here >>
             </p> -->
             </div>
+
         </div>
-        <div clasas = "ui row">
-        <div class="field" ng-if="attachment !== undefined && loadingFileFiller.attachmentName === undefined">
-            <p style="color:black;">
-                {{attachment.name}}
-            </p>
+        <div class="ui row">
+            <a ng-if = "loadingFileFiller.attachmentName === undefined && downloadLink !== undefined && !loading"
+               href="{{downloadLink}}">Download File</a>
         </div>
-    </div>
+        <br><br><br>
     </div>
 </form>
 

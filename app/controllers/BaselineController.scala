@@ -4,25 +4,32 @@
 
 
 package controllers
+import akka.actor.ActorSystem
 import models._
-
 import com.eclipsesource.schema._
 import com.eclipsesource.schema.internal.validation.VA
 import com.google.inject.Inject
-import play.api.cache.{AsyncCacheApi, SyncCacheApi}
+import play.api.cache.AsyncCacheApi
 import play.api.libs.json._
-
-import play.api.{ Configuration, Environment }
+import play.api.Configuration
 import play.api.mvc._
+
 import scala.concurrent.Future
 import squants.energy.Energy
 
 import scala.util.control.NonFatal
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
+import _root_.util.Logging
 
 
-class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, configuration: Configuration) extends AbstractController(cc) with Logging {
+class BaselineController @Inject() (
+                                     val cache: AsyncCacheApi,
+                                     cc: ControllerComponents,
+                                     configuration: Configuration)
+                                   (
+                                     implicit val actorSystem: ActorSystem
+                                   ) extends AbstractController(cc) with Logging {
 
 
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
