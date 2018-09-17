@@ -19,20 +19,8 @@ POST          /baseline             @controllers.BaselineController.getZEPIMetri
 OPTIONS       /baseline             @controllers.Application.options()
 POST          /degreedays           @controllers.DegreeDaysController.getDDMetrics()
 POST          /csvmetrics           @controllers.CSVController.upload
-POST          /normalize            controllers.ParseController.normalize()
 
-
-
-# Authentication
-#POST          /login               controllers.Application.login()
-#POST          /logout              controllers.Application.logout()
-
-# Users
-#GET           /users/:id           controllers.Users.user(id: Long)
-#POST          /users               controllers.Users.createUser()
-#PUT           /users/:id           controllers.Users.updateUser(id: Long)
-#DELETE        /users/:id           controllers.Users.deleteUser(id: Long)
-#GET           /authuser            controllers.Users.authUser()
+GET           /getProcessedCSV      @controllers.CSVController.getProcessedCSV(targetFileName: String, data: Boolean ?= false)
 
 # Static
 # ~~~~

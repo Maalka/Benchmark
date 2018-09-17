@@ -3,7 +3,7 @@
  * for uploading
  * CSV files
  */
-define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angular, saveAs) {
+define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angular) {
     'use strict';
     var mod = angular.module('common.directives');
 
@@ -32,36 +32,38 @@ define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angul
                 $scope.loadingFileFiller = {};
                 $scope.loading = false;
 
+                var watchForCompletedFile = function (targetFileName) { 
+                    playRoutes.controllers.CSVController.getProcessedCSV(targetFileName, false).get().then(function (response){ 
+                    
+                        $scope.downloadLink = response.data.targetFileNamePath;
+                        console.log("Exists and ready to download");
+                        $scope.loading = false;
+                        
+                    }).catch(function (response)  {
+                        if (response.status === 404) {
+                            console.log("Doesn't exist");
+                            $scope.loading = false; 
+                        } else if (response.status === 409) {
+                            $timeout(function () {
+                                watchForCompletedFile(targetFileName);
+                            }, 1000);
+                        } else {
+                            console.log(response);
+                        }
+                    });
+                };
+
                 $scope.upload = function (file) {
                     // https://github.com/eligrey/FileSaver.js/issues/156
                     $scope.loading = true;
                     Upload.upload({
-                        responseType: "arraybuffer",
                         url: playRoutes.controllers.CSVController.upload().url,
                         cache: false,
-                        headers: {
-                            'Content-Type': 'application/zip; charset=utf-8'
-                        },
-                        transformResponse: function (data) {
-                            //The data argument over here is arraybuffer but $http returns response
-                            // as object, thus returning the response as an object with a property holding the
-                            // binary file arraybuffer data
-                            var response = {};
-                            response.arrayBuffer = data;
-                            return response;
-                        },
                         data: {
                             attachment: file
                         }
                     }).then(function (resp) {
-                        var blob = new Blob([resp.data.arrayBuffer], {type: "application/zip;charset=utf-8"});
-                        saveAs(blob, "Results.zip");
-                        $scope.loading = false;
-
-                        $timeout(function () {
-                            $scope.loadingFileFiller = {};
-                        }, 1000);
-
+                        watchForCompletedFile(resp.data.targetFileName);
                     }).catch(function (resp) {
                         $scope.loading = false;
                         if (resp.status === 400) {

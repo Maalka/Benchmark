@@ -7,18 +7,23 @@ package controllers
 
 import models._
 import com.google.inject.Inject
-import play.api.cache.{AsyncCacheApi, CacheApi}
+import play.api.cache.AsyncCacheApi
 import play.api.libs.json._
 import play.api.mvc._
-import play.mvc.Security
 
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
+import _root_.util.Logging
+import akka.actor.ActorSystem
 
 
-class DegreeDaysController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) with Logging {
+
+class DegreeDaysController @Inject() (
+                                       val cache: AsyncCacheApi,
+                                       cc: ControllerComponents
+                                     )(implicit val actorSystem: ActorSystem) extends AbstractController(cc) with Logging {
   this: AbstractController =>
 
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
