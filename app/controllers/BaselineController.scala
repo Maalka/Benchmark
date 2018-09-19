@@ -140,7 +140,7 @@ class BaselineController @Inject() (
                        "type": "string",
                        "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
                        "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
-                       "WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
+                       "Warehouse","WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
                        "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
                        "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
                        "Bar","Nightclub","Casino","OtherEntertainment","ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
@@ -517,7 +517,7 @@ class BaselineController @Inject() (
                            "buildingType": {
                                "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
                                    "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
-                                   "WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
+                                   "Warehouse","WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
                                    "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
                                    "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
                                    "Bar","Nightclub","Casino","OtherEntertainment","ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",

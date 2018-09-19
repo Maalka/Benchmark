@@ -226,7 +226,8 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
               case ("USA", "WorshipCenter") => KBtus(70.7)
               case ("USA", "WastewaterCenter") => KBtus(148.1)
               case ("USA", "Warehouse") => KBtus(60.0)
-              case ("USA", "RefrigeratedWarehouse") => KBtus(252.6)
+              case ("USA", "WarehouseUnRefrigerated") => KBtus(60.0)
+              case ("USA", "WarehouseRefrigerated") => KBtus(252.6)
               case ("USA", "Supermarket") => KBtus(480.0)
               case ("USA", "SeniorCare") => KBtus(243.2)
               case ("USA", "Retail") => KBtus(114.4)
@@ -546,7 +547,9 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
       case ("USA", "WorshipCenter") => configuration.get[Option[String]]("baseline.worshipCenter")
       case ("USA", "WastewaterCenter") => configuration.get[Option[String]]("baseline.wastewaterCenter")
       case ("USA", "Warehouse") => configuration.get[Option[String]]("baseline.warehouse")
-      case ("USA", "RefrigeratedWarehouse") => configuration.get[Option[String]]("baseline.warehouse")
+      case ("USA", "WarehouseUnRefrigerated") => configuration.get[Option[String]]("baseline.warehouse")
+      case ("USA", "WarehouseRefrigerated") => configuration.get[Option[String]]("baseline.warehouse")
+      case ("USA", "DistributionCenter") => configuration.get[Option[String]]("baseline.warehouse")
       case ("USA", "Supermarket") => configuration.get[Option[String]]("baseline.supermarket")
       case ("USA", "SeniorCare") => configuration.get[Option[String]]("baseline.seniorCare")
       case ("USA", "Retail") => configuration.get[Option[String]]("baseline.retail")
@@ -772,7 +775,8 @@ case class CombinedPropTypes(params: JsValue, configuration: Configuration) {
         case ("Canada","Hotel") => 1.75
         case ("Canada","WorshipCenter") => 1.06
         case ("Canada","Warehouse") => 0.93
-        case ("Canada","RefrigeratedWarehouse") => 1.23
+        case ("Canada","WarehouseUnRefrigerated") => 0.93
+        case ("Canada","WarehouseRefrigerated") => 1.23
         case ("Canada","SeniorCare") => 1.88
         case ("Canada","Retail") => 1.52
         case ("Canada","ResidenceHall") => 2.05

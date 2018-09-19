@@ -141,6 +141,7 @@ class ParseCSV @Inject()(implicit val actorSystem: ActorSystem, executionContext
       case "BankBranch" => "FinancialOffice"
       case "DistributionCenter" => "Warehouse"
       case "ConvenienceStoreWithGas" => "GasStation"
+      case "ConvenienceStoreAndGas" => "GasStation"
       case "ConvenienceStoreNoGas" => "ConvenienceStore"
       case "MixedUseProperty" => "MixedUse"
       case "WarehouseRefrigerated" => "WarehouseRefrigerated"
