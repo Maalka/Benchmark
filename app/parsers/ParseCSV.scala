@@ -95,28 +95,25 @@ class ParseCSV @Inject()(implicit val actorSystem: ActorSystem, executionContext
       .toStream()
   }
 
-  def toPortfolioFlow(is:InputStream): Source[Either[NotValidCSVRow, JsValue], NotUsed] = {
+  def toPortfolioFlow(is:InputStream,reportingUnits:String): Source[Either[NotValidCSVRow, JsValue], NotUsed] = {
 
-    source(toStream(is)).via(portfolioSegmentFlow())
+    source(toStream(is)).via(portfolioSegmentFlow(reportingUnits))
 
   }
 
 
 
   def rowValid(row:Seq[Option[String]]):Boolean = {
-
-    (
-      row(0).isDefined &&
+    row(0).isDefined &&
       states.contains(row(1).getOrElse("").trim) &&
       buildingTypes.contains(row(3).getOrElse("").trim) &&
       unitList.contains(row(5).getOrElse("").trim) &&
       (row(2).getOrElse("").trim.length == 5) &&
       tryFormat(row(4).getOrElse(""), "double")
-    )
   }
 
 
-  private def portfolioSegmentFlow(): Flow[Seq[Option[String]], Either[NotValidCSVRow, JsValue], NotUsed] = Flow[Seq[Option[String]]]
+  private def portfolioSegmentFlow(reportingUnits:String): Flow[Seq[Option[String]], Either[NotValidCSVRow, JsValue], NotUsed] = Flow[Seq[Option[String]]]
     .map { row =>
         if (rowValid(row)) {
           Right(
@@ -128,7 +125,7 @@ class ParseCSV @Inject()(implicit val actorSystem: ActorSystem, executionContext
               "buildingType" -> JsString(getBuildingType(row(3).get.trim)),
               "GFA" -> JsNumber(row(4).get.trim.toDouble),
               "areaUnits" -> JsString(convertGFAUnits(row(5).get.trim)),
-              "reportingUnits" -> JsString("us"),
+              "reportingUnits" -> JsString(reportingUnits),
               "country" -> JsString("USA")
               )
             )
@@ -146,7 +143,7 @@ class ParseCSV @Inject()(implicit val actorSystem: ActorSystem, executionContext
       case "ConvenienceStoreWithGas" => "GasStation"
       case "ConvenienceStoreNoGas" => "ConvenienceStore"
       case "MixedUseProperty" => "MixedUse"
-      case "WarehouseRefrigerated" => "RefrigeratedWarehouse"
+      case "WarehouseRefrigerated" => "WarehouseRefrigerated"
       case "WarehouseUnRefrigerated" => "Warehouse"
       case "EnergyStation" => "PowerStation"
       case _ => bldgType
@@ -280,7 +277,7 @@ object rowCheck {
   "Courthouse",
   "OtherUtility",
   "SelfStorageFacility",
-  "RefrigeratedWarehouse",
+  "WarehouseRefrigerated",
   "IndoorArena",
   "RaceTrack",
   "Aquarium",
@@ -330,7 +327,7 @@ object rowCheck {
   "ConvenienceStoreWithGas", // GasStation
   "ConvenienceStoreNoGas", // GasStation
   "MixedUseProperty", // MixedUse
-  "WarehouseRefrigerated", //RefrigeratedWarehouse
+  "WarehouseRefrigerated", //WarehouseRefrigerated
   "WarehouseUnRefrigerated", // Warehouse
   "Other"
   )
