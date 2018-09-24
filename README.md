@@ -53,7 +53,7 @@ Deployment:
 
 ### Prod Mode with Docker
 
-* `docker-machine create --driver amazonec2 --amazonec2-ssh-keypath ~/.ssh/id_rsa --amazonec2-instance-type t2.small zerotool`
+* `docker-machine create --driver amazonec2 --amazonec2-ssh-keypath ~/.ssh/id_rsa --amazonec2-instance-type t2.large zerotool`
 * `eval $(docker-machine env zerotool)`
 * Produce executable via `sbt clean dist`
 * `docker-compose down`
