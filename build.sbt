@@ -8,7 +8,7 @@ organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
 
-version := "1.10.4.0"
+version := "1.10.5.0"
 
 scalaVersion in ThisBuild := "2.11.6"
 
@@ -91,15 +91,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-iteratees" % "2.6.1",
   "com.typesafe.play" %% "play-iteratees-reactive-streams" % "2.6.1"
 )
-
-/*
-dependencyOverrides := Set(
-
-  "com.typesafe.play" %% "play-json" % "2.4.6",
-  "com.typesafe.play" %% "play-specs2" % "2.4.6" % "test"
-
-
-)*/
 
 // Scala Compiler Options
 scalacOptions in ThisBuild ++= Seq(

@@ -10,7 +10,9 @@ define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angul
     mod.directive('files', ['$log', 'errorPopoverService', 'playRoutes', 'Upload', function ($log, errorPopover, playRoutes, Upload) {
         return {
             restrict: 'E',
-            scope: {},
+            scope: {
+
+            },
             templateUrl: "javascripts/common/partials/files.html",
             controller: ["$scope", "$element", "$timeout", "playRoutes",
                 function ($scope, $element, $timeout, playRoutes) {
@@ -60,7 +62,8 @@ define(['angular', 'filesaver', './main', 'angular-file-upload'], function(angul
                         url: playRoutes.controllers.CSVController.upload().url,
                         cache: false,
                         data: {
-                            attachment: file
+                            attachment: file,
+                            reportingUnits: $scope.auxModel.reportingUnits
                         }
                     }).then(function (resp) {
                         watchForCompletedFile(resp.data.targetFileName);

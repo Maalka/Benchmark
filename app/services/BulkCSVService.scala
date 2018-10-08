@@ -19,8 +19,9 @@ import play.api.libs.json.{JsValue, Json}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Try}
 import scala.util.control.NonFatal
-
 import util.Logging
+
+import scala.reflect.internal.Reporting
 
 object BulkCSVService {
   val RUNNING = "RUNNING"
@@ -72,7 +73,7 @@ class BulkCSVService @Inject ()(
   }
 
 
-  def processCSVFile(csvFile: File, targetFileName: String) {
+  def processCSVFile(csvFile: File, targetFileName: String, reportingUnits:String) {
 
     implicit val materializer: ActorMaterializer = ActorMaterializer()
 
@@ -83,7 +84,12 @@ class BulkCSVService @Inject ()(
     val unprocessedEntries = new File(tempDir + File.separator + "Errors.csv")
     val error_writer = CSVWriter.open(unprocessedEntries)
 
-    writer.writeRow(Seq("Building ID", "Baseline Score", "Baseline Site EUI (kBtu/ft2/yr)", "Baseline Source EUI (kBtu/ft2/yr)"))
+    if (reportingUnits == "metric"){
+      writer.writeRow(Seq("Building ID", "Baseline Score", "Baseline Site EUI (kWh/m2/yr)", "Baseline Source EUI (kWh/m2/yr)"))
+    } else {
+      writer.writeRow(Seq("Building ID", "Baseline Score", "Baseline Site EUI (kBtu/ft2/yr)", "Baseline Source EUI (kBtu/ft2/yr)"))
+    }
+
 
 
 
@@ -95,7 +101,7 @@ class BulkCSVService @Inject ()(
       .set(targetFileName, RUNNING)
       .flatMap { _ =>
         logging.debug("Set Cache and now starting stream")
-        parseCSV.toPortfolioFlow(fileStream1)
+        parseCSV.toPortfolioFlow(fileStream1, reportingUnits)
           .mapAsync(4) {
             case Right(js) => {
               futureToFutureTry[JsValue](

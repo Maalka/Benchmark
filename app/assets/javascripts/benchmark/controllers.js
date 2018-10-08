@@ -851,7 +851,7 @@ define(['angular'], function() {
                     {id:"OtherUtility",name:"Other Utility Station"},
                     {id:"SelfStorageFacility",name:"Self Storage Facility"},
                     {id:"Warehouse",name:"Warehouse - UnRefrigerated"},
-                    {id:"RefrigeratedWarehouse",name:"Warehouse - Refrigerated"},
+                    {id:"WarehouseRefrigerated",name:"Warehouse - Refrigerated"},
                     {id:"Warehouse",name:"Distribution Center"}
                 ],
                 residential: [
@@ -936,7 +936,7 @@ define(['angular'], function() {
                 {id:"OtherUtility",name:"Other Utility Station"},
                 {id:"SelfStorageFacility",name:"Self Storage Facility"},
                 {id:"Warehouse",name:"Warehouse - UnRefrigerated"},
-                {id:"RefrigeratedWarehouse",name:"Warehouse - Refrigerated"},
+                {id:"WarehouseRefrigerated",name:"Warehouse - Refrigerated"},
                 {id:"Warehouse",name:"Distribution Center"},
                 {id:"Parking",name:"Parking"}
                 ]
@@ -957,7 +957,7 @@ define(['angular'], function() {
            "SeniorCare",
            "Supermarket",
            "Warehouse",
-           "RefrigeratedWarehouse",
+           "WarehouseRefrigerated",
            "WastewaterCenter",
            "WorshipCenter"
        ];

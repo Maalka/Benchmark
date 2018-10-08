@@ -38,7 +38,10 @@ class CSVController @Inject() (val cache: AsyncCacheApi,
 
     val tempDir = Files.createTempDirectory("Results")
 
-
+    val reportingUnits:String = request.body.dataParts("reportingUnits") match {
+      case Seq(reportingUnits) => reportingUnits
+      case _ => "us"
+    }
     request.body.file("attachment") match {
       case Some(upload) if upload.filename.takeRight(3) != "csv" =>
         BadRequest(
@@ -51,7 +54,7 @@ class CSVController @Inject() (val cache: AsyncCacheApi,
         val filename = upload.filename
         val uploadedFile = new File(tempDir + File.separator + filename)
         upload.ref.moveTo(uploadedFile)
-        bulkCSVService.processCSVFile(uploadedFile, targetFileName)
+        bulkCSVService.processCSVFile(uploadedFile, targetFileName, reportingUnits)
         Ok(Json.obj("targetFileName" -> targetFileName))
       }
       case None =>
