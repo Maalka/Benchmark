@@ -92,15 +92,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-iteratees-reactive-streams" % "2.6.1"
 )
 
-/*
-dependencyOverrides := Set(
-
-  "com.typesafe.play" %% "play-json" % "2.4.6",
-  "com.typesafe.play" %% "play-specs2" % "2.4.6" % "test"
-
-
-)*/
-
 // Scala Compiler Options
 scalacOptions in ThisBuild ++= Seq(
   "-target:jvm-1.8",
