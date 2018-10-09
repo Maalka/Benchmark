@@ -143,7 +143,7 @@ class BaselineController @Inject() (
                        "Warehouse","WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
                        "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
                        "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
-                       "Bar","Nightclub","Casino","OtherEntertainment","ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
+                       "Bar","Nightclub","Casino","OtherEntertainment","GasStation", "ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
                        "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
                        "TransportationTerminal","WastewaterCenter","OtherPublicServices","WorshipCenter","AutoDealership","EnclosedMall","DataCenter","PersonalServices",
                        "RepairServices","OtherServices","Zoo","K12School","Other","SingleFamilyDetached","SingleFamilyAttached","MobileHome"]
@@ -520,7 +520,7 @@ class BaselineController @Inject() (
                                    "Warehouse","WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
                                    "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
                                    "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
-                                   "Bar","Nightclub","Casino","OtherEntertainment","ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
+                                   "Bar","Nightclub","Casino","OtherEntertainment","GasStation", "ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
                                    "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
                                    "TransportationTerminal","OtherPublicServices","WorshipCenter","AutoDealership","EnclosedMall","PersonalServices",
                                    "RepairServices","OtherServices","Zoo","K12School","Other","SingleFamilyDetached","SingleFamilyAttached","MobileHome"]

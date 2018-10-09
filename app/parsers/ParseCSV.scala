@@ -143,6 +143,7 @@ class ParseCSV @Inject()(implicit val actorSystem: ActorSystem, executionContext
       case "ConvenienceStoreWithGas" => "GasStation"
       case "ConvenienceStoreAndGas" => "GasStation"
       case "ConvenienceStoreNoGas" => "ConvenienceStore"
+      case "OtherResidentialLodging" => "ResidentialLodging"
       case "MixedUseProperty" => "MixedUse"
       case "WarehouseRefrigerated" => "WarehouseRefrigerated"
       case "WarehouseUnRefrigerated" => "Warehouse"
@@ -272,6 +273,7 @@ object rowCheck {
   "Prison",
   "ResidenceHall",
   "ResidentialLodging",
+  "OtherResidentialLodging",
   "MixedUse",
   "Office",
   "VeterinaryOffice",
@@ -326,6 +328,7 @@ object rowCheck {
   "K12School",
   "DistributionCenter", // Warehouse
   "ConvenienceStoreWithGas", // GasStation
+  "ConvenienceStoreAndGas", // GasStation
   "ConvenienceStoreNoGas", // GasStation
   "MixedUseProperty", // MixedUse
   "WarehouseRefrigerated", //WarehouseRefrigerated
