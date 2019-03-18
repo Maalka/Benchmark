@@ -75,7 +75,7 @@
                         </div>
                     </div>
                     <div class="five wide column"> <!-- ng-show="lacksDD" -->
-                        <div class="tooltip">Optional Degree Days
+                        <div class="tooltip">Degree Days
                             <div class="tooltip">
                                 <sup><i class="blue circle info icon"></i></sup>
                                 <span class="tooltiptext">
@@ -84,6 +84,7 @@
                                     <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" target="_blank">here</a>.
                                     Cities without zip codes in the Zero Tool can calculate degree days
                                      <a href="http://www.degreedays.net/#" target="_blank">here</a>.
+                                    Calculate degree days using degrees Fahrenheit.
                                     <br>
                                     <br>
                                     For more information on the relationship between degree days and building energy performance, start
@@ -98,14 +99,14 @@
                             <div class="two wide field">
                                 <label>HDD</label>
                             </div>
-                            <div class="five wide field">
+                            <div class="five wide field required">
                                 <input type="number" ng-model="auxModel.HDD"
                                        name="HDD" min="0" placeholder="HDD">
                             </div>
                             <div class="two wide field">
                                 <label>CDD</label>
                             </div>
-                            <div class="four wide field">
+                            <div class="four wide field required">
                                 <input type="number" ng-model="auxModel.CDD"
                                        name="CDD" min="0">
                             </div>
