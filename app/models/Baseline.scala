@@ -700,7 +700,9 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
         }
       }
 
-    } yield defaultRatio
+    } yield {
+      defaultRatio
+    }
 
     local.recoverWith{case NonFatal(th) => residentialSitetoSourceRatio(result.head)}
   }
