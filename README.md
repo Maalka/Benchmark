@@ -30,7 +30,7 @@ The JavaScript modules are organized as follows:
 
 ### Install SBT
  [http://www.scala-sbt.org/release/docs/Setup.html](http://www.scala-sbt.org/release/docs/Setup.html)
- 
+
 ### Dev Mode
 
 * Load dependencies via `sbt update`
@@ -51,6 +51,14 @@ Deployment:
 * Extract `unzip target/universal/maalka-benchmark--2.x.x.zip`
 * Run `maalka-benchmark--2.x.x/bin/maalka-benchmark- -Dhttp.port=9000 -Dconfig.resource=prod.conf`
 
+### Prod Mode with Docker
+
+* `docker-machine create --driver amazonec2 --amazonec2-ssh-keypath ~/.ssh/id_rsa --amazonec2-instance-type t2.large zerotool`
+* `eval $(docker-machine env zerotool)`
+* Produce executable via `sbt clean dist`
+* `docker-compose build`
+* `docker-compose down`
+* `docker-compose up -d`
 
 This uses the uglified JavaScript files, versioned and compressed assets, and loads WebJars resources from the jsDelivr CDN.
 

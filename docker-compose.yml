@@ -1,0 +1,15 @@
+version: '3'
+services:
+  web:
+    restart: always
+    build:
+      context: ./
+      args:
+        - VERSION=${VERSION}
+    environment:
+      - APPLICATION_SECRET
+      - SERVER_HOST
+      - SERVER_IP
+    ports:
+      - "80:80"
+    command: benchmark-${VERSION}/bin/benchmark -Dhttp.port=80 -Dconfig.resource=prod.conf

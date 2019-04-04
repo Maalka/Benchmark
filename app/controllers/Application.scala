@@ -43,6 +43,11 @@ class Application @Inject() (
     Ok(views.html.index(includeHeader))
   }
 
+  /** Serves the health check page */
+  def ht(includeHeader: Boolean = true) = Action {
+    Ok("")
+  }
+
   /**
    * Retrieves all routes via reflection.
    * http://stackoverflow.com/questions/12012703/less-verbose-way-of-generating-play-2s-javascript-router

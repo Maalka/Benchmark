@@ -5,6 +5,9 @@
 # Home page
 GET           /                    @controllers.Application.index(includeHeader: Boolean=true)
 
+# Health Check page
+GET           /ht/                 @controllers.Application.ht(includeHeader: Boolean=true)
+
 # iframe page
 GET           /iframe/             @controllers.Application.index(includeHeader: Boolean=false)
 
