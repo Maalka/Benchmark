@@ -56,8 +56,8 @@ Deployment:
 * `docker-machine create --driver amazonec2 --amazonec2-ssh-keypath ~/.ssh/id_rsa --amazonec2-instance-type t2.large zerotool`
 * `eval $(docker-machine env zerotool)`
 * Produce executable via `sbt clean dist`
-* `docker-compose down`
 * `docker-compose build`
+* `docker-compose down`
 * `docker-compose up -d`
 
 This uses the uglified JavaScript files, versioned and compressed assets, and loads WebJars resources from the jsDelivr CDN.
