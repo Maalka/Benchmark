@@ -232,7 +232,7 @@ case class Emissions(parameters:JsValue) {
 
   def loadEGridLookUp: Future[JsValue] = {
     for {
-      is <- Future(Play.current.resourceAsStream("eGridDict.json"))
+      is <- Future(play.api.Environment.simple().resourceAsStream("eGridDict.json"))
       json <- Future {
         is match {
           case Some(is: InputStream) => {

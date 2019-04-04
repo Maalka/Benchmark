@@ -960,7 +960,7 @@ define(['angular','./main'], function(angular) {
                             required: "USA"
                         }
                     ],
-                    RefrigeratedWarehouse: [
+                        WarehouseRefrigerated: [
                          {
                             name: "isWarehouseRefrigerated",
                             default: true,
@@ -1053,7 +1053,8 @@ define(['angular','./main'], function(angular) {
                        "SeniorCare",
                        "Supermarket",
                        "Warehouse",
-                       "RefrigeratedWarehouse",
+                       "WarehouseRefrigerated",
+                       "WarehouseUnRefrigerated",
                        "WastewaterCenter",
                        "WorshipCenter"
                ];

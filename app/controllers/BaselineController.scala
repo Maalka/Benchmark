@@ -4,25 +4,32 @@
 
 
 package controllers
+import akka.actor.ActorSystem
 import models._
-
 import com.eclipsesource.schema._
 import com.eclipsesource.schema.internal.validation.VA
 import com.google.inject.Inject
-import play.api.cache.{AsyncCacheApi, SyncCacheApi}
+import play.api.cache.AsyncCacheApi
 import play.api.libs.json._
-
-import play.api.{ Configuration, Environment }
+import play.api.Configuration
 import play.api.mvc._
+
 import scala.concurrent.Future
 import squants.energy.Energy
 
 import scala.util.control.NonFatal
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
+import _root_.util.Logging
 
 
-class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComponents, configuration: Configuration) extends AbstractController(cc) with Logging {
+class BaselineController @Inject() (
+                                     val cache: AsyncCacheApi,
+                                     cc: ControllerComponents,
+                                     configuration: Configuration)
+                                   (
+                                     implicit val actorSystem: ActorSystem
+                                   ) extends AbstractController(cc) with Logging {
 
 
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
@@ -133,10 +140,10 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                        "type": "string",
                        "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
                        "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
-                       "WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
+                       "Warehouse","WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
                        "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
                        "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
-                       "Bar","Nightclub","Casino","OtherEntertainment","ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
+                       "Bar","Nightclub","Casino","OtherEntertainment","GasStation", "ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
                        "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
                        "TransportationTerminal","WastewaterCenter","OtherPublicServices","WorshipCenter","AutoDealership","EnclosedMall","DataCenter","PersonalServices",
                        "RepairServices","OtherServices","Zoo","K12School","Other","SingleFamilyDetached","SingleFamilyAttached","MobileHome"]
@@ -449,7 +456,7 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                    "state": {
                        "id": "/items/properties/state",
                        "type": "string",
-                       "enum": ["AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","GU","HI","IA","ID", "IL","IN","KS","KY","LA","MA","MD","ME","MH","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY", "OH","OK","OR","PA","PR","PW","RI","SC","SD","TN","TX","UT","VA","VI","VT","WA","WI","WV","WY","BC","NB","MB","NL","NS","NT","NU","ON","PE","QC","SK","YT"]
+                       "enum": ["AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL","GA","GU","HI","IA","ID", "IL","IN","KS","KY","LA","MA","MD","ME","MH","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY", "OH","OK","OR","PA","PR","PW","RI","SC","SD","TN","TX","UT","VA","VI","VT","WA","WI","WV","WY","AB","BC","NB","MB","NL","NS","NT","NU","ON","PE","QC","SK","YT"]
                    },
                    "studentSeatingCapacity": {
                        "id": "/items/properties/studentSeatingCapacity",
@@ -510,10 +517,10 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
                            "buildingType": {
                                "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
                                    "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
-                                   "WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
+                                   "Warehouse","WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
                                    "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
                                    "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
-                                   "Bar","Nightclub","Casino","OtherEntertainment","ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
+                                   "Bar","Nightclub","Casino","OtherEntertainment","GasStation", "ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
                                    "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
                                    "TransportationTerminal","OtherPublicServices","WorshipCenter","AutoDealership","EnclosedMall","PersonalServices",
                                    "RepairServices","OtherServices","Zoo","K12School","Other","SingleFamilyDetached","SingleFamilyAttached","MobileHome"]
@@ -724,8 +731,8 @@ class BaselineController @Inject() (val cache: AsyncCacheApi, cc: ControllerComp
           "medianSiteEnergy",
           "medianSourceEnergy",
 
-          "medianSiteEnergy",
-          "medianSourceEnergy",
+          "percentBetterSiteEnergy",
+          "percentBetterSourceEnergy",
 
           "directSiteEmissions",
           "indirectSiteEmissions",

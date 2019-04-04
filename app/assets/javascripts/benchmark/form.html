@@ -75,7 +75,7 @@
                         </div>
                     </div>
                     <div class="five wide column"> <!-- ng-show="lacksDD" -->
-                        <div class="tooltip">Optional Degree Days
+                        <div class="tooltip">Degree Days
                             <div class="tooltip">
                                 <sup><i class="blue circle info icon"></i></sup>
                                 <span class="tooltiptext">
@@ -84,6 +84,7 @@
                                     <a href="https://portfoliomanager.energystar.gov/pm/degreeDaysCalculator" target="_blank">here</a>.
                                     Cities without zip codes in the Zero Tool can calculate degree days
                                      <a href="http://www.degreedays.net/#" target="_blank">here</a>.
+                                    Calculate degree days using degrees Fahrenheit.
                                     <br>
                                     <br>
                                     For more information on the relationship between degree days and building energy performance, start
@@ -98,14 +99,14 @@
                             <div class="two wide field">
                                 <label>HDD</label>
                             </div>
-                            <div class="five wide field">
+                            <div class="five wide field required">
                                 <input type="number" ng-model="auxModel.HDD"
                                        name="HDD" min="0" placeholder="HDD">
                             </div>
                             <div class="two wide field">
                                 <label>CDD</label>
                             </div>
-                            <div class="four wide field">
+                            <div class="four wide field required">
                                 <input type="number" ng-model="auxModel.CDD"
                                        name="CDD" min="0">
                             </div>
@@ -211,7 +212,8 @@
                     <div ng-if="prop.type=='SeniorCare' && prop.country=='USA'" building-Info forms='forms' type='SeniorCare' model="prop"></div>
                     <div ng-if="prop.type=='Supermarket' && prop.country=='USA'" building-Info forms='forms' type='Supermarket' model="prop"></div>
                     <div ng-if="prop.type=='Warehouse' && prop.country=='USA'" building-Info forms='forms' type='Warehouse' model="prop"></div>
-                    <div ng-if="prop.type=='RefrigeratedWarehouse' && prop.country=='USA'" building-Info forms='forms' type='RefrigeratedWarehouse' model="prop"></div>
+                    <div ng-if="prop.type=='WarehouseRefrigerated' && prop.country=='USA'" building-Info forms='forms' type='WarehouseRefrigerated' model="prop"></div>
+                    <div ng-if="prop.type=='WarehouseUnRefrigerated' && prop.country=='USA'" building-Info forms='forms' type='Warehouse' model="prop"></div>
                     <div ng-if="prop.type=='WastewaterCenter' && prop.country=='USA'" building-Info forms='forms' type='WastewaterCenter' model="prop"></div>
                     <div ng-if="prop.type=='WorshipCenter' && prop.country=='USA'" building-Info forms='forms' type='WorshipCenter' model="prop"></div>
                     <div ng-if="prop.type=='MultiFamily' && prop.country=='USA'" building-Info forms='forms' type='MultiFamily' model="prop"></div>
@@ -225,7 +227,7 @@
                     <div ng-if="prop.country=='USA' && prop.type!='DataCenter' && prop.type!='Hospital' &&
                         prop.type!='Hotel' && prop.type!='K12School' && prop.type!='MedicalOffice' &&
                         prop.type!='Office' && prop.type!='ResidenceHall' && prop.type!='Retail' &&
-                        prop.type!='SeniorCare' && prop.type!='Supermarket' && prop.type!='RefrigeratedWarehouse' && prop.type!='Warehouse' &&
+                        prop.type!='SeniorCare' && prop.type!='Supermarket' && prop.type!='WarehouseRefrigerated' && prop.type!='Warehouse' &&
                         prop.type!='WastewaterCenter' && prop.type!='MultiFamily' &&
                         prop.type!='WorshipCenter'" building-Info forms='forms' type='Generic' model="prop">
                     </div>

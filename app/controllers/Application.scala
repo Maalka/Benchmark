@@ -10,17 +10,22 @@ import play.api.mvc._
 import com.google.inject.Inject
 import play.api.cache.{AsyncCacheApi, Cached, SyncCacheApi}
 
+import _root_.util.Logging
 
 import scala.concurrent.duration._
 
 /** Application controller, handles authentication */
-class Application @Inject() (cached: Cached, val cache: AsyncCacheApi, cc: ControllerComponents) extends AbstractController(cc) with Logging {
+class Application @Inject() (
+                              cached: Cached,
+                              val cache: AsyncCacheApi,
+                              cc: ControllerComponents
+                            )(
+                            implicit val actorSystem: ActorSystem) extends AbstractController(cc) with Logging {
 
 
 
   val cacheDuration = 1.day
 
-  implicit val actorSystem = ActorSystem("ServiceName")
   implicit val materializer = ActorMaterializer()
 
   /**
@@ -34,7 +39,7 @@ class Application @Inject() (cached: Cached, val cache: AsyncCacheApi, cc: Contr
 
   /** Serves the index page, see views/index.scala.html */
   def index(includeHeader: Boolean = true) = Action {
-    log.debug("Index called")
+    logging.debug("Index called")
     Ok(views.html.index(includeHeader))
   }
 
