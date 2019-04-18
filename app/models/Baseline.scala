@@ -110,50 +110,50 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
   }
 
   //ZEPI METRICS .............................................................................................//
+//  def zepiActual:Future[Double] = {
+//    for {
+//      baselineConstant <- buildingProps.getBaselineConstant
+//      zepiMedianSiteEUI <- medianSiteEUI
+//      actualSiteEUI <- siteEUI
+//      zepiActual <- Future(baselineConstant*actualSiteEUI.value/zepiMedianSiteEUI.value)
+//    } yield zepiActual
+//  }
+
+
   def zepiActual:Future[Double] = {
     for {
       baselineConstant <- buildingProps.getBaselineConstant
       zepiMedianSiteEUI <- medianSiteEUI
-      actualSiteEUI <- siteEUI
-      zepiActual <- Future(baselineConstant*actualSiteEUI.value/zepiMedianSiteEUI.value)
-    } yield zepiActual
-  }
-/*
-
-  def zepiActual:Future[Double] = {
-    for {
-      baselineConstant <- buildingProps.getBaselineConstant
-      zepiMedianSiteEUI <- medianSiteEUIConverted
       actualSiteEUI <- siteEUIConverted
       zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
     } yield zepiActual
   }
-  def zepiActualwOnSite:Future[Double] = {
-    for {
-      baselineConstant <- buildingProps.getBaselineConstant
-      zepiMedianSiteEUI <- medianSiteEUIConverted
-      actualSiteEUI <- siteEUIwOnSiteConverted
-      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
-    } yield zepiActual
-  }
-  def zepiActualwOffSite:Future[Double] = {
-    for {
-      baselineConstant <- buildingProps.getBaselineConstant
-      zepiMedianSiteEUI <- medianSiteEUIConverted
-      actualSiteEUI <- siteEUIwOffSiteConverted
-      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
-    } yield zepiActual
-  }
-  def zepiActualwOnandOffSite:Future[Double] = {
-    for {
-      baselineConstant <- buildingProps.getBaselineConstant
-      zepiMedianSiteEUI <- medianSiteEUIConverted
-      actualSiteEUI <- siteEUIwOnandOffSiteConverted
-      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
-    } yield zepiActual
-  }
-*/
-
+//  def zepiActualwOnSite:Future[Double] = {
+//    for {
+//      baselineConstant <- buildingProps.getBaselineConstant
+//      zepiMedianSiteEUI <- medianSiteEUIConverted
+//      actualSiteEUI <- siteEUIwOnSiteConverted
+//      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
+//    } yield zepiActual
+//  }
+//  def zepiActualwOffSite:Future[Double] = {
+//    for {
+//      baselineConstant <- buildingProps.getBaselineConstant
+//      zepiMedianSiteEUI <- medianSiteEUIConverted
+//      actualSiteEUI <- siteEUIwOffSiteConverted
+//      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
+//    } yield zepiActual
+//  }
+//  def zepiActualwOnandOffSite:Future[Double] = {
+//    for {
+//      baselineConstant <- buildingProps.getBaselineConstant
+//      zepiMedianSiteEUI <- medianSiteEUIConverted
+//      actualSiteEUI <- siteEUIwOnandOffSiteConverted
+//      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
+//    } yield zepiActual
+//  }
+//
+//
 
 
   def zepiPercentBetter:Future[Double] = {
@@ -290,7 +290,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedEUI <- EUIConversionConstant(siteTotalEnergy+siteRenewableEnergy,buildingSize)
     } yield {
-      //println("SiteEUI...",convertedEUI)
+      println("SiteEUI...",convertedEUI)
       convertedEUI.value
     }
 
@@ -378,7 +378,10 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       siteEnergy <- medianSiteEnergy
       buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedEUI <- EUIConversionConstant(siteEnergy,buildingSize)
-    } yield convertedEUI
+    } yield {
+      println(convertedEUI)
+      convertedEUI
+    }
   }
 
   def percentBetterSourceEUIConverted:Future[Energy] = {

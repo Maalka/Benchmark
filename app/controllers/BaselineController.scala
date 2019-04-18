@@ -618,8 +618,12 @@ class BaselineController @Inject() (
           Baseline.actualGoalBetter.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
 
           Baseline.zepiActual.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          Baseline.zepiMedian.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+//          Baseline.zepiActualwOnSite.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+//          Baseline.zepiActualwOffSite.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+//          Baseline.zepiActualwOnandOffSite.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+
           Baseline.zepiPercentBetter.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.zepiMedian.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
 
           Baseline.siteEUIConverted.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.siteEUIwOnSiteConverted.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
@@ -692,8 +696,12 @@ class BaselineController @Inject() (
           "actualGoalBetter",
 
           "actualZEPI",
-          "medianZEPI",
+//          "actualZEPIwOnSite",
+//          "actualZEPIwOffSite",
+//          "actualZEPIwOnAndOffSite",
+
           "percentBetterZEPI",
+          "medianZEPI",
 
           "siteEUI",
           "siteEUIwOnSite",
@@ -707,6 +715,7 @@ class BaselineController @Inject() (
 
           "medianSiteEUI",
           "medianSourceEUI",
+
           "percentBetterSiteEUI",
           "percentBetterSourceEUI",
 
