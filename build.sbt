@@ -8,7 +8,7 @@ organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
 
-version := "1.11.3.1"
+version := "1.11.4.0"
 
 scalaVersion in ThisBuild := "2.11.6"
 
@@ -58,7 +58,7 @@ resolvers += "Artifactory Realm" at "https://jfrog.maalka.com/artifactory/libs-r
 libraryDependencies ++= Seq(
   filters,
   guice,
-  ehcache,
+  play.sbt.PlayImport.cacheApi,
   ws,
   // WebJars (i.e. client-side) dependencies
 
@@ -75,9 +75,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "matchmedia-ng" % "1.0.5",
   "org.webjars.bower" % "filesaver" % "1.3.3",
   "org.webjars.npm" % "ng-file-upload" % "12.2.13",
-
+  "com.github.karelcemus" %% "play-redis" % "2.3.0",
   "org.typelevel" %% "squants" % "1.3.1-maalka-1.0",
-
   "com.github.tototoshi" %% "scala-csv" % "1.2.1",
 
   "com.typesafe.akka" %% "akka-slf4j" % "2.5.9",
