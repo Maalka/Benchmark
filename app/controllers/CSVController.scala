@@ -73,7 +73,7 @@ class CSVController @Inject() (val cache: AsyncCacheApi,
               "Content-Disposition" -> "attachment; filename=Results.zip"
             )
         case None =>
-          Ok(Json.obj("targetFileNamePath" -> routes.CSVController.getProcessedCSV(targetFileName, true).absoluteURL()))
+          Ok(Json.obj("targetFileNamePath" -> routes.CSVController.getProcessedCSV(targetFileName, true).url))
       }.recover {
         case th: BulkCSVService.JobFailedException =>
           ExpectationFailed(s"Processed CSV by the name '$targetFileName' failed.  See Logs")
