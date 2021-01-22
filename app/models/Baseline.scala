@@ -378,10 +378,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       siteEnergy <- medianSiteEnergy
       buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedEUI <- EUIConversionConstant(siteEnergy,buildingSize)
-    } yield {
-      println(convertedEUI)
-      convertedEUI
-    }
+    } yield convertedEUI
   }
 
   def percentBetterSourceEUIConverted:Future[Energy] = {
@@ -690,7 +687,22 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
           case a if a==true => getMajorStateBuildingType(propFilter)
           case a if a==false => Future(StateBuildingType(buildingProps.state,"Other"))
         }
+      }      
+      defaultRatio <- {        
+        buildingProps.country match {
+          case "USA" => defaultUnitedStatesResidentialSiteToSourceRatio(stateBuildingType)
+          case "Canada" => canadaSitetoSourceRatio(stateBuildingType)
+        }
       }
+    } yield {      
+      defaultRatio
+    }
+    local.recoverWith{case _ => throw new Exception("Could not find Default Site to Source Ratio")}
+
+  }
+
+  def defaultUnitedStatesResidentialSiteToSourceRatio(stateBuildingType:StateBuildingType):Future[Double] = {
+    val local = for {
       statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
       defaultRatio <- {
         stateBuildingType.buildingType match {
@@ -703,12 +715,12 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
         }
       }
 
-    } yield {
-      defaultRatio
-    }
+    } yield defaultRatio
 
     local.recoverWith{case NonFatal(th) => residentialSitetoSourceRatio(result.head)}
   }
+
+
 
   def getMajorStateBuildingType(propFilter:List[Boolean]):Future[StateBuildingType] = {
     for {
@@ -790,6 +802,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
     val countryBuilding = rezParams.asOpt[CountryBuildingType]
     val region: String = buildingProps.getRegion
 
+
     countryBuilding match {
 
       case Some(CountryBuildingType("USA", "SingleFamilyDetached")) =>
@@ -838,80 +851,92 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
         }
       }
 
+      case _ => throw new Exception("Could not find Default Site to Source Ratio")
+    }
+  }
+
+
+  def canadaSitetoSourceRatio(stateBuildingType:StateBuildingType):Future[Double] = Future {
+
+    val buildingType: String = stateBuildingType.buildingType
+
+
+    ("Canada", buildingType) match {
+
 
       //Canadian Building Medians
-      case Some(CountryBuildingType("Canada", "AdultEducation")) => 1.18 / 1.44
-      case Some(CountryBuildingType("Canada", "College")) => 0.76 / 1.56
-      case Some(CountryBuildingType("Canada", "PreSchool")) => 0.92 / 1.27
-      case Some(CountryBuildingType("Canada", "VocationalSchool")) => 1.18 / 1.44
-      case Some(CountryBuildingType("Canada", "OtherEducation")) => 0.92 / 1.27
-      case Some(CountryBuildingType("Canada", "ConventionCenter")) => 1.74 /2.47
-      case Some(CountryBuildingType("Canada", "MovieTheater")) => 0.93 / 1.63
-      case Some(CountryBuildingType("Canada", "Museum")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "PerformingArts")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "BowlingAlley")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "FitnessCenter")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "IceRink")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "RollerRink")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "SwimmingPool")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "OtherRecreation")) => 1.11 / 1.91
-      case Some(CountryBuildingType("Canada", "MeetingHall")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "IndoorArena")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "RaceTrack")) => 1.11 / 1.91
-      case Some(CountryBuildingType("Canada", "Stadium")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "Aquarium")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "Bar")) => 0.93 / 1.63
-      case Some(CountryBuildingType("Canada", "NightClub")) => 0.93 / 1.63
-      case Some(CountryBuildingType("Canada", "Casino")) => 0.93 / 1.63
-      case Some(CountryBuildingType("Canada", "Zoo")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "OtherEntertainment")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "ConvenienceStore")) => 3.14 / 5.16
-      case Some(CountryBuildingType("Canada", "GasStation")) => 3.14 / 5.16
-      case Some(CountryBuildingType("Canada", "FastFoodRestaurant")) => 3.05 / 4.21
-      case Some(CountryBuildingType("Canada", "Restaurant")) => 3.05 / 4.21
-      case Some(CountryBuildingType("Canada", "OtherDining")) => 3.05 / 4.21
-      case Some(CountryBuildingType("Canada", "FoodSales")) => 3.14 / 5.16
-      case Some(CountryBuildingType("Canada", "FoodService")) => 3.05 / 4.21
-      case Some(CountryBuildingType("Canada", "AmbulatorySurgicalCenter")) => 1.02 / 1.5
-      case Some(CountryBuildingType("Canada", "DrinkingWaterTreatment")) => 0.63 / 1.84
-      case Some(CountryBuildingType("Canada", "SpecialtyHospital")) => 2.35 / 3.12
-      case Some(CountryBuildingType("Canada", "OutpatientCenter")) => 1.02 / 1.5
-      case Some(CountryBuildingType("Canada", "PhysicalTherapyCenter")) => 1.02 / 1.5
-      case Some(CountryBuildingType("Canada", "UrgentCareCenter")) => 1.02 / 1.5
-      case Some(CountryBuildingType("Canada", "Barracks")) => 1.45 / 2.05
-      case Some(CountryBuildingType("Canada", "Pr n")) => 1.28 / 1.74
-      case Some(CountryBuildingType("Canada", "ResidentialLodging")) => 1.12 / 1.75
-      case Some(CountryBuildingType("Canada", "MixedUse")) => 0.90 / 1.23
-      case Some(CountryBuildingType("Canada", "VeterinaryOffice")) => 1.02 / 1.5
-      case Some(CountryBuildingType("Canada", "Courthouse")) => 1.28 / 1.74
-      case Some(CountryBuildingType("Canada", "FireStation")) => 1.23 / 1.63
-      case Some(CountryBuildingType("Canada", "Library")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "MailingCenter")) => 1.37 / 1.67
-      case Some(CountryBuildingType("Canada", "PostOffice")) => 1.37 / 1.67
-      case Some(CountryBuildingType("Canada", "PoliceStation")) => 1.28 / 1.74
-      case Some(CountryBuildingType("Canada", "TransportationTerminal")) => 1.06 / 1.42
-      case Some(CountryBuildingType("Canada", "OtherPublicServices")) => 0.90 / 1.23
-      case Some(CountryBuildingType("Canada", "AutoDealership")) => 0.85 / 1.52
-      case Some(CountryBuildingType("Canada", "EnclosedMall")) => 2.10 / 3.47
-      case Some(CountryBuildingType("Canada", "StripMall")) => 1.38 / 2.25
-      case Some(CountryBuildingType("Canada", "Laboratory")) => 0.90 / 1.23
-      case Some(CountryBuildingType("Canada", "PersonalServices")) => 1.00 / 1.37
-      case Some(CountryBuildingType("Canada", "RepairServices")) => 1.00 / 1.37
-      case Some(CountryBuildingType("Canada", "OtherServices")) => 1.37 / 2.2
-      case Some(CountryBuildingType("Canada", "PowerStation")) => 0.90 / 1.23
-      case Some(CountryBuildingType("Canada", "OtherUtility")) => 0.90 / 1.23
-      case Some(CountryBuildingType("Canada", "SelfStorageFacility")) => 0.75 / 0.93
+      case ("Canada", "AdultEducation") => 1.18 / 1.44
+      case ("Canada", "College") => 0.76 / 1.56
+      case ("Canada", "PreSchool") => 0.92 / 1.27
+      case ("Canada", "VocationalSchool") => 1.18 / 1.44
+      case ("Canada", "OtherEducation") => 0.92 / 1.27
+      case ("Canada", "ConventionCenter") => 1.74 /2.47
+      case ("Canada", "MovieTheater") => 0.93 / 1.63
+      case ("Canada", "Museum") => 1.74 / 2.47
+      case ("Canada", "PerformingArts") => 1.74 / 2.47
+      case ("Canada", "BowlingAlley") => 1.51 / 1.93
+      case ("Canada", "FitnessCenter") => 1.51 / 1.93
+      case ("Canada", "IceRink") => 1.51 / 1.93
+      case ("Canada", "RollerRink") => 1.51 / 1.93
+      case ("Canada", "SwimmingPool") => 1.51 / 1.93
+      case ("Canada", "OtherRecreation") => 1.11 / 1.91
+      case ("Canada", "MeetingHall") => 1.74 / 2.47
+      case ("Canada", "IndoorArena") => 1.51 / 1.93
+      case ("Canada", "RaceTrack") => 1.11 / 1.91
+      case ("Canada", "Stadium") => 1.51 / 1.93
+      case ("Canada", "Aquarium") => 1.74 / 2.47
+      case ("Canada", "Bar") => 0.93 / 1.63
+      case ("Canada", "NightClub") => 0.93 / 1.63
+      case ("Canada", "Casino") => 0.93 / 1.63
+      case ("Canada", "Zoo") => 1.74 / 2.47
+      case ("Canada", "OtherEntertainment") => 1.74 / 2.47
+      case ("Canada", "ConvenienceStore") => 3.14 / 5.16
+      case ("Canada", "GasStation") => 3.14 / 5.16
+      case ("Canada", "FastFoodRestaurant") => 3.05 / 4.21
+      case ("Canada", "Restaurant") => 3.05 / 4.21
+      case ("Canada", "OtherDining") => 3.05 / 4.21
+      case ("Canada", "FoodSales") => 3.14 / 5.16
+      case ("Canada", "FoodService") => 3.05 / 4.21
+      case ("Canada", "AmbulatorySurgicalCenter") => 1.02 / 1.5
+      case ("Canada", "DrinkingWaterTreatment") => 0.63 / 1.84
+      case ("Canada", "SpecialtyHospital") => 2.35 / 3.12
+      case ("Canada", "OutpatientCenter") => 1.02 / 1.5
+      case ("Canada", "PhysicalTherapyCenter") => 1.02 / 1.5
+      case ("Canada", "UrgentCareCenter") => 1.02 / 1.5
+      case ("Canada", "Barracks") => 1.45 / 2.05
+      case ("Canada", "Prn") => 1.28 / 1.74
+      case ("Canada", "ResidentialLodging") => 1.12 / 1.75
+      case ("Canada", "MixedUse") => 0.90 / 1.23
+      case ("Canada", "VeterinaryOffice") => 1.02 / 1.5
+      case ("Canada", "Courthouse") => 1.28 / 1.74
+      case ("Canada", "FireStation") => 1.23 / 1.63
+      case ("Canada", "Library") => 1.74 / 2.47
+      case ("Canada", "MailingCenter") => 1.37 / 1.67
+      case ("Canada", "PostOffice") => 1.37 / 1.67
+      case ("Canada", "PoliceStation") => 1.28 / 1.74
+      case ("Canada", "TransportationTerminal") => 1.06 / 1.42
+      case ("Canada", "OtherPublicServices") => 0.90 / 1.23
+      case ("Canada", "AutoDealership") => 0.85 / 1.52
+      case ("Canada", "EnclosedMall") => 2.10 / 3.47
+      case ("Canada", "StripMall") => 1.38 / 2.25
+      case ("Canada", "Laboratory") => 0.90 / 1.23
+      case ("Canada", "PersonalServices") => 1.00 / 1.37
+      case ("Canada", "RepairServices") => 1.00 / 1.37
+      case ("Canada", "OtherServices") => 1.37 / 2.2
+      case ("Canada", "PowerStation") => 0.90 / 1.23
+      case ("Canada", "OtherUtility") => 0.90 / 1.23
+      case ("Canada", "SelfStorageFacility") => 0.75 / 0.93
       // Canadian Building Medians for Buildings with US Algorithms
-      case Some(CountryBuildingType("Canada","Hotel")) => 1.12 / 1.75
-      case Some(CountryBuildingType("Canada","WorshipCenter")) => 0.86 / 1.06
-      case Some(CountryBuildingType("Canada","Warehouse")) => 0.75 / 0.93
-      case Some(CountryBuildingType("Canada","WarehouseRefrigerated")) => 0.90 / 1.23 // there is no median for refrigerated warehouse in Canada (it's cold there!!)
-      case Some(CountryBuildingType("Canada","SeniorCare")) => 1.12 / 1.88
-      case Some(CountryBuildingType("Canada","Retail")) => 0.85 / 1.52
-      case Some(CountryBuildingType("Canada","ResidenceHall")) => 1.45 / 2.05
-      case Some(CountryBuildingType("Canada","DataCenter")) => 1.82 / 1.82
+      case ("Canada","Hotel") => 1.12 / 1.75
+      case ("Canada","WorshipCenter") => 0.86 / 1.06
+      case ("Canada","Warehouse") => 0.75 / 0.93
+      case ("Canada","WarehouseRefrigerated") => 0.90 / 1.23 // there is no median for refrigerated warehouse in Canada (it's cold there!!)
+      case ("Canada","SeniorCare") => 1.12 / 1.88
+      case ("Canada","Retail") => 0.85 / 1.52
+      case ("Canada","ResidenceHall") => 1.45 / 2.05
+      case ("Canada","DataCenter") => 1.82 / 1.82
 
-      case Some(CountryBuildingType("Canada", _)) => 0.90 / 1.23
+      case ("Canada", _) => 0.90 / 1.23
 
       case _ => throw new Exception("Could not find Default Site to Source Ratio")
     }
