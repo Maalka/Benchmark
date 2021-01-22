@@ -904,7 +904,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       case ("Canada", "PhysicalTherapyCenter") => 1.02 / 1.5
       case ("Canada", "UrgentCareCenter") => 1.02 / 1.5
       case ("Canada", "Barracks") => 1.45 / 2.05
-      case ("Canada", "Prn") => 1.28 / 1.74
+      case ("Canada", "Prison") => 1.28 / 1.74
       case ("Canada", "ResidentialLodging") => 1.12 / 1.75
       case ("Canada", "MixedUse") => 0.90 / 1.23
       case ("Canada", "VeterinaryOffice") => 1.02 / 1.5
@@ -912,7 +912,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       case ("Canada", "FireStation") => 1.23 / 1.63
       case ("Canada", "Library") => 1.74 / 2.47
       case ("Canada", "MailingCenter") => 1.37 / 1.67
-      case ("Canada", "PostOffice") => 1.37 / 1.67
+      case ("Canada", "PostOffice") => 1.37 / 1.67      
       case ("Canada", "PoliceStation") => 1.28 / 1.74
       case ("Canada", "TransportationTerminal") => 1.06 / 1.42
       case ("Canada", "OtherPublicServices") => 0.90 / 1.23
@@ -935,6 +935,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       case ("Canada","Retail") => 0.85 / 1.52
       case ("Canada","ResidenceHall") => 1.45 / 2.05
       case ("Canada","DataCenter") => 1.82 / 1.82
+      case ("Canada", "Office") => 0.99 / 1.55
 
       case ("Canada", _) => 0.90 / 1.23
 
