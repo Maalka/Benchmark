@@ -8,7 +8,7 @@ organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
 
-version := "1.12.0"
+version := "1.12.1"
 
 scalaVersion in ThisBuild := "2.11.6"
 
@@ -19,7 +19,7 @@ packageSummary in Linux := "Benchmark tool"
 packageDescription := "Benchmark tool"
 
 dockerRepository := Some("maalka")
-dockerBaseImage := "maalka/oracle8"
+dockerBaseImage := "eed3si9n/sbt:jdk11-alpine"
 dockerUpdateLatest := true
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
