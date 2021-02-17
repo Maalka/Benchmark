@@ -1,21 +1,18 @@
 package services
 
 import java.io.{File, FileInputStream, InputStream}
+import com.typesafe.scalalogging.LazyLogging
 
-import akka.actor.ActorSystem
 import javax.inject.{Inject, Singleton}
 import org.jclouds.ContextBuilder
 import org.jclouds.blobstore.{BlobStore, BlobStoreContext}
 import org.jclouds.filesystem.reference.FilesystemConstants
 import play.api.Configuration
-import util.Logging
-
 
 @Singleton
 class StorageService @Inject ()(
                                  configuration: Configuration
-                               )(
-                               implicit val actorSystem: ActorSystem) extends Logging {
+                               ) extends LazyLogging {
 
   val properties = new java.util.Properties()
 

@@ -15,15 +15,15 @@ import scala.concurrent.Future
 import scala.util.control.NonFatal
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
-import _root_.util.Logging
 import akka.actor.ActorSystem
+import com.typesafe.scalalogging.LazyLogging
 
 
 
 class DegreeDaysController @Inject() (
                                        val cache: AsyncCacheApi,
                                        cc: ControllerComponents
-                                     )(implicit val actorSystem: ActorSystem) extends AbstractController(cc) with Logging {
+                                     )(implicit val actorSystem: ActorSystem) extends AbstractController(cc) with LazyLogging {
   this: AbstractController =>
 
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)

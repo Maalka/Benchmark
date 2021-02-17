@@ -1,6 +1,6 @@
-@import play.api.Play.current
-@(includeHeader: Boolean)<!DOCTYPE html>
-<html>
+@import play.api.Configuration
+@(includeHeader: Boolean, configuration: Configuration)<!DOCTYPE html>
+<html lang="">
   <head>
     <title data-ng-bind="pageTitle"></title>
     <link rel="shortcut icon" type="image/x-icon" href="@routes.Assets.versioned("images/favicon.ico")">
@@ -16,14 +16,14 @@
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
     <link rel="stylesheet" media="print" href="@routes.Assets.versioned("stylesheets/print.css")">
     <script data-main="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript" src="@routes.Assets.versioned("lib/requirejs/require.js")"></script>
-    @if(current.configuration.getString("google.analytics") != ""){
+    @if(configuration.get[String]("google.analytics") != ""){
       <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
         })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-        ga('create', '@current.configuration.getString("google.analytics")', 'auto');
+        ga('create', '@configuration.get[String]("google.analytics")', 'auto');
         ga('send', 'pageview');
       </script>
     }

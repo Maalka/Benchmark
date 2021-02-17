@@ -8,9 +8,9 @@ organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
 
-version := "1.12.1"
+version := "1.13.0"
 
-scalaVersion in ThisBuild := "2.11.6"
+scalaVersion in ThisBuild := "2.12.13"
 
 maintainer in Linux := "Clay Teeter <clay.teeter@maalka.com>"
 maintainer in Docker := "Clay Teeter <clay.teeter@maalka.com>"
@@ -50,22 +50,28 @@ javaOptions in Universal ++= Seq(
 //lazy val root = (project in file(".")).enablePlugins(SbtWeb, PlayScala, JavaAppPackaging).dependsOn(squants)
 lazy val root = (project in file(".")).enablePlugins(PlayScala, JavaAppPackaging).enablePlugins(UpstartPlugin)
 
-
-resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
-resolvers += "Artifactory Realm" at "https://jfrog.maalka.com/artifactory/libs-release-local/"
-
+resolvers ++= Seq("Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+  "Artifactory Release Realm" at "https://jfrog.maalka.com/artifactory/libs-release-local/",
+  "Artifactory Snapshot Realm" at "https://jfrog.maalka.com/artifactory/libs-snapshot-local/",
+  "emueller-bintray" at "https://dl.bintray.com/emueller/maven",
+  "Artifactory Realm" at "https://jfrog.maalka.com/artifactory/libs-release-local/",
+  "Millhouse Bintray" at "https://dl.bintray.com/themillhousegroup/maven",
+  "sbt-plugin-releases" at "https://dl.bintray.com/sbt/sbt-plugin-releases/"
+)
 // Dependencies
 libraryDependencies ++= Seq(
   filters,
   guice,
   play.sbt.PlayImport.cacheApi,
   ws,
+  ehcache,
+  cacheApi,
   // WebJars (i.e. client-side) dependencies
 
   "org.apache.jclouds.api" % "filesystem" % "2.1.1",
 
-  "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % "test",
-  "org.mockito" % "mockito-all" % "1.10.19",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % "test",
+  "org.mockito" % "mockito-core" % "3.7.7",
   "org.webjars" % "requirejs" % "2.1.22",
   "org.webjars" % "jquery" % "2.1.3",
   "org.webjars" %% "webjars-play" % "2.6.3",
@@ -77,23 +83,21 @@ libraryDependencies ++= Seq(
   "org.webjars.npm" % "ng-file-upload" % "12.2.13",
   "com.github.karelcemus" %% "play-redis" % "2.3.0",
   "org.typelevel" %% "squants" % "1.3.1-maalka-1.18",
-  "com.github.tototoshi" %% "scala-csv" % "1.2.1",
+  "com.github.tototoshi" %% "scala-csv" % "1.3.6",
 
-  "com.typesafe.akka" %% "akka-slf4j" % "2.5.9",
-  "com.typesafe.akka" %% "akka-stream" % "2.5.9",
-  "com.typesafe.play" %% "play-json-joda" % "2.6.8",
-  "org.joda" % "joda-convert" % "1.9.2",
-  "com.typesafe.play" %% "play-json" % "2.6.8",
-  "com.eclipsesource" %% "play-json-schema-validator" % "0.9.4",
-
-
+//  "com.typesafe.akka" %% "akka-slf4j" % "2.6.12",
+//  "com.typesafe.akka" %% "akka-stream" % "2.6.12",
+  "com.typesafe.play" %% "play-json-joda" % "2.9.2",
+  "org.joda" % "joda-convert" % "2.2.1",
+  "com.typesafe.play" %% "play-json" % "2.8.1",
+  "com.eclipsesource" %% "play-json-schema-validator" % "0.9.5",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "com.typesafe.play" %% "play-iteratees" % "2.6.1",
   "com.typesafe.play" %% "play-iteratees-reactive-streams" % "2.6.1"
 )
 
 // Scala Compiler Options
 scalacOptions in ThisBuild ++= Seq(
-  "-target:jvm-1.8",
   "-encoding", "UTF-8",
   "-deprecation", // warning and location for usages of deprecated APIs
   "-feature", // warning and location for usages of features that should be imported explicitly
@@ -150,4 +154,3 @@ JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 // JshintKeys.config := ".jshintrc"
 
 // All work and no play...
-emojiLogs
