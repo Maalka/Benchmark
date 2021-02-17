@@ -92,7 +92,7 @@ class ParseCSV @Inject()(implicit val actorSystem: ActorSystem, executionContext
 
   private def toStream(is: InputStream): Stream[Seq[String]] = {
     CSVReader.open(new InputStreamReader(is, Charsets.UTF_8))
-      .toStream()
+      .toStream
   }
 
   def toPortfolioFlow(is:InputStream,reportingUnits:String): Source[Either[NotValidCSVRow, JsValue], NotUsed] = {

@@ -3,6 +3,8 @@ package filters
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.stream.Materializer
+import com.typesafe.scalalogging.LazyLogging
+
 import javax.inject.{Inject, Singleton}
 import org.joda.time.DateTime
 import play.api.mvc.{Filter, RequestHeader, Result}
@@ -13,9 +15,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class LoggingFilter @Inject() (
                                 actorSystem: ActorSystem,
                                 implicit val executionContext: ExecutionContext,
-                                implicit val mat: Materializer, ec: ExecutionContext) extends Filter {
+                                implicit val mat: Materializer, ec: ExecutionContext) extends Filter with LazyLogging {
 
-  val logger = Logging(actorSystem, "")
   def apply(nextFilter: RequestHeader => Future[Result])
            (requestHeader: RequestHeader): Future[Result] = {
 

@@ -4,15 +4,13 @@
 
 
 package controllers
-import akka.actor.ActorSystem
 import models._
-import com.eclipsesource.schema._
-import com.eclipsesource.schema.internal.validation.VA
 import com.google.inject.Inject
 import play.api.cache.AsyncCacheApi
 import play.api.libs.json._
 import play.api.Configuration
 import play.api.mvc._
+import com.eclipsesource.schema.drafts.Version7._
 
 import scala.concurrent.Future
 import squants.energy.Energy
@@ -20,17 +18,19 @@ import squants.energy.Energy
 import scala.util.control.NonFatal
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
-import _root_.util.Logging
+import com.eclipsesource.schema.{FailureExtensions, SchemaType, SchemaValidator}
+import com.typesafe.scalalogging.LazyLogging
 
 
 class BaselineController @Inject() (
                                      val cache: AsyncCacheApi,
                                      cc: ControllerComponents,
-                                     configuration: Configuration)
-                                   (
-                                     implicit val actorSystem: ActorSystem
-                                   ) extends AbstractController(cc) with Logging {
+                                     configuration: Configuration
+                                   )
+                                    extends AbstractController(cc) with LazyLogging {
 
+
+  val validator: SchemaValidator = SchemaValidator()
 
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
   implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(b.value)
@@ -47,7 +47,6 @@ class BaselineController @Inject() (
   }
 
   def api[T](response: T):Either[String, JsValue] = {
-
     response match {
       case v: Energy => Right(v)
       case v: Double => Right(v)
@@ -83,9 +82,6 @@ class BaselineController @Inject() (
       case None => Left("Could not recognize input type")
     }
   }
-
-
-  val validator = new SchemaValidator()
 
   val schema = Json.fromJson[SchemaType](Json.parse(
     """{
