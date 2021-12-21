@@ -644,6 +644,9 @@ class BaselineController @Inject() (
           Baseline.defaultMedianTotalEmissions.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           //to follow TargetFinder use Baseline.percentBetterTotalEmissions not Baseline.defaultPercentBetterTotalEmissions
           Baseline.defaultPercentBetterTotalEmissions.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.siteEmissionsIntensityConverted.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.medianSiteEmissionsIntensityConverted.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          
 
           Baseline.onSiteRenewableTotal.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.offSitePurchasedTotal.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
@@ -718,6 +721,8 @@ class BaselineController @Inject() (
           "totalEmissions",
           "medianEmissions",
           "percentBetterEmissions",
+          "totalEmissionsIntensity",
+          "medianEmissionsIntensity",
 
           "onSiteRenewableTotal",
           "offSitePurchasedTotal",

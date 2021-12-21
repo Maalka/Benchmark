@@ -638,7 +638,6 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends
     } yield percentBetterEmissions
   }
 
-
   def getDefaultEnergyTotals(defaultMix: Double, medianSourceEnergy: Energy): Future[EnergyList] = Future {
 
     val energyUnit = buildingProps.country match {
@@ -658,6 +657,29 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends
       entries <- energyCalcs.getEnergyList
       totalEmissions <- buildingEmissions.getTotalEmissions(entries)
     } yield totalEmissions
+  }
+
+  def siteEmissionsIntensityConverted: Future[Double] = {
+    for {
+      siteTotalEmissions <- energyCalcs.getTotalEmissions      
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
+      convertedEmissions <- EmissionsIntensityConversionConstant(siteTotalEmissions, buildingSize)
+    } yield {
+      logger.info("SiteEmissionsIntensity... {}", convertedEmissions)
+      convertedEmissions
+    }
+  }
+
+  // returns emissions intensity in kgCO2e / year / ft2 (or m2) depending on reporting units
+  def medianSiteEmissionsIntensityConverted: Future[Energy] = {
+    for {
+      medianEmissions <- medianTotalEmissions
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
+      convertedMedianEmissions <- EmissionsIntensityConversionConstant(medianEmissions, buildingSize)
+    } yield {
+      logger.info("SiteMedianEmissionsIntensity... {}", convertedMedianEmissions)
+      convertedMedianEmissions
+    }
   }
 
   def getDirectEmissionList(): Future[List[EmissionsTuple]] = {
@@ -1049,6 +1071,17 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends
       case (_, "metric") => 1.0
       case (_, "us") => SquareMeters(1) to SquareFeet
       case _ => 1.0
+    }
+  }
+
+
+  def EmissionsIntensityConversionConstant(emissionsEntry: Energy, areaEntry: Double): Future[Energy] = Future {
+    (energyCalcs.country, energyCalcs.reportingUnits) match {
+      case ("USA", "us") => emissionsEntry*1000 / areaEntry
+      case ("USA", "metric") => emissionsEntry*1000 / (areaEntry * (SquareFeet(1) to SquareMeters))
+      case (_, "metric") => emissionsEntry*1000 / areaEntry
+      case (_, "us") => emissionsEntry*1000 / (areaEntry * (SquareMeters(1) to SquareFeet))
+      case _ => energyEntry*1000 / areaEntry
     }
   }
 
