@@ -4,7 +4,6 @@ package controllers
  * Created by rimukas on 12/19/16.
  */
 
-import akka.actor.ActorSystem
 import akka.stream.scaladsl._
 import akka.util.ByteString
 import com.google.inject.Inject
@@ -17,7 +16,6 @@ import services.BulkCSVService
 
 import java.io._
 import scala.concurrent.ExecutionContext
-import scala.language.{implicitConversions, postfixOps}
 
 
 class CSVController @Inject()(val cache: AsyncCacheApi,

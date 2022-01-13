@@ -11,7 +11,6 @@ import squants.space._
 import java.io.InputStream
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.language._
 import scala.math._
 import scala.util.control.NonFatal
 
@@ -311,7 +310,6 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends
       totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy, "purchased")
       convertedEUI <- EUIConversionConstant(siteTotalEnergy + totalOffSite, buildingSize)
     } yield {
-      //println("SiteEUI w OnSite",convertedEUI)
       convertedEUI.value
     }
 
@@ -661,7 +659,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends
 
   def siteEmissionsIntensityConverted: Future[Double] = {
     for {
-      siteTotalEmissions <- energyCalcs.getTotalEmissions      
+      siteTotalEmissions <- getTotalEmissions      
       buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedEmissions <- EmissionsIntensityConversionConstant(siteTotalEmissions, buildingSize)
     } yield {
@@ -671,13 +669,12 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends
   }
 
   // returns emissions intensity in kgCO2e / year / ft2 (or m2) depending on reporting units
-  def medianSiteEmissionsIntensityConverted: Future[Energy] = {
+  def medianSiteEmissionsIntensityConverted: Future[Double] = {
     for {
-      medianEmissions <- medianTotalEmissions
+      medianEmissions <- defaultMedianTotalEmissions
       buildingSize <- combinedPropMetrics.getTotalArea(result)
       convertedMedianEmissions <- EmissionsIntensityConversionConstant(medianEmissions, buildingSize)
-    } yield {
-      logger.info("SiteMedianEmissionsIntensity... {}", convertedMedianEmissions)
+    } yield {      
       convertedMedianEmissions
     }
   }
@@ -1075,13 +1072,13 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends
   }
 
 
-  def EmissionsIntensityConversionConstant(emissionsEntry: Energy, areaEntry: Double): Future[Energy] = Future {
+  def EmissionsIntensityConversionConstant(emissionsEntry: Double, areaEntry: Double): Future[Double] = Future {
     (energyCalcs.country, energyCalcs.reportingUnits) match {
       case ("USA", "us") => emissionsEntry*1000 / areaEntry
       case ("USA", "metric") => emissionsEntry*1000 / (areaEntry * (SquareFeet(1) to SquareMeters))
       case (_, "metric") => emissionsEntry*1000 / areaEntry
       case (_, "us") => emissionsEntry*1000 / (areaEntry * (SquareMeters(1) to SquareFeet))
-      case _ => energyEntry*1000 / areaEntry
+      case _ => emissionsEntry*1000 / areaEntry
     }
   }
 
