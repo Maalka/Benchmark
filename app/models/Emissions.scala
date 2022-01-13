@@ -1,10 +1,7 @@
 package models
 
 import squants.energy.{MBtus, Energy}
-import squants.space._
 import scala.concurrent.Future
-import scala.language._
-import scala.math._
 import play.api.libs.json._
 import play.api.Play
 import scala.concurrent.ExecutionContext.Implicits.global

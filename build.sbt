@@ -8,7 +8,7 @@ organization in ThisBuild := "com.maalka"
 
 // TODO Set your version here
 
-version := "1.13.0"
+version := "1.14.0"
 
 scalaVersion in ThisBuild := "2.12.13"
 
@@ -19,8 +19,12 @@ packageSummary in Linux := "Benchmark tool"
 packageDescription := "Benchmark tool"
 
 dockerRepository := Some("maalka")
-dockerBaseImage := "eed3si9n/sbt:jdk11-alpine"
+dockerBaseImage := "openjdk:11-jre-slim"
 dockerUpdateLatest := true
+
+daemonUser in Docker := "daemon"
+daemonUserUid in Docker := Some("1")
+daemonGroup in Docker := "daemon"
 
 credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
@@ -81,7 +85,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "matchmedia-ng" % "1.0.5",
   "org.webjars.bower" % "filesaver" % "1.3.3",
   "org.webjars.npm" % "ng-file-upload" % "12.2.13",
-  "com.github.karelcemus" %% "play-redis" % "2.3.0",
+  "com.github.karelcemus" %% "play-redis" % "2.6.1",
   "org.typelevel" %% "squants" % "1.3.1-maalka-1.18",
   "com.github.tototoshi" %% "scala-csv" % "1.3.6",
 

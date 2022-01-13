@@ -11,7 +11,6 @@ import squants.space._
 import java.io.InputStream
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.language._
 import scala.math._
 import scala.util.control.NonFatal
 
@@ -311,7 +310,6 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends
       totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy, "purchased")
       convertedEUI <- EUIConversionConstant(siteTotalEnergy + totalOffSite, buildingSize)
     } yield {
-      //println("SiteEUI w OnSite",convertedEUI)
       convertedEUI.value
     }
 
@@ -638,7 +636,6 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends
     } yield percentBetterEmissions
   }
 
-
   def getDefaultEnergyTotals(defaultMix: Double, medianSourceEnergy: Energy): Future[EnergyList] = Future {
 
     val energyUnit = buildingProps.country match {
@@ -658,6 +655,28 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends
       entries <- energyCalcs.getEnergyList
       totalEmissions <- buildingEmissions.getTotalEmissions(entries)
     } yield totalEmissions
+  }
+
+  def siteEmissionsIntensityConverted: Future[Double] = {
+    for {
+      siteTotalEmissions <- getTotalEmissions      
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
+      convertedEmissions <- EmissionsIntensityConversionConstant(siteTotalEmissions, buildingSize)
+    } yield {
+      logger.info("SiteEmissionsIntensity... {}", convertedEmissions)
+      convertedEmissions
+    }
+  }
+
+  // returns emissions intensity in kgCO2e / year / ft2 (or m2) depending on reporting units
+  def medianSiteEmissionsIntensityConverted: Future[Double] = {
+    for {
+      medianEmissions <- defaultMedianTotalEmissions
+      buildingSize <- combinedPropMetrics.getTotalArea(result)
+      convertedMedianEmissions <- EmissionsIntensityConversionConstant(medianEmissions, buildingSize)
+    } yield {      
+      convertedMedianEmissions
+    }
   }
 
   def getDirectEmissionList(): Future[List[EmissionsTuple]] = {
@@ -1049,6 +1068,17 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends
       case (_, "metric") => 1.0
       case (_, "us") => SquareMeters(1) to SquareFeet
       case _ => 1.0
+    }
+  }
+
+
+  def EmissionsIntensityConversionConstant(emissionsEntry: Double, areaEntry: Double): Future[Double] = Future {
+    (energyCalcs.country, energyCalcs.reportingUnits) match {
+      case ("USA", "us") => emissionsEntry*1000 / areaEntry
+      case ("USA", "metric") => emissionsEntry*1000 / (areaEntry * (SquareFeet(1) to SquareMeters))
+      case (_, "metric") => emissionsEntry*1000 / areaEntry
+      case (_, "us") => emissionsEntry*1000 / (areaEntry * (SquareMeters(1) to SquareFeet))
+      case _ => emissionsEntry*1000 / areaEntry
     }
   }
 
