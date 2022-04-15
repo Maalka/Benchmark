@@ -1,16 +1,10 @@
 package controllers
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import models._
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
-import play.api.libs.json._
 import play.api.mvc._
 import com.google.inject.Inject
-import play.api.cache.{AsyncCacheApi, Cached, SyncCacheApi}
-
-import _root_.util.Logging
+import play.api.cache.{AsyncCacheApi, Cached}
+import com.typesafe.scalalogging.LazyLogging
+import play.api.Configuration
 
 import scala.concurrent.duration._
 
@@ -18,16 +12,11 @@ import scala.concurrent.duration._
 class Application @Inject() (
                               cached: Cached,
                               val cache: AsyncCacheApi,
-                              cc: ControllerComponents
-                            )(
-                            implicit val actorSystem: ActorSystem) extends AbstractController(cc) with Logging {
-
-
+                              cc: ControllerComponents,
+                              configuration: Configuration
+                            ) extends AbstractController(cc) with LazyLogging {
 
   val cacheDuration = 1.day
-
-  implicit val materializer = ActorMaterializer()
-
   /**
    * Caching action that caches an OK response for the given amount of time with the key.
    * NotFound will be cached for 5 mins. Any other status will not be cached.
@@ -39,8 +28,13 @@ class Application @Inject() (
 
   /** Serves the index page, see views/index.scala.html */
   def index(includeHeader: Boolean = true) = Action {
-    logging.debug("Index called")
-    Ok(views.html.index(includeHeader))
+    logger.debug("Index called")
+    Ok(views.html.index(includeHeader, configuration))
+  }
+
+  /** Serves the health check page */
+  def ht(includeHeader: Boolean = true) = Action {
+    Ok("")
   }
 
   /** Serves the health check page */

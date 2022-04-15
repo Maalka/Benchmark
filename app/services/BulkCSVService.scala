@@ -1,27 +1,25 @@
 package services
 
-import java.io.{BufferedInputStream, File, FileInputStream}
+import java.io.{BufferedInputStream, File, FileInputStream, InputStream}
 import java.nio.file.Files
 import java.util.zip.{ZipEntry, ZipOutputStream}
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink}
 import com.github.tototoshi.csv.{CSVWriter, DefaultCSVFormat, QUOTE_NONE, Quoting}
+import com.typesafe.scalalogging.LazyLogging
+
 import javax.inject.Inject
 import models.CSVlistCompute
 import parsers.ParseCSV
 import parsers.ParseCSV.NotValidCSVRow
 import play.api.Configuration
 import play.api.cache.AsyncCacheApi
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.JsValue
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Try}
 import scala.util.control.NonFatal
-import util.Logging
-
-import scala.reflect.internal.Reporting
 
 object BulkCSVService {
   val RUNNING = "RUNNING"
@@ -38,22 +36,19 @@ class BulkCSVService @Inject ()(
                                  storageModule: StorageService,
                                  asyncCacheApi: AsyncCacheApi,
                                  parseCSV: ParseCSV
-                               )(implicit ec: ExecutionContext,
-                                 val actorSystem: ActorSystem) extends Logging {
+                               )(implicit ec: ExecutionContext, actorSystem: ActorSystem) extends LazyLogging {
 
   import BulkCSVService._
-
-
-
 
   implicit object MyFormat extends DefaultCSVFormat {
     override val quoting: Quoting = QUOTE_NONE
   }
 
-  def getProcessedCSVFile(targetFileName: String, data: Boolean) = {
-    logging.info(s"Looking up key: $targetFileName")
+  def getProcessedCSVFile(targetFileName: String, data: Boolean): Future[Option[InputStream]] = {
+    logger.info("Looking up key: {}", targetFileName)
+
     asyncCacheApi.get[String](targetFileName).map { status =>
-      logging.info(s"Status from cache: $status")
+      logger.info("Status from cache: {}", status)
       status
     }.map {
       case Some(status) if status == RUNNING => throw JobNotFinishedException(targetFileName)
@@ -100,7 +95,7 @@ class BulkCSVService @Inject ()(
     asyncCacheApi
       .set(targetFileName, RUNNING)
       .flatMap { _ =>
-        logging.debug("Set Cache and now starting stream")
+        logger.debug("Set Cache and now starting stream")
         parseCSV.toPortfolioFlow(fileStream1, reportingUnits)
           .mapAsync(4) {
             case Right(js) => {
@@ -114,7 +109,7 @@ class BulkCSVService @Inject ()(
           .runWith(Sink.ignore)
       }
       .map { _ =>
-        logging.info("Finished processing csv")
+        logger.info("Finished processing csv")
         error_writer.close()
         writer.close()
 
@@ -137,7 +132,7 @@ class BulkCSVService @Inject ()(
 
         zip.close()
 
-        logging.info("Saving processed csv")
+        logger.info("Saving processed csv")
 
         storageModule.putFileFromFile("2030", targetFileName, path.toFile)
       }
@@ -146,8 +141,8 @@ class BulkCSVService @Inject ()(
       }
       .recoverWith {
         case NonFatal(th) =>
-          logging.error(th, "Failed to process CSV")
-          asyncCacheApi.set(targetFileName, s"$FAILED: ${th}")
+          logger.error("Failed to process CSV", th)
+          asyncCacheApi.set(targetFileName, s"$FAILED: $th")
       }
   }
 

@@ -2,178 +2,186 @@
 package models
 
 
+import com.typesafe.scalalogging.LazyLogging
+import play.api.Configuration
+import play.api.libs.json._
 import squants.energy._
 import squants.space._
 
+import java.io.InputStream
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.language._
 import scala.math._
-import play.api.libs.json._
-import play.api.{Configuration, Play}
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import java.io.InputStream
-
 import scala.util.control.NonFatal
 
 
-case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
+case class EUIMetrics(parameters: JsValue, configuration: Configuration) extends LazyLogging {
 
 
   val result = parameters.as[List[JsValue]]
 
 
-  val combinedPropMetrics:CombinedPropTypes = CombinedPropTypes(parameters, configuration)
-  val es:ES = ES(parameters, configuration)
+  val combinedPropMetrics: CombinedPropTypes = CombinedPropTypes(parameters, configuration)
+  val es: ES = ES(parameters, configuration)
 
-  val energyCalcs:EUICalculator = EUICalculator(result.head)
-  val buildingProps:BuildingProperties = BuildingProperties(result.head)
-  val buildingEmissions:Emissions = Emissions(result.head)
-
-
-  def getESScore:Future[Int] = es.getESScore
-  def getTargetESScore:Future[Int] = es.getTargetESScore
-  def getMedianESScore:Future[Int] = Future(50)
+  val energyCalcs: EUICalculator = EUICalculator(result.head)
+  val buildingProps: BuildingProperties = BuildingProperties(result.head)
+  val buildingEmissions: Emissions = Emissions(result.head)
 
 
-  def zepiMedian:Future[Int] = buildingProps.getBaselineConstant
+  def getESScore: Future[Int] = es.getESScore
+
+  def getTargetESScore: Future[Int] = es.getTargetESScore
+
+  def getMedianESScore: Future[Int] = Future(50)
 
 
-  def percentBetterMedian:Future[Double] = Future{0}
-  def percentBetterTarget:Future[Double] = buildingProps.getPercentBetterThanMedia
-  def getBuildingName:Future[String] = Future{buildingProps.buildingName}
+  def zepiMedian: Future[Int] = buildingProps.getBaselineConstant
 
+
+  def percentBetterMedian: Future[Double] = Future {
+    0
+  }
+
+  def percentBetterTarget: Future[Double] = buildingProps.getPercentBetterThanMedia
+
+  def getBuildingName: Future[String] = Future {
+    buildingProps.buildingName
+  }
 
 
   //percentBetterActual METRICS .............................................................................................//
-  def percentBetterActual:Future[Double] = {
+  def percentBetterActual: Future[Double] = {
     for {
       medianSiteEUI <- medianSiteEUIConverted
       actualEUI <- siteEUIConverted
     } yield {
       actualEUI match {
-        case x if x < medianSiteEUI.value => 100*math.abs((1 - actualEUI / medianSiteEUI.value))
-        case x  => -100*math.abs((1 - medianSiteEUI.value / actualEUI))
+        case x if x < medianSiteEUI.value => 100 * math.abs((1 - actualEUI / medianSiteEUI.value))
+        case x => -100 * math.abs((1 - medianSiteEUI.value / actualEUI))
       }
     }
   }
-  def percentBetterActualwOnSite:Future[Double] = {
+
+  def percentBetterActualwOnSite: Future[Double] = {
     for {
       medianSiteEUI <- medianSiteEUIConverted
       actualEUI <- siteEUIwOnSiteConverted
     } yield {
       actualEUI match {
-        case x if x < medianSiteEUI.value => 100*math.abs((1 - actualEUI / medianSiteEUI.value))
-        case x  => -100*math.abs((1 - medianSiteEUI.value / actualEUI))
+        case x if x < medianSiteEUI.value => 100 * math.abs((1 - actualEUI / medianSiteEUI.value))
+        case x => -100 * math.abs((1 - medianSiteEUI.value / actualEUI))
       }
     }
   }
-  def percentBetterActualwOffSite:Future[Double] = {
+
+  def percentBetterActualwOffSite: Future[Double] = {
     for {
       medianSiteEUI <- medianSiteEUIConverted
       actualEUI <- siteEUIwOffSiteConverted
     } yield {
       actualEUI match {
-        case x if x < medianSiteEUI.value => 100*math.abs((1 - actualEUI / medianSiteEUI.value))
-        case x  => -100*math.abs((1 - medianSiteEUI.value / actualEUI))
+        case x if x < medianSiteEUI.value => 100 * math.abs((1 - actualEUI / medianSiteEUI.value))
+        case x => -100 * math.abs((1 - medianSiteEUI.value / actualEUI))
       }
     }
   }
-  def percentBetterActualwOnandOffSite:Future[Double] = {
+
+  def percentBetterActualwOnandOffSite: Future[Double] = {
     for {
       medianSiteEUI <- medianSiteEUIConverted
       actualEUI <- siteEUIwOnandOffSiteConverted
     } yield {
       actualEUI match {
-        case x if x < medianSiteEUI.value => 100*math.abs((1 - actualEUI / medianSiteEUI.value))
-        case x  => -100*math.abs((1 - medianSiteEUI.value / actualEUI))
+        case x if x < medianSiteEUI.value => 100 * math.abs((1 - actualEUI / medianSiteEUI.value))
+        case x => -100 * math.abs((1 - medianSiteEUI.value / actualEUI))
       }
     }
   }
 
 
-
-
-  def actualGoalReduction:Future[Double] = {
+  def actualGoalReduction: Future[Double] = {
     for {
       percentBetterEUI <- percentBetterSiteEUIConverted
       actualEUI <- siteEUIwOnandOffSiteConverted
-    } yield 100*math.abs((1 - percentBetterEUI.value / actualEUI))
+    } yield 100 * math.abs((1 - percentBetterEUI.value / actualEUI))
   }
 
 
-  def actualGoalBetter:Future[Double] = {
+  def actualGoalBetter: Future[Double] = {
     for {
       percentBetterEUI <- percentBetterSiteEUIConverted
       actualEUI <- siteEUIwOnandOffSiteConverted
-    } yield 100*math.abs((1 - actualEUI / percentBetterEUI.value))
+    } yield 100 * math.abs((1 - actualEUI / percentBetterEUI.value))
   }
 
   //ZEPI METRICS .............................................................................................//
-  def zepiActual:Future[Double] = {
+  //  def zepiActual:Future[Double] = {
+  //    for {
+  //      baselineConstant <- buildingProps.getBaselineConstant
+  //      zepiMedianSiteEUI <- medianSiteEUI
+  //      actualSiteEUI <- siteEUI
+  //      zepiActual <- Future(baselineConstant*actualSiteEUI.value/zepiMedianSiteEUI.value)
+  //    } yield zepiActual
+  //  }
+
+
+  def zepiActual: Future[Double] = {
     for {
       baselineConstant <- buildingProps.getBaselineConstant
       zepiMedianSiteEUI <- medianSiteEUI
-      actualSiteEUI <- siteEUI
-      zepiActual <- Future(baselineConstant*actualSiteEUI.value/zepiMedianSiteEUI.value)
-    } yield zepiActual
-  }
-/*
-
-  def zepiActual:Future[Double] = {
-    for {
-      baselineConstant <- buildingProps.getBaselineConstant
-      zepiMedianSiteEUI <- medianSiteEUIConverted
       actualSiteEUI <- siteEUIConverted
-      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
+      zepiActual <- Future(baselineConstant * actualSiteEUI / zepiMedianSiteEUI.value)
     } yield zepiActual
   }
-  def zepiActualwOnSite:Future[Double] = {
-    for {
-      baselineConstant <- buildingProps.getBaselineConstant
-      zepiMedianSiteEUI <- medianSiteEUIConverted
-      actualSiteEUI <- siteEUIwOnSiteConverted
-      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
-    } yield zepiActual
-  }
-  def zepiActualwOffSite:Future[Double] = {
-    for {
-      baselineConstant <- buildingProps.getBaselineConstant
-      zepiMedianSiteEUI <- medianSiteEUIConverted
-      actualSiteEUI <- siteEUIwOffSiteConverted
-      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
-    } yield zepiActual
-  }
-  def zepiActualwOnandOffSite:Future[Double] = {
-    for {
-      baselineConstant <- buildingProps.getBaselineConstant
-      zepiMedianSiteEUI <- medianSiteEUIConverted
-      actualSiteEUI <- siteEUIwOnandOffSiteConverted
-      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
-    } yield zepiActual
-  }
-*/
+
+  //  def zepiActualwOnSite:Future[Double] = {
+  //    for {
+  //      baselineConstant <- buildingProps.getBaselineConstant
+  //      zepiMedianSiteEUI <- medianSiteEUIConverted
+  //      actualSiteEUI <- siteEUIwOnSiteConverted
+  //      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
+  //    } yield zepiActual
+  //  }
+  //  def zepiActualwOffSite:Future[Double] = {
+  //    for {
+  //      baselineConstant <- buildingProps.getBaselineConstant
+  //      zepiMedianSiteEUI <- medianSiteEUIConverted
+  //      actualSiteEUI <- siteEUIwOffSiteConverted
+  //      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
+  //    } yield zepiActual
+  //  }
+  //  def zepiActualwOnandOffSite:Future[Double] = {
+  //    for {
+  //      baselineConstant <- buildingProps.getBaselineConstant
+  //      zepiMedianSiteEUI <- medianSiteEUIConverted
+  //      actualSiteEUI <- siteEUIwOnandOffSiteConverted
+  //      zepiActual <- Future(baselineConstant*actualSiteEUI/zepiMedianSiteEUI.value)
+  //    } yield zepiActual
+  //  }
+  //
+  //
 
 
-
-  def zepiPercentBetter:Future[Double] = {
+  def zepiPercentBetter: Future[Double] = {
     for {
       baselineConstant <- buildingProps.getBaselineConstant
       percentBetter <- buildingProps.getPercentBetterThanMedia
-    } yield baselineConstant*(1-percentBetter/100)
+    } yield baselineConstant * (1 - percentBetter / 100)
   }
 
 
-  def getParkingEnergyOnly:Future[Double] = {
+  def getParkingEnergyOnly: Future[Double] = {
     for {
       targetbuilding <- BuildingProperties(result.head).getBuilding
       heatingDays <- targetbuilding.getHDD
-      parkingEnergy <- combinedPropMetrics.getParkingEnergy(result.head,heatingDays)
+      parkingEnergy <- combinedPropMetrics.getParkingEnergy(result.head, heatingDays)
       convertedEnergy <- energyConversion(parkingEnergy)
     } yield convertedEnergy.value
   }
 
-  def getParkingAreaOnly:Future[Double] = {
+  def getParkingAreaOnly: Future[Double] = {
     for {
       parkingArea <- combinedPropMetrics.getParkingArea(result.head)
     } yield parkingArea
@@ -190,22 +198,23 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
     for {
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOnSiteRenewable <- energyCalcs.getRenewableEnergyTotalbyTypeOutput(convertedEnergy,"onSite")
+      totalOnSiteRenewable <- energyCalcs.getRenewableEnergyTotalbyTypeOutput(convertedEnergy, "onSite")
     } yield totalOnSiteRenewable
 
   def offSitePurchasedTotal: Future[Double] =
     for {
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOnSiteRenewable <- energyCalcs.getRenewableEnergyTotalbyTypeOutput(convertedEnergy,"purchased")
+      totalOnSiteRenewable <- energyCalcs.getRenewableEnergyTotalbyTypeOutput(convertedEnergy, "purchased")
     } yield totalOnSiteRenewable
+
   //this is the total site energy without accounting for renewable generation and/or purchasing
   def siteEnergyALL: Future[Double] =
     for {
       siteEnergyList <- energyCalcs.getSiteEnergyList
       convertedEnergy <- convertEnergyTuple(siteEnergyList)
       totalSiteEnergyAll <- energyCalcs.getSiteEnergyTotalbyType(convertedEnergy)
-    } yield  totalSiteEnergyAll
+    } yield totalSiteEnergyAll
 
   //this is the total site energy accounting for renewable generation and/or purchasing
   def siteEnergyConverted: Future[Double] =
@@ -234,7 +243,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
       sourceRenewableEnergy <- energyCalcs.getTotalSourceRenewableEnergy
       buildingSize <- combinedPropMetrics.getTotalArea(result)
-      convertedEUI <- EUIConversionConstant(sourceEnergy+sourceRenewableEnergy,buildingSize)
+      convertedEUI <- EUIConversionConstant(sourceEnergy + sourceRenewableEnergy, buildingSize)
     } yield {
       //println("SourceEUI",convertedEUI)
       convertedEUI.value
@@ -247,10 +256,10 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
 
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"purchased")
-      convertedEUI <- EUIConversionConstant(sourceEnergy+totalOffSite,buildingSize)
+      totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy, "purchased")
+      convertedEUI <- EUIConversionConstant(sourceEnergy + totalOffSite, buildingSize)
     } yield {
-     // println("SourceEUI w OnSite",convertedEUI)
+      // println("SourceEUI w OnSite",convertedEUI)
       convertedEUI.value
     }
 
@@ -261,8 +270,8 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
 
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOnSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"onSite")
-      convertedEUI <- EUIConversionConstant(sourceEnergy+totalOnSite,buildingSize)
+      totalOnSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy, "onSite")
+      convertedEUI <- EUIConversionConstant(sourceEnergy + totalOnSite, buildingSize)
     } yield {
       //println("SourceEUI w Offsite",convertedEUI)
       convertedEUI.value
@@ -272,25 +281,23 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
     for {
       sourceEnergy <- energyCalcs.sourceEnergynoPoolnoParking
       buildingSize <- combinedPropMetrics.getTotalArea(result)
-      convertedEUI <- EUIConversionConstant(sourceEnergy,buildingSize)
+      convertedEUI <- EUIConversionConstant(sourceEnergy, buildingSize)
     } yield {
       //println("SourceEUI w On and Offsite",convertedEUI)
       convertedEUI.value
     }
 
 
-
-
-//SITE EUI METRICS .............................................................................................//
+  //SITE EUI METRICS .............................................................................................//
 
   def siteEUIConverted: Future[Double] =
     for {
       siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
       siteRenewableEnergy <- energyCalcs.getTotalSiteRenewableEnergy
       buildingSize <- combinedPropMetrics.getTotalArea(result)
-      convertedEUI <- EUIConversionConstant(siteTotalEnergy+siteRenewableEnergy,buildingSize)
+      convertedEUI <- EUIConversionConstant(siteTotalEnergy + siteRenewableEnergy, buildingSize)
     } yield {
-      //println("SiteEUI...",convertedEUI)
+      logger.info("SiteEUI... {}", convertedEUI)
       convertedEUI.value
     }
 
@@ -301,8 +308,8 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
 
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"purchased")
-      convertedEUI <- EUIConversionConstant(siteTotalEnergy+totalOffSite,buildingSize)
+      totalOffSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy, "purchased")
+      convertedEUI <- EUIConversionConstant(siteTotalEnergy + totalOffSite, buildingSize)
     } yield {
       //println("SiteEUI w OnSite",convertedEUI)
       convertedEUI.value
@@ -315,8 +322,8 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
 
       siteRenewableList <- energyCalcs.getSiteRenewableEnergyList
       convertedEnergy <- convertEnergyTuple(siteRenewableList)
-      totalOnSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy,"onSite")
-      convertedEUI <- EUIConversionConstant(siteTotalEnergy+totalOnSite,buildingSize)
+      totalOnSite <- energyCalcs.getRenewableEnergyTotalbyType(convertedEnergy, "onSite")
+      convertedEUI <- EUIConversionConstant(siteTotalEnergy + totalOnSite, buildingSize)
     } yield {
       //println("SiteEUI w OffSite",convertedEUI)
       convertedEUI.value
@@ -326,14 +333,14 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
     for {
       siteTotalEnergy <- energyCalcs.getTotalSiteEnergy
       buildingSize <- combinedPropMetrics.getTotalArea(result)
-      convertedEUI <- EUIConversionConstant(siteTotalEnergy,buildingSize)
+      convertedEUI <- EUIConversionConstant(siteTotalEnergy, buildingSize)
     } yield {
       //println("SiteEUI w OnSite and OffSite",convertedEUI)
       convertedEUI.value
     }
 
 
-  def medianSiteEnergyConverted:Future[Energy] = {
+  def medianSiteEnergyConverted: Future[Energy] = {
     for {
       siteRatio <- siteToSourceRatio
       backupRatio <- defaultSiteToSourceRatio
@@ -347,9 +354,9 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
         case Some(CountryBuildingType(_, "MultiFamilyMoreThan4")) => convertedEnergy * backupRatio
         case Some(CountryBuildingType(_, "MobileHome")) => convertedEnergy * backupRatio
         case _ => {
-          if(siteRatio.isNaN) {
+          if (siteRatio.isNaN) {
             convertedEnergy * backupRatio
-          }else {
+          } else {
             //convertedEnergy * siteRatio, this line will take actual site to source ratio based on actual building fuel use
             //breakdown, rather than default by fuel mixes from a lookuptable
             convertedEnergy * backupRatio
@@ -359,46 +366,46 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
     }
   }
 
-  def medianSourceEnergyConverted:Future[Energy] = {
+  def medianSourceEnergyConverted: Future[Energy] = {
     for {
       sourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
       convertedEnergy <- energyConversion(sourceEnergy)
     } yield convertedEnergy
   }
 
-  def medianSourceEUIConverted:Future[Energy] = {
+  def medianSourceEUIConverted: Future[Energy] = {
     for {
       sourceEUI <- combinedPropMetrics.getWholeBuildingSourceMedianEUI
       conversionConstant <- EUIConversionNoUnitsConstant
-    } yield sourceEUI*conversionConstant
+    } yield sourceEUI * conversionConstant
   }
 
-  def medianSiteEUIConverted:Future[Energy] = {
+  def medianSiteEUIConverted: Future[Energy] = {
     for {
       siteEnergy <- medianSiteEnergy
       buildingSize <- combinedPropMetrics.getTotalArea(result)
-      convertedEUI <- EUIConversionConstant(siteEnergy,buildingSize)
+      convertedEUI <- EUIConversionConstant(siteEnergy, buildingSize)
     } yield convertedEUI
   }
 
-  def percentBetterSourceEUIConverted:Future[Energy] = {
+  def percentBetterSourceEUIConverted: Future[Energy] = {
     for {
       betterTarget <- buildingProps.getPercentBetterThanMedia
       medianEUI <- combinedPropMetrics.getWholeBuildingSourceMedianEUI
       targetEUI <- Future(medianEUI * (1 - betterTarget / 100.0))
       conversionConstant <- EUIConversionNoUnitsConstant
-    } yield targetEUI*conversionConstant
+    } yield targetEUI * conversionConstant
   }
 
-  def percentBetterSiteEUIConverted:Future[Energy] = {
+  def percentBetterSiteEUIConverted: Future[Energy] = {
     for {
       siteEnergy <- percentBetterSiteEnergy
       buildingSize <- combinedPropMetrics.getTotalArea(result)
-      convertedEUI <- EUIConversionConstant(siteEnergy,buildingSize)
+      convertedEUI <- EUIConversionConstant(siteEnergy, buildingSize)
     } yield convertedEUI
   }
 
-  def percentBetterSourceEnergyConverted:Future[Energy] = {
+  def percentBetterSourceEnergyConverted: Future[Energy] = {
     for {
       sourceEnergy <- percentBetterSourceEUI
       buildingSize <- combinedPropMetrics.getTotalArea(result)
@@ -406,7 +413,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
     } yield convertedEnergy * buildingSize
   }
 
-  def percentBetterSiteEnergyConverted:Future[Energy] = {
+  def percentBetterSiteEnergyConverted: Future[Energy] = {
     for {
       siteRatio <- siteToSourceRatio
       backupRatio <- defaultSiteToSourceRatio
@@ -420,9 +427,9 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
         case Some(CountryBuildingType(_, "MultiFamilyMoreThan4")) => convertedEnergy * backupRatio
         case Some(CountryBuildingType(_, "MobileHome")) => convertedEnergy * backupRatio
         case _ => {
-          if(siteRatio.isNaN) {
+          if (siteRatio.isNaN) {
             convertedEnergy * backupRatio
-          }else {
+          } else {
             //convertedEnergy * siteRatio, this line will take actual site to source ratio based on actual building fuel use
             //breakdown, rather than default by fuel mixes from a lookuptable
             convertedEnergy * backupRatio
@@ -433,28 +440,28 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
   }
 
 
-
-//--------------------------- ABOVE IS THE EXIT POINT WITH FINAL CONVERSIONS ------------------------------------- //
-
+  //--------------------------- ABOVE IS THE EXIT POINT WITH FINAL CONVERSIONS ------------------------------------- //
 
 
-  def getPropOutputList:Future[List[PropParams]] = {
+  def getPropOutputList: Future[List[PropParams]] = {
     for {
       propTypes <- Future.sequence(result.map(BuildingProperties(_).getBuilding))
       propGFASum <- Future(propTypes.map(_.buildingSize).sum)
       conversionConstant <- GFAConversionConstant
-      outputList <- Future{
+      outputList <- Future {
         energyCalcs.reportingUnits match {
-            case "us" => propTypes.map{
-              a => PropParams(a.printed, a.buildingSize * conversionConstant,
+          case "us" => propTypes.map {
+            a =>
+              PropParams(a.printed, a.buildingSize * conversionConstant,
                 a.buildingSize / propGFASum, "ftSQ", a.propTypeName.getOrElse(null))
-            }
-            case "metric" => propTypes.map{
-              a => PropParams(a.printed, a.buildingSize * conversionConstant,
+          }
+          case "metric" => propTypes.map {
+            a =>
+              PropParams(a.printed, a.buildingSize * conversionConstant,
                 a.buildingSize / propGFASum, "mSQ", a.propTypeName.getOrElse(null))
-            }
           }
         }
+      }
     } yield outputList
   }
 
@@ -480,7 +487,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       buildingSize <- combinedPropMetrics.getTotalArea(result)
     } yield siteTotalEnergy / buildingSize
 
-  def medianSiteEnergy:Future[Energy] = {
+  def medianSiteEnergy: Future[Energy] = {
     for {
       siteRatio <- siteToSourceRatio
       backupRatio <- defaultSiteToSourceRatio
@@ -493,9 +500,9 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
         case Some(CountryBuildingType(_, "MultiFamilyMoreThan4")) => sourceEnergy * backupRatio
         case Some(CountryBuildingType(_, "MobileHome")) => sourceEnergy * backupRatio
         case _ => {
-          if(siteRatio.isNaN) {
+          if (siteRatio.isNaN) {
             sourceEnergy * backupRatio
-          }else {
+          } else {
             //convertedEnergy * siteRatio, this line will take actual site to source ratio based on actual building fuel use
             //breakdown, rather than default by fuel mixes from a lookuptable
             sourceEnergy * backupRatio
@@ -504,48 +511,49 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       }
     }
   }
-  def medianSourceEnergy:Future[Energy] = {
+
+  def medianSourceEnergy: Future[Energy] = {
     for {
       sourceEnergy <- combinedPropMetrics.getWholeBuildingSourceMedianEnergy
     } yield sourceEnergy
   }
 
-  def medianSourceEUI:Future[Energy] = {
+  def medianSourceEUI: Future[Energy] = {
     for {
       sourceEUI <- combinedPropMetrics.getWholeBuildingSourceMedianEUI
     } yield sourceEUI
   }
 
-  def medianSiteEUI:Future[Energy] = {
+  def medianSiteEUI: Future[Energy] = {
     for {
       siteEnergy <- medianSiteEnergy
       buildingSize <- combinedPropMetrics.getTotalArea(result)
     } yield siteEnergy / buildingSize
   }
 
-  def percentBetterSourceEUI:Future[Energy] = {
+  def percentBetterSourceEUI: Future[Energy] = {
     for {
       betterTarget <- buildingProps.getPercentBetterThanMedia
       medianEUI <- combinedPropMetrics.getWholeBuildingSourceMedianEUI
       targetEUI <- Future(medianEUI * (1 - betterTarget / 100.0))
-      } yield targetEUI
+    } yield targetEUI
   }
 
-  def percentBetterSiteEUI:Future[Energy] = {
+  def percentBetterSiteEUI: Future[Energy] = {
     for {
       siteEnergy <- percentBetterSiteEnergy
       buildingSize <- combinedPropMetrics.getTotalArea(result)
     } yield siteEnergy / buildingSize
   }
 
-  def percentBetterSourceEnergy:Future[Energy] = {
+  def percentBetterSourceEnergy: Future[Energy] = {
     for {
       sourceEUI <- percentBetterSourceEUI
       buildingSize <- combinedPropMetrics.getTotalArea(result)
     } yield sourceEUI * buildingSize
   }
 
-  def percentBetterSiteEnergy:Future[Energy] = {
+  def percentBetterSiteEnergy: Future[Energy] = {
     for {
       siteRatio <- siteToSourceRatio
       backupRatio <- defaultSiteToSourceRatio
@@ -558,9 +566,9 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
         case Some(CountryBuildingType(_, "MultiFamilyMoreThan4")) => sourceEnergy * backupRatio
         case Some(CountryBuildingType(_, "MobileHome")) => sourceEnergy * backupRatio
         case _ => {
-          if(siteRatio.isNaN) {
+          if (siteRatio.isNaN) {
             sourceEnergy * backupRatio
-          }else {
+          } else {
             //convertedEnergy * siteRatio, this line will take actual site to source ratio based on actual building fuel use
             //breakdown, rather than default by fuel mixes from a lookuptable
             sourceEnergy * backupRatio
@@ -571,7 +579,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
   }
 
 
-  def medianTotalEmissions:Future[Double] = {
+  def medianTotalEmissions: Future[Double] = {
     val local = for {
       entries <- energyCalcs.getEnergyList
       tempsourceEnergy <- sourceEnergy
@@ -581,10 +589,10 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       medianEmissions <- Future(actualEmissions / actualMedianRatio)
     } yield medianEmissions
 
-    local.recoverWith{case NonFatal(th) => defaultMedianTotalEmissions}
+    local.recoverWith { case NonFatal(th) => defaultMedianTotalEmissions }
   }
 
-  def percentBetterTotalEmissions:Future[Double] = {
+  def percentBetterTotalEmissions: Future[Double] = {
     val local = for {
       entries <- energyCalcs.getEnergyList
       sourceEnergy <- sourceEnergy
@@ -594,35 +602,35 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       percentBetterEmissions <- Future(actualEmissions / actualPercentBetterRatio)
     } yield percentBetterEmissions
 
-    local.recoverWith{case NonFatal(th) => defaultPercentBetterTotalEmissions}
+    local.recoverWith { case NonFatal(th) => defaultPercentBetterTotalEmissions }
   }
 
-  def defaultMedianTotalEmissions: Future[Double] ={
+  def defaultMedianTotalEmissions: Future[Double] = {
     for {
       propFilter <- combinedPropMetrics.majorProp
       stateBuildingType <- {
         propFilter.contains(true) match {
-          case a if a==true => getMajorStateBuildingType(propFilter)
-          case a if a==false => Future(StateBuildingType(buildingProps.state,"Other"))
+          case a if a == true => getMajorStateBuildingType(propFilter)
+          case a if a == false => Future(StateBuildingType(buildingProps.state, "Other"))
         }
       }
-      statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
+      statePropEnergyMix <- getMix(stateBuildingType.state, stateBuildingType.buildingType)
       medianSiteEnergyEmissions <- medianSiteEnergy
       energyList <- getDefaultEnergyTotals(statePropEnergyMix, medianSiteEnergyEmissions)
-      medianEmissions <-  buildingEmissions.nonActualTotalEmissions(energyList)
+      medianEmissions <- buildingEmissions.nonActualTotalEmissions(energyList)
     } yield medianEmissions
   }
 
-  def defaultPercentBetterTotalEmissions: Future[Double] ={
+  def defaultPercentBetterTotalEmissions: Future[Double] = {
     for {
       propFilter <- combinedPropMetrics.majorProp
       stateBuildingType <- {
         propFilter.contains(true) match {
-          case a if a==true => getMajorStateBuildingType(propFilter)
-          case a if a==false => Future(StateBuildingType(buildingProps.state,"Other"))
+          case a if a == true => getMajorStateBuildingType(propFilter)
+          case a if a == false => Future(StateBuildingType(buildingProps.state, "Other"))
         }
       }
-      statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
+      statePropEnergyMix <- getMix(stateBuildingType.state, stateBuildingType.buildingType)
       medianSiteEnergyEmissions <- percentBetterSiteEnergy
       energyList <- getDefaultEnergyTotals(statePropEnergyMix, medianSiteEnergyEmissions)
       percentBetterEmissions <- buildingEmissions.nonActualTotalEmissions(energyList)
@@ -631,7 +639,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
   }
 
 
-  def getDefaultEnergyTotals(defaultMix:Double, medianSourceEnergy:Energy): Future[EnergyList] = Future{
+  def getDefaultEnergyTotals(defaultMix: Double, medianSourceEnergy: Energy): Future[EnergyList] = Future {
 
     val energyUnit = buildingProps.country match {
       case "USA" => "kBtu"
@@ -639,8 +647,8 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
     }
 
     EnergyList(
-      List(EnergyMetrics("grid","Electric (Grid)",energyUnit,defaultMix*medianSourceEnergy.value,null),
-        EnergyMetrics("naturalGas","Natural Gas",energyUnit,(1-defaultMix)*medianSourceEnergy.value,null))
+      List(EnergyMetrics("grid", "Electric (Grid)", energyUnit, defaultMix * medianSourceEnergy.value, null),
+        EnergyMetrics("naturalGas", "Natural Gas", energyUnit, (1 - defaultMix) * medianSourceEnergy.value, null))
     )
   }
 
@@ -658,6 +666,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       directEmissions <- buildingEmissions.getDirectEmissionList(entries)
     } yield directEmissions
   }
+
   def getIndirectEmissionList(): Future[List[EmissionsTuple]] = {
     for {
       entries <- energyCalcs.getEnergyList
@@ -666,7 +675,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
   }
 
 
-  def siteToSourceRatio:Future[Double] = {
+  def siteToSourceRatio: Future[Double] = {
 
     val local = for {
       siteEnergy <- energyCalcs.getTotalSiteEnergy
@@ -676,19 +685,34 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
       }
     } yield ratio
 
-    local.recoverWith{case NonFatal(th) => defaultSiteToSourceRatio }
+    local.recoverWith { case NonFatal(th) => defaultSiteToSourceRatio }
   }
 
-  def defaultSiteToSourceRatio:Future[Double] = {
+  def defaultSiteToSourceRatio: Future[Double] = {
     val local = for {
       propFilter <- combinedPropMetrics.majorProp
       stateBuildingType <- {
         propFilter.contains(true) match {
-          case a if a==true => getMajorStateBuildingType(propFilter)
-          case a if a==false => Future(StateBuildingType(buildingProps.state,"Other"))
+          case a if a == true => getMajorStateBuildingType(propFilter)
+          case a if a == false => Future(StateBuildingType(buildingProps.state, "Other"))
         }
       }
-      statePropEnergyMix <- getMix(stateBuildingType.state,stateBuildingType.buildingType)
+      defaultRatio <- {
+        buildingProps.country match {
+          case "USA" => defaultUnitedStatesResidentialSiteToSourceRatio(stateBuildingType)
+          case "Canada" => canadaSitetoSourceRatio(stateBuildingType)
+        }
+      }
+    } yield {
+      defaultRatio
+    }
+    local.recoverWith { case _ => throw new Exception("Could not find Default Site to Source Ratio") }
+
+  }
+
+  def defaultUnitedStatesResidentialSiteToSourceRatio(stateBuildingType: StateBuildingType): Future[Double] = {
+    val local = for {
+      statePropEnergyMix <- getMix(stateBuildingType.state, stateBuildingType.buildingType)
       defaultRatio <- {
         stateBuildingType.buildingType match {
           case "SingleFamilyDetached" => residentialSitetoSourceRatio(result.head)
@@ -700,20 +724,18 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
         }
       }
 
-    } yield {
-      defaultRatio
-    }
+    } yield defaultRatio
 
-    local.recoverWith{case NonFatal(th) => residentialSitetoSourceRatio(result.head)}
+    local.recoverWith { case NonFatal(th) => residentialSitetoSourceRatio(result.head) }
   }
 
-  def getMajorStateBuildingType(propFilter:List[Boolean]):Future[StateBuildingType] = {
+
+  def getMajorStateBuildingType(propFilter: List[Boolean]): Future[StateBuildingType] = {
     for {
       majorProp <- combinedPropMetrics.getMajorProp(propFilter)
       stateBuildingType <- getStateBuildingType(majorProp)
     } yield stateBuildingType
   }
-
 
 
   def computeLookupEUI(targetBuilding: BaseLine): Future[Double] = {
@@ -724,40 +746,44 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
   }
 
 
-  def getTargetEUI[T](targetBuilding: T,lookupEUI:Double,targetRatio:Double):Future[Double] = Future {
+  def getTargetEUI[T](targetBuilding: T, lookupEUI: Double, targetRatio: Double): Future[Double] = Future {
     targetBuilding match {
       case a: ResidenceHall => exp(targetRatio / 15.717 * lookupEUI) / a.buildingSize
       case a: MedicalOffice => exp(targetRatio / 14.919 * lookupEUI) / a.buildingSize
       case a: DataCenter => targetRatio * lookupEUI * a.annualITEnergyKBtu
-      case a:GenericBuilding => throw new Exception("Could not calculate Target EUI - Generic Building: No Algorithm!!")
+      case a: GenericBuilding => throw new Exception("Could not calculate Target EUI - Generic Building: No Algorithm!!")
       case a: BaseLine => targetRatio * lookupEUI
     }
   }
 
-  def getStateBuildingType(params: JsValue): Future[StateBuildingType] = Future{
+  def getStateBuildingType(params: JsValue): Future[StateBuildingType] = Future {
     params.asOpt[StateBuildingType] match {
       case Some(a) => a
       case _ => throw new Exception("Cannot find State and Building Type:")
     }
   }
 
-  def getMix(state:String,propType:String):Future[Double] = {
+  def getMix(state: String, propType: String): Future[Double] = {
     val local = for {
       mixLookup <- loadEnergyMixTable.map { case a => (a \ state \ propType).toOption }
       mixValue <- mixLookup match {
-        case Some(a) => Future{a.as[Double]}
+        case Some(a) => Future {
+          a.as[Double]
+        }
         case _ => throw new Exception("Could not find State and PropType in statePropertyEnergyMix.json")
       }
     } yield mixValue
 
-    local.recoverWith{case NonFatal(th) => getDefaultMix(state)}
+    local.recoverWith { case NonFatal(th) => getDefaultMix(state) }
   }
 
-  def getDefaultMix(state:String):Future[Double] = {
+  def getDefaultMix(state: String): Future[Double] = {
     for {
       mixLookup <- loadEnergyMixTable.map { case a => (a \ state \ "Other").toOption }
       mixValue <- mixLookup match {
-        case Some(a) => Future{a.as[Double]}
+        case Some(a) => Future {
+          a.as[Double]
+        }
         case _ => throw new Exception("Could not find Default energyMix in statePropertyEnergyMix.json")
       }
     } yield mixValue
@@ -777,20 +803,20 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
     } yield json
   }
 
-  def getDefaultRatio(gridMix:Double):Future[Double] = Future{
-    1 / (gridMix*siteToSourceConversions.gridUS + (1.0-gridMix)*siteToSourceConversions.ngUS)
+  def getDefaultRatio(gridMix: Double): Future[Double] = Future {
+    1 / (gridMix * siteToSourceConversions.gridUS + (1.0 - gridMix) * siteToSourceConversions.ngUS)
   }
 
 
-  def residentialSitetoSourceRatio(rezParams:JsValue):Future[Double] = Future {
+  def residentialSitetoSourceRatio(rezParams: JsValue): Future[Double] = Future {
 
     val countryBuilding = rezParams.asOpt[CountryBuildingType]
     val region: String = buildingProps.getRegion
 
+
     countryBuilding match {
 
-      case Some(CountryBuildingType("USA", "SingleFamilyDetached")) =>
-      {
+      case Some(CountryBuildingType("USA", "SingleFamilyDetached")) => {
         region match {
           case "West" => 38.4 / 67.2
           case "Midwest" => 49.5 / 76.2
@@ -798,8 +824,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
           case "Northeast" => 45.7 / 67.5
         }
       }
-      case Some(CountryBuildingType("USA", "SingleFamilyAttached")) =>
-      {
+      case Some(CountryBuildingType("USA", "SingleFamilyAttached")) => {
         region match {
           case "West" => 38.8 / 63.2
           case "Midwest" => 44.8 / 66.6
@@ -807,8 +832,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
           case "Northeast" => 50.3 / 68.6
         }
       }
-      case Some(CountryBuildingType("USA", "MultiFamilyLessThan5")) =>
-      {
+      case Some(CountryBuildingType("USA", "MultiFamilyLessThan5")) => {
         region match {
           case "West" => 47.6 / 87.3
           case "Midwest" => 74.0 / 104.8
@@ -816,8 +840,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
           case "Northeast" => 57.8 / 78.8
         }
       }
-      case Some(CountryBuildingType("USA", "MultiFamilyMoreThan4")) =>
-      {
+      case Some(CountryBuildingType("USA", "MultiFamilyMoreThan4")) => {
         region match {
           case "West" => 40.0 / 81.7
           case "Midwest" => 50.9 / 93.3
@@ -825,8 +848,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
           case "Northeast" => 60.7 / 98.2
         }
       }
-      case Some(CountryBuildingType("USA", "MobileHome")) =>
-      {
+      case Some(CountryBuildingType("USA", "MobileHome")) => {
         region match {
           case "West" => 65.8 / 128.2
           case "Midwest" => 103.3 / 168.9
@@ -835,94 +857,106 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
         }
       }
 
+      case _ => throw new Exception("Could not find Default Site to Source Ratio")
+    }
+  }
+
+
+  def canadaSitetoSourceRatio(stateBuildingType: StateBuildingType): Future[Double] = Future {
+
+    val buildingType: String = stateBuildingType.buildingType
+
+
+    ("Canada", buildingType) match {
+
 
       //Canadian Building Medians
-      case Some(CountryBuildingType("Canada", "AdultEducation")) => 1.18 / 1.44
-      case Some(CountryBuildingType("Canada", "College")) => 0.76 / 1.56
-      case Some(CountryBuildingType("Canada", "PreSchool")) => 0.92 / 1.27
-      case Some(CountryBuildingType("Canada", "VocationalSchool")) => 1.18 / 1.44
-      case Some(CountryBuildingType("Canada", "OtherEducation")) => 0.92 / 1.27
-      case Some(CountryBuildingType("Canada", "ConventionCenter")) => 1.74 /2.47
-      case Some(CountryBuildingType("Canada", "MovieTheater")) => 0.93 / 1.63
-      case Some(CountryBuildingType("Canada", "Museum")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "PerformingArts")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "BowlingAlley")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "FitnessCenter")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "IceRink")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "RollerRink")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "SwimmingPool")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "OtherRecreation")) => 1.11 / 1.91
-      case Some(CountryBuildingType("Canada", "MeetingHall")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "IndoorArena")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "RaceTrack")) => 1.11 / 1.91
-      case Some(CountryBuildingType("Canada", "Stadium")) => 1.51 / 1.93
-      case Some(CountryBuildingType("Canada", "Aquarium")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "Bar")) => 0.93 / 1.63
-      case Some(CountryBuildingType("Canada", "NightClub")) => 0.93 / 1.63
-      case Some(CountryBuildingType("Canada", "Casino")) => 0.93 / 1.63
-      case Some(CountryBuildingType("Canada", "Zoo")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "OtherEntertainment")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "ConvenienceStore")) => 3.14 / 5.16
-      case Some(CountryBuildingType("Canada", "GasStation")) => 3.14 / 5.16
-      case Some(CountryBuildingType("Canada", "FastFoodRestaurant")) => 3.05 / 4.21
-      case Some(CountryBuildingType("Canada", "Restaurant")) => 3.05 / 4.21
-      case Some(CountryBuildingType("Canada", "OtherDining")) => 3.05 / 4.21
-      case Some(CountryBuildingType("Canada", "FoodSales")) => 3.14 / 5.16
-      case Some(CountryBuildingType("Canada", "FoodService")) => 3.05 / 4.21
-      case Some(CountryBuildingType("Canada", "AmbulatorySurgicalCenter")) => 1.02 / 1.5
-      case Some(CountryBuildingType("Canada", "DrinkingWaterTreatment")) => 0.63 / 1.84
-      case Some(CountryBuildingType("Canada", "SpecialtyHospital")) => 2.35 / 3.12
-      case Some(CountryBuildingType("Canada", "OutpatientCenter")) => 1.02 / 1.5
-      case Some(CountryBuildingType("Canada", "PhysicalTherapyCenter")) => 1.02 / 1.5
-      case Some(CountryBuildingType("Canada", "UrgentCareCenter")) => 1.02 / 1.5
-      case Some(CountryBuildingType("Canada", "Barracks")) => 1.45 / 2.05
-      case Some(CountryBuildingType("Canada", "Pr n")) => 1.28 / 1.74
-      case Some(CountryBuildingType("Canada", "ResidentialLodging")) => 1.12 / 1.75
-      case Some(CountryBuildingType("Canada", "MixedUse")) => 0.90 / 1.23
-      case Some(CountryBuildingType("Canada", "VeterinaryOffice")) => 1.02 / 1.5
-      case Some(CountryBuildingType("Canada", "Courthouse")) => 1.28 / 1.74
-      case Some(CountryBuildingType("Canada", "FireStation")) => 1.23 / 1.63
-      case Some(CountryBuildingType("Canada", "Library")) => 1.74 / 2.47
-      case Some(CountryBuildingType("Canada", "MailingCenter")) => 1.37 / 1.67
-      case Some(CountryBuildingType("Canada", "PostOffice")) => 1.37 / 1.67
-      case Some(CountryBuildingType("Canada", "PoliceStation")) => 1.28 / 1.74
-      case Some(CountryBuildingType("Canada", "TransportationTerminal")) => 1.06 / 1.42
-      case Some(CountryBuildingType("Canada", "OtherPublicServices")) => 0.90 / 1.23
-      case Some(CountryBuildingType("Canada", "AutoDealership")) => 0.85 / 1.52
-      case Some(CountryBuildingType("Canada", "EnclosedMall")) => 2.10 / 3.47
-      case Some(CountryBuildingType("Canada", "StripMall")) => 1.38 / 2.25
-      case Some(CountryBuildingType("Canada", "Laboratory")) => 0.90 / 1.23
-      case Some(CountryBuildingType("Canada", "PersonalServices")) => 1.00 / 1.37
-      case Some(CountryBuildingType("Canada", "RepairServices")) => 1.00 / 1.37
-      case Some(CountryBuildingType("Canada", "OtherServices")) => 1.37 / 2.2
-      case Some(CountryBuildingType("Canada", "PowerStation")) => 0.90 / 1.23
-      case Some(CountryBuildingType("Canada", "OtherUtility")) => 0.90 / 1.23
-      case Some(CountryBuildingType("Canada", "SelfStorageFacility")) => 0.75 / 0.93
+      case ("Canada", "AdultEducation") => 1.18 / 1.44
+      case ("Canada", "College") => 0.76 / 1.56
+      case ("Canada", "PreSchool") => 0.92 / 1.27
+      case ("Canada", "VocationalSchool") => 1.18 / 1.44
+      case ("Canada", "OtherEducation") => 0.92 / 1.27
+      case ("Canada", "ConventionCenter") => 1.74 / 2.47
+      case ("Canada", "MovieTheater") => 0.93 / 1.63
+      case ("Canada", "Museum") => 1.74 / 2.47
+      case ("Canada", "PerformingArts") => 1.74 / 2.47
+      case ("Canada", "BowlingAlley") => 1.51 / 1.93
+      case ("Canada", "FitnessCenter") => 1.51 / 1.93
+      case ("Canada", "IceRink") => 1.51 / 1.93
+      case ("Canada", "RollerRink") => 1.51 / 1.93
+      case ("Canada", "SwimmingPool") => 1.51 / 1.93
+      case ("Canada", "OtherRecreation") => 1.11 / 1.91
+      case ("Canada", "MeetingHall") => 1.74 / 2.47
+      case ("Canada", "IndoorArena") => 1.51 / 1.93
+      case ("Canada", "RaceTrack") => 1.11 / 1.91
+      case ("Canada", "Stadium") => 1.51 / 1.93
+      case ("Canada", "Aquarium") => 1.74 / 2.47
+      case ("Canada", "Bar") => 0.93 / 1.63
+      case ("Canada", "NightClub") => 0.93 / 1.63
+      case ("Canada", "Casino") => 0.93 / 1.63
+      case ("Canada", "Zoo") => 1.74 / 2.47
+      case ("Canada", "OtherEntertainment") => 1.74 / 2.47
+      case ("Canada", "ConvenienceStore") => 3.14 / 5.16
+      case ("Canada", "GasStation") => 3.14 / 5.16
+      case ("Canada", "FastFoodRestaurant") => 3.05 / 4.21
+      case ("Canada", "Restaurant") => 3.05 / 4.21
+      case ("Canada", "OtherDining") => 3.05 / 4.21
+      case ("Canada", "FoodSales") => 3.14 / 5.16
+      case ("Canada", "FoodService") => 3.05 / 4.21
+      case ("Canada", "AmbulatorySurgicalCenter") => 1.02 / 1.5
+      case ("Canada", "DrinkingWaterTreatment") => 0.63 / 1.84
+      case ("Canada", "SpecialtyHospital") => 2.35 / 3.12
+      case ("Canada", "OutpatientCenter") => 1.02 / 1.5
+      case ("Canada", "PhysicalTherapyCenter") => 1.02 / 1.5
+      case ("Canada", "UrgentCareCenter") => 1.02 / 1.5
+      case ("Canada", "Barracks") => 1.45 / 2.05
+      case ("Canada", "Prison") => 1.28 / 1.74
+      case ("Canada", "ResidentialLodging") => 1.12 / 1.75
+      case ("Canada", "MixedUse") => 0.90 / 1.23
+      case ("Canada", "VeterinaryOffice") => 1.02 / 1.5
+      case ("Canada", "Courthouse") => 1.28 / 1.74
+      case ("Canada", "FireStation") => 1.23 / 1.63
+      case ("Canada", "Library") => 1.74 / 2.47
+      case ("Canada", "MailingCenter") => 1.37 / 1.67
+      case ("Canada", "PostOffice") => 1.37 / 1.67
+      case ("Canada", "PoliceStation") => 1.28 / 1.74
+      case ("Canada", "TransportationTerminal") => 1.06 / 1.42
+      case ("Canada", "OtherPublicServices") => 0.90 / 1.23
+      case ("Canada", "AutoDealership") => 0.85 / 1.52
+      case ("Canada", "EnclosedMall") => 2.10 / 3.47
+      case ("Canada", "StripMall") => 1.38 / 2.25
+      case ("Canada", "Laboratory") => 0.90 / 1.23
+      case ("Canada", "PersonalServices") => 1.00 / 1.37
+      case ("Canada", "RepairServices") => 1.00 / 1.37
+      case ("Canada", "OtherServices") => 1.37 / 2.2
+      case ("Canada", "PowerStation") => 0.90 / 1.23
+      case ("Canada", "OtherUtility") => 0.90 / 1.23
+      case ("Canada", "SelfStorageFacility") => 0.75 / 0.93
       // Canadian Building Medians for Buildings with US Algorithms
-      case Some(CountryBuildingType("Canada","Hotel")) => 1.12 / 1.75
-      case Some(CountryBuildingType("Canada","WorshipCenter")) => 0.86 / 1.06
-      case Some(CountryBuildingType("Canada","Warehouse")) => 0.75 / 0.93
-      case Some(CountryBuildingType("Canada","WarehouseRefrigerated")) => 0.90 / 1.23 // there is no median for refrigerated warehouse in Canada (it's cold there!!)
-      case Some(CountryBuildingType("Canada","SeniorCare")) => 1.12 / 1.88
-      case Some(CountryBuildingType("Canada","Retail")) => 0.85 / 1.52
-      case Some(CountryBuildingType("Canada","ResidenceHall")) => 1.45 / 2.05
-      case Some(CountryBuildingType("Canada","DataCenter")) => 1.82 / 1.82
+      case ("Canada", "Hotel") => 1.12 / 1.75
+      case ("Canada", "WorshipCenter") => 0.86 / 1.06
+      case ("Canada", "Warehouse") => 0.75 / 0.93
+      case ("Canada", "WarehouseRefrigerated") => 0.90 / 1.23 // there is no median for refrigerated warehouse in Canada (it's cold there!!)
+      case ("Canada", "SeniorCare") => 1.12 / 1.88
+      case ("Canada", "Retail") => 0.85 / 1.52
+      case ("Canada", "ResidenceHall") => 1.45 / 2.05
+      case ("Canada", "DataCenter") => 1.82 / 1.82
+      case ("Canada", "Office") => 0.99 / 1.55
 
-      case Some(CountryBuildingType("Canada", _)) => 0.90 / 1.23
+      case ("Canada", _) => 0.90 / 1.23
 
       case _ => throw new Exception("Could not find Default Site to Source Ratio")
     }
   }
 
-  def residentialSiteEUI(rezParams:JsValue):Future[Double] = Future {
+  def residentialSiteEUI(rezParams: JsValue): Future[Double] = Future {
 
     val countryBuilding = rezParams.asOpt[CountryBuildingType]
     val region: String = buildingProps.getRegion
 
     countryBuilding match {
 
-      case Some(CountryBuildingType("USA", "SingleFamilyDetached")) =>
-      {
+      case Some(CountryBuildingType("USA", "SingleFamilyDetached")) => {
         region match {
           case "West" => 38.4
           case "Midwest" => 49.5
@@ -930,8 +964,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
           case "Northeast" => 45.7
         }
       }
-      case Some(CountryBuildingType("USA", "SingleFamilyAttached")) =>
-      {
+      case Some(CountryBuildingType("USA", "SingleFamilyAttached")) => {
         region match {
           case "West" => 38.8
           case "Midwest" => 44.8
@@ -939,8 +972,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
           case "Northeast" => 50.3
         }
       }
-      case Some(CountryBuildingType("USA", "MultiFamilyLessThan5")) =>
-      {
+      case Some(CountryBuildingType("USA", "MultiFamilyLessThan5")) => {
         region match {
           case "West" => 47.6
           case "Midwest" => 74.0
@@ -948,8 +980,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
           case "Northeast" => 57.8
         }
       }
-      case Some(CountryBuildingType("USA", "MultiFamilyMoreThan4")) =>
-      {
+      case Some(CountryBuildingType("USA", "MultiFamilyMoreThan4")) => {
         region match {
           case "West" => 40.0
           case "Midwest" => 50.9
@@ -957,8 +988,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
           case "Northeast" => 60.7
         }
       }
-      case Some(CountryBuildingType("USA", "MobileHome")) =>
-      {
+      case Some(CountryBuildingType("USA", "MobileHome")) => {
         region match {
           case "West" => 65.8
           case "Midwest" => 103.3
@@ -973,34 +1003,36 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
 
   def convertEnergyTuple(energies: List[EnergyTuple]): Future[List[EnergyTuple]] = Future {
     (energyCalcs.country, energyCalcs.reportingUnits) match {
-      case ("USA", "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KBtus)}
-      case ("USA", "metric") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KilowattHours)}
-      case (_, "metric") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KilowattHours)}
-      case (_, "us") => energies.map {case a:EnergyTuple => EnergyTuple(a.energyType,a.energyName,a.energyValue in KBtus)}
+      case ("USA", "us") => energies.map { case a: EnergyTuple => EnergyTuple(a.energyType, a.energyName, a.energyValue in KBtus) }
+      case ("USA", "metric") => energies.map { case a: EnergyTuple => EnergyTuple(a.energyType, a.energyName, a.energyValue in KilowattHours) }
+      case (_, "metric") => energies.map { case a: EnergyTuple => EnergyTuple(a.energyType, a.energyName, a.energyValue in KilowattHours) }
+      case (_, "us") => energies.map { case a: EnergyTuple => EnergyTuple(a.energyType, a.energyName, a.energyValue in KBtus) }
       case _ => energies
 
     }
   }
 
-  def EUIConversionConstant(energyEntry:Energy,areaEntry:Double):Future[Energy] = Future{
+  def EUIConversionConstant(energyEntry: Energy, areaEntry: Double): Future[Energy] = Future {
     (energyCalcs.country, energyCalcs.reportingUnits) match {
       case ("USA", "us") => energyEntry / areaEntry
-      case ("USA", "metric") => (energyEntry in KilowattHours)/(areaEntry * (SquareFeet(1) to SquareMeters))
+      case ("USA", "metric") => (energyEntry in KilowattHours) / (areaEntry * (SquareFeet(1) to SquareMeters))
       case (_, "metric") => (energyEntry in KilowattHours) / areaEntry
       case (_, "us") => (energyEntry in KBtus) / (areaEntry * (SquareMeters(1) to SquareFeet))
       case _ => energyEntry / areaEntry
     }
   }
-  def EUIConversionNoUnitsConstant:Future[Double] = Future{
+
+  def EUIConversionNoUnitsConstant: Future[Double] = Future {
     (energyCalcs.country, energyCalcs.reportingUnits) match {
       case ("USA", "us") => 1.0
-      case ("USA", "metric") => (KBtus(1) to KilowattHours)/(SquareFeet(1) to SquareMeters)
+      case ("USA", "metric") => (KBtus(1) to KilowattHours) / (SquareFeet(1) to SquareMeters)
       case (_, "metric") => (Gigajoules(1) to KilowattHours)
       case (_, "us") => (Gigajoules(1) to KBtus) / (SquareMeters(1) to SquareFeet)
       case _ => 1.0
     }
   }
-  def energyConversion(energyEntry:Energy):Future[Energy] = Future{
+
+  def energyConversion(energyEntry: Energy): Future[Energy] = Future {
     (energyCalcs.country, energyCalcs.reportingUnits) match {
       case ("USA", "us") => energyEntry
       case ("USA", "metric") => energyEntry in KilowattHours
@@ -1010,7 +1042,7 @@ case class EUIMetrics(parameters: JsValue, configuration: Configuration) {
     }
   }
 
-  def GFAConversionConstant:Future[Double] = Future{
+  def GFAConversionConstant: Future[Double] = Future {
     (energyCalcs.country, energyCalcs.reportingUnits) match {
       case ("USA", "us") => 1.0
       case ("USA", "metric") => SquareFeet(1) to SquareMeters

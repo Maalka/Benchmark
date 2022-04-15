@@ -400,6 +400,8 @@ define(['angular'], function() {
             $scope.showPercentBetterTarget = undefined;
         }
 
+        var baselineConstant = $scope.getBaselineConstant();
+        var scaleConstant = baselineConstant / 100;
         var metricsTable = [
 
               {"percentBetterMedian": Math.ceil($scope.getPropResponseField(results,"percentBetterMedian"))},
@@ -413,12 +415,12 @@ define(['angular'], function() {
               {"percentBetterActualtoGoal": Math.ceil($scope.getPropResponseField(results,"percentBetterActualtoGoal"))},
               {"actualGoalBetter": Math.ceil($scope.getPropResponseField(results,"actualGoalBetter"))},
 
-              {"medianZEPI": $scope.getBaselineConstant()},
-              {"percentBetterZEPI": Math.floor($scope.getPropResponseField(results,"percentBetterZEPI"))},
-              {"actualZEPI": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActual"))},
-              {"actualZEPIwOnSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOnSite"))},
-              {"actualZEPIwOffSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOffSite"))},
-              {"actualZEPIwOnAndOffSite": $scope.getBaselineConstant() - Math.floor($scope.getPropResponseField(results,"percentBetterActualwOnandOffSite"))},
+              {"medianZEPI": baselineConstant},
+              {"percentBetterZEPI": Math.ceil($scope.getPropResponseField(results,"percentBetterZEPI"))},
+              {"actualZEPI": baselineConstant - Math.ceil($scope.getPropResponseField(results,"percentBetterActual") * scaleConstant)},
+              {"actualZEPIwOnSite": baselineConstant - Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOnSite") * scaleConstant)},
+              {"actualZEPIwOffSite": baselineConstant - Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOffSite") * scaleConstant)},
+              {"actualZEPIwOnAndOffSite": baselineConstant - Math.ceil($scope.getPropResponseField(results,"percentBetterActualwOnandOffSite") * scaleConstant)},
 
               {"siteEUI": Math.ceil($scope.getPropResponseField(results,"siteEUI"))},
               {"siteEUIwOnSite": Math.ceil($scope.getPropResponseField(results,"siteEUIwOnSite"))},
@@ -471,8 +473,10 @@ define(['angular'], function() {
 
 
         ];
+
         return metricsTable;
     };
+
 
     $scope.submitErrors = function () {
         for (var i = 0; i < $scope.forms.baselineForm.$error.required.length; i++){

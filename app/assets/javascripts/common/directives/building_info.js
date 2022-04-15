@@ -24,7 +24,7 @@ define(['angular','./main'], function(angular) {
 
 
                 $scope.buildingName =  ($scope.model.name) ? $scope.model.name : "Anonymous";
-                
+
                 $scope.benchmark = $scope.$parent;
                 $scope.propFieldsRequired = false;
                 $scope.propertyModel = {};
@@ -46,20 +46,20 @@ define(['angular','./main'], function(angular) {
                     if($scope.propertyModel.defaultValues){
                         if( $scope.propertyModel.GFA && $scope.propertyModel.areaUnits) {
                             $scope.setDefaults();
-                        } 
+                        }
                     } else {
                         $scope.clearParams();
                     }
 
                 });
-                // if the building type changes.  then 
-                $scope.$watch('model.propertyModel.buildingType', function (propertyType, lastValue) { 
+                // if the building type changes.  then
+                $scope.$watch('model.propertyModel.buildingType', function (propertyType, lastValue) {
                     if (propertyType !== undefined && lastValue !== undefined){
                         setPropertyModelFields(GFA);
                     }
                 });
 
-                $scope.removeProp = function() { 
+                $scope.removeProp = function() {
                     $scope.$parent.removeProp(this);
                 };
                 $scope.isRequired = function(field) {
@@ -743,7 +743,7 @@ define(['angular','./main'], function(angular) {
                             type: "number",
                             title: "Number of Weekly Operating Hours",
                             required: "all"
-                        }, 
+                        },
                         {
                             name: "numWorkersMainShift",
                             default: $scope.round(1.0*GFA/1000,2),
@@ -935,14 +935,14 @@ define(['angular','./main'], function(angular) {
                             type: "number",
                             title: "Number of Workers on Main Shift",
                             required: "USA"
-                        }, 
+                        },
                         {
                             name: "numWalkinRefrUnits",
                             default: 0.0,
                             type: "number",
                             title: "Number of Walk-in Refrigeration Units",
                             required: "USA"
-                        }, 
+                        },
                         {
                             name: "percentHeated",
                             default: $scope.buildingProperties.areaHVAC[5].id,

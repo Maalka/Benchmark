@@ -92,7 +92,7 @@ class ParseCSV @Inject()(implicit val actorSystem: ActorSystem, executionContext
 
   private def toStream(is: InputStream): Stream[Seq[String]] = {
     CSVReader.open(new InputStreamReader(is, Charsets.UTF_8))
-      .toStream()
+      .toStream
   }
 
   def toPortfolioFlow(is:InputStream,reportingUnits:String): Source[Either[NotValidCSVRow, JsValue], NotUsed] = {
@@ -144,7 +144,7 @@ class ParseCSV @Inject()(implicit val actorSystem: ActorSystem, executionContext
       case "ConvenienceStoreAndGas" => "GasStation"
       case "ConvenienceStoreNoGas" => "ConvenienceStore"
       case "OtherResidentialLodging" => "ResidentialLodging"
-      case "MixedUseProperty" => "MixedUse"
+      case "MixedUse" => "MixedUse"
       case "WarehouseRefrigerated" => "WarehouseRefrigerated"
       case "WarehouseUnRefrigerated" => "Warehouse"
       case "EnergyStation" => "PowerStation"
@@ -330,7 +330,7 @@ object rowCheck {
   "ConvenienceStoreWithGas", // GasStation
   "ConvenienceStoreAndGas", // GasStation
   "ConvenienceStoreNoGas", // GasStation
-  "MixedUseProperty", // MixedUse
+  "MixedUse", // MixedUse
   "WarehouseRefrigerated", //WarehouseRefrigerated
   "WarehouseUnRefrigerated", // Warehouse
   "Other"

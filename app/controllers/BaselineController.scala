@@ -4,15 +4,13 @@
 
 
 package controllers
-import akka.actor.ActorSystem
 import models._
-import com.eclipsesource.schema._
-import com.eclipsesource.schema.internal.validation.VA
 import com.google.inject.Inject
 import play.api.cache.AsyncCacheApi
 import play.api.libs.json._
 import play.api.Configuration
 import play.api.mvc._
+import com.eclipsesource.schema.drafts.Version7._
 
 import scala.concurrent.Future
 import squants.energy.Energy
@@ -20,17 +18,19 @@ import squants.energy.Energy
 import scala.util.control.NonFatal
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
-import _root_.util.Logging
+import com.eclipsesource.schema.{FailureExtensions, SchemaType, SchemaValidator}
+import com.typesafe.scalalogging.LazyLogging
 
 
 class BaselineController @Inject() (
                                      val cache: AsyncCacheApi,
                                      cc: ControllerComponents,
-                                     configuration: Configuration)
-                                   (
-                                     implicit val actorSystem: ActorSystem
-                                   ) extends AbstractController(cc) with Logging {
+                                     configuration: Configuration
+                                   )
+                                    extends AbstractController(cc) with LazyLogging {
 
+
+  val validator: SchemaValidator = SchemaValidator()
 
   implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
   implicit def energyToJSValue(b: Energy): JsValue = Json.toJson(b.value)
@@ -47,7 +47,6 @@ class BaselineController @Inject() (
   }
 
   def api[T](response: T):Either[String, JsValue] = {
-
     response match {
       case v: Energy => Right(v)
       case v: Double => Right(v)
@@ -83,9 +82,6 @@ class BaselineController @Inject() (
       case None => Left("Could not recognize input type")
     }
   }
-
-
-  val validator = new SchemaValidator()
 
   val schema = Json.fromJson[SchemaType](Json.parse(
     """{
@@ -141,7 +137,7 @@ class BaselineController @Inject() (
                        "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
                        "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
                        "Warehouse","WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
-                       "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
+                       "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUse","Office","VeterinaryOffice",
                        "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
                        "Bar","Nightclub","Casino","OtherEntertainment","GasStation", "ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
                        "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
@@ -518,7 +514,7 @@ class BaselineController @Inject() (
                                "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
                                    "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
                                    "Warehouse","WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
-                                   "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUseProperty","Office","VeterinaryOffice",
+                                   "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUse","Office","VeterinaryOffice",
                                    "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
                                    "Bar","Nightclub","Casino","OtherEntertainment","GasStation", "ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
                                    "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
@@ -618,8 +614,12 @@ class BaselineController @Inject() (
           Baseline.actualGoalBetter.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
 
           Baseline.zepiActual.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          Baseline.zepiMedian.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+//          Baseline.zepiActualwOnSite.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+//          Baseline.zepiActualwOffSite.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+//          Baseline.zepiActualwOnandOffSite.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+
           Baseline.zepiPercentBetter.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
+          Baseline.zepiMedian.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
 
           Baseline.siteEUIConverted.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.siteEUIwOnSiteConverted.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
@@ -692,8 +692,12 @@ class BaselineController @Inject() (
           "actualGoalBetter",
 
           "actualZEPI",
-          "medianZEPI",
+//          "actualZEPIwOnSite",
+//          "actualZEPIwOffSite",
+//          "actualZEPIwOnAndOffSite",
+
           "percentBetterZEPI",
+          "medianZEPI",
 
           "siteEUI",
           "siteEUIwOnSite",
@@ -707,6 +711,7 @@ class BaselineController @Inject() (
 
           "medianSiteEUI",
           "medianSourceEUI",
+
           "percentBetterSiteEUI",
           "percentBetterSourceEUI",
 
