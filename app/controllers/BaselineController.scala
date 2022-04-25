@@ -137,7 +137,7 @@ class BaselineController @Inject() (
                        "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
                        "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
                        "Warehouse","WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
-                       "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUse","Office","VeterinaryOffice",
+                       "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","ResidentialLodging", "OtherResidentialLodging","MixedUse","Office","VeterinaryOffice",
                        "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
                        "Bar","Nightclub","Casino","OtherEntertainment","GasStation", "ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
                        "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
@@ -514,7 +514,7 @@ class BaselineController @Inject() (
                                "enum": ["AdultEducation","College","PreSchool","VocationalSchool","OtherEducation","ConventionCenter","MovieTheater","Museum","PerformingArts",
                                    "BowlingAlley","FitnessCenter","IceRink","RollerRink","SwimmingPool","OtherRecreation","Stadium","FinancialOffice","DistributionCenter",
                                    "Warehouse","WarehouseRefrigerated","WarehouseUnRefrigerated","SpecialtyHospital","MedicalOffice","OutpatientCenter","PhysicalTherapyCenter","SeniorCare",
-                                   "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","OtherResidentialLodging","MixedUse","Office","VeterinaryOffice",
+                                   "UrgentCareCenter","Barracks","Hotel","MultiFamily","Prison","ResidenceHall","ResidentialLodging", "OtherResidentialLodging","MixedUse","Office","VeterinaryOffice",
                                    "Courthouse","OtherUtility","SelfStorageFacility","StripMall","Retail","PowerStation","EnergyStation","BankBranch","IndoorArena","RaceTrack","Aquarium",
                                    "Bar","Nightclub","Casino","OtherEntertainment","GasStation", "ConvenienceStoreAndGas","ConvenienceStore","FastFoodRestaurant","Restaurant","Supermarket","WholesaleClub",
                                    "FoodSales","FoodService","AmbulatorySurgicalCenter","Hospital","DrinkingWaterTreatment","FireStation","Library","PostOffice","PoliceStation","MeetingHall",
@@ -646,7 +646,7 @@ class BaselineController @Inject() (
           Baseline.defaultPercentBetterTotalEmissions.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.siteEmissionsIntensityConverted.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.medianSiteEmissionsIntensityConverted.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
-          
+
 
           Baseline.onSiteRenewableTotal.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
           Baseline.offSitePurchasedTotal.map(api(_)).recover { case NonFatal(th) => apiRecover(th) },
