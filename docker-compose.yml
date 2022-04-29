@@ -1,15 +1,19 @@
 version: '3'
 services:
   web:
+    image: maalka/benchmark
     restart: always
-    build:
-      context: ./
-      args:
-        - VERSION=${VERSION}
     environment:
       - APPLICATION_SECRET
       - SERVER_HOST
       - SERVER_IP
     ports:
       - "80:80"
-    command: benchmark-${VERSION}/bin/benchmark -Dhttp.port=80 -Dconfig.resource=prod.conf
+    command:
+      -Dpidfile.path=/dev/null
+      -Dconfig.resource=prod.conf
+      -Dplay.http.secret.key=${APPLICATION_SECRET}
+      -Dplay.server.akka.default-host-header=${SERVER_HOST}
+      -Dhttp.address=${SERVER_IP}
+      -Dhttp.port=80
+
