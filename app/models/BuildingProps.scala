@@ -1,5 +1,7 @@
 package models
 
+import com.maalka.Utils.roundAt
+import com.typesafe.scalalogging.LazyLogging
 import squants.energy._
 import squants.space._
 
@@ -364,11 +366,6 @@ sealed trait BaseLine {
     }
   }
 
-  def roundAt(p: Int)(n: Double): Double = {
-    val s = math pow(10, p);
-    (math round n * s) / s
-  }
-
   def fillPosDoubleDefaults(building: String, parameter: String, size: Double): PosDouble = {
 
 
@@ -389,7 +386,7 @@ sealed trait BaseLine {
       }
       case "Hospital" => {
         parameter match {
-          case "numStaffedBeds" => PosDouble(roundAt(2)(0.46 * size / 1000))
+          case "numStaffedBeds" => PosDouble(roundAt(4)(0.4636 * size / 1000))
           case "numFTEWorkers" => PosDouble(roundAt(2)(2.6 * size / 1000))
           case "numMRIMachines" => PosDouble(1.0)
         }
@@ -640,8 +637,19 @@ sealed trait BaseLine {
   * @param c User Input
   */
 
-case class RegressionSegment(a:Double, b:Double, c:Double) {
-  def reduce:Double = {a * (c - b)}
+case class RegressionSegment(a:Double, b:Double, c:Double, maybeMin:Option[Double] = None, maybeMax:Option[Double] = None)
+  extends LazyLogging {
+
+  val correctedC: Double = (c, maybeMin, maybeMax) match {
+    case (v, Some(min), _) if v < min => min
+    case (v, _, Some(max)) if v > max => max
+    case (v, _, _) => v
+  }
+  val factor: Double = roundAt(4)(correctedC - b)
+
+  logger.debug("Regression Params: B: {} C: {} C-Corrected: {} Factor: {}", b, c, correctedC, factor)
+
+  def reduce:Double = a * factor
 }
 
 case class StateBuildingType(state: String, buildingType: String)
@@ -1601,15 +1609,26 @@ case class Hospital(GFA:PosDouble, areaUnits:String, country:String, buildingTyp
                     numMRIMachines:Option[PosDouble]) extends BaseLine {
 
 
+  val printed: String = "Hospital"
 
-  val printed:String = "Hospital"
-  def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
+  def regressionSegments(HDD: Double, CDD: Double): Seq[RegressionSegment] = Seq[RegressionSegment](
     RegressionSegment(484.8, 0, 1), // regression constant
-    RegressionSegment(26.64, 2.6, numFTEWorkers.getOrElse(fillPosDoubleDefaults("Hospital","numFTEWorkers",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(120.3, 0.4636, numStaffedBeds.getOrElse(fillPosDoubleDefaults("Hospital","numStaffedBeds",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(8961, 0.0031, numMRIMachines.getOrElse(fillPosDoubleDefaults("Hospital","numMRIMachines",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(0.0227, 1392, CDD)
-
+    RegressionSegment(26.64, 2.600,
+      numFTEWorkers.getOrElse(fillPosDoubleDefaults("Hospital", "numFTEWorkers", buildingSize)
+      ).value * 1000 / buildingSize,
+      Some(0.7646), Some(6.498)),
+    RegressionSegment(120.3, 0.4636,
+      numStaffedBeds.getOrElse(
+        fillPosDoubleDefaults("Hospital", "numStaffedBeds", buildingSize)
+      ).value * 1000 / buildingSize,
+      Some(0.1106), Some(1.426)),
+    RegressionSegment(8961, 0.0031,
+      numMRIMachines.getOrElse(
+        fillPosDoubleDefaults("Hospital", "numMRIMachines", buildingSize)
+      ).value * 1000 / buildingSize,
+      Some(0.0), Some(0.0136)),
+    RegressionSegment(0.0227, 1392, CDD,
+      Some(0.0), Some(4810.0))
   )
 }
 
@@ -1680,7 +1699,7 @@ case class DataCenter(reportingUnits:String, GFA:PosDouble, areaUnits:String, co
   //this results in expected energy, not EUI
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(1.924, 0, 1), // regression constant
-    RegressionSegment(-0.9506, 0.2091, annualITEnergyTBtu)
+    RegressionSegment(-0.9506, 0.2091, annualITEnergyTBtu, Some(0.0129), Some(0.7204))
   )
 }
 
