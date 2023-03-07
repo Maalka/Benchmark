@@ -849,14 +849,14 @@ case class Office(GFA:PosDouble, areaUnits:String, country:String, buildingType:
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = {
     Seq[RegressionSegment] (
       RegressionSegment(186.6, 0, 1), // regression constant
-      RegressionSegment(34.17, 9.535, math.min(log(buildingSize),log(200000))),
+      RegressionSegment(34.17, 9.535, math.min(log(buildingSize),log(200000)), Some(8.517), Some(13.82)),
       RegressionSegment(17.28, 2.231, math.min(numComputers.getOrElse(fillPosDoubleDefaults("Office","numComputers",buildingSize)).value / buildingSize * 1000, 11.1)),
-      RegressionSegment(55.96, 3.972, getLog(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("Office","weeklyOperatingHours",buildingSize)).value)),
-      RegressionSegment(10.34, 0.5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Office","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
-      RegressionSegment(0.0077, 4411, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Office","percentHeated",buildingSize)).value / 100),
-      RegressionSegment(0.0144, 1157, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Office","percentCooled",buildingSize)).value / 100),
-      RegressionSegment(0, 9.535, math.min(log(buildingSize),log(200000))),
-      RegressionSegment(0, .5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Office","numWorkersMainShift",buildingSize)).value / buildingSize * 1000)),
+      RegressionSegment(55.96, 3.972, getLog(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("Office","weeklyOperatingHours",buildingSize)).value), Some(0.0273), Some(11.11)),
+      RegressionSegment(10.34, 0.5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Office","numWorkersMainShift",buildingSize)).value / buildingSize * 1000), Some(-3.882), Some(2.651)),
+      RegressionSegment(0.0077, 4411, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Office","percentHeated",buildingSize)).value / 100, Some(0.0000), Some(9277)),
+      RegressionSegment(0.0144, 1157, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Office","percentCooled",buildingSize)).value / 100, Some(0.0000), Some(5204)),
+      RegressionSegment(0, 9.535, math.min(log(buildingSize),log(200000)), Some(8.517), Some(13.82)),
+      RegressionSegment(0, .5616, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Office","numWorkersMainShift",buildingSize)).value / buildingSize * 1000), Some(-3.882), Some(2.651)),
       RegressionSegment(0, 0, 1)
     )
   }
@@ -969,14 +969,14 @@ case class WorshipCenter(GFA:PosDouble, areaUnits:String, country:String, buildi
   val printed:String = "Worship Center"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(73.91, 0, 1), // regression constant
-    RegressionSegment(0.6532, 38.81, seatingCapacity.getOrElse(fillPosDoubleDefaults("WorshipCenter","seatingCapacity",buildingSize)).value / buildingSize * 1000),
-    RegressionSegment(19.14 * isOpenAllWeekdays.getOrElse(fillBooleanDefaults("WorshipCenter","isOpenAllWeekdays").get), 0, 1),
-    RegressionSegment(.2717, 33.28, weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("WorshipCenter","weeklyOperatingHours",buildingSize)).value),
-    RegressionSegment(26.55, 0.2036, numComputers.getOrElse(fillPosDoubleDefaults("WorshipCenter","numComputers",buildingSize)).value / buildingSize * 1000),
-    RegressionSegment(15.83 * hasFoodPreparation.getOrElse(fillBooleanDefaults("WorshipCenter","hasFoodPreparation").get), 0, 1),
-    RegressionSegment(113.1, 0.0183, numRefrUnits.getOrElse(fillPosDoubleDefaults("WorshipCenter","numRefrUnits",buildingSize)).value / buildingSize * 1000),
-    RegressionSegment(0.0081, 4523, HDD),
-    RegressionSegment(.0141, 1313, CDD)
+    RegressionSegment(0.6532, 38.81, seatingCapacity.getOrElse(fillPosDoubleDefaults("WorshipCenter","seatingCapacity",buildingSize)).value / buildingSize * 1000, Some(2.500), Some(150.0)),
+    RegressionSegment(19.14 * isOpenAllWeekdays.getOrElse(fillBooleanDefaults("WorshipCenter","isOpenAllWeekdays").get), 0, 1, Some(0.0000), Some(1.000)),
+    RegressionSegment(.2717, 33.28, weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("WorshipCenter","weeklyOperatingHours",buildingSize)).value, Some(2.000), Some(168.0)),
+    RegressionSegment(26.55, 0.2036, numComputers.getOrElse(fillPosDoubleDefaults("WorshipCenter","numComputers",buildingSize)).value / buildingSize * 1000, Some(0.000), Some(1.960)),
+    RegressionSegment(15.83 * hasFoodPreparation.getOrElse(fillBooleanDefaults("WorshipCenter","hasFoodPreparation").get), 0, 1, Some(0.000), Some(1.000)),
+    RegressionSegment(113.1, 0.0183, numRefrUnits.getOrElse(fillPosDoubleDefaults("WorshipCenter","numRefrUnits",buildingSize)).value / buildingSize * 1000, Some(0.000), Some(0.4286)),
+    RegressionSegment(0.0081, 4523, HDD, Some(146.0), Some(9716)),
+    RegressionSegment(.0141, 1313, CDD, Some(146.0), Some(4824))
   )
 }
 
@@ -1017,14 +1017,14 @@ case class WastewaterCenter(GFA:PosDouble, areaUnits:String, country:String, bui
   val printed:String = "Wastewater Center"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(10.13, 0, 1), // regression constant
-    RegressionSegment(-0.9421, 1.863, getLog(wastewaterAvgInfluentInflow.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterAvgInfluentInflow",buildingSize)).value)),
-    RegressionSegment(4.876, 5.204, getLog(wastewaterInfluentBiologicalOxygenDemand.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterInfluentBiologicalOxygenDemand",buildingSize)).value)),
-    RegressionSegment(-2.082, 1.656, getLog(wastewaterEffluentBiologicalOxygenDemand.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterEffluentBiologicalOxygenDemand",buildingSize)).value)),
-    RegressionSegment(-4.668, 4.171, getLog(wastewaterLoadFactor.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterLoadFactor",buildingSize)).value)),
-    RegressionSegment(-2.577,0.179, 1 * wastewaterHasTrickleFiltration.getOrElse(fillBooleanDefaults("WastewaterCenter","wastewaterHasTrickleFiltration").get)),
-    RegressionSegment(1.235, 0.4591, 1 * wastewaterHasNutrientRemoval.getOrElse(fillBooleanDefaults("WastewaterCenter","wastewaterHasNutrientRemoval").get)),
-    RegressionSegment(2.355,8.724,getLog(HDD)),
-    RegressionSegment(1.243, 6.5, getLog(CDD))
+    RegressionSegment(-0.9421, 1.863, getLog(wastewaterAvgInfluentInflow.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterAvgInfluentInflow",buildingSize)).value), Some(-0.4308), Some(5.784)),
+    RegressionSegment(4.876, 5.204, getLog(wastewaterInfluentBiologicalOxygenDemand.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterInfluentBiologicalOxygenDemand",buildingSize)).value), Some(3.800), Some(6.585)),
+    RegressionSegment(-2.082, 1.656, getLog(wastewaterEffluentBiologicalOxygenDemand.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterEffluentBiologicalOxygenDemand",buildingSize)).value), Some(-1.204), Some(4.736)),
+    RegressionSegment(-4.668, 4.171, getLog(wastewaterLoadFactor.getOrElse(fillPosDoubleDefaults("WastewaterCenter","wastewaterLoadFactor",buildingSize)).value), Some(2.855), Some(4.690)),
+    RegressionSegment(-2.577,0.179, 1 * wastewaterHasTrickleFiltration.getOrElse(fillBooleanDefaults("WastewaterCenter","wastewaterHasTrickleFiltration").get), Some(0.0000), Some(1.000)),
+    RegressionSegment(1.235, 0.4591, 1 * wastewaterHasNutrientRemoval.getOrElse(fillBooleanDefaults("WastewaterCenter","wastewaterHasNutrientRemoval").get), Some(0.0000), Some(1.000)),
+    RegressionSegment(2.355,8.724,getLog(HDD), Some(6.775), Some(9.324)),
+    RegressionSegment(1.243, 6.5, getLog(CDD), Some(4.554), Some(8.089))
   )
 }
 
@@ -1062,14 +1062,14 @@ case class Warehouse(GFA:PosDouble, areaUnits:String, country:String, buildingTy
   val printed:String = "Warehouse"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(82.18, 0, 1), // regression constant
-    RegressionSegment(168.6 * isWarehouseRefrigerated.getOrElse(fillBooleanDefaults("Warehouse","isWarehouseRefrigerated").get), 0, 1),
-    RegressionSegment(13.63, 9.806, log(buildingSize)),
-    RegressionSegment(41.84, 0.5943, numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Warehouse","numWorkersMainShift",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(0.3111, 60.93, weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("Warehouse","weeklyOperatingHours",buildingSize)).value),
-    RegressionSegment(0.0708 * isWarehouseRefrigerated.getOrElse(fillBooleanDefaults("Warehouse","isWarehouseRefrigerated").get),1570,CDD),
-    RegressionSegment(0.011 * converseBoolean(isWarehouseRefrigerated.getOrElse(fillBooleanDefaults("Warehouse","isWarehouseRefrigerated").get):Boolean),2707,HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Warehouse","percentHeated",buildingSize)).value / 100),
-    RegressionSegment(.0205 * converseBoolean(isWarehouseRefrigerated.getOrElse(fillBooleanDefaults("Warehouse","isWarehouseRefrigerated").get):Boolean), 378.7, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Warehouse","percentCooled",buildingSize)).value / 100),
-    RegressionSegment(262.3 * converseBoolean(isWarehouseRefrigerated.getOrElse(fillBooleanDefaults("Warehouse","isWarehouseRefrigerated").get):Boolean), 0.0096, numWalkinRefrUnits.getOrElse(fillPosDoubleDefaults("Warehouse","numWalkinRefrUnits",buildingSize)).value * 1000 / buildingSize )
+    RegressionSegment(168.6 * isWarehouseRefrigerated.getOrElse(fillBooleanDefaults("Warehouse","isWarehouseRefrigerated").get), 0, 1, Some(0.0000), Some(1.000)),
+    RegressionSegment(13.63, 9.806, log(buildingSize), Some(8.517), Some(13.59)),
+    RegressionSegment(41.84, 0.5943, numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Warehouse","numWorkersMainShift",buildingSize)).value * 1000 / buildingSize, Some(0.0000), Some(3.909)),
+    RegressionSegment(0.3111, 60.93, weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("Warehouse","weeklyOperatingHours",buildingSize)).value, Some(30.00), Some(168.0)),
+    RegressionSegment(0.0708 * isWarehouseRefrigerated.getOrElse(fillBooleanDefaults("Warehouse","isWarehouseRefrigerated").get),1570,CDD, Some(233), Some(5467)),
+    RegressionSegment(0.011 * converseBoolean(isWarehouseRefrigerated.getOrElse(fillBooleanDefaults("Warehouse","isWarehouseRefrigerated").get):Boolean),2707,HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Warehouse","percentHeated",buildingSize)).value / 100, Some(0.0000), Some(9944)),
+    RegressionSegment(.0205 * converseBoolean(isWarehouseRefrigerated.getOrElse(fillBooleanDefaults("Warehouse","isWarehouseRefrigerated").get):Boolean), 378.7, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Warehouse","percentCooled",buildingSize)).value / 100, Some(0.0000), Some(5467)),
+    RegressionSegment(262.3 * converseBoolean(isWarehouseRefrigerated.getOrElse(fillBooleanDefaults("Warehouse","isWarehouseRefrigerated").get):Boolean), 0.0096, numWalkinRefrUnits.getOrElse(fillPosDoubleDefaults("Warehouse","numWalkinRefrUnits",buildingSize)).value * 1000 / buildingSize, Some(0.0000), Some(0.2439) )
   )
 }
 
@@ -1136,13 +1136,13 @@ case class Supermarket(GFA:PosDouble, areaUnits:String, country:String, building
   val printed:String = "Supermarket"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(581.1, 0, 1), // regression constant
-    RegressionSegment(84.97, 9.679, getLog(buildingSize)),
-    RegressionSegment(115.6, -0.1084, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Supermarket","numWorkersMainShift",buildingSize)).value * 1000 / buildingSize)),
-    RegressionSegment(125.8, 4.657, getLog(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("Supermarket","weeklyOperatingHours",buildingSize)).value)),
-    RegressionSegment(794.4, 0.2345, numWalkinRefrUnits.getOrElse(fillPosDoubleDefaults("Supermarket","numWalkinRefrUnits",buildingSize)).value * 1000 / buildingSize ),
-    RegressionSegment(902.8, .0254, hasCooking.getOrElse(fillBooleanDefaults("Supermarket","hasCooking").get) * 1000 / buildingSize ),
-    RegressionSegment(.0947, 1219, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Supermarket","percentCooled",buildingSize)).value / 100),
-    RegressionSegment(0.0326, 3510, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Supermarket","percentHeated",buildingSize)).value / 100)
+    RegressionSegment(84.97, 9.679, getLog(buildingSize), Some(8.517), Some(11.92)),
+    RegressionSegment(115.6, -0.1084, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Supermarket","numWorkersMainShift",buildingSize)).value * 1000 / buildingSize), Some(-1.299), Some(1.306)),
+    RegressionSegment(125.8, 4.657, getLog(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("Supermarket","weeklyOperatingHours",buildingSize)).value), Some(3.871), Some(5.124)),
+    RegressionSegment(794.4, 0.2345, numWalkinRefrUnits.getOrElse(fillPosDoubleDefaults("Supermarket","numWalkinRefrUnits",buildingSize)).value * 1000 / buildingSize, Some(0), Some(0.6) ),
+    RegressionSegment(902.8, .0254, hasCooking.getOrElse(fillBooleanDefaults("Supermarket","hasCooking").get) * 1000 / buildingSize, Some(0), Some(0.125) ),
+    RegressionSegment(.0947, 1219, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Supermarket","percentCooled",buildingSize)).value / 100, Some(0), Some(4143)),
+    RegressionSegment(0.0326, 3510, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Supermarket","percentHeated",buildingSize)).value / 100, Some(0), Some(10121))
   )
 }
 
@@ -1231,16 +1231,16 @@ case class SeniorCare(GFA:PosDouble, areaUnits:String, country:String, buildingT
   val printed:String = "Senior Care Center"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(253, 0, 1), // regression constant
-    RegressionSegment(24.1, 1.582, numRezUnits.getOrElse(fillPosDoubleDefaults("SeniorCare","numRezUnits",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(0.9156, 87.61, avgNumResidents.getOrElse(fillPosDoubleDefaults("SeniorCare","avgNumResidents",buildingSize)).value/maxNumResidents.getOrElse(fillPosDoubleDefaults("SeniorCare","maxNumResidents",buildingSize)).value * 100),
-    RegressionSegment(256.5, 0.0692, numElectronicLifts.getOrElse(fillPosDoubleDefaults("SeniorCare","numElectronicLifts",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(35.42, 0.937, numWorkersMainShift.getOrElse(fillPosDoubleDefaults("SeniorCare","numWorkersMainShift",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(90.3, 0.3636, numComputers.getOrElse(fillPosDoubleDefaults("SeniorCare","numComputers",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(251.5, 0.0905, numRefrUnits.getOrElse(fillPosDoubleDefaults("SeniorCare","numRefrUnits",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(378.2, 0.0432, numCommWashingMachines.getOrElse(fillPosDoubleDefaults("SeniorCare","numCommWashingMachines",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(253, 0.0584, numRezWashingMachines.getOrElse(fillPosDoubleDefaults("SeniorCare","numRezWashingMachines",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(0.02004, 1184, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("SeniorCare","percentCooled",buildingSize)).value/100),
-    RegressionSegment(0.005879, 4524, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("SeniorCare","percentHeated",buildingSize)).value/100)
+    RegressionSegment(24.1, 1.582, numRezUnits.getOrElse(fillPosDoubleDefaults("SeniorCare","numRezUnits",buildingSize)).value * 1000 / buildingSize, Some(0.3481), Some(4.526)),
+    RegressionSegment(0.9156, 87.61, avgNumResidents.getOrElse(fillPosDoubleDefaults("SeniorCare","avgNumResidents",buildingSize)).value/maxNumResidents.getOrElse(fillPosDoubleDefaults("SeniorCare","maxNumResidents",buildingSize)).value * 100, Some(0.3481), Some(4.526)),
+    RegressionSegment(256.5, 0.0692, numElectronicLifts.getOrElse(fillPosDoubleDefaults("SeniorCare","numElectronicLifts",buildingSize)).value * 1000 / buildingSize, Some(0.0000), Some(0.3580)),
+    RegressionSegment(35.42, 0.937, numWorkersMainShift.getOrElse(fillPosDoubleDefaults("SeniorCare","numWorkersMainShift",buildingSize)).value * 1000 / buildingSize, Some(0.1205), Some(3.761)),
+    RegressionSegment(90.3, 0.3636, numComputers.getOrElse(fillPosDoubleDefaults("SeniorCare","numComputers",buildingSize)).value * 1000 / buildingSize, Some(0.01961), Some(1.566)),
+    RegressionSegment(251.5, 0.0905, numRefrUnits.getOrElse(fillPosDoubleDefaults("SeniorCare","numRefrUnits",buildingSize)).value * 1000 / buildingSize, Some(0.0), Some(0.3624)),
+    RegressionSegment(378.2, 0.0432, numCommWashingMachines.getOrElse(fillPosDoubleDefaults("SeniorCare","numCommWashingMachines",buildingSize)).value * 1000 / buildingSize, Some(0.0), Some(0.1426)),
+    RegressionSegment(253, 0.0584, numRezWashingMachines.getOrElse(fillPosDoubleDefaults("SeniorCare","numRezWashingMachines",buildingSize)).value * 1000 / buildingSize, Some(0.0), Some(2.308)),
+    RegressionSegment(0.02004, 1184, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("SeniorCare","percentCooled",buildingSize)).value/100, Some(0.0), Some(3862)),
+    RegressionSegment(0.005879, 4524, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("SeniorCare","percentHeated",buildingSize)).value/100, Some(257.0), Some(9752))
 
   )
 }
@@ -1283,15 +1283,15 @@ case class Retail(GFA:PosDouble, areaUnits:String, country:String, buildingType:
   val printed:String = "Retail Space"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(153.1, 0, 1), // regression constant
-    RegressionSegment(20.19, 9.371, getLog(buildingSize)),
-    RegressionSegment(1.373, 63.74, weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("Retail","weeklyOperatingHours",buildingSize)).value),
-    RegressionSegment(61.76, 0.6279, numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Retail","numWorkersMainShift",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(70.6, 0.3149, numComputers.getOrElse(fillPosDoubleDefaults("Retail","numComputers",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(249.1, 0.1905, numCashRegisters.getOrElse(fillPosDoubleDefaults("Retail","numCashRegisters",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(720.2, 0.0038, numWalkinRefrUnits.getOrElse(fillPosDoubleDefaults("Retail","numWalkinRefrUnits",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(81.9, 0.045, numOpenClosedRefrCases.getOrElse(fillPosDoubleDefaults("Retail","numOpenClosedRefrCases",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(0.0125, 972.1, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Retail","percentCooled",buildingSize)).value/100),
-    RegressionSegment(0.0113, 3811, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Retail","percentHeated",buildingSize)).value/100)
+    RegressionSegment(20.19, 9.371, getLog(buildingSize), Some(8.517), Some(13.02)),
+    RegressionSegment(1.373, 63.74, weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("Retail","weeklyOperatingHours",buildingSize)).value, Some(30.0), Some(168.0)),
+    RegressionSegment(61.76, 0.6279, numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Retail","numWorkersMainShift",buildingSize)).value * 1000 / buildingSize, Some(0.2500), Some(4.000)),
+    RegressionSegment(70.6, 0.3149, numComputers.getOrElse(fillPosDoubleDefaults("Retail","numComputers",buildingSize)).value * 1000 / buildingSize, Some(0.0000), Some(2.000)),
+    RegressionSegment(249.1, 0.1905, numCashRegisters.getOrElse(fillPosDoubleDefaults("Retail","numCashRegisters",buildingSize)).value * 1000 / buildingSize, Some(0.0000), Some(1.400)),
+    RegressionSegment(720.2, 0.0038, numWalkinRefrUnits.getOrElse(fillPosDoubleDefaults("Retail","numWalkinRefrUnits",buildingSize)).value * 1000 / buildingSize, Some(0.0000), Some(0.1110)),
+    RegressionSegment(81.9, 0.045, numOpenClosedRefrCases.getOrElse(fillPosDoubleDefaults("Retail","numOpenClosedRefrCases",buildingSize)).value * 1000 / buildingSize, Some(0.0000), Some(1.000)),
+    RegressionSegment(0.0125, 972.1, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Retail","percentCooled",buildingSize)).value/100, Some(0.0000), Some(5206)),
+    RegressionSegment(0.0113, 3811, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Retail","percentHeated",buildingSize)).value/100, Some(0.0000), Some(9625))
 
   )
 }
@@ -1323,10 +1323,10 @@ case class ResidenceHall(GFA:PosDouble, areaUnits:String, country:String, buildi
   val printed:String = "Residence Hall"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(4.99455, 0, 1), // regression constant
-    RegressionSegment(0.91309, 0, getLog(buildingSize)),
-    RegressionSegment(0.09455, 0, getLog(numBedrooms.getOrElse(fillPosDoubleDefaults("ResidenceHall","numBedrooms",buildingSize)).value)),
-    RegressionSegment(0.00009744, 0, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("ResidenceHall","percentHeated",buildingSize)).value/100),
-    RegressionSegment(0.00016279, 0, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("ResidenceHall","percentCooled",buildingSize)).value/100)
+    RegressionSegment(0.91309, 0, getLog(buildingSize), Some(8.161), Some(13.653)),
+    RegressionSegment(0.09455, 0, getLog(numBedrooms.getOrElse(fillPosDoubleDefaults("ResidenceHall","numBedrooms",buildingSize)).value), Some(1.386), Some(6.397)),
+    RegressionSegment(0.00009744, 0, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("ResidenceHall","percentHeated",buildingSize)).value/100, Some(116.2), Some(7339)),
+    RegressionSegment(0.00016279, 0, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("ResidenceHall","percentCooled",buildingSize)).value/100, Some(0.000), Some(3162))
 
   )
 }
@@ -1363,11 +1363,11 @@ case class MultiFamily(GFA:PosDouble, areaUnits:String, country:String, building
   val printed:String = "MultiFamily Building"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(140.8, 0, 1), // regression constant
-    RegressionSegment(52.57, 1.215, numRezUnits.getOrElse(fillPosDoubleDefaults("MultiFamily","numRezUnits",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(24.45, 1.238, numBedrooms.getOrElse(fillPosDoubleDefaults("MultiFamily","numBedrooms",buildingSize)).value/numRezUnits.getOrElse(fillPosDoubleDefaults("MultiFamily","numRezUnits",buildingSize)).value),
-    RegressionSegment(-18.76, 0, numUnitsLowRise1to4.getOrElse(fillPosDoubleDefaults("MultiFamily","numUnitsLowRise1to4",buildingSize)).value/numRezUnits.getOrElse(fillPosDoubleDefaults("MultiFamily","numRezUnits",buildingSize)).value),
-    RegressionSegment(0.009617, 4233, HDD),
-    RegressionSegment(0.01617, 1364, CDD)
+    RegressionSegment(52.57, 1.215, numRezUnits.getOrElse(fillPosDoubleDefaults("MultiFamily","numRezUnits",buildingSize)).value * 1000 / buildingSize, Some(0.266), Some(2.504) /* Unit Density */),
+    RegressionSegment(24.45, 1.238, numBedrooms.getOrElse(fillPosDoubleDefaults("MultiFamily","numBedrooms",buildingSize)).value/numRezUnits.getOrElse(fillPosDoubleDefaults("MultiFamily","numRezUnits",buildingSize)).value, Some(1.000), Some(2.990)),
+    RegressionSegment(-18.76, 0, numUnitsLowRise1to4.getOrElse(fillPosDoubleDefaults("MultiFamily","numUnitsLowRise1to4",buildingSize)).value/numRezUnits.getOrElse(fillPosDoubleDefaults("MultiFamily","numRezUnits",buildingSize)).value, Some(0.000), Some(1.000)),
+    RegressionSegment(0.009617, 4233, HDD, Some(429.2), Some(8326)),
+    RegressionSegment(0.01617, 1364, CDD, Some(29.60), Some(4602))
   )
 }
 /**
@@ -1437,11 +1437,11 @@ case class MedicalOffice(GFA:PosDouble, areaUnits:String, country:String, buildi
   val printed:String = "Medical Office"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(2.78889, 0, 1), // regression constant
-    RegressionSegment(0.91433, 0, getLog(buildingSize)),
-    RegressionSegment(0.46768, 0, getLog(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("MedicalOffice","weeklyOperatingHours",buildingSize)).value)),
-    RegressionSegment(0.21568, 0, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("MedicalOffice","numWorkersMainShift",buildingSize)).value)),
-    RegressionSegment(0.00020111, 0, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("MedicalOffice","percentCooled",buildingSize)).value/100),
-    RegressionSegment(0.00005321, 0, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("MedicalOffice","percentHeated",buildingSize)).value/100)
+    RegressionSegment(0.91433, 0, getLog(buildingSize), Some(6.908), Some(13.122)),
+    RegressionSegment(0.46768, 0, getLog(weeklyOperatingHours.getOrElse(fillPosDoubleDefaults("MedicalOffice","weeklyOperatingHours",buildingSize)).value), Some(3.555), Some(4.820)),
+    RegressionSegment(0.21568, 0, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("MedicalOffice","numWorkersMainShift",buildingSize)).value), Some(0.693), Some(7.718)),
+    RegressionSegment(0.00020111, 0, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("MedicalOffice","percentCooled",buildingSize)).value/100, Some(54), Some(4143)),
+    RegressionSegment(0.00005321, 0, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("MedicalOffice","percentHeated",buildingSize)).value/100, Some(0.000), Some(8176))
 
   )
 }
@@ -1522,20 +1522,20 @@ case class K12School(GFA:PosDouble, areaUnits:String, country:String, buildingTy
   val printed:String = "K-12 School"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(131.9, 0, 1), // regression constant
-    RegressionSegment(4.377 * isHighSchool.getOrElse(fillBooleanDefaults("K12School","isHighSchool").get), 0, 1),
-    RegressionSegment(8.974, 7.716, getLog(HDD) * percentHeated.getOrElse(fillPosDoubleDefaults("K12School","percentHeated",buildingSize)).value / 100),
-    RegressionSegment(6.389, 5.045, getLog(CDD) * percentCooled.getOrElse(fillPosDoubleDefaults("K12School","percentCooled",buildingSize)).value / 100),
-    RegressionSegment(-19.26, 10.2, getLog(buildingSize)),
-    RegressionSegment(18.43 * isOpenWeekends.getOrElse(fillBooleanDefaults("K12School","isOpenWeekends").get), 0, 1),
-    RegressionSegment(574.7, 0.0109, numWalkinRefrUnits.getOrElse(fillPosDoubleDefaults("K12School","numWalkinRefrUnits",buildingSize)).value / buildingSize * 1000),
-    RegressionSegment(24.2 * hasCooking.getOrElse(fillBooleanDefaults("K12School","hasCooking").get), 0, 1),
-    RegressionSegment(9.568, 1.742, numComputers.getOrElse(fillPosDoubleDefaults("K12School","numComputers",buildingSize)).value / buildingSize * 1000),
+    RegressionSegment(4.377 * isHighSchool.getOrElse(fillBooleanDefaults("K12School","isHighSchool").get), 0, 1, Some(0.000), Some(1.000) /* needed on boolean? */),
+    RegressionSegment(8.974, 7.716, getLog(HDD) * percentHeated.getOrElse(fillPosDoubleDefaults("K12School","percentHeated",buildingSize)).value / 100, Some(0.2821), Some(9.139)),
+    RegressionSegment(6.389, 5.045, getLog(CDD) * percentCooled.getOrElse(fillPosDoubleDefaults("K12School","percentCooled",buildingSize)).value / 100, Some(0.000), Some(8.530)),
+    RegressionSegment(-19.26, 10.2, getLog(buildingSize), Some(8.517), Some(13.10)),
+    RegressionSegment(18.43 * isOpenWeekends.getOrElse(fillBooleanDefaults("K12School","isOpenWeekends").get), 0, 1, Some(0.000), Some(1.000)),
+    RegressionSegment(574.7, 0.0109, numWalkinRefrUnits.getOrElse(fillPosDoubleDefaults("K12School","numWalkinRefrUnits",buildingSize)).value / buildingSize * 1000, Some(0.000), Some(0.1928)),
+    RegressionSegment(24.2 * hasCooking.getOrElse(fillBooleanDefaults("K12School","hasCooking").get), 0, 1, Some(0.000), Some(1.000)),
+    RegressionSegment(9.568, 1.742, numComputers.getOrElse(fillPosDoubleDefaults("K12School","numComputers",buildingSize)).value / buildingSize * 1000, Some(0.000), Some(9.537)),
 
 
     //if High School also include the following
-    RegressionSegment(0.00021 * isHighSchool.getOrElse(fillBooleanDefaults("K12School","isHighSchool").get), 47310, buildingSize),
-    RegressionSegment(0.0285 * isHighSchool.getOrElse(fillBooleanDefaults("K12School","isHighSchool").get), 1316, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("K12School","percentCooled",buildingSize)).value / 100),
-    RegressionSegment(-11.75 * isHighSchool.getOrElse(fillBooleanDefaults("K12School","isHighSchool").get), 5.045, getLog(CDD) * percentCooled.getOrElse(fillPosDoubleDefaults("K12School","percentCooled",buildingSize)).value / 100)
+    RegressionSegment(0.00021 * isHighSchool.getOrElse(fillBooleanDefaults("K12School","isHighSchool").get), 47310, buildingSize, Some(5000), Some(490000)),
+    RegressionSegment(0.0285 * isHighSchool.getOrElse(fillBooleanDefaults("K12School","isHighSchool").get), 1316, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("K12School","percentCooled",buildingSize)).value / 100, Some(0.000), Some(5064)),
+    RegressionSegment(-11.75 * isHighSchool.getOrElse(fillBooleanDefaults("K12School","isHighSchool").get), 5.045, getLog(CDD) * percentCooled.getOrElse(fillPosDoubleDefaults("K12School","percentCooled",buildingSize)).value / 100, Some(0.000), Some(8.530))
 
   )
 }
@@ -1575,12 +1575,12 @@ case class Hotel(GFA:PosDouble, areaUnits:String, country:String, buildingType:S
   val printed:String = "Hotel"
   def regressionSegments(HDD:Double, CDD:Double):Seq[RegressionSegment] = Seq[RegressionSegment] (
     RegressionSegment(169.1, 0, 1), // regression constant
-    RegressionSegment(33.22, 1.951, numBedrooms.getOrElse(fillPosDoubleDefaults("Hotel","numBedrooms",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(20.81, -1.395, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Hotel","numWorkersMainShift",buildingSize)).value * 1000 / buildingSize)),
-    RegressionSegment(65.14 * hasFoodPreparation.getOrElse(fillBooleanDefaults("Hotel","hasFoodPreparation").get), 0, 1),
-    RegressionSegment(249.8, 0.0227, numRefrUnits.getOrElse(fillPosDoubleDefaults("Hotel","numRefrUnits",buildingSize)).value * 1000 / buildingSize),
-    RegressionSegment(0.0169, 1224, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Hotel","percentCooled",buildingSize)).value/100),
-    RegressionSegment(0.0107, 4120, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Hotel","percentHeated",buildingSize)).value/100)
+    RegressionSegment(33.22, 1.951, numBedrooms.getOrElse(fillPosDoubleDefaults("Hotel","numBedrooms",buildingSize)).value * 1000 / buildingSize, Some(0.5195), Some(4.237)),
+    RegressionSegment(20.81, -1.395, getLog(numWorkersMainShift.getOrElse(fillPosDoubleDefaults("Hotel","numWorkersMainShift",buildingSize)).value * 1000 / buildingSize), Some(-3.245), Some(1.008)),
+    RegressionSegment(65.14 * hasFoodPreparation.getOrElse(fillBooleanDefaults("Hotel","hasFoodPreparation").get), 0, 1, Some(0.000), Some(1.000)),
+    RegressionSegment(249.8, 0.0227, numRefrUnits.getOrElse(fillPosDoubleDefaults("Hotel","numRefrUnits",buildingSize)).value * 1000 / buildingSize, Some(0.000), Some(0.3125)),
+    RegressionSegment(0.0169, 1224, CDD * percentCooled.getOrElse(fillPosDoubleDefaults("Hotel","percentCooled",buildingSize)).value/100, Some(0.000), Some(4871)),
+    RegressionSegment(0.0107, 4120, HDD * percentHeated.getOrElse(fillPosDoubleDefaults("Hotel","percentHeated",buildingSize)).value/100, Some(31.90), Some(9928))
 
   )
 }
