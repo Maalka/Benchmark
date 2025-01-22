@@ -88,7 +88,7 @@ libraryDependencies ++= Seq(
   "com.github.karelcemus" %% "play-redis" % "2.6.1",
   "org.typelevel" %% "squants" % "1.3.1-maalka-1.18",
   "com.github.tototoshi" %% "scala-csv" % "1.3.6",
-
+  "com.softwaremill.sttp.client4" %% "core" % "4.0.0-M6",
 //  "com.typesafe.akka" %% "akka-slf4j" % "2.6.12",
 //  "com.typesafe.akka" %% "akka-stream" % "2.6.12",
   "com.typesafe.play" %% "play-json-joda" % "2.9.2",

@@ -1,7 +1,6 @@
 package models
 
 import java.io.InputStream
-
 import play.api.Play
 import play.api.libs.json._
 
@@ -11,6 +10,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
+import services.AzureMapsService
 
 
 //...
@@ -42,7 +42,7 @@ object DegreeDays {
 
 }
 
-case class DegreeDays(parameters:JsValue) {
+case class DegreeDays(parameters:JsValue, azureMapsService: AzureMapsService)  {
   import DegreeDays._
 
   def lookupWeatherStation: Future[String] = {
@@ -57,6 +57,15 @@ case class DegreeDays(parameters:JsValue) {
         }
       }
     } yield zipStation
+  }
+
+  def lookupHddAndCddFromAzure: Future[Option[(Double, Double)]] = {
+    for {
+      zipCode <- getZipCode
+      dd <- azureMapsService.fetchHDDAndCDDFromZipcode(zipCode)
+    } yield {
+      dd
+    }
   }
 
   def lookupCDD: Future[Int] = {
