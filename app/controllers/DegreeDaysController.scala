@@ -17,18 +17,22 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 import akka.actor.ActorSystem
 import com.typesafe.scalalogging.LazyLogging
+import services.AzureMapsService
 
 
 
 class DegreeDaysController @Inject() (
                                        val cache: AsyncCacheApi,
-                                       cc: ControllerComponents
+                                       cc: ControllerComponents,
+                                      azureMapsService: AzureMapsService
                                      )(implicit val actorSystem: ActorSystem) extends AbstractController(cc) with LazyLogging {
   this: AbstractController =>
 
-  implicit def doubleToJSValue(d:Double):JsValue = Json.toJson(d)
+  implicit def doubleToJSValue(d: Double): JsValue = Json.toJson(d)
 
-  def roundAt(p: Int)(n: Double): Double = { val s = math pow (10, p); (math round n * s) / s }
+  def roundAt(p: Int)(n: Double): Double = {
+    val s = math pow(10, p); (math round n * s) / s
+  }
 
   def apiRecover(throwable: Throwable): Either[String, JsValue] = {
     throwable match {
@@ -36,7 +40,7 @@ class DegreeDaysController @Inject() (
     }
   }
 
-  def api[T](response: T):Either[String, JsValue] = {
+  def api[T](response: T): Either[String, JsValue] = {
     response match {
       case v: Double => Right(v)
       case v: Int => Right(Json.toJson(v))
@@ -45,37 +49,72 @@ class DegreeDaysController @Inject() (
     }
   }
 
+  def getDDPostcodeMetrics(DD: DegreeDays): Future[(Either[String, JsValue], Either[String, JsValue], Either[String, JsValue])] = {
+
+    val weatherStationFuture = DD.lookupWeatherStation.map(api).recover { case NonFatal(th) => apiRecover(th) }
+    val hddFuture = DD.lookupHDD.map(api).recover { case NonFatal(th) => apiRecover(th) }
+    val cddFuture = DD.lookupCDD.map(api).recover { case NonFatal(th) => apiRecover(th) }
+
+    for {
+      weatherStation <- weatherStationFuture
+      hdd <- hddFuture
+      cdd <- cddFuture
+    } yield (weatherStation, hdd, cdd)
+  }
+
+  def getDDAzureMetrics(DD: DegreeDays): Future[Seq[Either[String, JsValue]]] = {
+    val weatherStationFuture = DD.lookupWeatherStation
+      .map(api)
+      .recover { case NonFatal(th) => apiRecover(th) }
+
+    val hddAndCddFuture = DD.lookupHddAndCddFromAzure
+      .map {
+        case Some((hdd, cdd)) => Seq(Right(Json.toJson(hdd)), Right(Json.toJson(cdd)))
+        case None => Seq(Left("HDD and CDD data not found"), Left("HDD and CDD data not found"))
+      }.recover {
+        case NonFatal(th) => Seq(apiRecover(th), apiRecover(th))
+      }
+
+    for {
+      weatherStation <- weatherStationFuture
+      hddAndCdd <- hddAndCddFuture
+    } yield weatherStation +: hddAndCdd
+  }
+
+  // Introduce constant for field names
+  private val FieldNames: Seq[String] = Seq(
+    "weatherStation",
+    "HDD",
+    "CDD"
+  )
+
   def getDDMetrics() = Action.async(parse.json) { implicit request =>
+    val DD = DegreeDays(request.body, azureMapsService)
 
-    val DD: DegreeDays = DegreeDays(request.body)
+    val postcodeMetrics = getDDPostcodeMetrics(DD)
 
-    val futures = Future.sequence(Seq(
-
-      DD.lookupWeatherStation.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      DD.lookupCDD.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)},
-      DD.lookupHDD.map(api(_)).recover{ case NonFatal(th) => apiRecover(th)}
-
-    ))
-
-    val fieldNames = Seq(
-      "weatherStation",
-      "CDD",
-      "HDD"
-    )
-
-    futures.map(fieldNames.zip(_)).map { r =>
-      val errors = r.collect {
-        case (n, Left(s)) => Json.obj(n -> s)
-      }
-      val results = r.collect {
-        case (n, Right(s)) => Json.obj(n -> s)
-      }
-      Ok(Json.obj(
-        "values" -> results,
-        "errors" -> errors
-      ))
+    // Rename variable for better clarity
+    val processedMetricsFutures = postcodeMetrics.flatMap {
+      case (Right(w), Right(hdd), Right(cdd)) => Future.successful(Seq(Right(w), Right(hdd), Right(cdd)))
+      case _ => getDDAzureMetrics(DD)
     }
 
+    // Extract result processing logic to a method
+    processedMetricsFutures.map(FieldNames.zip(_)).map(processMetrics)
+  }
+
+  // Extract function to process metrics into errors and results
+  private def processMetrics(fieldResults: Seq[(String, Either[String, JsValue])]): Result = {
+    val errors = fieldResults.collect {
+      case (name, Left(error)) => Json.obj(name -> error)
+    }
+    val results = fieldResults.collect {
+      case (name, Right(value)) => Json.obj(name -> value)
+    }
+    Ok(Json.obj(
+      "values" -> results,
+      "errors" -> errors
+    ))
   }
 }
 
